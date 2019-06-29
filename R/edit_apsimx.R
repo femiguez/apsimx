@@ -609,8 +609,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }
     
     ## Just check that there is Harvesting
-    if(length(grep("Harvesting",xml_find_all(apsimx_xml, ".//Manager/Name"))) == 0)
-      stop("Harvesting not found")
+    ## In the Wheat example there is not 'Harvesting', instead it is called 'Harvest'
+    ##if(length(grep("Harvesting",xml_find_all(apsimx_xml, ".//Manager/Name"))) == 0)
+    ##  stop("Harvesting not found")
     
     return(kable(sowingrule.d, digits = digits))
   }
@@ -620,7 +621,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     ## This is not bullet-proof as I do not know what to expect with
     ## 'Other' Manager options
     amo <- xml_text(xml_find_all(apsimx_xml, ".//Manager/Name"))
-    w.amo <- which(amo0 != "Harvesting" & amo0 != "SowingRule")
+    w.amo <- which(amo != "Harvesting" & amo != "SowingRule")
     cat("Other Manager Components: \n",amo[w.amo],"\n")
     
     ## This is rough at the moment
