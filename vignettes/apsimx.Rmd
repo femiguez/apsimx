@@ -43,7 +43,7 @@ The main functions in the package are (for now):
 
 ### Running an example
 
-To get up an running you can run one of the examples distributed with APSIM-X.
+To get up and running you can run one of the examples distributed with APSIM-X.
 
 ```{r apsimx-example, eval = TRUE}
 maize <- apsimx_example("Maize")
@@ -93,4 +93,11 @@ The main goal is to be able to create an .apsimx file using the GUI, but then to
 6. Read in the results, possibly using 'read_apsimx'
 7. Perform visual and statistical analysis on the results
 
-Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Tools for implementing this type of work will be added in future development.
+Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.
+
+```{r apsimx}
+ex.dir <- auto_detect_apsimx_examples()
+sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report", cleanup = 1)
+## Plot data
+ggplot(data = sim, aes(x = Date, y = Yield)) + geom_point()
+```

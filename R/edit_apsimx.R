@@ -17,7 +17,7 @@
 #' @param file file ending in .apsimx to be edited
 #' @param src.dir directory containing the .apsimx file to be edited; defaults to the current working directory
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
-#' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Plant' or 'Manager' (for now) 
+#' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop' or 'Manager' (for now) 
 #' @param soil.child specific soil component to be edited
 #' @param som.child specific soil organic matter component to be edited
 #' @param parm parameter to be edited
@@ -50,7 +50,7 @@
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         node = c("Weather","Soil","SurfaceOrganicMatter",
-                                 "MicroClimate","Plant","Manager"),
+                                 "MicroClimate","Crop","Manager"),
                         soil.child = c("Water","Nitrogen","OrganicMatter",
                                        "Analysis","InitialWater","Sample"),
                         som.child = c("Pools","Other"),
@@ -157,6 +157,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       
       if(length(value) != length(xml_children(soil.Analysis.node)))
            stop("value vector of incorrect length")
+      
       xml_set_text(xml_children(soil.Analysis.node), as.character(value))
     }
     
@@ -171,7 +172,8 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.InitialWater.node <- xml_find_first(apsimx_xml, parm.path)
       
       if(length(value) != length(soil.InitialWater.node))
-        stop("value vector of incorrect length")
+          stop("value vector of incorrect length")
+      
       xml_set_text(soil.InitialWater.node, as.character(value))
     }
     
@@ -186,7 +188,8 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.Sample.node <- xml_find_first(apsimx_xml, parm.path)
       
       if(length(value) != length(soil.Sample.node))
-        stop("value vector of incorrect length")
+          stop("value vector of incorrect length")
+      
       xml_set_text(soil.Sample.node, as.character(value))
     }
     ## For now changing other components of the 'Soil' might make little sense
@@ -205,7 +208,8 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.Pools.Pool.node <- xml_find_first(apsimx_xml, parm.path)
       
       if(length(value) != length(soil.Pools.Pool.node))
-        stop("value vector of incorrect length")
+          stop("value vector of incorrect length")
+      
       xml_set_text(soil.Pools.Pool.node, as.character(value))
       
       ## The structure here is confusing because there are two places
@@ -222,7 +226,8 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
         soil.Pools.node <- xml_find_first(apsimx_xml, parm.path2)
         
         if(length(value) != length(soil.Pools.node))
-          stop("value vector of incorrect length")
+            stop("value vector of incorrect length")
+        
         xml_set_text(soil.Pools.node, as.character(value))
       }
     }
@@ -244,18 +249,21 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.Other.node <- xml_find_first(apsimx_xml, parm.path)
       
       if(length(value) != length(soil.Other.node))
-        stop("value vector of incorrect length")
+         stop("value vector of incorrect length")
+      
       xml_set_text(soil.Other.node, as.character(value))
       
     }
   }
   
   if(node == "MicroClimate"){
+    ## These are hard coded, might use them in the future
+    ## parm.ch <- c("a_interception","b_interception","c_interception",
+    ##             "d_interception", "soil_albedo", "sun_angle",
+    ##             "soil_heat_flux_fraction", "night_interception_fraction",
+    ##             "refheight","albedo","emissivity","RadIntTotal")
     
-    parm.ch <- c("a_interception","b_interception","c_interception",
-                 "d_interception", "soil_albedo", "sun_angle",
-                 "soil_heat_flux_fraction", "night_interception_fraction",
-                 "refheight","albedo","emissivity","RadIntTotal")
+    parm.ch <- xml_name(xml_children(xml_find_first(apsimx_xml, ".//MicroClimate")))[-c(1:2)]
     
     parm <- match.arg(parm, choices = parm.ch)
     
@@ -265,24 +273,38 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     
     if(length(value) != length(soil.MicroClimate.node))
       stop("value vector of incorrect length")
+    
     xml_set_text(soil.MicroClimate.node, as.character(value))
     
   }
   
-  if(node == "Plant"){
+  if(node == "Crop"){
+    ## I will assume that 'SowingRule' and 'Harvesing' are always present
+    ## Sowing is a case where it might not be easy to automatically 
+    ## get the parameter choices
+    parms.ch <- c("StartDate","EndDate","MinESW","MinRain",
+                          "RainDays","CultivarName","SowingDepth",
+                          "RowSpacing","Population")
     
-    ## For Plant the only thing that seems to make sense is to 
-    ## Change the name of the plant being used, but before this
-    ## we would need to edit the Models.xml file which contains
-    ## crop specific parameters
+    parm <- match.arg(parm, choices = parm.ch)
+    
+    parm.path <- paste0(".//Manager/Script","/",parm)
+    
+    soil.manager.sowingrule.node <- xml_find_first(apsimx_xml, parm.path)
+    
+    if(length(value) != length(soil.manager.sowingrule.node))
+      stop("value vector of incorrect length")
+    
+    xml_set_text(soil.manager.sowingrule.node, as.character(value))
+    
+    ## At the moment it seems that there is nothing to edit for 'Harvesting'
   }
   
   if(node == "Manager"){
     stop("This is an advanced feature, not implemented at the moment")
   }
 
-    ## Still to do:
-    ## Plant, Manager
+    ## Still to do: Manager
     ## It might not make sense to change all of these variables
     ## For example, the plant is 'Maize' and if you really need to change this
     ## create a different .apsimx file.
@@ -314,16 +336,16 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
 #' @name inspect_apsimx
 #' @param file file ending in .apsimx to be inspected
 #' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
-#' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Plant'
+#' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop' or 'Manager'
 #' @param soil.child specific soil component to be inspected
 #' @param som.child specific soil organic matter component to be inspected
 #' @param digits number of decimals to print
 #' @return table with inspected parameters and values
 #' @export
-#' @note nodes 'Plant' and 'MicroClimate' are not implemented yet
+#' @note node 'Manager' can be complicated and it is not guranteed to work
 #' @examples 
 #' \dontrun{
-#' ex.dir <- apsimx::auto_detect_apsimx_examples()
+#' ex.dir <- auto_detect_apsimx_examples()
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")        
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Water")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Nitrogen")
@@ -334,12 +356,14 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.child = "Pools")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.child = "Other")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "MicroClimate")
+#' inspect_apsimx("Maize", src.dir = ex.dir, node = "Crop")
+#' inspect_apsimx("Maize", src.dir = ex.dir, node = "Manager")
 #' }
 #' 
 
 inspect_apsimx <- function(file = "", src.dir = ".", 
                            node = c("Weather","Soil","SurfaceOrganicMatter",
-                                    "MicroClimate","Plant","Manager"),
+                                    "MicroClimate","Crop","Manager"),
                            soil.child = c("Water","Nitrogen","OrganicMatter",
                                           "Analysis","InitialWater","Sample"),
                            som.child = c("Pools","Other"),
@@ -424,6 +448,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     
     if(soil.child == "OrganicMatter"){
       ## State what are organic matter possible parameters
+      ## Will keep these ones hard coded
       som.parms1 <- c("RootCN","RootWt","SoilCN","EnrACoeff",
                     "EnrBCoeff")
       som.parms2 <- c("Thickness","Depth","OC","FBiom","FInert")
@@ -452,6 +477,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     
     if(soil.child == "Analysis"){
       
+      ## I will keep this one hard coded because it is simple
       analysis.parms <- c("Thickness","PH")
       
       val.mat <- matrix(NA, nrow = length(analysis.parms),
@@ -499,13 +525,17 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   
   if(node == "SurfaceOrganicMatter"){
     if(som.child == "Pools"){
-      pools.parms <- c("PoolName","ResidueType","Mass","CNRatio",
-                   "CPRatio","StandingFraction")
+      ## The lines below are hardcoded, which could be used if we want to
+      ## restrict the variables to inspect
+      ## pools.parms <- c("PoolName","ResidueType","Mass","CNRatio",
+      ##             "CPRatio","StandingFraction")
+      pools.path <- ".//SurfaceOrganicMatter/Pools/Pool"
+      pools.parms <- xml_name(xml_children(xml_find_first(apsimx_xml, pools.path)))
       
       pools.d <- data.frame(parm = pools.parms, value = NA)
       
       for(i in pools.parms){
-        parm.path <- paste0(".//SurfaceOrganicMatter/Pools/Pool","/",i)
+        parm.path <- paste0(pools.path,"/",i)
         soil.pools.node <- xml_find_first(apsimx_xml, parm.path)
         pools.d[pools.d$parm == i,2] <- xml_text(soil.pools.node)
       }
@@ -513,13 +543,17 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }
     
     if(som.child == "Other"){
-      other.parms <- c("CriticalResidueWeight",
-                   "OptimumDecompTemp","MaxCumulativeEOS",
-                   "CNRatioDecompCoeff","CNRatioDecompThreshold",
-                   "TotalLeachRain","MinRainToLeach",
-                   "CriticalMinimumOrganicC","DefaultCPRatio",
-                   "DefaultStandingFraction","StandingExtinctCoeff",
-                   "FractionFaecesAdded")
+      ## The lines below are hardcoded, which could be used if we want to
+      ## restrict the variables to inspect
+      ## other.parms <- c("CriticalResidueWeight",
+      ##             "OptimumDecompTemp","MaxCumulativeEOS",
+      ##             "CNRatioDecompCoeff","CNRatioDecompThreshold",
+      ##             "TotalLeachRain","MinRainToLeach",
+      ##             "CriticalMinimumOrganicC","DefaultCPRatio",
+      ##             "DefaultStandingFraction","StandingExtinctCoeff",
+      ##             "FractionFaecesAdded")
+      
+      other.parms <- xml_name(xml_children(xml_find_first(apsimx_xml, ".//SurfaceOrganicMatter")))[-c(1:2)]
       
       other.d <- data.frame(parm = other.parms, value = NA)
       
@@ -533,10 +567,15 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   }
   
   if(node == "MicroClimate"){
-    microclimate.parms <- c("a_interception","b_interception","c_interception",
-                 "d_interception", "soil_albedo", "sun_angle",
-                 "soil_heat_flux_fraction", "night_interception_fraction",
-                 "refheight","albedo","emissivity","RadIntTotal")
+    ## The lines below would be the hard coded version which could work
+    ## If we want to restrict the variables which can be inspected
+    ## microclimate.parms <- c("a_interception","b_interception","c_interception",
+    ##             "d_interception", "soil_albedo", "sun_angle",
+    ##             "soil_heat_flux_fraction", "night_interception_fraction",
+    ##             "refheight","albedo","emissivity","RadIntTotal")
+    
+    ## Names 'Name' and 'IncludeInDocumentation' will not be inspected
+    microclimate.parms <- xml_name(xml_children(xml_find_first(apsimx_xml, ".//MicroClimate")))[-c(1:2)]
     
     microclimate.d <- data.frame(parm = microclimate.parms, value = NA)
     
@@ -548,10 +587,53 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     return(kable(microclimate.d, digits = digits))
   }
   
-  if(node == "Plant" | node == "Manager"){
-    stop("Not implemented yet")
+  if(node == "Crop"){
+    ## I will assume that 'SowingRule' and 'Harvesting' are
+    ## always present, but this might not be true for some crops
+    ## Print name of Crop
+    cat("Crop Type: ",xml_text(xml_find_first(apsimx_xml, ".//Plant/CropType")),"\n")
+    ## Make sure sowing rule is present
+    if(length(grep("SowingRule",xml_find_all(apsimx_xml, ".//Manager/Name"))) == 0)
+         stop("SowingRule not found")
+    
+    sowingrule.parms <- c("StartDate","EndDate","MinESW","MinRain",
+                          "RainDays","CultivarName","SowingDepth",
+                          "RowSpacing","Population")
+    
+    sowingrule.d <- data.frame(parm = sowingrule.parms, value = NA)
+    
+    for(i in sowingrule.parms){
+      parm.path <- paste0(".//Manager/Script","/",i)
+      manager.sowingrule.node <- xml_find_first(apsimx_xml, parm.path)
+      sowingrule.d[sowingrule.d$parm == i,2] <- xml_text(manager.sowingrule.node)
+    }
+    
+    ## Just check that there is Harvesting
+    if(length(grep("Harvesting",xml_find_all(apsimx_xml, ".//Manager/Name"))) == 0)
+      stop("Harvesting not found")
+    
+    return(kable(sowingrule.d, digits = digits))
+  }
+  
+  if(node == "Manager"){
+    ## First print available 'Manager' options
+    ## This is not bullet-proof as I do not know what to expect with
+    ## 'Other' Manager options
+    amo <- xml_text(xml_find_all(apsimx_xml, ".//Manager/Name"))
+    w.amo <- which(amo0 != "Harvesting" & amo0 != "SowingRule")
+    cat("Other Manager Components: \n",amo[w.amo],"\n")
+    
+    ## This is rough at the moment
+    ## Available components within Other Manager Components
+    ms.attr <- xml_children(xml_find_all(apsimx_xml, paste0(".//Manager/Script"))[w.amo])
+    ms.nm <- xml_name(ms.attr)
+    ms.vl <- xml_text(ms.attr)
+    
+    return(kable(data.frame(parm = ms.nm, value = ms.vl), digits = digits))
+
   }
 }
+
 
 
 

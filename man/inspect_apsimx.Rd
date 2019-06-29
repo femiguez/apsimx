@@ -5,7 +5,7 @@
 \title{Inspect and .apsimx file}
 \usage{
 inspect_apsimx(file = "", src.dir = ".", node = c("Weather", "Soil",
-  "SurfaceOrganicMatter", "MicroClimate", "Plant", "Manager"),
+  "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
   soil.child = c("Water", "Nitrogen", "OrganicMatter", "Analysis",
   "InitialWater", "Sample"), som.child = c("Pools", "Other"),
   digits = 3)
@@ -15,7 +15,7 @@ inspect_apsimx(file = "", src.dir = ".", node = c("Weather", "Soil",
 
 \item{src.dir}{directory containing the .apsimx file to be inspected; defaults to the current working directory}
 
-\item{node}{either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Plant'}
+\item{node}{either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop' or 'Manager'}
 
 \item{soil.child}{specific soil component to be inspected}
 
@@ -31,11 +31,11 @@ Similar structure to the 'edit_apsimx' file but aimed at a simple way
 of inspecting a file
 }
 \note{
-nodes 'Plant' and 'MicroClimate' are not implemented yet
+node 'Manager' can be complicated and it is not guranteed to work
 }
 \examples{
 \dontrun{
-ex.dir <- apsimx::auto_detect_apsimx_examples()
+ex.dir <- auto_detect_apsimx_examples()
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")        
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Water")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Nitrogen")
@@ -46,6 +46,8 @@ inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Sample")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.child = "Pools")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.child = "Other")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "MicroClimate")
+inspect_apsimx("Maize", src.dir = ex.dir, node = "Crop")
+inspect_apsimx("Maize", src.dir = ex.dir, node = "Manager")
 }
 
 }

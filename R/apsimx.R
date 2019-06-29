@@ -33,32 +33,33 @@ apsimx <- function(file = "", src.dir=".",
   
   if(file == "") stop("need to specify file name")
   
+  ## The following lines are somewhat not needed
   fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  
+  file <- match.arg(file, fileNames, several.ok=FALSE)
   
   if(length(fileNames)==0){
     stop("There are no .apsimx files in the specified directory to edit.")
   }
   
-  if(grep("apsimx",file)){
+  if(length(grep(".apsimx$",file)) != 0){
     ## I assume the extention was included
     ## Only use the name from here 
     file <- strsplit(file, ".", fixed = TRUE)[[1]][1]
   }
   
-  file <- match.arg(file, fileNames, several.ok=FALSE)
-  
-  file.name <- paste0(src.dir,"/",file)
+  file.name.path <- paste0(src.dir,"/",file)
   
   ## This function will run an APSIM file
   ## This work on MacOS and it might work on other 'unix'
   mono <- system("which mono", intern = TRUE)
   ada <- auto_detect_apsimx()
-  run.strng <- paste0(mono," ",ada," ",file.name,".apsimx")
+  run.strng <- paste0(mono," ",ada," ",file.name.path,".apsimx")
   ## Use the system function
   system(command = run.strng, ignore.stdout = silent)
   
   if(value != "none"){
-    ans <- read_apsimx(file = file.name, src.dir = src.dir, value = value)
+    ans <- read_apsimx(file = file, src.dir = src.dir, value = value)
   }else{
     if(value == "none" & !silent){
       cat("APSIM created .db files, but nothing is returned \n")
@@ -200,7 +201,7 @@ read_apsimx <- function(file = "", src.dir = ".",
   
   value <- match.arg(value)
   
-  if(grep(".db$",file)){
+  if(length(grep(".db$",file)) != 0){
     ## I assume the extention was included
     ## Only use the name from here 
     file <- strsplit(file, ".", fixed = TRUE)[[1]][1]

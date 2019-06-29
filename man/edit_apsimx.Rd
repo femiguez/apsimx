@@ -5,7 +5,7 @@
 \title{Edit an APSIM-X Simulation}
 \usage{
 edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
-  "Soil", "SurfaceOrganicMatter", "MicroClimate", "Plant", "Manager"),
+  "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
   soil.child = c("Water", "Nitrogen", "OrganicMatter", "Analysis",
   "InitialWater", "Sample"), som.child = c("Pools", "Other"),
   parm = NULL, value = NULL, overwrite = FALSE, verbose = TRUE)
@@ -17,7 +17,7 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
 
 \item{wrt.dir}{should be used if the destination directory is different from the src.dir}
 
-\item{node}{either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Plant' or 'Manager' (for now)}
+\item{node}{either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop' or 'Manager' (for now)}
 
 \item{soil.child}{specific soil component to be edited}
 
