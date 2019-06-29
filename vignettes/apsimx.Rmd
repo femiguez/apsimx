@@ -98,6 +98,8 @@ Another proposed more advanced workflow would involve calibrating or optimizing 
 ```{r apsimx}
 ex.dir <- auto_detect_apsimx_examples()
 sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report", cleanup = 1)
+## 
+summary(sim)
 ## Plot data
 ggplot(data = sim, aes(x = Date, y = Yield)) + geom_point()
 ```

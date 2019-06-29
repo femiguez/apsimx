@@ -70,7 +70,7 @@ apsimx <- function(file = "", src.dir=".",
     ## Default is not to cleanup
     if(value == "none") stop("do not clean up if you choose value = 'none' ")
     ## Delete the apsim-generated sql database 
-    system(paste0("rm ",file.name,".db"))
+    system(paste0("rm ",file.name.path,".db"))
   }
   
   if(value != "none")
@@ -204,12 +204,13 @@ read_apsimx <- function(file = "", src.dir = ".",
   if(length(grep(".db$",file)) != 0){
     ## I assume the extention was included
     ## Only use the name from here 
+    ## This strips the extension
     file <- strsplit(file, ".", fixed = TRUE)[[1]][1]
   }
   
-  file.name <- paste0(src.dir,"/",file)
+  file.name.path <- paste0(src.dir,"/",file)
   
-  con <- DBI::dbConnect(RSQLite::SQLite(), paste0(file.name,".db"))
+  con <- DBI::dbConnect(RSQLite::SQLite(), paste0(file.name.path,".db"))
   ## create data frame for each table
   tbl0 <- DBI::dbGetQuery(con, "SELECT * FROM Report")
   tbl1 <- DBI::dbGetQuery(con, "SELECT * FROM _Checkpoints")
