@@ -1,0 +1,96 @@
+---
+title: "apsimx: An R package for APSIM Next Generation"
+author: "Fernando Miguez"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{apsimx: An R package for APSIM Next Generation}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(apsimx)
+library(ggplot2)
+```
+
+# Introduction
+
+Before using this package it is recommended to become familiar with APSIM-X ("Next Generation").
+
+See the following for details
+
+[APSIM](https://www.apsim.info)
+
+[APSIM-X](https://apsimnextgeneration.netlify.com/)
+
+[Holzworth et al. (2018)](https://www.sciencedirect.com/science/article/pii/S1364815217311921)
+
+This package only works on MacOS at the moment and it assumes that you have successfully installed APSIM-X.
+
+Other useful R packages are 'APSIM' and 'apsimr'. The main difference is that these were written to work with the previous generation of APSIM (7.x). This package is thus an update for the new APSIM-X software.
+
+## R functions for APSIM-X
+
+The main functions in the package are (for now):
+
+* **inspect_apsimx** simple inspecting of an .apsimx file. (It does not replace the GUI.)
+* **edit_apsimx** edit/modify an .apsimx file. (Limited options are available at the moment).
+* **apsimx** run an .apsimx simulation.
+* **read_apsimx** read files created by an .apsimx simulation run (.db files)
+* **read_apsimx_all** read all files created by one or more .apsimx simulation runs in a directory (.db files)
+
+### Running an example
+
+To get up an running you can run one of the examples distributed with APSIM-X.
+
+```{r apsimx-example, eval = TRUE}
+maize <- apsimx_example("Maize")
+summary(maize)
+## Simple data plotting
+ggplot(data = maize , aes(x = Date, y = Maize.AboveGround.Wt)) + 
+  geom_point()
+```
+
+### Inspecting a file
+
+A function to inspect an .apsimx file is included. This is meant to be used simply to avoid the need to use the GUI when a quick inspection of a given component is needed. For example, you edit a file and you want to make sure that the intended component was edited correctly just inspect it. For complex inspections and manipulations of an .apsimx file the GUI is recommended.
+
+```{r inspect-apsimx}
+ex.dir <- auto_detect_apsimx_examples()
+inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")
+```
+
+### Editing a file
+
+Editing a file has the side effect of creating a new file with '-edited' added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the 'apsimr' package. This code does not run an APSIM simulation, it only edits the file. Here we are modifying the 'Organic Carbon' values in the soil.
+
+```{r edit-apsimx}
+ex.dir <- auto_detect_apsimx_examples()
+ocs <- c(1.5,1.4,1.3,1.2,1.1,1.0,0.9)
+edit_apsimx("Maize.apsimx", src.dir = ex.dir,
+            wrt.dir = ".",
+            node = "Soil",
+            soil.child = "OrganicMatter", 
+            parm = "OC", value = ocs)
+```
+
+```{r edit-apsimx-delete, echo = FALSE}
+## delete the created file
+system("rm ./Maize-edited.apsimx")
+```
+
+### Running a simulation
+
+The main goal is to be able to create an .apsimx file using the GUI, but then to be able to do either sensitivity or uncertainty analysis using R. The funcitons included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. Warning: at the moment this pacakge has not been extensively tested, so there are absolutely no gurantees. This is the proposed workflow:
+
+1. Create a simualtion using the APSIM GUI
+2. Identify variables/parameters that you want to modify (they need to be exposed in the .apsimx XML file)
+3. Edit the file using 'edit_apsimx'
+4. Run the simulation using 'apsimx'
+5. Repeat steps 3 and 4 as needed
+6. Read in the results, possibly using 'read_apsimx'
+7. Perform visual and statistical analysis on the results
+
+Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Tools for implementing this type of work will be added in future development.
