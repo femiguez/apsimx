@@ -53,7 +53,8 @@ is a list that has the same number of elements as the length of the vector \code
 \note{
 The components that can be edited are restricted becuase this is better in preventing
 errors of editing unintended parts of the file. The disadvantage is that there is less flexibility
-compared to the similar function in the 'apsimr' package
+compared to the similar function in the 'apsimr' package. Only XML files are supported at the moment.
+ JSON files will be supported in the future.
 }
 \examples{
 \dontrun{

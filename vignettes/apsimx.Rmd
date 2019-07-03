@@ -41,9 +41,9 @@ The main functions in the package are (for now):
 * **read_apsimx** read files created by an .apsimx simulation run (.db files)
 * **read_apsimx_all** read all files created by one or more .apsimx simulation runs in a directory (.db files)
 
-### Running an example
+### 'apsimx_exmple': Running a built-in example
 
-To get up and running you can run one of the examples distributed with APSIM-X.
+To get started you can run one of the examples distributed with APSIM-X. This function does the following: it detects where the APSIM examples are located, it runs the example indicated and it returns the 'report' as a data.frame. After that you can do the usual manipulations, including visualization.
 
 ```{r apsimx-example, eval = TRUE}
 maize <- apsimx_example("Maize")
@@ -53,16 +53,16 @@ ggplot(data = maize , aes(x = Date, y = Maize.AboveGround.Wt)) +
   geom_point()
 ```
 
-### Inspecting a file
+### 'inspect_apsimx': Inspecting a file
 
-A function to inspect an .apsimx file is included. This is meant to be used simply to avoid the need to use the GUI when a quick inspection of a given component is needed. For example, you edit a file and you want to make sure that the intended component was edited correctly just inspect it. For complex inspections and manipulations of an .apsimx file the GUI is recommended.
+A function to inspect an .apsimx file is included. This is meant to be used simply to avoid the need to use the GUI when a quick inspection of a given component is needed. For example, if you edit a file and want to make sure that the intended component was edited correctly just inspect it. For complex inspections and manipulations of an .apsimx file the GUI is recommended.
 
 ```{r inspect-apsimx}
 ex.dir <- auto_detect_apsimx_examples()
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")
 ```
 
-### Editing a file
+### 'edit_apsimx': Editing a file
 
 Editing a file has the side effect of creating a new file with '-edited' added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the 'apsimr' package. This code does not run an APSIM simulation, it only edits the file. Here we are modifying the 'Organic Carbon' values in the soil.
 
@@ -76,14 +76,14 @@ edit_apsimx("Maize.apsimx", src.dir = ex.dir,
             parm = "OC", value = ocs)
 ```
 
-```{r edit-apsimx-delete, echo = FALSE}
+```{r edit-apsimx-delete, echo = TRUE}
 ## delete the created file
 system("rm ./Maize-edited.apsimx")
 ```
 
-### Running a simulation
+## Running a simulation
 
-The main goal is to be able to create an .apsimx file using the GUI, but then to be able to do either sensitivity or uncertainty analysis using R. The funcitons included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. Warning: at the moment this pacakge has not been extensively tested, so there are absolutely no gurantees. This is the proposed workflow:
+The proposed workflow is to start by creating an .apsimx file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The funcitons included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. This is the proposed workflow:
 
 1. Create a simualtion using the APSIM GUI
 2. Identify variables/parameters that you want to modify (they need to be exposed in the .apsimx XML file)
@@ -96,13 +96,28 @@ The main goal is to be able to create an .apsimx file using the GUI, but then to
 Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.
 
 ```{r apsimx}
+## Detect 'Examples' directory
 ex.dir <- auto_detect_apsimx_examples()
+## Run simulation, this will take a while
 sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report", cleanup = 1)
-## 
+## Calcualte summary statistics on all variables
 summary(sim)
 ## Plot data
 ggplot(data = sim, aes(x = Date, y = Yield)) + geom_point()
 ## Inspect the Wheat .apsimx file
 inspect_apsimx("Wheat", src.dir = ex.dir, node = "Crop")
 inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
+```
+
+# Future features
+
+* Provide support for Windows and Linux (highest priority)
+* Provide support for JSON files (high priority)
+* Provide support for editing 'Manager' (medium priority)
+* Improve implementation of read_apsimx_all (low priority)
+
+```{r junk-code}
+ex.dir <- auto_detect_apsimx_examples()
+barley.json <- read_json(paste0(ex.dir,"/","Barley.apsimx"))
+## This is a list
 ```

@@ -31,7 +31,8 @@ Similar structure to the 'edit_apsimx' file but aimed at a simple way
 of inspecting a file
 }
 \note{
-node 'Manager' can be complicated and it is not guranteed to work
+node 'Manager' can be complicated and it is not guranteed to work. 
+Only XML files are supported at the moment. JSON files will be supported in the future.
 }
 \examples{
 \dontrun{

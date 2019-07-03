@@ -1,6 +1,6 @@
 Package: apsimx
 Title: Inspect, Read, Edit and Run APSIM-X
-Version: 0.34
+Version: 0.40
 Authors@R: person("Fernando", "Miguez", email = "femiguezt@iastate.edu", role = c("aut", "cre"))
 Description: The functions in this package manipulate .apsimx (XML) files and run them from within
    R through the command line. For more information about APSIM see (www.apsim.info) and for APSIM
@@ -12,6 +12,7 @@ Encoding: UTF-8
 VignetteBuilder: knitr
 Imports:
         DBI,
+	jsonlite,
         knitr,
         RSQLite,
 	xml2

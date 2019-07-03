@@ -17,18 +17,20 @@
 #' @param file file ending in .apsimx to be edited
 #' @param src.dir directory containing the .apsimx file to be edited; defaults to the current working directory
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
-#' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop' or 'Manager' (for now) 
+#' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other' 
 #' @param soil.child specific soil component to be edited
 #' @param som.child specific soil organic matter component to be edited
 #' @param parm parameter to be edited
 #' @param value new values for the parameter to be edited 
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
+#' @param parm.path path to the attribute to edit when node is 'Other'
 #' @param verbose whether to print information about successful edit
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
 #' As a side effect this function created a new (XML) .apsimx file.
 #' @note The components that can be edited are restricted becuase this is better in preventing
 #' errors of editing unintended parts of the file. The disadvantage is that there is less flexibility
-#' compared to the similar function in the 'apsimr' package
+#' compared to the similar function in the 'apsimr' package. Only XML files are supported at the moment.
+#'  JSON files will be supported in the future.
 #' @export
 #' @examples 
 #' \dontrun{
@@ -55,6 +57,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                                        "Analysis","InitialWater","Sample"),
                         som.child = c("Pools","Other"),
                         parm=NULL, value=NULL, overwrite = FALSE,
+                        parm.path = NULL,
                         verbose = TRUE){
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
@@ -71,6 +74,9 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   
   ## For now we just edit one file at a time
   file <- match.arg(file, fileNames, several.ok=FALSE)
+  
+  if(!is_apsimx_xml(file = file, src.dir = src.dir))
+    stop("Only XML files are supported. JSON files will be supported in the future")
   
   ## Parse apsimx file (XML file)
   apsimx_xml <- read_xml(paste0(src.dir,"/",file))
@@ -293,7 +299,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     soil.manager.sowingrule.node <- xml_find_first(apsimx_xml, parm.path)
     
     if(length(value) != length(soil.manager.sowingrule.node))
-      stop("value vector of incorrect length")
+        stop("value vector of incorrect length")
     
     xml_set_text(soil.manager.sowingrule.node, as.character(value))
     
@@ -301,6 +307,10 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   }
   
   if(node == "Manager"){
+    stop("This is an advanced feature, not implemented at the moment")
+  }
+  
+  if(node == "Other"){
     stop("This is an advanced feature, not implemented at the moment")
   }
 
@@ -336,13 +346,15 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
 #' @name inspect_apsimx
 #' @param file file ending in .apsimx to be inspected
 #' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
-#' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop' or 'Manager'
+#' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
 #' @param soil.child specific soil component to be inspected
 #' @param som.child specific soil organic matter component to be inspected
+#' @param parm.path path to the attribute to edit when node is 'Other'
 #' @param digits number of decimals to print
 #' @return table with inspected parameters and values
 #' @export
-#' @note node 'Manager' can be complicated and it is not guranteed to work
+#' @note node 'Manager' can be complicated and it is not guranteed to work. 
+#' Only XML files are supported at the moment. JSON files will be supported in the future.
 #' @examples 
 #' \dontrun{
 #' ex.dir <- auto_detect_apsimx_examples()
@@ -372,23 +384,132 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
   if(length(fileNames)==0){
-    stop("There are no .apsimx files in the specified directory to edit.")
+    stop("There are no .apsimx files in the specified directory to inspect.")
   }
   
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)
   som.child <- match.arg(som.child)
   
-  ## For now we just edit one file at a time
+  ## This matches the specified file from a list of files
+  ## Notice that the .apsimx extension will be added here
   file <- match.arg(file, fileNames, several.ok=FALSE)
   
   ## Parse apsimx file (XML file)
-  apsimx_xml <- read_xml(paste0(src.dir,"/",file))
+  if(apsimx_filetype(file = file, src.dir = src.dir) == "xml"){
+    insepct_apsimx_xml(file = file, src.dir = src.dir, node = node,
+                       soil.child = soil.child, som.child = som.child, 
+                       digits = digits)
+  }else{
+      stop("json file not supported yet")
+  }
+} 
+
+#' Test whether an .apsimx file is XML or json
+#' 
+#' @title Test file format for .apsimx files
+#' @name apsimx_filetype
+#' @param file file ending in .apsimx to be tested
+#' @param src.dir directory containing the .apsimx file to be tested; defaults to the current working directory
+#' @return 'xml', 'json' or 'unknown'
+#' @note Minimal function which reads only the first line in a file and tries to guess whether it is
+#'       an 'xml' or 'json' file type.
+#' @export
+#' @examples 
+#' \dontrun{
+#' ex.dir <- auto_detect_apsimx_examples()
+#' apsimx_filetype("Barley", src.dir = ex.dir) 
+#' apsimx_filetype("Chicory", src.dir = ex.dir) 
+#' apsimx_filetype("Oats", src.dir = ex.dir)                               
+#' apsimx_filetype("Maize", src.dir = ex.dir)
+#' apsimx_filetype("Sugarcane", src.dir = ex.dir)
+#' }
+#' 
+
+apsimx_filetype <- function(file = "", src.dir = "."){
+  
+  
+  fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  
+  if(length(fileNames)==0){
+    stop("There are no .apsimx files in the specified directory to test.")
+  }
+  
+  file <- match.arg(file, fileNames, several.ok=FALSE)
+  
+  rfl1 <- read.table(file = paste0(src.dir,"/",file), nrows = 1)[1,1]
+  ## The next line will work if all XML files contain xml in the first line
+  if(length(grep("xml", as.character(rfl1))) != 0){
+    ans <- "xml"
+  }else{
+    if(length(grep("{", as.character(rfl1), fixed = TRUE)) == 0){
+      ans <- "unkown"
+    }else{
+      ans <- "json"
+    }
+  }
+  return(ans)
+}
+
+
+#' 
+#' @title Inspect an .apsimx (XML) file
+#' @name inspect_apsimx_xml
+#' @param file file ending in .apsimx to be inspected (XML)
+#' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
+#' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
+#' @param soil.child specific soil component to be inspected
+#' @param som.child specific soil organic matter component to be inspected
+#' @param parm.path path to the attribute to edit when node is 'Other'
+#' @param digits number of decimals to print
+#' @return table with inspected parameters and values
+#' @export
+#' @note node 'Manager' can be complicated and it is not guranteed to work. 
+#' Only XML files are supported at the moment. 
+#' @examples 
+#' \dontrun{
+#' ex.dir <- auto_detect_apsimx_examples()
+#' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Weather") 
+#' }
+#' 
+
+inspect_apsimx_xml <- function(file = "", src.dir = ".", 
+                               node = c("Weather","Soil","SurfaceOrganicMatter",
+                                        "MicroClimate","Crop","Manager"),
+                               soil.child = c("Water","Nitrogen","OrganicMatter",
+                                              "Analysis","InitialWater","Sample"),
+                               som.child = c("Pools","Other"),
+                               digits = 3){
+  
+  fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  
+  if(length(fileNames)==0){
+    stop("There are no .apsimx files in the specified directory to inspect.")
+  }
+  
+  node <- match.arg(node)
+  soil.child <- match.arg(soil.child)
+  som.child <- match.arg(som.child)
+  
+  ## This matches the specified file from a list of files
+  ## Notice that the .apsimx extension will be added here
+  file <- match.arg(file, fileNames, several.ok=FALSE)
+  
+  ## Parse apsimx file (XML file)
+  if(apsimx_filetype(file = file, src.dir = src.dir) == "xml"){
+    apsimx_xml <- read_xml(paste0(src.dir,"/",file))
+  }else{
+    if(apsimx_filetype(file = file, src.dir = src.dir) == "json"){
+      stop("use function inspect_apsimx_json for this type of file")
+    }else{
+      stop("unknown filetype")
+    }
+  }
   
   if(node == "Weather"){
-      parm.path <- paste0("//Weather/FileName")
-      weather.filename.node <- xml_find_first(apsimx_xml, parm.path)
-      return(xml_text(weather.filename.node))
+    parm.path <- paste0("//Weather/FileName")
+    weather.filename.node <- xml_find_first(apsimx_xml, parm.path)
+    return(xml_text(weather.filename.node))
   }
   
   if(node == "Soil"){
@@ -450,7 +571,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       ## State what are organic matter possible parameters
       ## Will keep these ones hard coded
       som.parms1 <- c("RootCN","RootWt","SoilCN","EnrACoeff",
-                    "EnrBCoeff")
+                      "EnrBCoeff")
       som.parms2 <- c("Thickness","Depth","OC","FBiom","FInert")
       
       som.d1 <- data.frame(parm = som.parms1, value = NA)
@@ -484,7 +605,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                         ncol = number.soil.layers)
       colnames(val.mat) <- soil.depths
       analysis.d <- data.frame(parm = analysis.parms, val.mat)
-
+      
       for(i in analysis.parms){
         parm.path <- paste0(".//Soil/Analysis","/",i)
         soil.analysis.node <- xml_find_first(apsimx_xml, parm.path)
@@ -588,14 +709,19 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   }
   
   if(node == "Crop"){
-    ## I will assume that 'SowingRule' and 'Harvesting' are
-    ## always present, but this might not be true for some crops
-    ## Print name of Crop
+    ## It seems that for nodes Crop and Manager, the names can be arbitrary which
+    ## makes this hard parsing complicated
     cat("Crop Type: ",xml_text(xml_find_first(apsimx_xml, ".//Plant/CropType")),"\n")
     ## Make sure sowing rule is present
-    if(length(grep("SowingRule",xml_find_all(apsimx_xml, ".//Manager/Name"))) == 0)
-         stop("SowingRule not found")
+    xfa.manager <- xml_text(xml_find_all(apsimx_xml, ".//Manager/Name"))
+    cat("Management Scripts:", xfa.manager,"\n")
     
+    ## this makes a strong assumption that a sowing rule is present
+    if(length(grep("sowingrule",xfa.manager, ignore.case = TRUE)) == 0)
+      warning("Sowing Rule not found")
+    
+    ## This makes a strong assumption that these components are present 
+    ## in the sowing rule
     sowingrule.parms <- c("StartDate","EndDate","MinESW","MinRain",
                           "RainDays","CultivarName","SowingDepth",
                           "RowSpacing","Population")
@@ -608,10 +734,28 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       sowingrule.d[sowingrule.d$parm == i,2] <- xml_text(manager.sowingrule.node)
     }
     
-    ## Just check that there is Harvesting
-    ## In the Wheat example there is not 'Harvesting', instead it is called 'Harvest'
-    ##if(length(grep("Harvesting",xml_find_all(apsimx_xml, ".//Manager/Name"))) == 0)
-    ##  stop("Harvesting not found")
+    ## Just check that there is a harvest rule
+    ## So far I looked into the Maize and Wheat examples. For Maize it is called
+    ## Harvesting. For Wheat it is called 'Harvest'. I suspect the user can give it
+    ## Other names too
+    if(length(grep("harvest", xfa.manager, ignore.case = TRUE)) == 0){
+      warning("Harvest[ing] not found")
+    }else{
+      cat("Harvest rule found \n")
+      ## For now it does not seem to make sense to print the harvest rule
+      if(FALSE){
+        w.harvest <- grep("harvest", xfa.manager, ignore.case = TRUE)
+        hrv <- xml_find_all(apsimx_xml, paste0(".//Manager"))[w.harvest]
+        hrv.attr <- xml_children(hrv)
+        hrv.nm <- xml_name(hrv.attr)
+        hrv.vl <- xml_text(hrv.attr)
+        w.hrv.nm.code <- which(hrv.nm == "Code" & hrv.nm == "Script")
+        ## Eliminate "Code"
+        hrv.nm <- hrv.nm[-w.hrv.nm.code]
+        hrv.vl <- hrv.vl[-w.hrv.nm.code]
+        print(kable(data.frame(parm = hrv.nm, value = hrv.vl)))
+      }
+    }
     
     return(kable(sowingrule.d, digits = digits))
   }
@@ -620,21 +764,124 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     ## First print available 'Manager' options
     ## This is not bullet-proof as I do not know what to expect with
     ## 'Other' Manager options
-    amo <- xml_text(xml_find_all(apsimx_xml, ".//Manager/Name"))
-    w.amo <- which(amo != "Harvesting" & amo != "SowingRule")
-    cat("Other Manager Components: \n",amo[w.amo],"\n")
+    xfa.manager <- xml_text(xml_find_all(apsimx_xml, ".//Manager/Name"))
+    cat("Management Scripts:", xfa.manager,"\n")
+    ## Inspect other manager scripts other than sowing and harvesting
+    w.sow <- grep("sowingrule", xfa.manager, ignore.case = TRUE)
+    w.harvest <- grep("harvest", xfa.manager, ignore.case = TRUE)
+    if(length(c(w.sow,w.harvest)) != 0){
+      other.manager <- xfa.manager[-c(w.sow,w.harvest)]
+      w.other.manager <- which(xfa.manager == other.manager)
+    }else{
+      other.manager <- xfa.manager
+      w.other.manager <- seq_along(other.manager)
+    }
+    cat("Other Manager: \n",other.manager,"\n")
     
     ## This is rough at the moment
     ## Available components within Other Manager Components
-    ms.attr <- xml_children(xml_find_all(apsimx_xml, paste0(".//Manager/Script"))[w.amo])
-    ms.nm <- xml_name(ms.attr)
-    ms.vl <- xml_text(ms.attr)
+    manager.d <- NULL
+    for(i in w.other.manager){
+      amo <- xml_find_all(apsimx_xml, paste0(".//Manager/Script"))[w.other.manager]
+      ms.attr <- xml_children(amo)
+      ms.nm <- xml_name(ms.attr)
+      ms.vl <- xml_text(ms.attr)
+      tmp <- data.frame(parm = ms.nm, value = ms.vl)
+      manager.d <- rbind(manager.d, tmp)
+    }
+    return(kable(manager.d, digits = digits))
+  }
+  
+  if(node == 'Other'){
+    if(missing(parm.path)){
+      stop("parm.path should be specified when node = 'Other'")
+    }
     
-    return(kable(data.frame(parm = ms.nm, value = ms.vl), digits = digits))
-
+    other.d <- NULL
+    for(i in other){
+      other <- xml_find_all(apsimx_xml, paste0(parm.path,"/",parm))
+      ms.attr <- xml_children(other)
+      ms.nm <- xml_name(ms.attr)
+      ms.vl <- xml_text(ms.attr)
+      tmp <- data.frame(parm = ms.nm, value = ms.vl)
+      other.d <- rbind(other.d, tmp)
+    }
+    return(kable(other.d))
   }
 }
 
+#' 
+#' @title Inspect an .apsimx (JSON) file
+#' @name inspect_apsimx_json
+#' @param file file ending in .apsimx to be inspected (JSON)
+#' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
+#' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
+#' @param soil.child specific soil component to be inspected
+#' @param som.child specific soil organic matter component to be inspected
+#' @param parm.path path to the attribute to edit when node is 'Other'
+#' @param digits number of decimals to print
+#' @return table with inspected parameters and values
+#' @export
+#' @examples 
+#' \dontrun{
+#' ex.dir <- auto_detect_apsimx_examples()
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Clock") 
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Weather") 
+#' }
+#'
+
+inspect_apsimx_json <- function(file = "", src.dir = ".", 
+                                node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
+                                         "MicroClimate","Crop","Manager"),
+                                soil.child = c("Water","Nitrogen","OrganicMatter",
+                                               "Analysis","InitialWater","Sample"),
+                                som.child = c("Pools","Other"),
+                                digits = 3){
+  
+  fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  
+  if(length(fileNames)==0){
+    stop("There are no .apsimx files in the specified directory to inspect.")
+  }
+  
+  node <- match.arg(node)
+  soil.child <- match.arg(soil.child)
+  som.child <- match.arg(som.child)
+  
+  ## This matches the specified file from a list of files
+  ## Notice that the .apsimx extension will be added here
+  file <- match.arg(file, fileNames, several.ok=FALSE)
+  
+  apsimx_json <- read_json(paste0(src.dir,"/",file))
+  
+  ## I think that everything I might want to look at 
+  ## is
+  parent.node <- apsimx_json$Children[[1]]$Children
+  ## The previous creates a list
+  if(node == "Clock"){
+    clock.node0 <- apsimx_json$Children[[1]]$Children
+    ## Extract the list which has a component Name == "Clock"
+    wlc <- function(x) grepl("Clock", x$Name)
+    wlcl <- sapply(clock.node0, FUN = wlc)
+    clock.node1 <- unlist(clock.node0[wlcl])
+    cat("Start Date:", clock.node1["StartDate"],"\n")
+    cat("End Date:", clock.node1["EndDate"],"\n")
+  }
+  
+  ## The previous creates a list
+  if(node == "Weather"){
+    weather.node0 <- apsimx_json$Children[[1]]$Children
+    ## Extract the list which has a component Name == "Weather"
+    wlw <- function(x) grepl("Weather", x$Name)
+    wlwl <- sapply(weather.node0, FUN = wlw)
+    weather.node1 <- weather.node0[wlwl]
+    ## Select the string which has a met file
+    gf1 <- function(x) grep(".met$", x, value = TRUE)
+    cat("Weather file:", as.character(sapply(weather.node1, gf1)),"\n")
+  }
+  
+  
+}
 
 
 

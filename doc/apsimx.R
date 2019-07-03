@@ -27,3 +27,14 @@ edit_apsimx("Maize.apsimx", src.dir = ex.dir,
 ## delete the created file
 system("rm ./Maize-edited.apsimx")
 
+## ----apsimx--------------------------------------------------------------
+ex.dir <- auto_detect_apsimx_examples()
+sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report", cleanup = 1)
+## 
+summary(sim)
+## Plot data
+ggplot(data = sim, aes(x = Date, y = Yield)) + geom_point()
+## Inspect the Wheat .apsimx file
+inspect_apsimx("Wheat", src.dir = ex.dir, node = "Crop")
+inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
+

@@ -156,7 +156,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   }
   
   ## Run a limited set of examples
-  ex.ch <- c("Wheat","Barley","Maize", "Oats","Sugarcane")
+  ex.ch <- c("Wheat","Maize", "Oats","Sugarcane")
   example <- match.arg(example, choices = ex.ch)
   ## This works on MacOS and it might work on other 'unix' 
   mono <- system("which mono", intern = TRUE)
@@ -268,5 +268,5 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
 }
 
 #' Import packages needed for apsimx to work correctly
-#' @import DBI RSQLite knitr xml2
+#' @import DBI RSQLite knitr xml2 jsonlite
 NULL
