@@ -69,11 +69,11 @@ Editing a file has the side effect of creating a new file with '-edited' added t
 ```{r edit-apsimx}
 ex.dir <- auto_detect_apsimx_examples()
 ocs <- c(1.5,1.4,1.3,1.2,1.1,1.0,0.9)
-edit_apsimx("Maize.apsimx", src.dir = ex.dir,
-            wrt.dir = ".",
-            node = "Soil",
-            soil.child = "OrganicMatter", 
-            parm = "OC", value = ocs)
+edit_apsimx_xml("Maize.apsimx", src.dir = ex.dir,
+                wrt.dir = ".",
+                node = "Soil",
+                soil.child = "OrganicMatter", 
+                parm = "OC", value = ocs)
 ```
 
 ```{r edit-apsimx-delete, echo = TRUE}
@@ -116,8 +116,4 @@ inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
 * Provide support for editing 'Manager' (medium priority)
 * Improve implementation of read_apsimx_all (low priority)
 
-```{r junk-code}
-ex.dir <- auto_detect_apsimx_examples()
-barley.json <- read_json(paste0(ex.dir,"/","Barley.apsimx"))
-## This is a list
-```
+
