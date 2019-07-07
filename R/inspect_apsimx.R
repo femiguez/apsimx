@@ -20,6 +20,7 @@
 #' @examples 
 #' \dontrun{
 #' ex.dir <- auto_detect_apsimx_examples()
+#' inspect_apsimx("Maize", src.dir = ex.dir, node = "Clock")        
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")        
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Water")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Nitrogen")

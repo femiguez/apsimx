@@ -17,11 +17,11 @@ inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")
 ## ----edit-apsimx---------------------------------------------------------
 ex.dir <- auto_detect_apsimx_examples()
 ocs <- c(1.5,1.4,1.3,1.2,1.1,1.0,0.9)
-edit_apsimx_xml("Maize.apsimx", src.dir = ex.dir,
-                wrt.dir = ".",
-                node = "Soil",
-                soil.child = "OrganicMatter", 
-                parm = "OC", value = ocs)
+edit_apsimx("Maize.apsimx", src.dir = ex.dir,
+             wrt.dir = ".",
+             node = "Soil",
+             soil.child = "OrganicMatter", 
+             parm = "OC", value = ocs)
 
 ## ----edit-apsimx-delete, echo = TRUE-------------------------------------
 ## delete the created file
