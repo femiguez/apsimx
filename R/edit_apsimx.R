@@ -470,6 +470,8 @@ apsimx_filetype <- function(file = "", src.dir = "."){
 #' \dontrun{
 #' ex.dir <- auto_detect_apsimx_examples()
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Weather") 
+#' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
+#' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "MicroClimate") 
 #' }
 #' 
 
@@ -757,7 +759,7 @@ inspect_apsimx_xml <- function(file = "", src.dir = ".",
       }
     }
     
-    return(kable(sowingrule.d, digits = digits))
+    print(kable(sowingrule.d, digits = digits))
   }
   
   if(node == "Manager"){
@@ -789,7 +791,7 @@ inspect_apsimx_xml <- function(file = "", src.dir = ".",
       tmp <- data.frame(parm = ms.nm, value = ms.vl)
       manager.d <- rbind(manager.d, tmp)
     }
-    return(kable(manager.d, digits = digits))
+    print(kable(manager.d, digits = digits))
   }
   
   if(node == 'Other'){
@@ -806,7 +808,7 @@ inspect_apsimx_xml <- function(file = "", src.dir = ".",
       tmp <- data.frame(parm = ms.nm, value = ms.vl)
       other.d <- rbind(other.d, tmp)
     }
-    return(kable(other.d))
+    print(kable(other.d))
   }
 }
 
@@ -816,9 +818,9 @@ inspect_apsimx_xml <- function(file = "", src.dir = ".",
 #' @param file file ending in .apsimx to be inspected (JSON)
 #' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
 #' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
-#' @param soil.child specific soil component to be inspected
+#' @param soil.child specific soil component to be inspected. The options are: 'Water', 'Nitrogen', 'OrganicMatter', 'Analysis'
 #' @param som.child specific soil organic matter component to be inspected
-#' @param parm.path path to the attribute to edit when node is 'Other'
+#' @param parm.path path to the attribute to be inspected when node is 'Other'
 #' @param digits number of decimals to print
 #' @return table with inspected parameters and values
 #' @export
@@ -826,7 +828,17 @@ inspect_apsimx_xml <- function(file = "", src.dir = ".",
 #' \dontrun{
 #' ex.dir <- auto_detect_apsimx_examples()
 #' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Clock") 
-#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Weather") 
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Weather")
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Nitrogen") 
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Sample")
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "SurfaceOrganicMatter")
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "MicroClimate")
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Crop")
+#' 
 #' }
 #'
 
@@ -855,32 +867,230 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
   apsimx_json <- read_json(paste0(src.dir,"/",file))
   
   ## I think that everything I might want to look at 
-  ## is
+  ## is under this Children/Children node
   parent.node <- apsimx_json$Children[[1]]$Children
+  
   ## The previous creates a list
   if(node == "Clock"){
-    clock.node0 <- apsimx_json$Children[[1]]$Children
+    ## Clock seems to be the first element in the list
+    ## parent.node[[1]]
     ## Extract the list which has a component Name == "Clock"
     wlc <- function(x) grepl("Clock", x$Name)
-    wlcl <- sapply(clock.node0, FUN = wlc)
-    clock.node1 <- unlist(clock.node0[wlcl])
-    cat("Start Date:", clock.node1["StartDate"],"\n")
-    cat("End Date:", clock.node1["EndDate"],"\n")
+    wlcl <- sapply(parent.node, FUN = wlc)
+    clock.node <- unlist(parent.node[wlcl])
+    cat("Start Date:", clock.node["StartDate"],"\n")
+    cat("End Date:", clock.node["EndDate"],"\n")
   }
   
   ## The previous creates a list
   if(node == "Weather"){
-    weather.node0 <- apsimx_json$Children[[1]]$Children
     ## Extract the list which has a component Name == "Weather"
     wlw <- function(x) grepl("Weather", x$Name)
-    wlwl <- sapply(weather.node0, FUN = wlw)
-    weather.node1 <- weather.node0[wlwl]
+    wlwl <- sapply(parent.node, FUN = wlw)
+    weather.node <- parent.node[wlwl]
     ## Select the string which has a met file
     gf1 <- function(x) grep(".met$", x, value = TRUE)
-    cat("Weather file:", as.character(sapply(weather.node1, gf1)),"\n")
+    cat("Weather file:", as.character(sapply(weather.node, gf1)),"\n")
   }
   
+  ## From here on there is an important component that lives inside
+  ## 'Models.Core.Zone'
+  wcz <- grepl("Models.Core.Zone", parent.node)
+  core.zone.node <- parent.node[wcz][[1]]$Children
   
+  if(node == "Soil"){
+    ## Which soils node
+    wsn <- grepl("Models.Soils.Soil", core.zone.node)
+    soil.node <- core.zone.node[wsn]
+    
+    ## Print some basic soil information
+    cat("Soil Type: ", soil.node[[1]]$SoilType,"\n")
+    cat("Latitude: ", soil.node[[1]]$Latitude,"\n")
+    cat("Longitude: ", soil.node[[1]]$Longitude,"\n")
+
+    if(soil.child == "Water"){
+
+      soil.water.node <- soil.node[[1]]$Children[[1]]
+      
+      soil.water.d <- data.frame(Thickness = unlist(soil.water.node$Thickness),
+                                 BD = unlist(soil.water.node$Thickness),
+                                 AirDry = unlist(soil.water.node$AirDry),
+                                 LL15 = unlist(soil.water.node$LL15),
+                                 DUL = unlist(soil.water.node$DUL),
+                                 SAT = unlist(soil.water.node$SAT),
+                                 KS = unlist(soil.water.node$KS))
+      
+      cat("\n Soil Water \n")
+      print(kable(soil.water.d, digits = digits))
+      
+      crop.soil.water.d <- data.frame(LL = unlist(soil.water.node$Children[[1]]$LL),
+                                      KL = unlist(soil.water.node$Children[[1]]$KL),
+                                      XF = unlist(soil.water.node$Children[[1]]$XF))
+      
+      cat("\n Crop Soil Water \n")
+      print(kable(crop.soil.water.d, digits = digits))
+      
+      ## Which soils water model
+      wswmn <- grepl("Models.Soils.SoilWater", soil.node[[1]]$Children)
+      soil.water.model.node <- soil.node[[1]]$Children[wswmn][[1]]
+      
+      tmp <- soil.water.model.node
+      tmp1 <- data.frame(SummerDate = tmp$SummerDate,
+                         SummerU = tmp$SummerU,
+                         SummerCona = tmp$SummerCona,
+                         WinterDate = tmp$WinterDate,
+                         WinterU = tmp$WinterU,
+                         WinterCona = tmp$WinterCona,
+                         DiffusConst = tmp$DiffusConst,
+                         DiffusSlope = tmp$DiffusSlope,
+                         Salb = tmp$Salb,
+                         CNBare = tmp$CN2Bare,
+                         CNRed = tmp$CNRed,
+                         CNCov = tmp$CNCov,
+                         slope = tmp$slope,
+                         discharge_width = tmp$discharge_width,
+                         catchment_area = tmp$catchment_area,
+                         max_pond = tmp$max_pond)
+      
+      soil.water.model.node.d1 <- as.data.frame(t(as.matrix(tmp1)))
+      
+      soil.water.model.node.d2 <- data.frame(Thickness = unlist(tmp$Thickness),
+                                             SWCON = unlist(tmp$SWCON))
+      
+      cat("\n Soil Water Model \n")
+      print(kable(soil.water.model.node.d1, digits = digits))
+      print(kable(soil.water.model.node.d2, digits = digits))
+                          
+    }
+    
+    if(soil.child == "Nitrogen"){
+      ## Which soil nitrogen
+      wsnn <- grepl("Models.Soils.SoilNitrogen", soil.node[[1]]$Children)
+      soil.nitrogen.node <- soil.node[[1]]$Children[wsnn][[1]]
+      
+      tmp <- soil.nitrogen.node
+      
+      soil.nitrogen.node.d <- data.frame(fom_types = unlist(tmp$fom_types),
+                                         fract_carb = unlist(tmp$fract_carb),
+                                         fract_cell = unlist(tmp$fract_cell),
+                                         fract_lign = unlist(tmp$fract_lign))
+      
+      cat("\n Soil Nitrogen \n")
+      print(kable(soil.nitrogen.node.d, digits = digits))
+    }
+    
+    if(soil.child == "OrganicMatter"){
+      ## Which soil organc matter
+      wsomn <- grepl("Models.Soils.SoilOrganicMatter", soil.node[[1]]$Children)
+      soil.om.node <- soil.node[[1]]$Children[wsomn][[1]]
+      
+      tmp <- soil.om.node
+      soil.om.d1 <- data.frame(parm = names(tmp)[2:6],
+                         value = as.vector(unlist(tmp[2:6])))
+      cat("\n Soil Organic Matter 1: \n")
+      print(kable(soil.om.d1, digits = digits))
+      
+      soil.om.d2 <- data.frame(Thickness = unlist(tmp$Thickness),
+                               Depth = unlist(tmp$Depth),
+                               OC = unlist(tmp$OC),
+                               FBiom = unlist(tmp$FBiom),
+                               FInert = unlist(tmp$FInert))
+      
+      cat("\n Soil Organic Matter 2: \n")
+      print(kable(soil.om.d2, digits = digits))
+    }
+    
+    if(soil.child == "Analysis"){
+      ## Which soil analysis
+      wsan <- grepl("Models.Soils.Analysis", soil.node[[1]]$Children)
+      soil.analysis.node <- soil.node[[1]]$Children[wsan][[1]]
+      
+      tmp <- soil.analysis.node
+      soil.analysis.d <- data.frame(Thickness = unlist(tmp$Thickness),
+                                    PH = unlist(tmp$PH))
+      
+      cat("\n Analysis: \n")
+      print(kable(soil.analysis.d, digits = digits))
+    }
+    
+    if(soil.child == "InitialWater"){
+      ## Which soil initialwater
+      wsiwn <- grepl("Models.Soils.InitialWater", soil.node[[1]]$Children)
+      soil.initialwater.node <- soil.node[[1]]$Children[wsiwn][[1]]
+      
+      tmp <- soil.initialwater.node
+      soil.initialwater.d <- data.frame(PercentMethod = tmp$PercentMethod,
+                                        FractionFull = tmp$FractionFull,
+                                        DepthWetSoil = tmp$DepthWetSoil)
+                                        
+      cat("\n Initial Water: \n")
+      print(kable(soil.initialwater.d, digits = digits))
+    }
+    
+    if(soil.child == "Sample"){
+      ## Which soil sample
+      wssn <- grepl("Models.Soils.Sample", soil.node[[1]]$Children)
+      soil.sample.node <- soil.node[[1]]$Children[wssn][[1]]
+      
+      tmp <- soil.sample.node
+      mat <- rbind(unlist(tmp$Thickness), unlist(tmp$NO3),
+                   unlist(tmp$NH4), unlist(tmp$SW), unlist(tmp$OC),
+                   unlist(tmp$EC), unlist(tmp$CL), unlist(tmp$ESP),
+                   unlist(tmp$PH))
+      soil.sample.d <- data.frame(parm = names(tmp)[2:10],
+                                  value = mat)
+      cat("Soil Sample \n")
+      print(kable(soil.sample.d, digits = digits))
+    }
+  }
+  
+  if(node == "SurfaceOrganicMatter"){
+    ## Which is 'SurfaceOrganicMatter'
+    ## som.child is not relevant at the moment
+    wsomn <- grepl("Models.Surface.SurfaceOrganicMatter", core.zone.node)
+    som.node <- core.zone.node[wsomn][[1]]
+    
+    som.d <- data.frame(parm = names(som.node)[2:8],
+                        value = as.vector(unlist(som.node)[2:8]))
+    cat("Surface Organic Matter: \n")
+    print(kable(som.d, digits = digits))
+  }
+  
+  if(node == "MicroClimate"){
+    ## Which is 'MicroClimate'
+    wmcn <- grepl("Models.MicroClimate", core.zone.node)
+    microclimate.node <- core.zone.node[wmcn][[1]]
+    
+    microclimate.d <- data.frame(parm = names(microclimate.node)[2:9],
+                        value = as.vector(unlist(microclimate.node)[2:9]))
+    cat("MicroClimate: \n")
+    print(kable(microclimate.d, digits = digits))
+  }
+  
+  if(node == "Crop"){
+    ## Which is 'Crop'
+    wmmn <- grepl("Models.Manager", core.zone.node)
+    manager.node <- core.zone.node[wmmn]
+    ## Which element has the crop information?
+    wcn <- grepl("CultivarName", manager.node)
+    crop.node <- manager.node[wcn][[1]]$Parameters
+    
+    mat <- matrix(NA, nrow = 5, ncol = 2,
+                  dimnames = list(NULL,c("parm","value")))
+    j <- 1
+    for(i in 2:6){
+      mat[j,1] <- crop.node[[i]]$Key
+      mat[j,2] <- crop.node[[i]]$Value
+      j <- j + 1
+    }
+
+    cat("Crop: \n")
+    print(kable(as.data.frame(mat), digits = digits))
+  }
+  
+  if(node == "Manager"){
+    stop("Not implemented yet")
+  }
 }
 
 
