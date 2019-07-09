@@ -108,7 +108,7 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
       soil.water.node <- soil.node[[1]]$Children[[1]]
       
       soil.water.d <- data.frame(Thickness = unlist(soil.water.node$Thickness),
-                                 BD = unlist(soil.water.node$Thickness),
+                                 BD = unlist(soil.water.node$BD),
                                  AirDry = unlist(soil.water.node$AirDry),
                                  LL15 = unlist(soil.water.node$LL15),
                                  DUL = unlist(soil.water.node$DUL),
@@ -119,7 +119,7 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
                                  KL = unlist(soil.water.node$Children[[1]]$KL),
                                  XF = unlist(soil.water.node$Children[[1]]$XF))
       
-      crop.soil.water.d <- data.frame(Depth = soil.depths, crop.soil.water.d, soil.water.d)
+      crop.soil.water.d <- data.frame(Depth = soil.depths, crop.water.d, soil.water.d)
       print(kable(crop.soil.water.d, digits = digits))
       
       ## Which soils water model
@@ -269,16 +269,15 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
     wcn <- grepl("CultivarName", manager.node)
     crop.node <- manager.node[wcn][[1]]$Parameters
     
-    mat <- matrix(NA, nrow = 5, ncol = 2,
+    mat <- matrix(NA, nrow = length(crop.node), ncol = 2,
                   dimnames = list(NULL,c("parm","value")))
     j <- 1
-    for(i in 2:6){
+    for(i in 1:length(crop.node)){
       mat[j,1] <- crop.node[[i]]$Key
       mat[j,2] <- crop.node[[i]]$Value
       j <- j + 1
     }
     
-    cat("Crop: \n")
     print(kable(as.data.frame(mat), digits = digits))
   }
   

@@ -2,10 +2,10 @@
 % Please edit documentation in R/inspect_apsimx.R
 \name{inspect_apsimx}
 \alias{inspect_apsimx}
-\title{Inspect and .apsimx file}
+\title{Inspect and .apsimx file (XML or JSON)}
 \usage{
-inspect_apsimx(file = "", src.dir = ".", node = c("Weather", "Soil",
-  "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
+inspect_apsimx(file = "", src.dir = ".", node = c("Clock", "Weather",
+  "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
   soil.child = c("Water", "Nitrogen", "OrganicMatter", "Analysis",
   "InitialWater", "Sample"), som.child = c("Pools", "Other"),
   digits = 3)
@@ -15,15 +15,15 @@ inspect_apsimx(file = "", src.dir = ".", node = c("Weather", "Soil",
 
 \item{src.dir}{directory containing the .apsimx file to be inspected; defaults to the current working directory}
 
-\item{node}{either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'}
+\item{node}{either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'}
 
-\item{soil.child}{specific soil component to be inspected}
+\item{soil.child}{specific soil component to be inspected. For example, 'Water' or 'Nitrogen'.}
 
-\item{som.child}{specific soil organic matter component to be inspected}
+\item{som.child}{specific soil organic matter component to be inspected ('Pools' or 'Other')}
 
 \item{digits}{number of decimals to print}
 
-\item{parm.path}{path to the attribute to edit when node is 'Other'}
+\item{parm.path}{path to the attribute to edit when node is 'Other' (XML only)}
 }
 \value{
 table with inspected parameters and values
@@ -35,11 +35,11 @@ inspect either an XML or JSON apsimx file. It does not replace the GUI, but it c
 Similar structure to the 'edit_apsimx' file but aimed at a simple way
 of inspecting a file
 
-This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
+The inspection has many elements that are hard coded, it is not a literal inspection tool for all aspects of the file. For this use a text editor.
 }
 \note{
 node 'Manager' can be complicated and it is not guranteed to work. First version of a file which supports
-both XML and JSON files.
+both XML and JSON files. This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 }
 \examples{
 \dontrun{

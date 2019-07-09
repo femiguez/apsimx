@@ -37,7 +37,7 @@
 #' 
 
 inspect_apsimx <- function(file = "", src.dir = ".", 
-                           node = c("Weather","Soil","SurfaceOrganicMatter",
+                           node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                     "MicroClimate","Crop","Manager"),
                            soil.child = c("Water","Nitrogen","OrganicMatter",
                                           "Analysis","InitialWater","Sample"),

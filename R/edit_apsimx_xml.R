@@ -26,11 +26,10 @@
 #' @param parm.path path to the attribute to edit when node is 'Other'
 #' @param verbose whether to print information about successful edit
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
-#' As a side effect this function created a new (XML) .apsimx file.
+#' As a side effect this function creates a new (XML) .apsimx file.
 #' @note The components that can be edited are restricted becuase this is better in preventing
 #' errors of editing unintended parts of the file. The disadvantage is that there is less flexibility
-#' compared to the similar function in the 'apsimr' package. Only XML files are supported at the moment.
-#'  JSON files will be supported in the future.
+#' compared to the similar function in the 'apsimr' package. 
 #' @export
 #' @examples 
 #' \dontrun{
@@ -75,7 +74,10 @@ edit_apsimx_xml <- function(file, src.dir = ".", wrt.dir = NULL,
   ## For now we just edit one file at a time
   file <- match.arg(file, fileNames, several.ok=FALSE)
   
-  ## Parse apsimx file (XML file)
+  if(apsimx_filetype(file = file, src.dir = src.dir) != "xml")
+    stop("This function only edits XML files")
+  
+  ## Parse apsimx file (XML)
   apsimx_xml <- read_xml(paste0(src.dir,"/",file))
   
   ## Edit the 'Clock'

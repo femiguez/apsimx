@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-07-07" />
+<meta name="date" content="2019-07-08" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author"><em>Fernando Miguez</em></h4>
-<h4 class="date"><em>2019-07-07</em></h4>
+<h4 class="date"><em>2019-07-08</em></h4>
 
 
 
@@ -143,7 +143,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>A function to inspect an .apsimx file is included. This is meant to be used simply to avoid the need to use the GUI when a quick inspection of a given component is needed. For example, if you edit a file and want to make sure that the intended component was edited correctly just inspect it. For complex inspections and manipulations of an .apsimx file the GUI is recommended.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
 <span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">node =</span> <span class="st">&quot;Weather&quot;</span>)</code></pre></div>
-<pre><code>## [1] &quot;%root%\\Examples\\WeatherFiles\\Dalby.met&quot;</code></pre>
+<pre><code>## Met file: %root%\Examples\WeatherFiles\Dalby.met</code></pre>
 </div>
 <div id="edit_apsimx-editing-a-file" class="section level3">
 <h3>‘edit_apsimx’: Editing a file</h3>

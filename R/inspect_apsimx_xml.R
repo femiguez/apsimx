@@ -25,7 +25,9 @@
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Sample")
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.child = "Pools")
+#' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.child = "Other")
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "MicroClimate") 
+#' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Crop") 
 #' }
 #' 
 
