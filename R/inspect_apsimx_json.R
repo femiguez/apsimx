@@ -57,14 +57,16 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
   
   ## I think that everything I might want to look at 
   ## is under this Children/Children node
-  parent.node <- apsimx_json$Children[[1]]$Children
+  ## It looks like I need to 'find' the "Models.Core.Simulation" node
+  fcsn <- grep("Models.Core.Simulation", apsimx_json$Children, fixed = TRUE)
+  parent.node <- apsimx_json$Children[[fcsn]]$Children
   
   ## The previous creates a list
   if(node == "Clock"){
     ## Clock seems to be the first element in the list
     ## parent.node[[1]]
     ## Extract the list which has a component Name == "Clock"
-    wlc <- function(x) grepl("Clock", x$Name)
+    wlc <- function(x) grepl("Clock", x$Name, ignore.case = TRUE)
     wlcl <- sapply(parent.node, FUN = wlc)
     clock.node <- unlist(parent.node[wlcl])
     cat("StartDate:", clock.node["StartDate"],"\n")

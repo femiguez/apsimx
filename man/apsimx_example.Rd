@@ -7,7 +7,7 @@
 apsimx_example(example = "Wheat", silent = FALSE)
 }
 \arguments{
-\item{example}{run an example from built-in APSIM-X. Options are Wheat, Barley, Maize, Oats, Sugarcane}
+\item{example}{run an example from built-in APSIM-X. Options are all of the ones included with the APSIM-X distribution, except 'Graph'.}
 
 \item{silent}{whether to print standard output from the APSIM-X execution}
 }
@@ -17,12 +17,15 @@ simple function to run some of the built-in APSIM-X examples
 \details{
 Access Example APSIM-X Simulations
 }
+\note{
+This function creates a new column 'Date' which is in the R 'Date' format which is convenient for graphics.
+}
 \examples{
 \dontrun{
 wheat <- apsimx_example("Wheat")
 maize <- apsimx_example("Maize")
 barley <- apsimx_example("Barley")
-
+## The 'Date' column is created by this function, based on apsim output.
 ggplot(data = wheat , aes(x = Date, y = Yield)) + 
   geom_point()
 }

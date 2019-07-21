@@ -8,17 +8,17 @@ files. The editing of JSON files is limited at the moment (July 9th 2019)
 
 * Package requirements:
 
-** Other R packages: DBI, jsonlite, knitr, RSQLite, xml2
+* Other R packages: DBI, jsonlite, knitr, RSQLite, xml2
 
-** APSIMX:
+* APSIMX:
 
 The new APSIM uses the mono framework to run on Windows, Mac and Linux
-(Debian). It needs to be installed.
+(Debian). Mono should be installed first.
 
-*** Mono framework download:
+**Mono framework download**:
 https://www.mono-project.com/download/stable/
 
-*** APSIMX download:
+**APSIMX download**:
 https://www.apsim.info/Products/Downloads.aspx
 
 If you need an R package to interact with the previous version(s) of

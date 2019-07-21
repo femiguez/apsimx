@@ -11,7 +11,7 @@ read_apsimx(file = "", src.dir = ".", value = c("report", "all"))
 
 \item{src.dir}{source directory where file is located}
 
-\item{value}{either 'report' or 'all'}
+\item{value}{either 'report' (data.frame) or 'all' (list)}
 }
 \description{
 read SQLite databases created by APSIM-X runs. One file at a time.

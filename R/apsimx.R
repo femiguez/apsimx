@@ -51,8 +51,10 @@ apsimx <- function(file = "", src.dir=".",
   file.name.path <- paste0(src.dir,"/",file)
   
   ## This function will run an APSIM file
-  ## This work on MacOS and it might work on other 'unix'
-  mono <- system("which mono", intern = TRUE)
+  ## This works on MacOS and it might work on other 'unix'
+  if(.Platform$OS.type == "unix"){
+    mono <- system("which mono", intern = TRUE)
+  }
   ada <- auto_detect_apsimx()
   run.strng <- paste0(mono," ",ada," ",file.name.path,".apsimx")
   ## Use the system function
@@ -81,19 +83,44 @@ apsimx <- function(file = "", src.dir=".",
 auto_detect_apsimx <- function(){
   
   ## This is only valid for MacOS for now
-  if(.Platform$OS.type != "unix"){
-    stop("not implemented yet")
+  if(.Platform$OS.type == "unix"){
+
+    if(grepl("Darwin", Sys.info()[["sysname"]])){
+      laf <- list.files("/Applications/")
+      find.apsim <- grep("APSIM",laf)
+      apsimx.name <- laf[find.apsim]
+      ## APSIM executable
+      st1 <- "/Applications/"
+      st3 <- "/Contents/Resources/Bin/Models.exe" 
+      apsimx_dir <- paste0(st1,apsimx.name,st3)
+    }
+  
+    if(grepl("Linux", Sys.info()[["sysname"]])){
+      laf <- list.files("/usr/local/lib")
+      find.apsim <- grep("APSIM",laf)
+      apsimx.name <- laf[find.apsim]
+      ## APSIM executable
+      st1 <- "/usr/local/lib/apsim"
+      st3 <- "/Bin/Models.exe" 
+      apsimx_dir <- paste0(st1,apsimx.name,st3)
+    }
   }
-  ## If APSIM-X is installed it will be in /Applications/
-  ## look into Applications folder
-  laf <- list.files("/Applications/")
-  find.apsim <- grep("APSIM",laf)
-  if(find.apsim == 0) stop("APSIM-X not found")
-  apsimx.name <- laf[find.apsim]
-  ## Apsim executable
-  st1 <- "/Applications/"
-  st3 <- "/Contents/Resources/Bin/Models.exe" 
-  apsimx_dir <- paste0(st1,apsimx.name,st3)
+  
+  if(.Platform$OS.type == "Windows"){
+    if(grepl("Windows", Sys.info()[["sysname"]])){
+      laf <- list.files("C:/Program Files")
+      find.apsim <- grep("APSIM",laf)
+      apsimx.name <- laf[find.apsim]
+      ## APSIM executable
+      st1 <- "C:/Program Files/"
+      st3 <- "/Bin/Models.exe" 
+      apsimx_dir <- paste0(st1,apsimx.name,st3)
+    }
+  }
+  
+  if(!is.na(apsimx::apsimx.options$exe.path)){
+    apsimx_dir <- apsimx::apsimx.options$exe.path
+  }
   return(apsimx_dir)
 }
 
@@ -113,20 +140,44 @@ auto_detect_apsimx <- function(){
 auto_detect_apsimx_examples <- function(){
   
   ## This is only valid for MacOS for now
-  if(.Platform$OS.type != "unix"){
-    stop("not implemented yet")
+  if(.Platform$OS.type == "unix"){
+    if(grepl("Darwin", Sys.info()[["sysname"]])){
+      ## If APSIM-X is installed it will be in /Applications/
+      ## look into Applications folder
+      laf <- list.files("/Applications/")
+      find.apsim <- grep("APSIM",laf)
+      apsimx.name <- laf[find.apsim]
+      ## Apsim executable
+      st1 <- "/Applications/"
+      st3 <- "/Contents/Resources/Examples" 
+      apsimx_ex_dir <- paste0(st1,apsimx.name,st3)
+      return(apsimx_ex_dir)
+    }
+  
+    if(grepl("Linux", Sys.info()[["sysname"]])){
+      apsimx_dir <- "/usr/local/lib/apsim/"
+      apsim.version <- list.files(apsimx_dir)
+      apsimx_ex_dir <- paste0(apsimx_dir,apsim.version,"/Examples")
+
+    }
   }
-  ## If APSIM-X is installed it will be in /Applications/
-  ## look into Applications folder
-  laf <- list.files("/Applications/")
-  find.apsim <- grep("APSIM",laf)
-  if(find.apsim == 0) stop("APSIM-X not found")
-  apsimx.name <- laf[find.apsim]
-  ## Apsim executable
-  st1 <- "/Applications/"
-  st3 <- "/Contents/Resources/Examples" 
-  apsimx_dir <- paste0(st1,apsimx.name,st3)
-  return(apsimx_dir)
+  
+  if(.Platform$OS.type == "Windows"){
+    if(grepl("Windows", Sys.info()[["sysname"]])){
+      laf <- list.files("C:/Program Files")
+      find.apsim <- grep("APSIM",laf)
+      apsimx.name <- laf[find.apsim]
+      ## APSIM executable
+      st1 <- "C:/Program Files/"
+      st3 <- "/Examples" 
+      apsimx_ex_dir <- paste0(st1,apsimx.name,st3)
+    }
+  }
+  
+  if(!is.na(apsimx::apsimx.options$examples.path)){
+    apsimx_dir <- apsimx::apsimx.options$examples.path
+  }
+  return(apsim_ex_dir)
 }
 
 #' Access Example APSIM-X Simulations
@@ -134,15 +185,16 @@ auto_detect_apsimx_examples <- function(){
 #' @title Access Example APSIM-X Simulations
 #' @name apsimx_example
 #' @description simple function to run some of the built-in APSIM-X examples
-#' @param example run an example from built-in APSIM-X. Options are Wheat, Barley, Maize, Oats, Sugarcane
+#' @param example run an example from built-in APSIM-X. Options are all of the ones included with the APSIM-X distribution, except 'Graph'.
 #' @param silent whether to print standard output from the APSIM-X execution
+#' @note This function creates a new column 'Date' which is in the R 'Date' format which is convenient for graphics.
 #' @export
 #' @examples 
 #' \dontrun{
 #' wheat <- apsimx_example("Wheat")
 #' maize <- apsimx_example("Maize")
 #' barley <- apsimx_example("Barley")
-#' 
+#' ## The 'Date' column is created by this function, based on apsim output.
 #' ggplot(data = wheat , aes(x = Date, y = Yield)) + 
 #'   geom_point()
 #' }
@@ -150,13 +202,16 @@ auto_detect_apsimx_examples <- function(){
 
 apsimx_example <- function(example = "Wheat", silent = FALSE){
 
-  ## This is only valid for MacOS for now
-  if(.Platform$OS.type != "unix"){
-    stop("not implemented yet")
-  }
-  
   ## Run a limited set of examples
-  ex.ch <- c("Wheat","Maize", "Oats","Sugarcane")
+  ## Now the only one missing is Graph, which I assume is about
+  ## graphics and not that relevant to apsimx
+  ## Examples not supported: 'Graph', 'FodderBeet'
+  ex.ch <- c("Barley","Chicory","ControlledEnvironment",
+             "Eucalyptus", "EucalyptusRotation",
+             "Factorial","FodderBeet",
+             "Maize","MorrisExample", "Oats", "OilPalm",
+             "Plantain","Potato","SCRUM","Slurp", "SobolExample",
+             "Sugarcane", "Wheat","WhiteClover")
   example <- match.arg(example, choices = ex.ch)
   ## This works on MacOS and it might work on other 'unix' 
   mono <- system("which mono", intern = TRUE)
@@ -184,7 +239,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
 #' @description read SQLite databases created by APSIM-X runs. One file at a time.
 #' @param file file name
 #' @param src.dir source directory where file is located
-#' @param value either 'report' or 'all'
+#' @param value either 'report' (data.frame) or 'all' (list)
 #' @export
 #' 
 
@@ -267,6 +322,49 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
   return(ans)
 }
 
+#' Set APSIM-X options
+#' 
+#' @title Setting some options for the package
+#' @name apsimx_options
+#' @description Used to set the path to the APSIM-X executable. 
+#' @param exe.path path to the executable
+#' @param examples.path path to the examples
+#' @note It is possible that APSIM-X is installed in some alternative location other than the 
+#'       defaults ones. Guessing this can be difficult and then the auto_detect functions might
+#'       fail. 
+#' @export
+#'\dontrun{
+#' names(apsimx.options)
+#' apsimx_options(exe.path = "some-new-path-to-executable")
+#' apsimx.options$exe.path
+#' }
+
+apsimx_options <- function(exe.path = NA, examples.path = NA){
+  assign('exe.path', exe.path, apsimx.options)
+  assign('examples.path', examples.path, apsimx.options)
+}
+
+#' Environment which stores APSIM-X options
+#' 
+#' @title Environment which stores APSIM-X options
+#' @name apsimx.options
+#' @description Environment which can store the path to the executable and where examples are located.
+#'              Creating an environment avoids the use of global variables or other similar practices
+#'              which would have possible undesriable consequences. 
+#' @export
+#' @examples 
+#' \dontrun{
+#' names(apsimx.options)
+#' apsimx_options(exe.path = "some-new-path-to-executable")
+#' apsimx.options$exe.path
+#' }
+#' 
+
+apsimx.options <- new.env(parent = emptyenv())
+assign('exe.path', NA, apsimx.options)
+assign('examples.path', NA, apsimx.options)
+
 #' Import packages needed for apsimx to work correctly
 #' @import DBI RSQLite knitr xml2 jsonlite
 NULL
+

@@ -131,19 +131,139 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
     wsn <- grepl("Models.Soils.Soil", core.zone.node)
     soil.node <- core.zone.node[wsn]
     
+    soil.node0 <- soil.node[[1]]$Children
+  
     if(soil.child == "Water"){
       soil.water.node <- soil.node[[1]]$Children[[1]]
+      ## I select this one based on position, so problems
+      ## can arise
       
-      for(i in 1:length(soil.water.node[[parm]])){
-         soil.water.node[[parm]][[i]] <- value[i]
+      if(soil.water.node$Name != "Water"){
+        stop("Wrong node (Soil Water)")
+      }
+      
+      crop.parms <- c("XF", "KL", "LL")
+      
+      if(parm %in% crop.parms ){
+        for(i in 1:length(soil.water.node[[parm]])){
+          soil.water.node$Children[[1]][[parm]][[i]] <- value[i]
+        }
+      }else{
+        for(i in 1:length(soil.water.node[[parm]])){
+          soil.water.node[[parm]][[i]] <- value[i]
+        }
       }
       soil.node[[1]]$Children[[1]] <- soil.water.node
     }
     
+    if(soil.child == "Nitrogen"){
+      wnn <- grepl("Nitrogen", soil.node0)
+      soil.nitrogen.node <- soil.node0[wnn][[1]]
+      
+      for(i in 1:length(soil.nitrogen.node[[parm]])){
+        soil.nitrogen.node[[parm]][[i]] <- value[i]
+      }
+      soil.node[[1]]$Children[wnn][[1]] <- soil.nitrogen.node
+    }
+    
+    if(soil.child == "OrganicMatter"){
+      wsomn <- grepl("OrganicMatter", soil.node0)
+      soil.om.node <- soil.node0[wsomn][[1]]
+      
+      som.parms1 <- c("RootCN", "RootWt", "SoilCN", "EnrACoeff", "EnrBCoeff")
+      
+      if(parm %in% som.parms1){
+          soil.om.node[[parm]] <- value
+      }else{
+        for(i in 1:length(soil.om.node[[parm]])){
+          soil.om.node[[parm]][[i]] <- value[i]
+        }
+      }
+      soil.node[[1]]$Children[wsomn][[1]] <- soil.om.node
+    }
+    
+    if(soil.child == "Analysis"){
+      wan <- grepl("Analysis", soil.node0)
+      soil.analysis.node <- soil.node0[wan][[1]]
+      
+      ## Only PH can be edited
+      if(parm == "PH"){
+        for(i in 1:length(soil.analysis.node[[parm]])){
+          soil.analysis.node[[parm]][[i]] <- value[i]
+        }
+      }
+      soil.node[[1]]$Children[wan][[1]] <- soil.analysis.node
+    }
+    
+    if(soil.child == "InitialWater"){
+      wiwn <- grepl("InitialWater", soil.node0)
+      soil.initialwater.node <- soil.node0[wiwn][[1]]
+      
+      ## Only three can be edited: PercentMethod, FractionFull, DepthWetSoil
+      siw.parms <- c("PercentMethod", "FractionFull","DepthWetSoil")
+      parm <- match.arg(parm, choices = siw.parms)
+      
+      soil.initialwater.node[[parm]] <- value
+      
+      soil.node[[1]]$Children[wiwn][[1]] <- soil.initialwater.node
+    }
+    
+    if(soil.child == "Sample"){
+      wsn <- grepl("Sample", soil.node0)
+      soil.sample.node <- soil.node0[wsn][[1]]
+      
+      for(i in 1:length(soil.sample.node[[parm]])){
+        soil.sample.node[[parm]][[i]] <- value[i]
+      }
+      soil.node[[1]]$Children[wsn][[1]] <- soil.sample.node
+    }
+    
     core.zone.node[wsn] <- soil.node
-    parent.node[wcz][[1]]$Children <- core.zone.node
   }
   
+  if(node == "SurfaceOrganicMatter"){
+    wsomn <- grepl("Models.Surface.SurfaceOrganicMatter", core.zone.node)
+    som.node <- core.zone.node[wsomn][[1]]
+    
+    if(som.node$Name != "SurfaceOrganicMatter"){
+      stop("Wrong node")
+    }
+    som.node[[parm]] <- value
+    core.zone.node[wsomn][[1]] <- som.node
+  }
+  
+  if(node == "MicroClimate"){
+    wmcn <- grepl("Models.MicroClimate", core.zone.node)
+    microclimate.node <- core.zone.node[wmcn][[1]]
+    
+    if(microclimate.node$Name != "MicroClimate"){
+      stop("Wrong node")
+    }
+    microclimate.node[[parm]] <- value
+    core.zone.node[wmcn][[1]] <- microclimate.node
+  }
+  
+  if(node == "Crop"){
+    ## Which is 'Crop'
+    wmmn <- grepl("Models.Manager", core.zone.node)
+    manager.node <- core.zone.node[wmmn]
+    ## Which element has the crop information?
+    wcn <- grepl("CultivarName", manager.node)
+    crop.node <- manager.node[wcn][[1]]$Parameters
+    
+    for(i in 1:length(crop.node)){
+      if(crop.node[[i]]$Key == parm){
+        crop.node[[i]]$Value <- value
+      }
+    }
+    core.zone.node[wmmn][wcn][[1]]$Parameters <- crop.node
+  }
+  
+  if(node == "Manager"){
+    stop("Not implemented yet")
+  }
+  
+  parent.node[wcz][[1]]$Children <- core.zone.node
   apsimx_json$Children[[1]]$Children <- parent.node
   
   if(overwrite == FALSE){
