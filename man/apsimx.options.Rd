@@ -9,9 +9,19 @@
 apsimx.options
 }
 \description{
-Environment which can store the path to the executable and where examples are located
+Environment which can store the path to the executable and where examples are located.
+             Creating an environment avoids the use of global variables or other similar practices
+             which would have possible undesriable consequences.
 }
 \details{
 Environment which stores APSIM-X options
+}
+\examples{
+\dontrun{
+names(apsimx.options)
+apsimx_options(exe.path = "some-new-path-to-executable")
+apsimx.options$exe.path
+}
+
 }
 \keyword{datasets}

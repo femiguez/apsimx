@@ -5,17 +5,17 @@
 #' 
 #' @title Run an APSIM-X simulation
 #' @name apsimx
-#' @description The goal is to run apsimx from R. It basically calls 'system' to run from the command line.
+#' @description Run apsimx from R. It uses 'system' and it attempts to be platform independent.
 #' @param file file name to be run (the extension .apsimx is optional)
 #' @param src.dir directory containing the .apsimx file to be run (defaults to the current directory)
-#' @param silent whether to print messages from apsim executable
-#' @param value how much output to return:
-#'              option 'all' returns all components of the simulation;
-#'              option 'report' returns only the 'main' report component;
+#' @param silent whether to print messages from apsim simulation
+#' @param value how much output to return: \cr
+#'              option 'all' returns all components of the simulation; \cr
+#'              option 'report' returns only the 'main' report component; \cr
 #'              option 'none' does not create a data.frame but it generates the databases from APSIM-X
-#' @param cleanup level of file cleanup:
-#'                0 does nothing; 
-#'                1 deletes the .db created by APSIM-X;
+#' @param cleanup level of file cleanup: \cr
+#'                0 does nothing; \cr
+#'                1 deletes the .db created by APSIM-X; \cr
 #'                2 is not implemented yet.
 #' @export
 #' @examples 
@@ -54,10 +54,16 @@ apsimx <- function(file = "", src.dir=".",
   ## This works on MacOS and it might work on other 'unix'
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
+    ada <- auto_detect_apsimx()
+    run.strng <- paste0(mono," ",ada," ",file.name.path,".apsimx")
+    ## Use the system function
+    
   }
-  ada <- auto_detect_apsimx()
-  run.strng <- paste0(mono," ",ada," ",file.name.path,".apsimx")
-  ## Use the system function
+  
+  if(.Platform$OS.type == "windows"){
+      run.strng <- auto_detect_apsimx()
+  }
+  ## Run APSIM-X on the command line
   system(command = run.strng, ignore.stdout = silent)
   
   if(value != "none"){
@@ -82,7 +88,6 @@ apsimx <- function(file = "", src.dir=".",
 ## This is an internal function so I won't export/document it
 auto_detect_apsimx <- function(){
   
-  ## This is only valid for MacOS for now
   if(.Platform$OS.type == "unix"){
 
     if(grepl("Darwin", Sys.info()[["sysname"]])){
@@ -106,20 +111,21 @@ auto_detect_apsimx <- function(){
     }
   }
   
-  if(.Platform$OS.type == "Windows"){
-    if(grepl("Windows", Sys.info()[["sysname"]])){
-      laf <- list.files("C:/Program Files")
+  if(.Platform$OS.type == "windows"){
+      laf <- list.files("C:/PROGRA~1")
       find.apsim <- grep("APSIM",laf)
       apsimx.name <- laf[find.apsim]
       ## APSIM executable
-      st1 <- "C:/Program Files/"
+      st1 <- "C:/PROGRA~1/"
       st3 <- "/Bin/Models.exe" 
-      apsimx_dir <- paste0(st1,apsimx.name,st3)
-    }
+      apsimx_dir <- shQuote(paste0(st1,apsimx.name,st3), type = "cmd")
   }
   
   if(!is.na(apsimx::apsimx.options$exe.path)){
-    apsimx_dir <- apsimx::apsimx.options$exe.path
+    ## Windows paths can contain white spaces which are
+    ## problematic when running them at the command line
+    ## shQuote is useful for this purpose
+    apsimx_dir <- shQuote(apsimx::apsimx.options$exe.path)
   }
   return(apsimx_dir)
 }
@@ -162,22 +168,21 @@ auto_detect_apsimx_examples <- function(){
     }
   }
   
-  if(.Platform$OS.type == "Windows"){
-    if(grepl("Windows", Sys.info()[["sysname"]])){
-      laf <- list.files("C:/Program Files")
+  if(.Platform$OS.type == "windows"){
+      st1 <- "C:/PROGRA~1"
+      laf <- list.files(st1)
       find.apsim <- grep("APSIM",laf)
       apsimx.name <- laf[find.apsim]
-      ## APSIM executable
-      st1 <- "C:/Program Files/"
+      ## APSIM path to examples
       st3 <- "/Examples" 
-      apsimx_ex_dir <- paste0(st1,apsimx.name,st3)
-    }
+      apsimx_ex_dir <- shQuote(paste0(st1,"/",apsimx.name,st3), type = "cmd")
   }
   
   if(!is.na(apsimx::apsimx.options$examples.path)){
-    apsimx_dir <- apsimx::apsimx.options$examples.path
+    ## Not sure if I need shQuote here
+    apsimx_ex_dir <- shQuote(apsimx::apsimx.options$examples.path, type = "cmd")
   }
-  return(apsim_ex_dir)
+  return(apsimx_ex_dir)
 }
 
 #' Access Example APSIM-X Simulations
@@ -214,13 +219,24 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
              "Sugarcane", "Wheat","WhiteClover")
   example <- match.arg(example, choices = ex.ch)
   ## This works on MacOS and it might work on other 'unix' 
-  mono <- system("which mono", intern = TRUE)
-  ada <- auto_detect_apsimx()
-  ex.dir <- auto_detect_apsimx_examples()
-  ex <- paste0(ex.dir,"/",example)
-  run.strng <- paste0(mono," ",ada," ",ex,".apsimx")
+  if(.Platform$OS.type == "unix"){
+    mono <- system("which mono", intern = TRUE)
+    ada <- auto_detect_apsimx()
+    ex.dir <- auto_detect_apsimx_examples()
+    ex <- paste0(ex.dir,"/",example,".apsimx")
+    run.strng <- paste0(mono," ",ada," ",ex)
+  }
+  
+  if(.Platform$OS.type == "windows"){
+    ada <- auto_detect_apsimx()
+    ex.dir <- auto_detect_apsimx_examples()
+    ex <- paste0(ex.dir,"/",example,".apsimx")
+    run.strng <- paste0(ada," ",ex)
+  }
+  
   ## Run APSIM
   system(command = run.strng, ignore.stdout = silent)
+  
   ## Create database connection
   ans <- read_apsimx(paste0(example,".db"), src.dir = ex.dir, value = "report")
   ## Dangerous cleanup
@@ -229,7 +245,6 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## Add the date
   ans$Date <- as.Date(sapply(ans$Clock.Today, function(x) strsplit(x, " ")[[1]][1]))
   return(ans)
-  
 }
 
 #' Read APSIM-X generated .db files
@@ -333,6 +348,7 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
 #'       defaults ones. Guessing this can be difficult and then the auto_detect functions might
 #'       fail. 
 #' @export
+#' @examples 
 #'\dontrun{
 #' names(apsimx.options)
 #' apsimx_options(exe.path = "some-new-path-to-executable")

@@ -4,7 +4,8 @@ This package allows for interaction with APSIM ("Next Generation") or
 APSIM-X. It can inspect, edit, run and read APSIMX files. APSIMX now
 uses two different file types for .apsimx files: XML and JSON. This
 package can inspect and edit XML files and it can inspect JSON
-files. The editing of JSON files is limited at the moment (July 9th 2019)
+files. The editing of JSON files is slightly more limited thatn for
+XML at the moment (July 21st).
 
 * Package requirements:
 
@@ -13,7 +14,7 @@ files. The editing of JSON files is limited at the moment (July 9th 2019)
 * APSIMX:
 
 The new APSIM uses the mono framework to run on Windows, Mac and Linux
-(Debian). Mono should be installed first.
+(Debian). Mono should be installed first (in Mac and Linux).
 
 **Mono framework download**:
 https://www.mono-project.com/download/stable/

@@ -18,6 +18,14 @@ Used to set the path to the APSIM-X executable.
 Set APSIM-X options
 }
 \note{
-In Windows it is more likely that APSIM-X is installed in some alternative location 
-       and guessing this can be difficult to auto detect.
+It is possible that APSIM-X is installed in some alternative location other than the 
+      defaults ones. Guessing this can be difficult and then the auto_detect functions might
+      fail.
+}
+\examples{
+\dontrun{
+names(apsimx.options)
+apsimx_options(exe.path = "some-new-path-to-executable")
+apsimx.options$exe.path
+}
 }

@@ -1,4 +1,4 @@
-## Function to check whether mono and APSIM-X are installed
+## Function to check whether mono (unix only) and APSIM-X are installed
 
 .onLoad <- function(libname, pkgname){
   
@@ -14,29 +14,24 @@
       ## In both of them the command 'mono' seems to work
     }
     
-    ## Check whether we find APSIM-X in Mac
+    ## List of application files in Darwin (Mac)
     if(grepl("Darwin", Sys.info()[["sysname"]])){
       laf <- list.files("/Applications/")
-      apsimx <- laf[grepl("APSIM", laf)]
-      if(length(apsimx) == 0){
-        warning("APSIM-X not found")
-      }
     }
-    ## Check whether we find APSIM-X in Linux (Debian)
+    ## Linux (Debian)
     if(grepl("Linux", Sys.info()[["sysname"]])){
-      local.lib <- "/usr/local/lib"
-      laf <- list.files(local.lib)
-      if(!grepl("apsim", laf)){
-        warning("APSIM-X not found")
+      laf <- list.files("/usr/local/lib")
+    }
+  }else{
+        if(grepl("Windows", Sys.info()[["sysname"]])){
+          laf <- list.files("c:/PROGRA~1")
       }
-    }
   }
-    
-  if(grepl("Windows", Sys.info()[["sysname"]])){
-      local.lib <- "c:/Program Files"
-      laf <- list.files(local.lib)
-      if(!grepl("apsim", laf, ignore.case = TRUE)){
-        warning("APSIM-X not found")
-    }
+  ## Check whether APSIM-X is detected
+  apsimx <- laf[grepl("APSIM", laf, ignore.case = TRUE)]
+  if(length(apsimx) == 0){
+    warning("APSIM-X not found. \n 
+             If APSIM-X is installed in an alternative location, \n
+                set paths manually using 'apsimx_options'")
   }
 }

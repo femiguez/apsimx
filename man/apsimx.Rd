@@ -12,20 +12,20 @@ apsimx(file = "", src.dir = ".", silent = FALSE, value = c("all",
 
 \item{src.dir}{directory containing the .apsimx file to be run (defaults to the current directory)}
 
-\item{silent}{whether to print messages from apsim executable}
+\item{silent}{whether to print messages from apsim simulation}
 
-\item{value}{how much output to return:
-option 'all' returns all components of the simulation;
-option 'report' returns only the 'main' report component;
+\item{value}{how much output to return: \cr
+option 'all' returns all components of the simulation; \cr
+option 'report' returns only the 'main' report component; \cr
 option 'none' does not create a data.frame but it generates the databases from APSIM-X}
 
-\item{cleanup}{level of file cleanup:
-0 does nothing; 
-1 deletes the .db created by APSIM-X;
+\item{cleanup}{level of file cleanup: \cr
+0 does nothing; \cr
+1 deletes the .db created by APSIM-X; \cr
 2 is not implemented yet.}
 }
 \description{
-The goal is to run apsimx from R. It basically calls 'system' to run from the command line.
+Run apsimx from R. It uses 'system' and it attempts to be platform independent.
 }
 \details{
 Run an APSIM-X Simulation
