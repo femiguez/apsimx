@@ -50,17 +50,17 @@ apsimx <- function(file = "", src.dir=".",
   
   file.name.path <- paste0(src.dir,"/",file)
   
+  ada <- auto_detect_apsimx()
   ## This function will run an APSIM file
   ## This works on MacOS and it might work on other 'unix'
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
-    ada <- auto_detect_apsimx()
     run.strng <- paste0(mono," ",ada," ",file.name.path,".apsimx")
     ## Use the system function
   }
   
   if(.Platform$OS.type == "windows"){
-      run.strng <- auto_detect_apsimx()
+      run.strng <- paste0(ada," ",file.name.path,".apsimx")
   }
   ## Run APSIM-X on the command line
   system(command = run.strng, ignore.stdout = silent)
@@ -301,8 +301,8 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   if(.Platform$OS.type == "windows"){
     ## Make a temporary local copy of the example file
     cp.strng <- paste0("copy ",ex," ",paste0(example,".apsimx"))
-    shell(cmd = cp.strng, translate = TRUE)
-    run.strng <- paste0(ada," ",paste0(file,".apsimx"))
+    shell(cmd = cp.strng, translate = TRUE, ignore.stdout = TRUE)
+    run.strng <- paste0(ada," ",paste0(example,".apsimx"))
   }
   ## Run APSIM
   system(command = run.strng, ignore.stdout = silent)

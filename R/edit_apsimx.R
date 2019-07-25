@@ -75,6 +75,9 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   ## For now we just edit one file at a time
   file <- match.arg(file, fileNames, several.ok=FALSE)
   
+  if(apsimx_filetype(file = file, src.dir) == "unknown"){
+    stop("file must be either XML or JSON")
+  }
   ## Inspect XML file type
   if(apsimx_filetype(file = file, src.dir = src.dir) == "xml"){
     edit_apsimx_xml(file = file, src.dir = src.dir, wrt.dir = wrt.dir,
@@ -82,6 +85,9 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                     parm = parm, value = value, overwrite = overwrite,
                     parm.path = parm.path, verbose = verbose)
   }else{
-    stop("Only XML files supported at the moment")
+    edit_apsimx_json(file = file, src.dir = src.dir, wrt.dir = wrt.dir,
+                    node = node, soil.child = soil.child, som.child = som.child, 
+                    parm = parm, value = value, overwrite = overwrite,
+                    parm.path = parm.path, verbose = verbose)
   }
 }
