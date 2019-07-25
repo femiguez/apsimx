@@ -87,13 +87,29 @@ apsimx <- function(file = "", src.dir=".",
 
 ## This is an internal function so I won't export/document it
 auto_detect_apsimx <- function(){
+
+  ## Internal function to split APSIM name
+  fev <- function(x) as.numeric(strsplit(x, ".", fixed = TRUE)[[1]][4])
+  ## I need to deal with the fact that there might be multiple versions
+  ## of APSIM installed
   
   if(.Platform$OS.type == "unix"){
 
     if(grepl("Darwin", Sys.info()[["sysname"]])){
       laf <- list.files("/Applications/")
       find.apsim <- grep("APSIM",laf)
-      apsimx.name <- laf[find.apsim]
+      if(length(find.apsim) > 1){
+        apsimx.versions <- sapply(laf[find.apsim],fev)
+        newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
+        if(apsimx.options$warn.versions){
+           warning("Multiple versions of APSIM-X installed. \n
+                    Choosing the newest one.")
+          cat("Version: ", newest.version,"\n")
+        }
+        apsimx.name <- grep(newest.version, laf[find.apsim], value = TRUE)
+      }else{
+        apsimx.name <- laf[find.apsim]
+      }
       ## APSIM executable
       st1 <- "/Applications/"
       st3 <- "/Contents/Resources/Bin/Models.exe" 
@@ -102,8 +118,20 @@ auto_detect_apsimx <- function(){
   
     if(grepl("Linux", Sys.info()[["sysname"]])){
       laf <- list.files("/usr/local/lib")
-      find.apsim <- grep("APSIM",laf)
-      apsimx.name <- laf[find.apsim]
+      find.apsim <- grep("APSIM", laf, ignore.case = TRUE)
+      apsimx.versions <- list.files(laf[find.apsim]) 
+      if(length(apsimx.versions) > 1){
+        versions <- sapply(apsimx.versions, fev)
+        newest.version <- sort(versions, decreasing = TRUE)[1]
+        if(apsimx.options$warn.versions){
+          warning("Multiple versions of APSIM-X installed. \n
+                  Choosing the newest one.")
+          cat("Version: ", newest.version,"\n")
+        }
+        apsimx.name <- grep(newest.version, apsimx.versions, value = TRUE)
+      }else{
+        apsimx.name <- apsimx.versions
+      }
       ## APSIM executable
       st1 <- "/usr/local/lib/apsim"
       st3 <- "/Bin/Models.exe" 
@@ -114,6 +142,10 @@ auto_detect_apsimx <- function(){
   if(.Platform$OS.type == "windows"){
       laf <- list.files("C:/PROGRA~1")
       find.apsim <- grep("APSIM",laf)
+      if(length(find.apsim) > 1){
+        warning("multiple versions of APSIM-X installed")
+        find.apsim <- find.apsim[1]
+      }
       apsimx.name <- laf[find.apsim]
       ## APSIM executable
       st1 <- "C:/PROGRA~1/"
@@ -145,15 +177,24 @@ auto_detect_apsimx <- function(){
 
 auto_detect_apsimx_examples <- function(){
   
-  ## This is only valid for MacOS for now
   if(.Platform$OS.type == "unix"){
     if(grepl("Darwin", Sys.info()[["sysname"]])){
       ## If APSIM-X is installed it will be in /Applications/
       ## look into Applications folder
       laf <- list.files("/Applications/")
       find.apsim <- grep("APSIM",laf)
-      apsimx.name <- laf[find.apsim]
-      ## Apsim executable
+      if(length(find.apsim) > 1){
+        apsimx.versions <- sapply(laf[find.apsim],fev)
+        newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
+        if(apsimx.options$warn.versions){
+          warning("Multiple versions of APSIM-X installed. \n
+                  Choosing the newest one.")
+          cat("Version: ", newest.version,"\n")
+        }
+        apsimx.name <- grep(newest.version, laf[find.apsim], value = TRUE)
+      }else{
+        apsimx.name <- laf[find.apsim]
+      }
       st1 <- "/Applications/"
       st3 <- "/Contents/Resources/Examples" 
       apsimx_ex_dir <- paste0(st1,apsimx.name,st3)
@@ -161,10 +202,20 @@ auto_detect_apsimx_examples <- function(){
     }
   
     if(grepl("Linux", Sys.info()[["sysname"]])){
-      apsimx_dir <- "/usr/local/lib/apsim/"
-      apsim.version <- list.files(apsimx_dir)
-      apsimx_ex_dir <- paste0(apsimx_dir,apsim.version,"/Examples")
-
+      apsimx.versions <- list.files("/usr/local/lib/apsim/") 
+      if(length(apsimx.versions) > 1){
+        versions <- sapply(apsimx.versions, fev)
+        newest.version <- sort(versions, decreasing = TRUE)[1]
+        if(apsimx.options$warn.versions){
+          warning("Multiple versions of APSIM-X installed. \n
+                  Choosing the newest one.")
+          cat("Version: ", newest.version,"\n")
+        }
+        apsimx.name <- grep(newest.version, apsimx.versions, value = TRUE)
+      }else{
+        apsimx.name <- apsimx.versions
+      }
+      apsimx_ex_dir <- paste0(apsimx_dir,apsim.name,"/Examples")
     }
   }
   
@@ -172,6 +223,10 @@ auto_detect_apsimx_examples <- function(){
       st1 <- "C:/PROGRA~1"
       laf <- list.files(st1)
       find.apsim <- grep("APSIM",laf)
+      if(length(find.apsim) > 1){
+        warning("multiple versions of APSIM-X installed")
+        find.apsim <- find.apsim[1]
+      }
       apsimx.name <- laf[find.apsim]
       ## APSIM path to examples
       st3 <- "/Examples" 
@@ -344,6 +399,7 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
 #' @description Used to set the path to the APSIM-X executable. 
 #' @param exe.path path to the executable
 #' @param examples.path path to the examples
+#' @param warn.versions logical. warning if multiple versions of APSIM-X are detected.
 #' @note It is possible that APSIM-X is installed in some alternative location other than the 
 #'       defaults ones. Guessing this can be difficult and then the auto_detect functions might
 #'       fail. 
@@ -355,9 +411,10 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
 #' apsimx.options$exe.path
 #' }
 
-apsimx_options <- function(exe.path = NA, examples.path = NA){
+apsimx_options <- function(exe.path = NA, examples.path = NA, warn.versions = TRUE){
   assign('exe.path', exe.path, apsimx.options)
   assign('examples.path', examples.path, apsimx.options)
+  assign('warn.versions', warn.versions, apsimx.options)
 }
 
 #' Environment which stores APSIM-X options
@@ -379,6 +436,7 @@ apsimx_options <- function(exe.path = NA, examples.path = NA){
 apsimx.options <- new.env(parent = emptyenv())
 assign('exe.path', NA, apsimx.options)
 assign('examples.path', NA, apsimx.options)
+assign('warn.versions', TRUE, apsimx.options)
 
 #' Import packages needed for apsimx to work correctly
 #' @import DBI RSQLite knitr xml2 jsonlite
