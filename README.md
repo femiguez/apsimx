@@ -25,4 +25,9 @@ https://www.apsim.info/Products/Downloads.aspx
 If you need an R package to interact with the previous version(s) of
 APSIM (7.x) try 'APSIM' and 'apsimr'.
 
+If you want to install this package from github try in R:
+
+library(devtools)
+devtools::install_github("femiguez/apsimx")
+
 If you have any questions contact Fernando E. Miguez (femiguez *at* iastate.edu)
