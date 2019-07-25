@@ -118,7 +118,7 @@ auto_detect_apsimx <- function(){
     if(grepl("Linux", Sys.info()[["sysname"]])){
       laf <- list.files("/usr/local/lib")
       find.apsim <- grep("APSIM", laf, ignore.case = TRUE)
-      apsimx.versions <- list.files(laf[find.apsim]) 
+      apsimx.versions <- laf[find.apsim] 
       if(length(apsimx.versions) > 1){
         versions <- sapply(apsimx.versions, fev)
         newest.version <- sort(versions, decreasing = TRUE)[1]
@@ -139,17 +139,25 @@ auto_detect_apsimx <- function(){
   }
   
   if(.Platform$OS.type == "windows"){
-      laf <- list.files("C:/PROGRA~1")
-      find.apsim <- grep("APSIM",laf)
-      if(length(find.apsim) > 1){
-        warning("multiple versions of APSIM-X installed")
-        find.apsim <- find.apsim[1]
+    st1 <- "C:/PROGRA~1/"
+    laf <- list.files(st1)
+    find.apsim <- grep("APSIM",laf)
+    apsimx.versions <- laf[find.apsim]
+    if(length(find.apsim) > 1){
+      versions <- sapply(apsimx.versions, fev)
+      newest.version <- sort(versions, decreasing = TRUE)[1]
+      if(apsimx::apsimx.options$warn.versions){
+        warning("Multiple versions of APSIM-X installed. \n
+                  Choosing the newest one.")
+          cat("Version: ", newest.version,"\n")
       }
+      apsimx.name <- grep(newest.version, apsimx.versions, value = TRUE)
+    }else{
       apsimx.name <- laf[find.apsim]
-      ## APSIM executable
-      st1 <- "C:/PROGRA~1/"
-      st3 <- "/Bin/Models.exe" 
-      apsimx_dir <- shQuote(paste0(st1,apsimx.name,st3), type = "cmd")
+    }
+    ## APSIM executable
+    st3 <- "/Bin/Models.exe" 
+    apsimx_dir <- paste0(st1,apsimx.name,st3)
   }
   
   if(!is.na(apsimx::apsimx.options$exe.path)){
@@ -234,7 +242,7 @@ auto_detect_apsimx_examples <- function(){
       apsimx.name <- laf[find.apsim]
       ## APSIM path to examples
       st3 <- "/Examples" 
-      apsimx_ex_dir <- shQuote(paste0(st1,"/",apsimx.name,st3), type = "cmd")
+      apsimx_ex_dir <- paste0(st1,"/",apsimx.name,st3)
   }
   
   if(!is.na(apsimx::apsimx.options$examples.path)){
@@ -277,29 +285,34 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
              "Plantain","Potato","SCRUM","Slurp", "SobolExample",
              "Sugarcane", "Wheat","WhiteClover")
   example <- match.arg(example, choices = ex.ch)
-  ## This works on MacOS and it might work on other 'unix' 
+  
+  ada <- auto_detect_apsimx()
+  ex.dir <- auto_detect_apsimx_examples()
+  ex <- paste0(ex.dir,"/",example,".apsimx")
+  
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
-    ada <- auto_detect_apsimx()
-    ex.dir <- auto_detect_apsimx_examples()
-    ex <- paste0(ex.dir,"/",example,".apsimx")
-    run.strng <- paste0(mono," ",ada," ",ex)
+    ## Make a temporary local copy of example
+    cp.strng <- paste0("cp ",ex," ",".")
+    system(command = cp.strng)
+    run.strng <- paste0(mono," ",ada," ",paste0(example,".apsimx"))
   }
   
   if(.Platform$OS.type == "windows"){
-    ada <- auto_detect_apsimx()
-    ex.dir <- auto_detect_apsimx_examples()
-    ex <- paste0(ex.dir,"/",example,".apsimx")
-    run.strng <- paste0(ada," ",ex)
+    ## Make a temporary local copy of the example file
+    cp.strng <- paste0("copy ",ex," ",paste0(example,".apsimx"))
+    shell(cmd = cp.strng, translate = TRUE)
+    run.strng <- paste0(ada," ",paste0(file,".apsimx"))
   }
-  
   ## Run APSIM
   system(command = run.strng, ignore.stdout = silent)
   
   ## Create database connection
-  ans <- read_apsimx(paste0(example,".db"), src.dir = ex.dir, value = "report")
+  ## I don't need to specify the directory as it should be the current one
+  ans <- read_apsimx(paste0(example,".db"), value = "report")
   ## Dangerous cleanup
-  system(paste0("rm ",ex.dir,"/",example,".db"))
+  system(paste0("rm ",example,".db"))
+  system(paste0("rm ",example,".apsimx"))
   ## Return data frame
   ## Add the date
   ans$Date <- as.Date(sapply(ans$Clock.Today, function(x) strsplit(x, " ")[[1]][1]))
