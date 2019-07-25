@@ -2,7 +2,7 @@
 % Please edit documentation in R/edit_apsimx.R
 \name{edit_apsimx}
 \alias{edit_apsimx}
-\title{Edit an APSIM-X (XML) Simulation}
+\title{Edit an APSIM-X Simulation}
 \usage{
 edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
   "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
@@ -39,7 +39,7 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
 As a side effect this function created a new (XML) .apsimx file.
 }
 \description{
-This function allows editing of an APSIM-X (XML) simulation file.
+This function allows editing of an APSIM-X (XML or JSON) simulation file.
 }
 \details{
 The variables specified by \code{parm} within the .apsimx file specified by \code{file} 

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-07-08" />
+<meta name="date" content="2019-07-25" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author"><em>Fernando Miguez</em></h4>
-<h4 class="date"><em>2019-07-08</em></h4>
+<h4 class="date"><em>2019-07-25</em></h4>
 
 
 
@@ -83,6 +83,14 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><a href="https://www.sciencedirect.com/science/article/pii/S1364815217311921">Holzworth et al. (2018)</a></p>
 <p>This package only works on MacOS at the moment and it assumes that you have successfully installed APSIM-X.</p>
 <p>Other useful R packages are ‘APSIM’ and ‘apsimr’. The main difference is that these were written to work with the previous generation of APSIM (7.x). This package is thus an update for the new APSIM-X software.</p>
+<div id="installing-apsim-x" class="section level2">
+<h2>Installing APSIM-X</h2>
+<p>For most functions in this pacakge you need to have a version of APSIM-X installed. For this you might first need to install mono (<a href="https://www.mono-project.com/download/stable/" class="uri">https://www.mono-project.com/download/stable/</a>) and then download and install APSIM-X (<a href="https://www.apsim.info/Products/Downloads.aspx" class="uri">https://www.apsim.info/Products/Downloads.aspx</a>). The  package will try to detect the install of both mono and APSIM-X.</p>
+<div id="mac" class="section level3">
+<h3>Mac</h3>
+<p>For Mac it is also assumed that APSIM-X had been moved to the ‘/Applications/’ directory.</p>
+</div>
+</div>
 <div id="r-functions-for-apsim-x" class="section level2">
 <h2>R functions for APSIM-X</h2>
 <p>The main functions in the package are (for now):</p>
@@ -168,7 +176,7 @@ ocs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">1.5
 <p>The proposed workflow is to start by creating an .apsimx file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The funcitons included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. This is the proposed workflow:</p>
 <ol style="list-style-type: decimal">
 <li>Create a simualtion using the APSIM GUI</li>
-<li>Identify variables/parameters that you want to modify (they need to be exposed in the .apsimx XML file)</li>
+<li>Identify variables/parameters that you want to modify (they need to be exposed in the .apsimx XML o JSON file)</li>
 <li>Edit the file using ‘edit_apsimx’</li>
 <li>Run the simulation using ‘apsimx’</li>
 <li>Repeat steps 3 and 4 as needed</li>
@@ -257,12 +265,21 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## CropName   wheat</code></pre>
 </div>
 </div>
+<div id="file-type-or-file-format-details" class="section level1">
+<h1>File Type (or File Format) Details</h1>
+<p>APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance.</p>
+<p>The  package supports inspection and editing of both file types for most components except for the ‘Manager’; for which there is partial support. In most instances the parameters that are likely to need inspection and editing are supported but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
+<span class="kw">apsimx_filetype</span>(<span class="st">&quot;Barley&quot;</span>, <span class="dt">src.dir =</span> ex.dir)</code></pre></div>
+<pre><code>## [1] &quot;json&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">apsimx_filetype</span>(<span class="st">&quot;Maize&quot;</span>, <span class="dt">src.dir =</span> ex.dir)</code></pre></div>
+<pre><code>## [1] &quot;xml&quot;</code></pre>
+</div>
 <div id="future-features" class="section level1">
 <h1>Future features</h1>
 <ul>
 <li>Provide support for Windows and Linux (highest priority)</li>
-<li>Provide support for JSON files (high priority)</li>
-<li>Provide support for editing ‘Manager’ (medium priority)</li>
+<li>Provide additional support for editing ‘Manager’ (medium priority)</li>
 <li>Improve implementation of read_apsimx_all (low priority)</li>
 </ul>
 </div>

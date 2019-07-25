@@ -1,6 +1,6 @@
-#' Edit an APSIM-X (XML) Simulation
+#' Edit an APSIM-X Simulation
 #' 
-#' This function allows editing of an APSIM-X (XML) simulation file.
+#' This function allows editing of an APSIM-X (XML or JSON) simulation file.
 #' 
 #' The variables specified by \code{parm} within the .apsimx file specified by \code{file} 
 #' in the source directory \code{src.dir} are edited. The old values are replaced with \code{value}, which

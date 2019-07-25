@@ -57,7 +57,6 @@ apsimx <- function(file = "", src.dir=".",
     ada <- auto_detect_apsimx()
     run.strng <- paste0(mono," ",ada," ",file.name.path,".apsimx")
     ## Use the system function
-    
   }
   
   if(.Platform$OS.type == "windows"){
@@ -101,7 +100,7 @@ auto_detect_apsimx <- function(){
       if(length(find.apsim) > 1){
         apsimx.versions <- sapply(laf[find.apsim],fev)
         newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
-        if(apsimx.options$warn.versions){
+        if(apsimx::apsimx.options$warn.versions){
            warning("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one.")
           cat("Version: ", newest.version,"\n")
@@ -123,7 +122,7 @@ auto_detect_apsimx <- function(){
       if(length(apsimx.versions) > 1){
         versions <- sapply(apsimx.versions, fev)
         newest.version <- sort(versions, decreasing = TRUE)[1]
-        if(apsimx.options$warn.versions){
+        if(apsimx::apsimx.options$warn.versions){
           warning("Multiple versions of APSIM-X installed. \n
                   Choosing the newest one.")
           cat("Version: ", newest.version,"\n")
@@ -177,7 +176,11 @@ auto_detect_apsimx <- function(){
 
 auto_detect_apsimx_examples <- function(){
   
+  ## Internal function to split APSIM name
+  fev <- function(x) as.numeric(strsplit(x, ".", fixed = TRUE)[[1]][4])
+  
   if(.Platform$OS.type == "unix"){
+    apsim.name <- NULL
     if(grepl("Darwin", Sys.info()[["sysname"]])){
       ## If APSIM-X is installed it will be in /Applications/
       ## look into Applications folder
@@ -186,7 +189,7 @@ auto_detect_apsimx_examples <- function(){
       if(length(find.apsim) > 1){
         apsimx.versions <- sapply(laf[find.apsim],fev)
         newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
-        if(apsimx.options$warn.versions){
+        if(apsimx::apsimx.options$warn.versions){
           warning("Multiple versions of APSIM-X installed. \n
                   Choosing the newest one.")
           cat("Version: ", newest.version,"\n")
@@ -202,7 +205,8 @@ auto_detect_apsimx_examples <- function(){
     }
   
     if(grepl("Linux", Sys.info()[["sysname"]])){
-      apsimx.versions <- list.files("/usr/local/lib/apsim/") 
+      st1 <- "/usr/local/lib/apsim/"
+      apsimx.versions <- list.files(st1) 
       if(length(apsimx.versions) > 1){
         versions <- sapply(apsimx.versions, fev)
         newest.version <- sort(versions, decreasing = TRUE)[1]
@@ -215,7 +219,7 @@ auto_detect_apsimx_examples <- function(){
       }else{
         apsimx.name <- apsimx.versions
       }
-      apsimx_ex_dir <- paste0(apsimx_dir,apsim.name,"/Examples")
+      apsimx_ex_dir <- paste0(st1,apsim.name,"/Examples")
     }
   }
   
@@ -295,7 +299,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## Create database connection
   ans <- read_apsimx(paste0(example,".db"), src.dir = ex.dir, value = "report")
   ## Dangerous cleanup
-  system(paste0("rm ",ex,".db"))
+  system(paste0("rm ",ex.dir,"/",example,".db"))
   ## Return data frame
   ## Add the date
   ans$Date <- as.Date(sapply(ans$Clock.Today, function(x) strsplit(x, " ")[[1]][1]))
@@ -392,17 +396,18 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
   return(ans)
 }
 
-#' Set APSIM-X options
+#' Set apsimx options
 #' 
 #' @title Setting some options for the package
 #' @name apsimx_options
-#' @description Used to set the path to the APSIM-X executable. 
-#' @param exe.path path to the executable
-#' @param examples.path path to the examples
+#' @description Set the path to the APSIM-X executable, examples and warning suppression. 
+#' @param exe.path path to apsim executable
+#' @param examples.path path to apsim examples
 #' @param warn.versions logical. warning if multiple versions of APSIM-X are detected.
 #' @note It is possible that APSIM-X is installed in some alternative location other than the 
 #'       defaults ones. Guessing this can be difficult and then the auto_detect functions might
-#'       fail. 
+#'       fail. Also, if multiple versions of APSIM-X are installed apsimx will choose the newest
+#'       one but it will issue a warning. Suppress the warning by setting warn.versions = FLASE.
 #' @export
 #' @examples 
 #'\dontrun{
@@ -440,5 +445,6 @@ assign('warn.versions', TRUE, apsimx.options)
 
 #' Import packages needed for apsimx to work correctly
 #' @import DBI RSQLite knitr xml2 jsonlite
+#' @importFrom utils read.table
 NULL
 

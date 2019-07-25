@@ -8,6 +8,7 @@
 #' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
 #' @param soil.child specific soil component to be inspected
 #' @param som.child specific surface organic matter component to be inspected ('Pools' or 'Other')
+#' @param parm parameter to inspect when node = 'Other'
 #' @param digits number of decimals to print (default 3)
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 #' @return table with inspected parameters and values
@@ -37,6 +38,7 @@ inspect_apsimx_xml <- function(file = "", src.dir = ".",
                                soil.child = c("Water","Nitrogen","OrganicMatter",
                                               "Analysis","InitialWater","Sample"),
                                som.child = c("Pools","Other"),
+                               parm = NULL,
                                digits = 3){
   
   fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)

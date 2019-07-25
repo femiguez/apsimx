@@ -2,7 +2,7 @@
 #' Similar structure to the 'edit_apsimx' file but aimed at a simple way
 #' of inspecting a file
 #' 
-#' @title Inspect and .apsimx file (XML or JSON)
+#' @title Inspect an .apsimx file (XML or JSON)
 #' @name inspect_apsimx
 #' @description inspect either an XML or JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
 #' @param file file ending in .apsimx to be inspected
@@ -10,7 +10,7 @@
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
 #' @param soil.child specific soil component to be inspected. For example, 'Water' or 'Nitrogen'.
 #' @param som.child specific soil organic matter component to be inspected ('Pools' or 'Other')
-#' @param parm.path path to the attribute to edit when node is 'Other' (XML only)
+#' @param parm parameter to inspect when node = 'Other' (XML only)
 #' @param digits number of decimals to print
 #' @details The inspection has many elements that are hard coded, it is not a literal inspection tool for all aspects of the file. For this use a text editor.
 #' @return table with inspected parameters and values
@@ -42,6 +42,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                            soil.child = c("Water","Nitrogen","OrganicMatter",
                                           "Analysis","InitialWater","Sample"),
                            som.child = c("Pools","Other"),
+                           parm = NULL,
                            digits = 3){
   
   fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
@@ -63,7 +64,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   if(apsimx_ft == "xml"){
     inspect_apsimx_xml(file = file, src.dir = src.dir, node = node,
                        soil.child = soil.child, som.child = som.child, 
-                       digits = digits)
+                       parm = parm, digits = digits)
   }
   
   ## Inspect JSON file type

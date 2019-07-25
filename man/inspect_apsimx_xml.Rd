@@ -8,7 +8,7 @@ inspect_apsimx_xml(file = "", src.dir = ".", node = c("Clock",
   "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
   "Manager"), soil.child = c("Water", "Nitrogen", "OrganicMatter",
   "Analysis", "InitialWater", "Sample"), som.child = c("Pools", "Other"),
-  digits = 3)
+  parm = NULL, digits = 3)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected (XML)}
@@ -20,6 +20,8 @@ inspect_apsimx_xml(file = "", src.dir = ".", node = c("Clock",
 \item{soil.child}{specific soil component to be inspected}
 
 \item{som.child}{specific surface organic matter component to be inspected ('Pools' or 'Other')}
+
+\item{parm}{parameter to inspect when node = 'Other'}
 
 \item{digits}{number of decimals to print (default 3)}
 }

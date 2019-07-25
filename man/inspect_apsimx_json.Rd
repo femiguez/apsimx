@@ -22,8 +22,6 @@ inspect_apsimx_json(file = "", src.dir = ".", node = c("Clock",
 \item{som.child}{specific surface organic matter component to be inspected (not used)}
 
 \item{digits}{number of decimals to print (default 3)}
-
-\item{parm.path}{path to the attribute to be inspected when node is 'Other'}
 }
 \value{
 table with inspected parameters and values

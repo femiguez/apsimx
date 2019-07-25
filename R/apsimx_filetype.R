@@ -31,7 +31,7 @@ apsimx_filetype <- function(file = "", src.dir = "."){
   
   file <- match.arg(file, fileNames, several.ok=FALSE)
   
-  rfl1 <- read.table(file = paste0(src.dir,"/",file), nrows = 1)[1,1]
+  rfl1 <- utils::read.table(file = paste0(src.dir,"/",file), nrows = 1)[1,1]
   ## The next line will work if all XML files contain xml in the first line
   if(length(grep("xml", as.character(rfl1))) != 0){
     ans <- "xml"

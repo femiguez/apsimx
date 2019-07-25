@@ -40,3 +40,8 @@ ggplot(data = sim, aes(x = Date, y = Yield)) + geom_point()
 inspect_apsimx("Wheat", src.dir = ex.dir, node = "Crop")
 inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
 
+## ----filetypes-----------------------------------------------------------
+ex.dir <- auto_detect_apsimx_examples()
+apsimx_filetype("Barley", src.dir = ex.dir)
+apsimx_filetype("Maize", src.dir = ex.dir)
+

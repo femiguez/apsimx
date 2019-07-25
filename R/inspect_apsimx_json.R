@@ -8,7 +8,6 @@
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
 #' @param soil.child specific soil component to be inspected. The options are: 'Water', 'Nitrogen', 'OrganicMatter', 'Analysis', 'InitalWater', 'Sample'
 #' @param som.child specific surface organic matter component to be inspected (not used)
-#' @param parm.path path to the attribute to be inspected when node is 'Other'
 #' @param digits number of decimals to print (default 3)
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 #' @return table with inspected parameters and values

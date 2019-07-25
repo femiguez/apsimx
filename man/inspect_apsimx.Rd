@@ -2,13 +2,13 @@
 % Please edit documentation in R/inspect_apsimx.R
 \name{inspect_apsimx}
 \alias{inspect_apsimx}
-\title{Inspect and .apsimx file (XML or JSON)}
+\title{Inspect an .apsimx file (XML or JSON)}
 \usage{
 inspect_apsimx(file = "", src.dir = ".", node = c("Clock", "Weather",
   "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
   soil.child = c("Water", "Nitrogen", "OrganicMatter", "Analysis",
   "InitialWater", "Sample"), som.child = c("Pools", "Other"),
-  digits = 3)
+  parm = NULL, digits = 3)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected}
@@ -21,9 +21,9 @@ inspect_apsimx(file = "", src.dir = ".", node = c("Clock", "Weather",
 
 \item{som.child}{specific soil organic matter component to be inspected ('Pools' or 'Other')}
 
-\item{digits}{number of decimals to print}
+\item{parm}{parameter to inspect when node = 'Other' (XML only)}
 
-\item{parm.path}{path to the attribute to edit when node is 'Other' (XML only)}
+\item{digits}{number of decimals to print}
 }
 \value{
 table with inspected parameters and values

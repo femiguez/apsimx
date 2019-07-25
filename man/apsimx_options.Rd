@@ -4,23 +4,27 @@
 \alias{apsimx_options}
 \title{Setting some options for the package}
 \usage{
-apsimx_options(exe.path = NA, examples.path = NA)
+apsimx_options(exe.path = NA, examples.path = NA,
+  warn.versions = TRUE)
 }
 \arguments{
-\item{exe.path}{path to the executable}
+\item{exe.path}{path to apsim executable}
 
-\item{examples.path}{path to the examples}
+\item{examples.path}{path to apsim examples}
+
+\item{warn.versions}{logical. warning if multiple versions of APSIM-X are detected.}
 }
 \description{
-Used to set the path to the APSIM-X executable.
+Set the path to the APSIM-X executable, examples and warning suppression.
 }
 \details{
-Set APSIM-X options
+Set apsimx options
 }
 \note{
 It is possible that APSIM-X is installed in some alternative location other than the 
       defaults ones. Guessing this can be difficult and then the auto_detect functions might
-      fail.
+      fail. Also, if multiple versions of APSIM-X are installed apsimx will choose the newest
+      one but it will issue a warning. Suppress the warning by setting warn.versions = FLASE.
 }
 \examples{
 \dontrun{
