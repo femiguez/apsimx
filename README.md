@@ -4,8 +4,8 @@ This package allows for interaction with APSIM ("Next Generation") or
 APSIM-X. It can inspect, edit, run and read APSIMX files. APSIMX now
 uses two different file types for .apsimx files: XML and JSON. This
 package can inspect and edit XML files and it can inspect JSON
-files. The editing of JSON files is slightly more limited thatn for
-XML at the moment (July 21st).
+files. The editing of JSON files is slightly more limited than for
+XML at the moment (July 25th 2019).
 
 * Package requirements:
 
