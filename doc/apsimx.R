@@ -28,10 +28,9 @@ edit_apsimx("Maize.apsimx", src.dir = ex.dir,
 system("rm ./Maize-edited.apsimx")
 
 ## ----apsimx--------------------------------------------------------------
-## Detect 'Examples' directory
-ex.dir <- auto_detect_apsimx_examples()
-## Run simulation, this will take a while
-sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report", cleanup = 1)
+## I included one example with the package for the vignette
+ex.dir <- system.file("extdata", package = "apsimx")
+sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report", cleanup = TRUE)
 ## Calcualte summary statistics on all variables
 summary(sim)
 ## Plot data

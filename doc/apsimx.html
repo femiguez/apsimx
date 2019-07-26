@@ -184,10 +184,9 @@ ocs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">1.5
 <li>Perform visual and statistical analysis on the results</li>
 </ol>
 <p>Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Detect 'Examples' directory
-ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
-## Run simulation, this will take a while
-sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>, <span class="dt">cleanup =</span> <span class="dv">1</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## I included one example with the package for the vignette
+ex.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
+sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>, <span class="dt">cleanup =</span> <span class="ot">TRUE</span>)
 ## Calcualte summary statistics on all variables
 <span class="kw">summary</span>(sim)</code></pre></div>
 <pre><code>##   CheckpointID  SimulationID  FolderName            Zone          
