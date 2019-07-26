@@ -51,12 +51,10 @@ apsimx <- function(file = "", src.dir=".",
   file.name.path <- paste0(src.dir,"/",file)
   
   ada <- auto_detect_apsimx()
-  ## This function will run an APSIM file
-  ## This works on MacOS and it might work on other 'unix'
+
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
     run.strng <- paste0(mono," ",ada," ",file.name.path,".apsimx")
-    ## Use the system function
   }
   
   if(.Platform$OS.type == "windows"){
@@ -116,9 +114,7 @@ auto_detect_apsimx <- function(){
     }
   
     if(grepl("Linux", Sys.info()[["sysname"]])){
-      laf <- list.files("/usr/local/lib")
-      find.apsim <- grep("APSIM", laf, ignore.case = TRUE)
-      apsimx.versions <- laf[find.apsim] 
+      apsimx.versions <- list.files("/usr/local/lib/apsim")
       if(length(apsimx.versions) > 1){
         versions <- sapply(apsimx.versions, fev)
         newest.version <- sort(versions, decreasing = TRUE)[1]
@@ -132,7 +128,7 @@ auto_detect_apsimx <- function(){
         apsimx.name <- apsimx.versions
       }
       ## APSIM executable
-      st1 <- "/usr/local/lib/apsim"
+      st1 <- "/usr/local/lib/apsim/"
       st3 <- "/Bin/Models.exe" 
       apsimx_dir <- paste0(st1,apsimx.name,st3)
     }
@@ -227,7 +223,7 @@ auto_detect_apsimx_examples <- function(){
       }else{
         apsimx.name <- apsimx.versions
       }
-      apsimx_ex_dir <- paste0(st1,apsim.name,"/Examples")
+      apsimx_ex_dir <- paste0(st1,apsimx.name,"/Examples")
     }
   }
   
@@ -252,14 +248,16 @@ auto_detect_apsimx_examples <- function(){
   return(apsimx_ex_dir)
 }
 
-#' Access Example APSIM-X Simulations
-#' 
+#'
 #' @title Access Example APSIM-X Simulations
 #' @name apsimx_example
 #' @description simple function to run some of the built-in APSIM-X examples
 #' @param example run an example from built-in APSIM-X. Options are all of the ones included with the APSIM-X distribution, except 'Graph'.
 #' @param silent whether to print standard output from the APSIM-X execution
 #' @note This function creates a new column 'Date' which is in the R 'Date' format which is convenient for graphics.
+#' @details This function creates a temporary copy of the example file distributed with APSIM-X to avoid writing a .db file 
+#'          to the directory where the 'Examples' are located. It is not a good practice and there is no guarantee that 
+#'          the user has read/write permissions in that directory.
 #' @export
 #' @examples 
 #' \dontrun{
@@ -295,7 +293,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
     ## Make a temporary local copy of example
     cp.strng <- paste0("cp ",ex," ",".")
     system(command = cp.strng)
-    run.strng <- paste0(mono," ",ada," ",paste0(example,".apsimx"))
+    run.strng <- paste0(mono," ",ada," ./",paste0(example,".apsimx"))
   }
   
   if(.Platform$OS.type == "windows"){
