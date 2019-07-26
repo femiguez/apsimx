@@ -14,8 +14,11 @@ ggplot(data = maize , aes(x = Date, y = Maize.AboveGround.Wt)) +
 ex.dir <- auto_detect_apsimx_examples()
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")
 
-## ----edit-apsimx---------------------------------------------------------
-ex.dir <- auto_detect_apsimx_examples()
+## ----inspect-maize-oc----------------------------------------------------
+inspect_apsimx("Maize.apsimx", src.dir = ex.dir, node = "Soil",
+               soil.child = "OrganicMatter")
+
+## ----edit-maize-oc-------------------------------------------------------
 ocs <- c(1.5,1.4,1.3,1.2,1.1,1.0,0.9)
 edit_apsimx("Maize.apsimx", src.dir = ex.dir,
              wrt.dir = ".",
@@ -23,9 +26,14 @@ edit_apsimx("Maize.apsimx", src.dir = ex.dir,
              soil.child = "OrganicMatter", 
              parm = "OC", value = ocs)
 
+## ----inspect-maize-oc-check----------------------------------------------
+inspect_apsimx("Maize-edited.apsimx", src.dir = ".", 
+               node = "Soil",
+               soil.child = "OrganicMatter")
+
 ## ----edit-apsimx-delete, echo = TRUE-------------------------------------
 ## delete the created file
-system("rm ./Maize-edited.apsimx")
+file.remove("./Maize-edited.apsimx")
 
 ## ----apsimx--------------------------------------------------------------
 ## I included one example with the package for the vignette

@@ -72,10 +72,18 @@ inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")
 
 ### 'edit_apsimx': Editing a file
 
-Editing a file has the side effect of creating a new file with '-edited' added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the 'apsimr' package. This code does not run an APSIM simulation, it only edits the file. Here we are modifying the 'Organic Carbon' values in the soil.
+Editing a file has the side effect of creating a new file with '-edited' added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the 'apsimr' package. This code does not run an APSIM simulation, it only edits the file. 
 
-```{r edit-apsimx}
-ex.dir <- auto_detect_apsimx_examples()
+Let's say we want to modify the values of 'Organic Carbon' in the soil in the 'Maize.apsimx' example. First we should inspect the current values.
+
+```{r inspect-maize-oc}
+inspect_apsimx("Maize.apsimx", src.dir = ex.dir, node = "Soil",
+               soil.child = "OrganicMatter")
+```
+
+The function 'inspect_apsimx', in this example, displays various information about the organic matter in the soil. (See the help page for more options). In the next step we 'edit' or change the values.
+
+```{r edit-maize-oc}
 ocs <- c(1.5,1.4,1.3,1.2,1.1,1.0,0.9)
 edit_apsimx("Maize.apsimx", src.dir = ex.dir,
              wrt.dir = ".",
@@ -84,9 +92,19 @@ edit_apsimx("Maize.apsimx", src.dir = ex.dir,
              parm = "OC", value = ocs)
 ```
 
+Let's make sure that we have changed the values successfully.
+
+```{r inspect-maize-oc-check}
+inspect_apsimx("Maize-edited.apsimx", src.dir = ".", 
+               node = "Soil",
+               soil.child = "OrganicMatter")
+```
+
+Deleting the file.
+
 ```{r edit-apsimx-delete, echo = TRUE}
 ## delete the created file
-system("rm ./Maize-edited.apsimx")
+file.remove("./Maize-edited.apsimx")
 ```
 
 ## Running a simulation

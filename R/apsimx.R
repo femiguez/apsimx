@@ -72,7 +72,7 @@ apsimx <- function(file = "", src.dir=".",
     ## Default is not to cleanup
     if(value == "none") stop("do not clean up if you choose value = 'none' ")
     ## Delete the apsim-generated sql database 
-    system(paste0("rm ",file.name.path,".db"))
+    file.remove(paste0("./",file.name.path,".db"))
   }
   
   if(value != "none")
@@ -156,7 +156,7 @@ auto_detect_apsimx <- function(){
   if(!is.na(apsimx::apsimx.options$exe.path)){
     ## Windows paths can contain white spaces which are
     ## problematic when running them at the command line
-    ## shQuote is useful for this purpose
+    ## shQuote might be useful for this purpose
     apsimx_dir <- shQuote(apsimx::apsimx.options$exe.path)
   }
   return(apsimx_dir)
@@ -279,25 +279,25 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
              "Maize","MorrisExample", "Oats", "OilPalm",
              "Plantain","Potato","SCRUM","Slurp", "SobolExample",
              "Sugarcane", "Wheat","WhiteClover")
+  
   example <- match.arg(example, choices = ex.ch)
   
   ada <- auto_detect_apsimx()
   ex.dir <- auto_detect_apsimx_examples()
   ex <- paste0(ex.dir,"/",example,".apsimx")
   
+  ## Make a temporary copy of the file to the current directory
+  ## Do not transfer permissions?
+  file.copy(from = ex, to =".", copy.mode = FALSE)
+  
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
-    ## Make a temporary local copy of example
-    cp.strng <- paste0("cp ",ex," ",".")
-    system(command = cp.strng)
     run.strng <- paste0(mono," ",ada," ./",paste0(example,".apsimx"))
   }
   
   if(.Platform$OS.type == "windows"){
-    ## Make a temporary local copy of the example file
-    cp.strng <- paste0("copy ",ex," ",paste0(example,".apsimx"))
-    shell(cmd = cp.strng, translate = TRUE, ignore.stdout = TRUE)
     run.strng <- paste0(ada," ",paste0(example,".apsimx"))
+    ## Need to use shell in Windows probably
   }
   ## Run APSIM
   system(command = run.strng, ignore.stdout = silent)
@@ -305,12 +305,12 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## Create database connection
   ## I don't need to specify the directory as it should be the current one
   ans <- read_apsimx(paste0(example,".db"), value = "report")
-  ## Dangerous cleanup
-  system(paste0("rm ",example,".db"))
-  system(paste0("rm ",example,".apsimx"))
-  ## Return data frame
+  ## OS independent cleanup (risky?)
+  file.remove(paste0("./",example,".db"))
+  file.remove(paste0("./",example,".apsimx"))
   ## Add the date
   ans$Date <- as.Date(sapply(ans$Clock.Today, function(x) strsplit(x, " ")[[1]][1]))
+  ## Return data frame
   return(ans)
 }
 

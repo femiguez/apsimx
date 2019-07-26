@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-07-25" />
+<meta name="date" content="2019-07-26" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author"><em>Fernando Miguez</em></h4>
-<h4 class="date"><em>2019-07-25</em></h4>
+<h4 class="date"><em>2019-07-26</em></h4>
 
 
 
@@ -155,9 +155,35 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="edit_apsimx-editing-a-file" class="section level3">
 <h3>‘edit_apsimx’: Editing a file</h3>
-<p>Editing a file has the side effect of creating a new file with ‘-edited’ added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the ‘apsimr’ package. This code does not run an APSIM simulation, it only edits the file. Here we are modifying the ‘Organic Carbon’ values in the soil.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
-ocs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">1.5</span>,<span class="fl">1.4</span>,<span class="fl">1.3</span>,<span class="fl">1.2</span>,<span class="fl">1.1</span>,<span class="fl">1.0</span>,<span class="fl">0.9</span>)
+<p>Editing a file has the side effect of creating a new file with ‘-edited’ added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the ‘apsimr’ package. This code does not run an APSIM simulation, it only edits the file.</p>
+<p>Let’s say we want to modify the values of ‘Organic Carbon’ in the soil in the ‘Maize.apsimx’ example. First we should inspect the current values.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
+               <span class="dt">soil.child =</span> <span class="st">&quot;OrganicMatter&quot;</span>)</code></pre></div>
+<pre><code>## Soil Type:  Clay 
+## Latitude:  -27.581836 
+## Longitude:  151.320206 
+## 
+## 
+## parm        value 
+## ----------  ------
+## RootCN      40    
+## RootWt      1000  
+## SoilCN      12    
+## EnrACoeff   7.4   
+## EnrBCoeff   0.2   
+## 
+## 
+## Depth        Thickness   OC     FBiom   FInert 
+## -----------  ----------  -----  ------  -------
+## 0_to_15      150         1.2    0.04    0.4    
+## 15_to_30     150         0.96   0.02    0.6    
+## 30_to_60     300         0.6    0.02    0.8    
+## 60_to_90     300         0.3    0.02    1      
+## 90_to_120    300         0.18   0.01    1      
+## 120_to_150   300         0.12   0.01    1      
+## 150_to_180   300         0.12   0.01    1</code></pre>
+<p>The function ‘inspect_apsimx’, in this example, displays various information about the organic matter in the soil. (See the help page for more options). In the next step we ‘edit’ or change the values.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ocs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">1.5</span>,<span class="fl">1.4</span>,<span class="fl">1.3</span>,<span class="fl">1.2</span>,<span class="fl">1.1</span>,<span class="fl">1.0</span>,<span class="fl">0.9</span>)
 <span class="kw">edit_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir,
              <span class="dt">wrt.dir =</span> <span class="st">&quot;.&quot;</span>,
              <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
@@ -167,8 +193,37 @@ ocs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">1.5
 ## Edited parameter OC 
 ## New values  1.5 1.4 1.3 1.2 1.1 1 0.9 
 ## Created  ./Maize-edited.apsimx</code></pre>
+<p>Let’s make sure that we have changed the values successfully.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize-edited.apsimx&quot;</span>, <span class="dt">src.dir =</span> <span class="st">&quot;.&quot;</span>, 
+               <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
+               <span class="dt">soil.child =</span> <span class="st">&quot;OrganicMatter&quot;</span>)</code></pre></div>
+<pre><code>## Soil Type:  Clay 
+## Latitude:  -27.581836 
+## Longitude:  151.320206 
+## 
+## 
+## parm        value 
+## ----------  ------
+## RootCN      40    
+## RootWt      1000  
+## SoilCN      12    
+## EnrACoeff   7.4   
+## EnrBCoeff   0.2   
+## 
+## 
+## Depth        Thickness   OC    FBiom   FInert 
+## -----------  ----------  ----  ------  -------
+## 0_to_15      150         1.5   0.04    0.4    
+## 15_to_30     150         1.4   0.02    0.6    
+## 30_to_60     300         1.3   0.02    0.8    
+## 60_to_90     300         1.2   0.02    1      
+## 90_to_120    300         1.1   0.01    1      
+## 120_to_150   300         1     0.01    1      
+## 150_to_180   300         0.9   0.01    1</code></pre>
+<p>Deleting the file.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## delete the created file
-<span class="kw">system</span>(<span class="st">&quot;rm ./Maize-edited.apsimx&quot;</span>)</code></pre></div>
+<span class="kw">file.remove</span>(<span class="st">&quot;./Maize-edited.apsimx&quot;</span>)</code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
 </div>
 </div>
 <div id="running-a-simulation" class="section level2">
@@ -186,8 +241,12 @@ ocs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">1.5
 <p>Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## I included one example with the package for the vignette
 ex.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
-sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>, <span class="dt">cleanup =</span> <span class="ot">TRUE</span>)
-## Calcualte summary statistics on all variables
+sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>, <span class="dt">cleanup =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Warning in file.remove(paste0(&quot;./&quot;, file.name.path, &quot;.db&quot;)): cannot
+## remove file './/private/var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T/
+## RtmpRTw4IS/temp_libpath4b265d258a7b/apsimx/extdata/Wheat.db', reason 'No
+## such file or directory'</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Calcualte summary statistics on all variables
 <span class="kw">summary</span>(sim)</code></pre></div>
 <pre><code>##   CheckpointID  SimulationID  FolderName            Zone          
 ##  Min.   :1     Min.   :1     Length:79          Length:79         
