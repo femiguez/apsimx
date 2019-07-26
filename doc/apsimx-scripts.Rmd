@@ -1,0 +1,183 @@
+---
+title: "apsimx: writing scripts"
+author: "Fernando Miguez"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{apsimx: writing scripts}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(apsimx)
+```
+
+# Writing scripts and running APSIM-X at the command line
+
+The reason for running APSIM without the use of the GUI is to be able to perform a variety of more complex analysis, but the diversity of problems that a user might want to solve are not likely to be addressed by this package alone. Since it is possible to run APSIM-X from the command line it is also possible to write custom scripts in R, Python or other languages. Within APSIM-X it is also possible to write C# and VB.NET scripts to control field and management operations. 
+
+Even though this package is meant to simplify writing scripts in R that require the use of APSIM "Next Generation", it is likely that a user might decide not to use this package, but still the information below will be useful in writing scripts. Other users are likely to run into problems when trying to run APSIM-X at the command line and the material below is meant to try to help with this process. 
+
+APSIM-X is an effort at modernizing and improving the previous versions of APSIM 7.x. The program is primarily written in C# and it uses the Mono Framework and GTK# (https://apsimnextgeneration.netlify.com/). Note that in the previous website there is also information about using Cloud Services and Microsoft Azure.
+
+If you are using a previous version of APSIM (7.x) you might be interested in either the 'APSIM' or 'apsimr' R packages.
+
+Let's see what is needed to run APSIM-X at the command line.
+
+## Windows
+
+In Windows if you use the current (`r Sys.Date()`) version of the installer the program will be, most likely, in:
+
+**C:\\Program Files\\APSIM2019.07.19.4025\\Bin\\Models.exe**
+
+Notice that for each new build of APSIM-X the path will change. After 'APSIM' is the year, month, date and version separated by a period. In this case '2019.07.19.4000'. In the folder 'Bin'(for 'binary') there are many libraries ('.dll files') and some executables. The 'Models.exe' is the one that can run .apsimx files.
+
+When trying to invoke that line at the command line, the space after 'Program' is a problem. There are some possible solutions. One is to add quotations (for example see 'shQuote' function in R). Another option is to use Windows short name paths, which in this case, for 'Program Files' is 'PROGRA~1' (but this can change). If running the program from R, for example, the separator needs to be either a double backslash '\\\\' or a forward slash '/'. So one example would be:
+
+**C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe** or
+
+**C:\\\\PROGRA~1\\\\APSIM2019.07.19.4025\\\\Bin\\\\Models.exe**
+
+The backslash ("\") is an escape character in R, so you can't use it within strings.
+
+After this, the name of the file that you want to run needs to be included. For example,
+
+**C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx**.
+
+However, the previous string cannot be passed directly to a Windows shell. It needs to be translated, because the 'PROGRA~1' needs to be expanded and the forward slashes ("/") need to be converted to backslashes ("\").
+
+In Windows it is better to use 'shell' from R.
+
+## Unix (Mac) or Linux (Debian)
+
+In Unix (Mac) or Linux (Debian) to be able to run APSIM-X the Mono Framework needs to be installed (https://www.mono-project.com/download/stable/). This is important because the command 'mono' needs to be available in order to run APSIM-X at the command line. The Mono Framework should be available to install APSIM-X in the first place, but it is important to be aware of this at this stage.
+
+To find out if 'mono' is present you can type 'which mono' at the Terminal.
+
+**which mono**
+
+For Mac:
+
+/Library/Frameworks/Mono.framework/Versions/Current/Commands/mono
+
+For Debian:
+
+/usr/bin/mono
+
+In R you can also use 'Sys.which("mono")'.
+
+A current version of Mono (4.3 or higher) is needed and you can find out which version you are running:
+
+**mono --version**
+
+Which in my case is 5.18.1.3. (Mac)  and 6.0.0.313 (Debian).
+
+To run an example from the command line it is best to move to a directory where you are doing your work and have read and write permissions. APSIM-X will write an SQLite database (.db) with the results and it needs permissions to do this in the current directory. For example, you might want to move to:
+
+Mac example:
+
+**/Users/fernandomiguez/Documents/myApsimWork**
+
+Debian example:
+
+**/home/femiguez/Documents/myApsimWork**
+
+Then find out where APSIM-X is installed, but this will change with each new version. For example, I have these versions installed now:
+
+Mac:
+
+**/Applications/APSIM2019.06.25.3956.app**
+
+Debian:
+
+apsim lib: **/usr/local/lib/apsim/2019.07.09.4000**
+
+The apsim binary is in: **/usr/local/bin/apsim**
+
+Finally, to run an example at the command line:
+
+Mac:
+
+**mono /Applications/APSIM2019.06.25.3956.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx**
+
+Debian:
+
+**mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe ./Wheat.apsimx**
+
+The previous two commands assume that the file "Wheat.apsimx" is present in the current working directory. A detailed that seems to have changed with recent versions of 'mono' (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:
+
+**mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe Wheat.apsimx**
+
+but the line above which points to the current directory ("./") did work.
+
+So to run this from within R, the following is one possibility
+
+```{r run-apsimx, eval = FALSE}
+## Mac
+run.string.mac <- "mono /Applications/APSIM2019.06.25.3956.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx"
+system(command = run.string.mac, intern = TRUE)
+## Debian
+run.string.debian <- "mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe ./Wheat.apsimx"
+system(command = run.string.debian, intern = TRUE)
+```
+
+As mentioned before, if the simulation is successful, a database will be written to the current directory (where the file "Wheat.apsimx" is located in the previous example). In this case it will be a file with the name 'Wheat.db'.
+
+## Functions in the apsimx package
+
+Having to change scripts every time you install a new version of APSIM-X or when you change operating system is certainly problematic and for this reason apsimx tries to 'guess' where APSIM-X is installed and where the 'Examples' are located. The functions to do this are:
+
+Executable: **auto_detect_apsimx()**
+
+Examples: **auto_detect_apsimx_examples()**
+
+Which will return the path to the executable and the directory where the examples are located. These functions are supposed to work whether you are using Windows, Mac or Linux. The function 'auto_detect_apsimx' is not exported, so in order to expose it, you need 'apsimx:::auto_detect_apsimx(). This function is meant to work with the current binary distributions (as opposed to source code). (I'm guessing that if you are building APSIM-X from source code, you do not need this information.) 
+
+If multiple versions of APSIM-X are installed apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the 'apsimx_options'. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the 'apsimx_options' function.
+
+In addition, when loaded, the apsimx package will try to detect the presence of APSIM-X and, if not found, it will issue a warning with instructions to set the path manually using 'apsimx_options'. If you have a previous version of APSIM installed (7.x) or multiple versions of both the 'old' and 'new' this might be potentially problematic, but it is hard for me now to consider these endless possibilities.
+
+### Session information
+
+Displaying below specific information related to when the vignette was built.
+
+```{r sisd}
+sessionInfo()
+Sys.info()[["sysname"]]
+Sys.info()[["release"]]
+Sys.info()[["version"]]
+if(.Platform$OS.type == "unix") system(command = "mono --version")
+R.version
+```
+
+### Links
+
+There are some links on the APSIM forums related to this, but I have found the information in those links to be incomplete or outdated. This document is meant to be a comprehensive summary of this topic.
+
+Running APSIM-X command line (Mac): https://www.apsim.info/Support/tabid/254/forumid/1/threadid/2312/scope/posts/Default.aspx
+
+Here it is mentioned that 'Modelx.exe' can work (Windows):
+https://www.apsim.info/Support/tabid/254/forumid/1/threadid/2037/scope/posts/Default.aspx
+
+For previous version of APSIM (7.x):
+https://www.apsim.info/Support/tabid/254/forumid/1/postid/2088/scope/posts/Default.aspx
+
+I believe this information is outdated:
+https://www.apsim.info/Documentation/TechnicalandDevelopment/RunAPSIMfromcommandlineorfromscripts.aspx
+
+Here it is mentioned that 'Models.exe Wheat.apsimx' should be able to run APSIM-X at the command line:
+https://github.com/APSIMInitiative/ApsimX/issues/2199
+
+This information could be useful:
+http://www.apsim.info/Documentation/TrainingManualsandResources/APSIMTraining(SIMLESA)/Climatechangeprojections.aspx
+
+Large scale simulations and climate change:
+http://www.apsim.info/Portals/0/Documentation/SIMLESA/Apsim-Climate-change-2010.pdf
+
+
+
+
+
+
