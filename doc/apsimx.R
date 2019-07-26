@@ -38,7 +38,7 @@ file.remove("./Maize-edited.apsimx")
 ## ----apsimx--------------------------------------------------------------
 ## I included one example with the package for the vignette
 ex.dir <- system.file("extdata", package = "apsimx")
-sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report", cleanup = TRUE)
+sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report")
 ## Calcualte summary statistics on all variables
 summary(sim)
 ## Plot data

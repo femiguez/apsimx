@@ -74,8 +74,8 @@ edit_apsimx_json("Barley.apsimx", src.dir = ex.dir,
                  verbose = FALSE)
 ## Inspect file
 inspect_apsimx("Barley-edited.apsimx", node = "Soil", soil.child = "Water")
-## To delete the file run
-system("rm Barley-edited.apsimx")
+## To delete the file...
+file.remove("./Barley-edited.apsimx")
 }
 
 }

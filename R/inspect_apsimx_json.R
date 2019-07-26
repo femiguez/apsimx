@@ -157,7 +157,8 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
     }
     
     if(soil.child == "Nitrogen"){
-      ## Which soil nitrogen
+        ## Which soil nitrogen
+        stop("need to change this. SoilNitrogen has disappeared")
       wsnn <- grepl("Models.Soils.SoilNitrogen", soil.node[[1]]$Children)
       soil.nitrogen.node <- soil.node[[1]]$Children[wsnn][[1]]
       
@@ -177,13 +178,15 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
       soil.om.node <- soil.node[[1]]$Children[wsomn][[1]]
       
       tmp <- soil.om.node
-      soil.om.d1 <- data.frame(parm = names(tmp)[2:6],
-                               value = as.vector(unlist(tmp[2:6])))
+      soil.om.d1 <- data.frame(parm = names(tmp)[2:4],
+                               value = as.vector(unlist(tmp[2:4])))
       print(kable(soil.om.d1, digits = digits))
       
       soil.om.d2 <- data.frame(Depth = soil.depths,
                                Thickness = unlist(tmp$Thickness),
                                OC = unlist(tmp$OC),
+                               SoilCN = unlist(tmp$SoilCN),
+                               RootWt = unlist(tmp$RootWt),
                                FBiom = unlist(tmp$FBiom),
                                FInert = unlist(tmp$FInert))
       

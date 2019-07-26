@@ -48,7 +48,14 @@ After this, the name of the file that you want to run needs to be included. For 
 
 However, the previous string cannot be passed directly to a Windows shell. It needs to be translated, because the 'PROGRA~1' needs to be expanded and the forward slashes ("/") need to be converted to backslashes ("\").
 
-In Windows it is better to use 'shell' from R.
+So to run the previous command in Windows from within R this is one way:
+
+```{r apsimx-windows, eval = FALSE}
+run.strng <- "C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx"
+shell(cmd = run.strng, translate = TRUE, intern = TRUE)
+```
+
+
 
 ## Unix (Mac) or Linux (Debian)
 

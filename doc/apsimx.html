@@ -241,12 +241,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## I included one example with the package for the vignette
 ex.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
-sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>, <span class="dt">cleanup =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Warning in file.remove(paste0(&quot;./&quot;, file.name.path, &quot;.db&quot;)): cannot
-## remove file './/private/var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T/
-## Rtmp0c8AYu/temp_libpath4bb9430108e7/apsimx/extdata/Wheat.db', reason 'No
-## such file or directory'</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Calcualte summary statistics on all variables
+sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>)
+## Calcualte summary statistics on all variables
 <span class="kw">summary</span>(sim)</code></pre></div>
 <pre><code>##   CheckpointID  SimulationID  FolderName            Zone          
 ##  Min.   :1     Min.   :1     Length:79          Length:79         

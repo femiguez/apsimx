@@ -36,7 +36,7 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
 }
 \value{
 (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
-As a side effect this function created a new (XML) .apsimx file.
+As a side effect this function created a new (XML or JSON) .apsimx file.
 }
 \description{
 This function allows editing of an APSIM-X (XML or JSON) simulation file.
@@ -44,7 +44,7 @@ This function allows editing of an APSIM-X (XML or JSON) simulation file.
 \details{
 The variables specified by \code{parm} within the .apsimx file specified by \code{file} 
 in the source directory \code{src.dir} are edited. The old values are replaced with \code{value}, which
-is a list that has the same number of elements as the length of the vector \code{parm}.  The current
+is a vector that has the same number of elements as the length of the vector \code{parm}.  The current
 .apsimx file will be overwritten if \code{overwrite} is set to \code{TRUE}; otherwise the file
 \emph{'file'-edited.apsimx} will be created.  If (verbose = TRUE) then the name
  of the written file is returned. The function is similar to the edit_apsim functin in the 'apsimr'
@@ -56,8 +56,7 @@ is a list that has the same number of elements as the length of the vector \code
 \note{
 The components that can be edited are restricted becuase this is better in preventing
 errors of editing unintended parts of the file. The disadvantage is that there is less flexibility
-compared to the similar function in the 'apsimr' package. Only XML files are supported at the moment.
- JSON files will be supported in the future.
+compared to the similar function in the 'apsimr' package.
 }
 \examples{
 \dontrun{
@@ -72,8 +71,8 @@ edit_apsimx("Maize.apsimx", src.dir = ex.dir,
             soil.child = "OrganicMatter", 
             parm = "OC", value = ocs,
             verbose = FALSE)
-## To delete the file run
-system("rm Maize-edited.apsimx")
+## To delete the file...
+file.remove("./Maize-edited.apsimx")
 }
 
 }

@@ -52,14 +52,15 @@ apsimx <- function(file = "", src.dir=".",
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
     run.strng <- paste0(mono," ",ada," ",file.name.path,".apsimx")
+    ## Run APSIM-X on the command line
+    system(command = run.strng, ignore.stdout = silent)
   }
   
   if(.Platform$OS.type == "windows"){
-      run.strng <- paste0(ada," ",file.name.path,".apsimx")
+    run.strng <- paste0(ada," ",file.name.path,".apsimx")
+    shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   }
-  ## Run APSIM-X on the command line
-  system(command = run.strng, ignore.stdout = silent)
-  
+
   if(value != "none"){
     ans <- read_apsimx(file = file, src.dir = src.dir, value = value)
   }else{
@@ -293,15 +294,15 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
     run.strng <- paste0(mono," ",ada," ./",paste0(example,".apsimx"))
+    ## Run APSIM
+    system(command = run.strng, ignore.stdout = silent)
   }
   
   if(.Platform$OS.type == "windows"){
-    run.strng <- paste0(ada," ",paste0(example,".apsimx"))
-    ## Need to use shell in Windows probably
+    run.strng <- paste0(ada," ",paste0("./",example,".apsimx"))
+    shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   }
-  ## Run APSIM
-  system(command = run.strng, ignore.stdout = silent)
-  
+
   ## Create database connection
   ## I don't need to specify the directory as it should be the current one
   ans <- read_apsimx(paste0(example,".db"), value = "report")

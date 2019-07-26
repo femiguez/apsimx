@@ -47,8 +47,8 @@
 #'                  verbose = FALSE)
 #' ## Inspect file
 #' inspect_apsimx("Barley-edited.apsimx", node = "Soil", soil.child = "Water")
-#' ## To delete the file run
-#' system("rm Barley-edited.apsimx")
+#' ## To delete the file...
+#' file.remove("./Barley-edited.apsimx")
 #' }
 #' 
 
@@ -170,7 +170,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
       wsomn <- grepl("OrganicMatter", soil.node0)
       soil.om.node <- soil.node0[wsomn][[1]]
       
-      som.parms1 <- c("RootCN", "RootWt", "SoilCN", "EnrACoeff", "EnrBCoeff")
+      som.parms1 <- c("RootCN", "EnrACoeff", "EnrBCoeff")
       
       if(parm %in% som.parms1){
           soil.om.node[[parm]] <- value
