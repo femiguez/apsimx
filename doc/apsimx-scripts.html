@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-07-26" />
+<meta name="date" content="2019-07-27" />
 
 <title>apsimx: writing scripts</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: writing scripts</h1>
 <h4 class="author"><em>Fernando Miguez</em></h4>
-<h4 class="date"><em>2019-07-26</em></h4>
+<h4 class="date"><em>2019-07-27</em></h4>
 
 
 
@@ -83,7 +83,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Let’s see what is needed to run APSIM-X at the command line.</p>
 <div id="windows" class="section level2">
 <h2>Windows</h2>
-<p>In Windows if you use the current (2019-07-26) version of the installer the program will be, most likely, in:</p>
+<p>In Windows if you use the current (2019-07-27) version of the installer the program will be, most likely, in:</p>
 <p><strong>C:\Program Files\APSIM2019.07.19.4025\Bin\Models.exe</strong></p>
 <p>Notice that for each new build of APSIM-X the path will change. After ‘APSIM’ is the year, month, date and version separated by a period. In this case ‘2019.07.19.4000’. In the folder ‘Bin’(for ‘binary’) there are many libraries (‘.dll files’) and some executables. The ‘Models.exe’ is the one that can run .apsimx files.</p>
 <p>When trying to invoke that line at the command line, the space after ‘Program’ is a problem. There are some possible solutions. One is to add quotations (for example see ‘shQuote’ function in R). Another option is to use Windows short name paths, which in this case, for ‘Program Files’ is ‘PROGRA~1’ (but this can change). If running the program from R, for example, the separator needs to be either a double backslash ‘\\’ or a forward slash ‘/’. So one example would be:</p>
@@ -117,13 +117,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><strong>/home/femiguez/Documents/myApsimWork</strong></p>
 <p>Then find out where APSIM-X is installed, but this will change with each new version. For example, I have these versions installed now:</p>
 <p>Mac:</p>
-<p><strong>/Applications/APSIM2019.06.25.3956.app</strong></p>
+<p><strong>/Applications/APSIM2019.07.25.4035.app</strong></p>
 <p>Debian:</p>
 <p>apsim lib: <strong>/usr/local/lib/apsim/2019.07.09.4000</strong></p>
 <p>The apsim binary is in: <strong>/usr/local/bin/apsim</strong></p>
 <p>Finally, to run an example at the command line:</p>
 <p>Mac:</p>
-<p><strong>mono /Applications/APSIM2019.06.25.3956.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx</strong></p>
+<p><strong>mono /Applications/APSIM2019.07.25.4035.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx</strong></p>
 <p>Debian:</p>
 <p><strong>mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe ./Wheat.apsimx</strong></p>
 <p>The previous two commands assume that the file “Wheat.apsimx” is present in the current working directory. A detail that seems to have changed with recent versions of ‘mono’ (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:</p>
@@ -165,7 +165,7 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.06
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] apsimx_0.73
+## [1] apsimx_0.74
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_1.0.1        compiler_3.5.0    prettyunits_1.0.2

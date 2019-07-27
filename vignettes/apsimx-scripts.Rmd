@@ -93,7 +93,7 @@ Then find out where APSIM-X is installed, but this will change with each new ver
 
 Mac:
 
-**/Applications/APSIM2019.06.25.3956.app**
+**/Applications/APSIM2019.07.25.4035.app**
 
 Debian:
 
@@ -105,7 +105,7 @@ Finally, to run an example at the command line:
 
 Mac:
 
-**mono /Applications/APSIM2019.06.25.3956.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx**
+**mono /Applications/APSIM2019.07.25.4035.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx**
 
 Debian:
 
