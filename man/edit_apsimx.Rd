@@ -6,9 +6,9 @@
 \usage{
 edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
   "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
-  soil.child = c("Water", "Nitrogen", "OrganicMatter", "Analysis",
-  "InitialWater", "Sample"), som.child = c("Pools", "Other"),
-  parm = NULL, value = NULL, overwrite = FALSE, parm.path = NULL,
+  soil.child = c("Water", "OrganicMatter", "Analysis", "InitialWater",
+  "Sample"), som.child = c("Pools", "Other"), parm = NULL,
+  value = NULL, overwrite = FALSE, parm.path = NULL,
   verbose = TRUE)
 }
 \arguments{

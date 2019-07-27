@@ -6,7 +6,7 @@
 #' @param file file ending in .apsimx to be inspected (JSON)
 #' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
-#' @param soil.child specific soil component to be inspected. The options are: 'Water', 'Nitrogen', 'OrganicMatter', 'Analysis', 'InitalWater', 'Sample'
+#' @param soil.child specific soil component to be inspected. The options are: 'Water', 'OrganicMatter', 'Analysis', 'InitalWater', 'Sample'
 #' @param som.child specific surface organic matter component to be inspected (not used)
 #' @param digits number of decimals to print (default 3)
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
@@ -18,7 +18,6 @@
 #' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Clock") 
 #' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Weather")
 #' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
-#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Nitrogen") 
 #' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
 #' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
 #' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
@@ -33,7 +32,7 @@
 inspect_apsimx_json <- function(file = "", src.dir = ".", 
                                 node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                          "MicroClimate","Crop","Manager"),
-                                soil.child = c("Water","Nitrogen","OrganicMatter",
+                                soil.child = c("Water","OrganicMatter",
                                                "Analysis","InitialWater","Sample"),
                                 som.child = c("Pools","Other"),
                                 digits = 3){

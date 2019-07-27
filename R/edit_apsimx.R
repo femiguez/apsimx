@@ -52,7 +52,7 @@
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         node = c("Weather","Soil","SurfaceOrganicMatter",
                                  "MicroClimate","Crop","Manager"),
-                        soil.child = c("Water","Nitrogen","OrganicMatter",
+                        soil.child = c("Water","OrganicMatter",
                                        "Analysis","InitialWater","Sample"),
                         som.child = c("Pools","Other"),
                         parm=NULL, value=NULL, overwrite = FALSE,

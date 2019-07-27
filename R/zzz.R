@@ -28,10 +28,12 @@
       }
   }
   ## Check whether APSIM-X is detected
-  apsimx <- laf[grepl("APSIM", laf, ignore.case = TRUE)]
-  if(length(apsimx) == 0){
+  find.apsimx <- laf[grepl("APSIM", laf, ignore.case = TRUE)]
+  if(length(find.apsimx) > 0){
+    cat("Found: ", find.apsimx,"\n")
+  }else{
     warning("APSIM-X not found. \n 
              If APSIM-X is installed in an alternative location, \n
-                set paths manually using 'apsimx_options'")
+            set paths manually using 'apsimx_options'")
   }
 }

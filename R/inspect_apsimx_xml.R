@@ -1,4 +1,3 @@
-
 #' 
 #' @title Inspect an .apsimx (XML) file
 #' @name inspect_apsimx_xml
@@ -20,7 +19,6 @@
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Clock")
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Weather") 
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Water")
-#' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Nitrogen")
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
 #' inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
@@ -35,7 +33,7 @@
 inspect_apsimx_xml <- function(file = "", src.dir = ".", 
                                node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                         "MicroClimate","Crop","Manager"),
-                               soil.child = c("Water","Nitrogen","OrganicMatter",
+                               soil.child = c("Water","OrganicMatter",
                                               "Analysis","InitialWater","Sample"),
                                som.child = c("Pools","Other"),
                                parm = NULL,

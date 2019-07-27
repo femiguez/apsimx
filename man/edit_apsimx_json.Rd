@@ -6,7 +6,7 @@
 \usage{
 edit_apsimx_json(file, src.dir = ".", wrt.dir = NULL,
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter",
-  "MicroClimate", "Crop", "Manager"), soil.child = c("Water", "Nitrogen",
+  "MicroClimate", "Crop", "Manager"), soil.child = c("Water",
   "OrganicMatter", "Analysis", "InitialWater", "Sample"),
   som.child = c("Pools", "Other"), parm = NULL, value = NULL,
   overwrite = FALSE, parm.path = NULL, verbose = TRUE)

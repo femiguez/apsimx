@@ -8,7 +8,7 @@
 #' @param file file ending in .apsimx to be inspected
 #' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
-#' @param soil.child specific soil component to be inspected. For example, 'Water' or 'Nitrogen'.
+#' @param soil.child specific soil component to be inspected. For example, 'Water' or 'OrganicMatter'.
 #' @param som.child specific soil organic matter component to be inspected ('Pools' or 'Other')
 #' @param parm parameter to inspect when node = 'Other' (XML only)
 #' @param digits number of decimals to print
@@ -23,7 +23,6 @@
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Clock")        
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")        
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Water")
-#' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Nitrogen")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
@@ -39,7 +38,7 @@
 inspect_apsimx <- function(file = "", src.dir = ".", 
                            node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                     "MicroClimate","Crop","Manager"),
-                           soil.child = c("Water","Nitrogen","OrganicMatter",
+                           soil.child = c("Water","OrganicMatter",
                                           "Analysis","InitialWater","Sample"),
                            som.child = c("Pools","Other"),
                            parm = NULL,

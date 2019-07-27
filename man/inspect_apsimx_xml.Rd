@@ -6,8 +6,8 @@
 \usage{
 inspect_apsimx_xml(file = "", src.dir = ".", node = c("Clock",
   "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-  "Manager"), soil.child = c("Water", "Nitrogen", "OrganicMatter",
-  "Analysis", "InitialWater", "Sample"), som.child = c("Pools", "Other"),
+  "Manager"), soil.child = c("Water", "OrganicMatter", "Analysis",
+  "InitialWater", "Sample"), som.child = c("Pools", "Other"),
   parm = NULL, digits = 3)
 }
 \arguments{
@@ -43,7 +43,6 @@ ex.dir <- auto_detect_apsimx_examples()
 inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Clock")
 inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Weather") 
 inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Water")
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Nitrogen")
 inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
 inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
 inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")

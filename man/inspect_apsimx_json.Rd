@@ -6,8 +6,8 @@
 \usage{
 inspect_apsimx_json(file = "", src.dir = ".", node = c("Clock",
   "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-  "Manager"), soil.child = c("Water", "Nitrogen", "OrganicMatter",
-  "Analysis", "InitialWater", "Sample"), som.child = c("Pools", "Other"),
+  "Manager"), soil.child = c("Water", "OrganicMatter", "Analysis",
+  "InitialWater", "Sample"), som.child = c("Pools", "Other"),
   digits = 3)
 }
 \arguments{
@@ -17,7 +17,7 @@ inspect_apsimx_json(file = "", src.dir = ".", node = c("Clock",
 
 \item{node}{either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'}
 
-\item{soil.child}{specific soil component to be inspected. The options are: 'Water', 'Nitrogen', 'OrganicMatter', 'Analysis', 'InitalWater', 'Sample'}
+\item{soil.child}{specific soil component to be inspected. The options are: 'Water', 'OrganicMatter', 'Analysis', 'InitalWater', 'Sample'}
 
 \item{som.child}{specific surface organic matter component to be inspected (not used)}
 
@@ -38,7 +38,6 @@ ex.dir <- auto_detect_apsimx_examples()
 inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Clock") 
 inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Weather")
 inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
-inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Nitrogen") 
 inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
 inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
 inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
