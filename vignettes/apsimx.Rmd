@@ -126,7 +126,7 @@ The proposed workflow is to start by creating an .apsimx file using the GUI. In 
 Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.
 
 ```{r apsimx}
-## I included one example with the package for the vignette
+## One example ('Wheat') is included with the package for the vignette
 ex.dir <- system.file("extdata", package = "apsimx")
 sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report")
 ## Calcualte summary statistics on all variables

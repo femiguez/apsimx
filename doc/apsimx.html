@@ -81,7 +81,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><a href="https://www.apsim.info">APSIM</a></p>
 <p><a href="https://apsimnextgeneration.netlify.com/">APSIM-X</a></p>
 <p><a href="https://www.sciencedirect.com/science/article/pii/S1364815217311921">Holzworth et al. (2018)</a></p>
-<p>This package only works on MacOS at the moment and it assumes that you have successfully installed APSIM-X.</p>
+<p>This package has been tested on:</p>
+<p><strong>Mac</strong>: ApsimX version 4035</p>
+<p><strong>Debian</strong>: ApsimX version 4000</p>
+<p><strong>Windows</strong>: ApsimX version 4025</p>
 <p>Other useful R packages are ‘APSIM’ and ‘apsimr’. The main difference is that these were written to work with the previous generation of APSIM (7.x). This package is thus an update for the new APSIM-X software.</p>
 <div id="installing-apsim-x" class="section level2">
 <h2>Installing APSIM-X</h2>
@@ -225,7 +228,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>Perform visual and statistical analysis on the results</li>
 </ol>
 <p>Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## I included one example with the package for the vignette
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## One example ('Wheat') is included with the package for the vignette
 ex.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
 sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>)
 ## Calcualte summary statistics on all variables

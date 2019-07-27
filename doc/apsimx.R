@@ -36,7 +36,7 @@ inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
 file.remove("./Maize-edited.apsimx")
 
 ## ----apsimx--------------------------------------------------------------
-## I included one example with the package for the vignette
+## One example ('Wheat') is included with the package for the vignette
 ex.dir <- system.file("extdata", package = "apsimx")
 sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report")
 ## Calcualte summary statistics on all variables

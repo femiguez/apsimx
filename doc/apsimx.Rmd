@@ -27,7 +27,13 @@ See the following for details
 
 [Holzworth et al. (2018)](https://www.sciencedirect.com/science/article/pii/S1364815217311921)
 
-This package only works on MacOS at the moment and it assumes that you have successfully installed APSIM-X.
+This package has been tested on:
+
+**Mac**: ApsimX version 4035
+
+**Debian**: ApsimX version 4000
+
+**Windows**: ApsimX version 4025
 
 Other useful R packages are 'APSIM' and 'apsimr'. The main difference is that these were written to work with the previous generation of APSIM (7.x). This package is thus an update for the new APSIM-X software.
 
@@ -120,7 +126,7 @@ The proposed workflow is to start by creating an .apsimx file using the GUI. In 
 Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.
 
 ```{r apsimx}
-## I included one example with the package for the vignette
+## One example ('Wheat') is included with the package for the vignette
 ex.dir <- system.file("extdata", package = "apsimx")
 sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report")
 ## Calcualte summary statistics on all variables
