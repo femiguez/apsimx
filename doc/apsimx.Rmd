@@ -43,6 +43,8 @@ For most functions in this pacakge you need to have a version of APSIM-X install
 
 **Mac**: For Mac it is also assumed that APSIM-X has been moved to 'Applications'.
 
+**Windows**: In Windows the default install location is in 'Program Files'.
+
 ## R functions for APSIM-X
 
 The main functions in the package are (for now):

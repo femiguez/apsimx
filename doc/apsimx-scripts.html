@@ -89,10 +89,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>When trying to invoke that line at the command line, the space after ‘Program’ is a problem. There are some possible solutions. One is to add quotations (for example see ‘shQuote’ function in R). Another option is to use Windows short name paths, which in this case, for ‘Program Files’ is ‘PROGRA~1’ (but this can change). If running the program from R, for example, the separator needs to be either a double backslash ‘\\’ or a forward slash ‘/’. So one example would be:</p>
 <p><strong>C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe</strong> or</p>
 <p><strong>C:\\PROGRA~1\\APSIM2019.07.19.4025\\Bin\\Models.exe</strong></p>
-<p>The backslash (“&quot;) is an escape character in R, so you can’t use it within strings.</p>
+<p>The backslash (“\”) is an escape character in R, so you can’t use it within strings.</p>
 <p>After this, the name of the file that you want to run needs to be included. For example,</p>
 <p><strong>C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx</strong>.</p>
-<p>However, the previous string cannot be passed directly to a Windows shell. It needs to be translated, because the ‘PROGRA~1’ needs to be expanded and the forward slashes (“/”) need to be converted to backslashes (“&quot;).</p>
+<p>However, the previous string cannot be passed directly to a Windows shell. It needs to be translated, because the ‘PROGRA~1’ needs to be expanded and the forward slashes (“/”) need to be converted to backslashes (“\”).</p>
 <p>So to run the previous command in Windows from within R this is one way:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">run.strng &lt;-<span class="st"> &quot;C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx&quot;</span>
 <span class="kw">shell</span>(<span class="dt">cmd =</span> run.strng, <span class="dt">translate =</span> <span class="ot">TRUE</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</code></pre></div>
@@ -165,7 +165,7 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.06
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] apsimx_0.75
+## [1] apsimx_0.76
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_1.0.1        compiler_3.5.0    prettyunits_1.0.2
