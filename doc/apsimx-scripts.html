@@ -125,16 +125,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Mac:</p>
 <p><strong>mono /Applications/APSIM2019.07.25.4035.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx</strong></p>
 <p>Debian:</p>
-<p><strong>mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe ./Wheat.apsimx</strong></p>
+<p><strong>mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe ./Wheat.apsimx</strong></p>
 <p>The previous two commands assume that the file “Wheat.apsimx” is present in the current working directory. A detail that seems to have changed with recent versions of ‘mono’ (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:</p>
-<p><strong>mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe Wheat.apsimx</strong></p>
+<p><strong>mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe Wheat.apsimx</strong></p>
 <p>but the line above which points to the current directory (“./”) did work.</p>
 <p>So to run this from within R, the following is one possibility</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Mac
-run.string.mac &lt;-<span class="st"> &quot;mono /Applications/APSIM2019.06.25.3956.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx&quot;</span>
+run.string.mac &lt;-<span class="st"> &quot;mono /Applications/APSIM2019.07.25.4035.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx&quot;</span>
 <span class="kw">system</span>(<span class="dt">command =</span> run.string.mac, <span class="dt">intern =</span> <span class="ot">TRUE</span>)
 ## Debian
-run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe ./Wheat.apsimx&quot;</span>
+run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe ./Wheat.apsimx&quot;</span>
 <span class="kw">system</span>(<span class="dt">command =</span> run.string.debian, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p>As mentioned before, if the simulation is successful, a database will be written to the current directory (where the file “Wheat.apsimx” is located in the previous example). In this case it will be a file with the name ‘Wheat.db’.</p>
 </div>

@@ -109,11 +109,11 @@ Mac:
 
 Debian:
 
-**mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe ./Wheat.apsimx**
+**mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe ./Wheat.apsimx**
 
 The previous two commands assume that the file "Wheat.apsimx" is present in the current working directory. A detail that seems to have changed with recent versions of 'mono' (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:
 
-**mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe Wheat.apsimx**
+**mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe Wheat.apsimx**
 
 but the line above which points to the current directory ("./") did work.
 
@@ -121,10 +121,10 @@ So to run this from within R, the following is one possibility
 
 ```{r run-apsimx, eval = FALSE}
 ## Mac
-run.string.mac <- "mono /Applications/APSIM2019.06.25.3956.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx"
+run.string.mac <- "mono /Applications/APSIM2019.07.25.4035.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx"
 system(command = run.string.mac, intern = TRUE)
 ## Debian
-run.string.debian <- "mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe ./Wheat.apsimx"
+run.string.debian <- "mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe ./Wheat.apsimx"
 system(command = run.string.debian, intern = TRUE)
 ```
 
