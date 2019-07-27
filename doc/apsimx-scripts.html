@@ -126,7 +126,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><strong>mono /Applications/APSIM2019.06.25.3956.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx</strong></p>
 <p>Debian:</p>
 <p><strong>mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe ./Wheat.apsimx</strong></p>
-<p>The previous two commands assume that the file “Wheat.apsimx” is present in the current working directory. A detailed that seems to have changed with recent versions of ‘mono’ (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:</p>
+<p>The previous two commands assume that the file “Wheat.apsimx” is present in the current working directory. A detail that seems to have changed with recent versions of ‘mono’ (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:</p>
 <p><strong>mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe Wheat.apsimx</strong></p>
 <p>but the line above which points to the current directory (“./”) did work.</p>
 <p>So to run this from within R, the following is one possibility</p>
@@ -143,7 +143,7 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.06
 <p>Having to change scripts every time you install a new version of APSIM-X or when you change operating system is certainly problematic and for this reason apsimx tries to ‘guess’ where APSIM-X is installed and where the ‘Examples’ are located. The functions to do this are:</p>
 <p>Executable: <strong>auto_detect_apsimx()</strong></p>
 <p>Examples: <strong>auto_detect_apsimx_examples()</strong></p>
-<p>Which will return the path to the executable and the directory where the examples are located. These functions are supposed to work whether you are using Windows, Mac or Linux. The function ‘auto_detect_apsimx’ is not exported, so in order to expose it, you need ’apsimx:::auto_detect_apsimx(). This function is meant to work with the current binary distributions (as opposed to source code). (I’m guessing that if you are building APSIM-X from source code, you do not need this information.)</p>
+<p>Which will return the path to the executable and the directory where the examples are located. These functions are supposed to work whether you are using Windows, Mac or Linux. The function ‘auto_detect_apsimx’ is not exported, so in order to expose it, you need ‘apsimx:::auto_detect_apsimx()’. This function is meant to work with the current binary distributions (as opposed to source code). (I’m guessing that if you are building APSIM-X from source code, you do not need this information.)</p>
 <p>If multiple versions of APSIM-X are installed apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the ‘apsimx_options’. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the ‘apsimx_options’ function.</p>
 <p>In addition, when loaded, the apsimx package will try to detect the presence of APSIM-X and, if not found, it will issue a warning with instructions to set the path manually using ‘apsimx_options’. If you have a previous version of APSIM installed (7.x) or multiple versions of both the ‘old’ and ‘new’ this might be potentially problematic, but it is hard for me now to consider these endless possibilities.</p>
 <div id="session-information" class="section level3">
@@ -165,7 +165,7 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.06
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] apsimx_0.72
+## [1] apsimx_0.73
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_1.0.1        compiler_3.5.0    prettyunits_1.0.2
@@ -189,8 +189,20 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.06
 <pre><code>## [1] &quot;17.7.0&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.info</span>()[[<span class="st">&quot;version&quot;</span>]]</code></pre></div>
 <pre><code>## [1] &quot;Darwin Kernel Version 17.7.0: Wed Apr 24 21:17:24 PDT 2019; root:xnu-4570.71.45~1/RELEASE_X86_64&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(.Platform<span class="op">$</span>OS.type <span class="op">==</span><span class="st"> &quot;unix&quot;</span>) <span class="kw">system</span>(<span class="dt">command =</span> <span class="st">&quot;mono --version&quot;</span>)
-R.version</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(.Platform<span class="op">$</span>OS.type <span class="op">==</span><span class="st"> &quot;unix&quot;</span>) <span class="kw">system</span>(<span class="dt">command =</span> <span class="st">&quot;mono --version&quot;</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>##  [1] &quot;Mono JIT compiler version 5.18.1.3 (2018-08/fdb26b0a445 Wed Mar 20 10:02:02 EDT 2019)&quot;  
+##  [2] &quot;Copyright (C) 2002-2014 Novell, Inc, Xamarin Inc and Contributors. www.mono-project.com&quot;
+##  [3] &quot;\tTLS:           &quot;                                                                      
+##  [4] &quot;\tSIGSEGV:       altstack&quot;                                                              
+##  [5] &quot;\tNotification:  kqueue&quot;                                                                
+##  [6] &quot;\tArchitecture:  amd64&quot;                                                                 
+##  [7] &quot;\tDisabled:      none&quot;                                                                  
+##  [8] &quot;\tMisc:          softdebug &quot;                                                            
+##  [9] &quot;\tInterpreter:   yes&quot;                                                                   
+## [10] &quot;\tLLVM:          yes(600)&quot;                                                              
+## [11] &quot;\tSuspend:       preemptive&quot;                                                            
+## [12] &quot;\tGC:            sgen (concurrent by default)&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">R.version</code></pre></div>
 <pre><code>##                _                           
 ## platform       x86_64-apple-darwin15.6.0   
 ## arch           x86_64                      

@@ -19,6 +19,6 @@ sessionInfo()
 Sys.info()[["sysname"]]
 Sys.info()[["release"]]
 Sys.info()[["version"]]
-if(.Platform$OS.type == "unix") system(command = "mono --version")
+if(.Platform$OS.type == "unix") system(command = "mono --version", intern = TRUE)
 R.version
 

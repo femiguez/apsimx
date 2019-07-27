@@ -35,9 +35,7 @@ Other useful R packages are 'APSIM' and 'apsimr'. The main difference is that th
 
 For most functions in this pacakge you need to have a version of APSIM-X installed. For this you might first need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM-X (https://www.apsim.info/Products/Downloads.aspx). The \code{apsimx} package will try to detect the install of both mono and APSIM-X. 
 
-### Mac
-
-For Mac it is also assumed that APSIM-X had been moved to the '/Applications/' directory.
+**Mac**: For Mac it is also assumed that APSIM-X has been moved to 'Applications'.
 
 ## R functions for APSIM-X
 
@@ -134,11 +132,11 @@ inspect_apsimx("Wheat", src.dir = ex.dir, node = "Crop")
 inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
 ```
 
-# File Type (or File Format) Details
+### File Type (or File Format) Details
 
-APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance.
+APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance. All distributed APSIM-X examples are 'JSON' now.
 
-The \code{apsimx} package supports inspection and editing of both file types for most components except for the 'Manager'; for which there is partial support. In most instances the parameters that are likely to need inspection and editing are supported but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON
+The \code{apsimx} package supports inspection and editing of both file types for most components except for the 'Manager'; for which there is partial support. In most instances the parameters that are likely to need inspection and editing are supported but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON.
 
 ```{r filetypes}
 ex.dir <- auto_detect_apsimx_examples()
@@ -148,6 +146,7 @@ apsimx_filetype("Maize", src.dir = ex.dir)
 
 # Future features
 
-* Provide support for Windows and Linux (highest priority)
-* Provide additional support for editing 'Manager' (medium priority)
-* Improve implementation of read_apsimx_all (low priority)
+* Provide additional support for editing 'Manager'. Concentrate on JSON.
+* Increase capabilities for more complex inspecting and editing
+* Improve implementation of read_apsimx_all 
+* Add tools for optimization and sensitivity analysis.

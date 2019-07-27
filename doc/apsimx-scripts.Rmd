@@ -55,8 +55,6 @@ run.strng <- "C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx"
 shell(cmd = run.strng, translate = TRUE, intern = TRUE)
 ```
 
-
-
 ## Unix (Mac) or Linux (Debian)
 
 In Unix (Mac) or Linux (Debian) to be able to run APSIM-X the Mono Framework needs to be installed (https://www.mono-project.com/download/stable/). This is important because the command 'mono' needs to be available in order to run APSIM-X at the command line. The Mono Framework should be available to install APSIM-X in the first place, but it is important to be aware of this at this stage.
@@ -113,7 +111,7 @@ Debian:
 
 **mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe ./Wheat.apsimx**
 
-The previous two commands assume that the file "Wheat.apsimx" is present in the current working directory. A detailed that seems to have changed with recent versions of 'mono' (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:
+The previous two commands assume that the file "Wheat.apsimx" is present in the current working directory. A detail that seems to have changed with recent versions of 'mono' (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:
 
 **mono /usr/local/lib/apsim/2019.06.25.3956/Bin/Models.exe Wheat.apsimx**
 
@@ -140,7 +138,7 @@ Executable: **auto_detect_apsimx()**
 
 Examples: **auto_detect_apsimx_examples()**
 
-Which will return the path to the executable and the directory where the examples are located. These functions are supposed to work whether you are using Windows, Mac or Linux. The function 'auto_detect_apsimx' is not exported, so in order to expose it, you need 'apsimx:::auto_detect_apsimx(). This function is meant to work with the current binary distributions (as opposed to source code). (I'm guessing that if you are building APSIM-X from source code, you do not need this information.) 
+Which will return the path to the executable and the directory where the examples are located. These functions are supposed to work whether you are using Windows, Mac or Linux. The function 'auto_detect_apsimx' is not exported, so in order to expose it, you need 'apsimx:::auto_detect_apsimx()'. This function is meant to work with the current binary distributions (as opposed to source code). (I'm guessing that if you are building APSIM-X from source code, you do not need this information.) 
 
 If multiple versions of APSIM-X are installed apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the 'apsimx_options'. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the 'apsimx_options' function.
 
@@ -155,7 +153,7 @@ sessionInfo()
 Sys.info()[["sysname"]]
 Sys.info()[["release"]]
 Sys.info()[["version"]]
-if(.Platform$OS.type == "unix") system(command = "mono --version")
+if(.Platform$OS.type == "unix") system(command = "mono --version", intern = TRUE)
 R.version
 ```
 

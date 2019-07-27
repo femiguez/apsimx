@@ -30,7 +30,9 @@
   ## Check whether APSIM-X is detected
   find.apsimx <- laf[grepl("APSIM", laf, ignore.case = TRUE)]
   if(length(find.apsimx) > 0){
-    cat("Found: ", find.apsimx,"\n")
+    fax <- paste0("Found: ", find.apsimx)
+    ## Won't print ApsimX at the moment but might change it in the future
+    ## packageStartupMessage(fax)
   }else{
     warning("APSIM-X not found. \n 
              If APSIM-X is installed in an alternative location, \n
