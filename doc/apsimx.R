@@ -50,5 +50,7 @@ inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
 ## ----filetypes-----------------------------------------------------------
 ex.dir <- auto_detect_apsimx_examples()
 apsimx_filetype("Barley", src.dir = ex.dir)
-apsimx_filetype("Maize", src.dir = ex.dir)
+extd.dir <- system.file("extdata", package = "apsimx")
+## This is an older XML 'Maize' file which is no longer distributed
+apsimx_filetype("Maize", src.dir = extd.dir)
 

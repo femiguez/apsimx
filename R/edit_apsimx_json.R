@@ -20,6 +20,7 @@
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other' 
 #' @param soil.child specific soil component to be edited
 #' @param som.child specific surface organic matter component to be edited (not used)
+#' @param manager.child specific manager component to be edited
 #' @param parm parameter to be edited
 #' @param value new values for the parameter to be edited 
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
@@ -49,6 +50,18 @@
 #' inspect_apsimx("Barley-edited.apsimx", node = "Soil", soil.child = "Water")
 #' ## To delete the file...
 #' file.remove("./Barley-edited.apsimx")
+#' 
+#' ## Edit the fertilizer amount in 'Maize.apsimx'
+#' edit_apsimx_json("Maize.apsimx", src.dir = ex.dir,
+#'                  wrt.dir = ".",
+#'                  node = "Manager",
+#'                  manager.child = "SowingFertiliser",
+#'                  parm = "Amount",
+#'                  value = 200, verbose = TRUE)
+#' ## Make sure it worked
+#' inspect_apsimx("Maize-edited.apsimx", node = "Manager")
+#' ## Remove the file
+#' file.remove("./Maize-edited.apsimx")
 #' }
 #' 
 
@@ -58,6 +71,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
                             soil.child = c("Water","OrganicMatter",
                                            "Analysis","InitialWater","Sample"),
                             som.child = c("Pools","Other"),
+                            manager.child = NULL,
                             parm=NULL, value=NULL, overwrite = FALSE,
                             parm.path = NULL,
                             verbose = TRUE){
@@ -73,6 +87,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)
   som.child <- match.arg(som.child)
+  edited.child <- "none"
   
   ## For now we just edit one file at a time
   file <- match.arg(file, fileNames, several.ok=FALSE)
@@ -134,6 +149,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
     soil.node0 <- soil.node[[1]]$Children
   
     if(soil.child == "Water"){
+      edited.child <- "Water"
       soil.water.node <- soil.node[[1]]$Children[[1]]
       ## I select this one based on position, so problems
       ## can arise
@@ -167,6 +183,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
     }
     
     if(soil.child == "OrganicMatter"){
+      edited.child <- "OrganicMatter"
       wsomn <- grepl("OrganicMatter", soil.node0)
       soil.om.node <- soil.node0[wsomn][[1]]
       
@@ -183,6 +200,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
     }
     
     if(soil.child == "Analysis"){
+      edited.child <- "Analysis"
       wan <- grepl("Analysis", soil.node0)
       soil.analysis.node <- soil.node0[wan][[1]]
       
@@ -196,6 +214,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
     }
     
     if(soil.child == "InitialWater"){
+      edited.child <- "InitialWater"
       wiwn <- grepl("InitialWater", soil.node0)
       soil.initialwater.node <- soil.node0[wiwn][[1]]
       
@@ -209,6 +228,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
     }
     
     if(soil.child == "Sample"){
+      edited.child <- "Sample"
       wsn <- grepl("Sample", soil.node0)
       soil.sample.node <- soil.node0[wsn][[1]]
       
@@ -260,7 +280,24 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
   }
   
   if(node == "Manager"){
-    stop("Not implemented yet")
+    wmmn <- grepl("Models.Manager", core.zone.node)
+    manager.node <- core.zone.node[wmmn]
+    manager.node.names <- sapply(manager.node, FUN = function(x) x$Name)
+
+    if(missing(manager.child)) stop("need to specify manager.child")
+    edited.child <- manager.child
+    ## Which child should we edit?
+    wmc <- grep(manager.child, manager.node.names)
+    
+    manager.child.node <- manager.node[[wmc]]$Parameters
+    
+    for(i in 1:length(manager.child.node)){
+      if(manager.child.node[[i]]$Key == parm){
+        manager.child.node[[i]]$Value <- value
+      }
+    }
+    manager.node[[wmc]]$Parameters <- manager.child.node
+    core.zone.node[wmmn] <- manager.node
   }
   
   parent.node[wcz][[1]]$Children <- core.zone.node
@@ -274,17 +311,16 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
     wr.path <- paste0(wrt.dir,"/",file)
   }
   
-  
   write_json(apsimx_json, path = wr.path, 
              pretty = TRUE, digits = NA, 
              auto_unbox = TRUE, null = "null")
   
   if(verbose){
-    cat("Edited",parm.path, "\n")
-    cat("Edited parameter",parm, "\n")
-    cat("New values ",value, "\n")
-    cat("Created ",wr.path,"\n")
+    cat("Edited (node): ",node, "\n")
+    cat("Edited (child): ", edited.child,"\n")
+    cat("Edited parameter: ",parm, "\n")
+    cat("New values: ",value, "\n")
+    cat("Created: ",wr.path,"\n")
   }
 }
-
 

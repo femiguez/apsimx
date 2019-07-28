@@ -20,6 +20,7 @@
 #' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other' 
 #' @param soil.child specific soil component to be edited
 #' @param som.child specific soil organic matter component to be edited
+#' @param manager.child specific manager component to be edited
 #' @param parm parameter to be edited
 #' @param value new values for the parameter to be edited 
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
@@ -55,6 +56,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         soil.child = c("Water","OrganicMatter",
                                        "Analysis","InitialWater","Sample"),
                         som.child = c("Pools","Other"),
+                        manager.child = NULL,
                         parm=NULL, value=NULL, overwrite = FALSE,
                         parm.path = NULL,
                         verbose = TRUE){
@@ -81,12 +83,14 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   if(apsimx_filetype(file = file, src.dir = src.dir) == "xml"){
     edit_apsimx_xml(file = file, src.dir = src.dir, wrt.dir = wrt.dir,
                     node = node, soil.child = soil.child, som.child = som.child, 
+                    manager.child = manager.child,
                     parm = parm, value = value, overwrite = overwrite,
                     parm.path = parm.path, verbose = verbose)
   }else{
     ## Edit JSON file type
     edit_apsimx_json(file = file, src.dir = src.dir, wrt.dir = wrt.dir,
                     node = node, soil.child = soil.child, som.child = som.child, 
+                    manager.child = manager.child,
                     parm = parm, value = value, overwrite = overwrite,
                     parm.path = parm.path, verbose = verbose)
   }

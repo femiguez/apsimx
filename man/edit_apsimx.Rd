@@ -7,8 +7,8 @@
 edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
   "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
   soil.child = c("Water", "OrganicMatter", "Analysis", "InitialWater",
-  "Sample"), som.child = c("Pools", "Other"), parm = NULL,
-  value = NULL, overwrite = FALSE, parm.path = NULL,
+  "Sample"), som.child = c("Pools", "Other"), manager.child = NULL,
+  parm = NULL, value = NULL, overwrite = FALSE, parm.path = NULL,
   verbose = TRUE)
 }
 \arguments{
@@ -23,6 +23,8 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
 \item{soil.child}{specific soil component to be edited}
 
 \item{som.child}{specific soil organic matter component to be edited}
+
+\item{manager.child}{specific manager component to be edited}
 
 \item{parm}{parameter to be edited}
 

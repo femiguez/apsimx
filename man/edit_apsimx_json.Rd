@@ -8,8 +8,9 @@ edit_apsimx_json(file, src.dir = ".", wrt.dir = NULL,
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter",
   "MicroClimate", "Crop", "Manager"), soil.child = c("Water",
   "OrganicMatter", "Analysis", "InitialWater", "Sample"),
-  som.child = c("Pools", "Other"), parm = NULL, value = NULL,
-  overwrite = FALSE, parm.path = NULL, verbose = TRUE)
+  som.child = c("Pools", "Other"), manager.child = NULL, parm = NULL,
+  value = NULL, overwrite = FALSE, parm.path = NULL,
+  verbose = TRUE)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be edited (JSON)}
@@ -22,7 +23,9 @@ edit_apsimx_json(file, src.dir = ".", wrt.dir = NULL,
 
 \item{soil.child}{specific soil component to be edited}
 
-\item{som.child}{specific soil organic matter component to be edited}
+\item{som.child}{specific surface organic matter component to be edited (not used)}
+
+\item{manager.child}{specific manager component to be edited}
 
 \item{parm}{parameter to be edited}
 
@@ -76,6 +79,18 @@ edit_apsimx_json("Barley.apsimx", src.dir = ex.dir,
 inspect_apsimx("Barley-edited.apsimx", node = "Soil", soil.child = "Water")
 ## To delete the file...
 file.remove("./Barley-edited.apsimx")
+
+## Edit the fertilizer amount in 'Maize.apsimx'
+edit_apsimx_json("Maize.apsimx", src.dir = ex.dir,
+                 wrt.dir = ".",
+                 node = "Manager",
+                 manager.child = "SowingFertiliser",
+                 parm = "Amount",
+                 value = 200, verbose = TRUE)
+## Make sure it worked
+inspect_apsimx("Maize-edited.apsimx", node = "Manager")
+## Remove the file
+file.remove("./Maize-edited.apsimx")
 }
 
 }

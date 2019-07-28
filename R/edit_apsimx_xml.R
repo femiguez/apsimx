@@ -20,6 +20,7 @@
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other' 
 #' @param soil.child specific soil component to be edited
 #' @param som.child specific soil organic matter component to be edited
+#' @param manager.child specific manager component to be edited (not implemented yet)
 #' @param parm parameter to be edited
 #' @param value new values for the parameter to be edited 
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
@@ -56,6 +57,7 @@ edit_apsimx_xml <- function(file, src.dir = ".", wrt.dir = NULL,
                             soil.child = c("Water","OrganicMatter",
                                            "Analysis","InitialWater","Sample"),
                             som.child = c("Pools","Other"),
+                            manager.child = NULL,
                             parm=NULL, value=NULL, overwrite = FALSE,
                             parm.path = NULL,
                             verbose = TRUE){

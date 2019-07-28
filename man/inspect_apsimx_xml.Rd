@@ -39,18 +39,19 @@ node 'Manager' can be complicated and it is not guranteed to work.
 }
 \examples{
 \dontrun{
-ex.dir <- auto_detect_apsimx_examples()
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Clock")
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Weather") 
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Water")
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Sample")
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.child = "Pools")
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.child = "Other")
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "MicroClimate") 
-inspect_apsimx_xml("Maize", src.dir = ex.dir, node = "Crop") 
+extd.dir <- system.file("extdata", package = "apsimx")
+## This is an older XML 'Maize' file which is no longer distributed
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "Clock")
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "Weather") 
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "Soil", soil.child = "Water")
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "Soil", soil.child = "OrganicMatter")
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "Soil", soil.child = "Analysis")
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "Soil", soil.child = "Sample")
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "SurfaceOrganicMatter", som.child = "Pools")
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "SurfaceOrganicMatter", som.child = "Other")
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "MicroClimate") 
+inspect_apsimx_xml("Maize", src.dir = extd.dir, node = "Crop") 
 }
 
 }

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-07-27" />
+<meta name="date" content="2019-07-28" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author"><em>Fernando Miguez</em></h4>
-<h4 class="date"><em>2019-07-27</em></h4>
+<h4 class="date"><em>2019-07-28</em></h4>
 
 
 
@@ -181,10 +181,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
              <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
              <span class="dt">soil.child =</span> <span class="st">&quot;OrganicMatter&quot;</span>, 
              <span class="dt">parm =</span> <span class="st">&quot;OC&quot;</span>, <span class="dt">value =</span> ocs)</code></pre></div>
-<pre><code>## Edited 
-## Edited parameter OC 
-## New values  1.5 1.4 1.3 1.2 1.1 1 0.9 
-## Created  ./Maize-edited.apsimx</code></pre>
+<pre><code>## Edited (node):  Soil 
+## Edited (child):  OrganicMatter 
+## Edited parameter:  OC 
+## New values:  1.5 1.4 1.3 1.2 1.1 1 0.9 
+## Created:  ./Maize-edited.apsimx</code></pre>
 <p>Let’s make sure that we have changed the values successfully.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize-edited.apsimx&quot;</span>, <span class="dt">src.dir =</span> <span class="st">&quot;.&quot;</span>, 
                <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
@@ -314,8 +315,10 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
 <span class="kw">apsimx_filetype</span>(<span class="st">&quot;Barley&quot;</span>, <span class="dt">src.dir =</span> ex.dir)</code></pre></div>
 <pre><code>## [1] &quot;json&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">apsimx_filetype</span>(<span class="st">&quot;Maize&quot;</span>, <span class="dt">src.dir =</span> ex.dir)</code></pre></div>
-<pre><code>## [1] &quot;json&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
+## This is an older XML 'Maize' file which is no longer distributed
+<span class="kw">apsimx_filetype</span>(<span class="st">&quot;Maize&quot;</span>, <span class="dt">src.dir =</span> extd.dir)</code></pre></div>
+<pre><code>## [1] &quot;xml&quot;</code></pre>
 </div>
 </div>
 </div>

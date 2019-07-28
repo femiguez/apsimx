@@ -8,8 +8,9 @@ edit_apsimx_xml(file, src.dir = ".", wrt.dir = NULL,
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter",
   "MicroClimate", "Crop", "Manager"), soil.child = c("Water",
   "OrganicMatter", "Analysis", "InitialWater", "Sample"),
-  som.child = c("Pools", "Other"), parm = NULL, value = NULL,
-  overwrite = FALSE, parm.path = NULL, verbose = TRUE)
+  som.child = c("Pools", "Other"), manager.child = NULL, parm = NULL,
+  value = NULL, overwrite = FALSE, parm.path = NULL,
+  verbose = TRUE)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be edited}
@@ -23,6 +24,8 @@ edit_apsimx_xml(file, src.dir = ".", wrt.dir = NULL,
 \item{soil.child}{specific soil component to be edited}
 
 \item{som.child}{specific soil organic matter component to be edited}
+
+\item{manager.child}{specific manager component to be edited (not implemented yet)}
 
 \item{parm}{parameter to be edited}
 
@@ -63,9 +66,10 @@ compared to the similar function in the 'apsimr' package.
 ## This example will read one of the examples distributed with APSIM-X
 ## but write to the current directory
 
-ex.dir <- auto_detect_apsimx_examples()
+extd.dir <- system.file("extdata", package = "apsimx")
+## This is an older XML 'Maize' file which is no longer distributed
 ocs <- rep(0.5, 7)
-edit_apsimx_xml("Maize.apsimx", src.dir = ex.dir,
+edit_apsimx_xml("Maize.apsimx", src.dir = extd.dir,
                 wrt.dir = ".",
                 node = "Soil",
                 soil.child = "OrganicMatter", 
