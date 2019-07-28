@@ -19,7 +19,7 @@
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other' 
 #' @param soil.child specific soil component to be edited
-#' @param som.child specific soil organic matter component to be edited
+#' @param som.child specific surface organic matter component to be edited (not used)
 #' @param parm parameter to be edited
 #' @param value new values for the parameter to be edited 
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise

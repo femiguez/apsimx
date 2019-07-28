@@ -36,9 +36,10 @@
 #' ## This example will read one of the examples distributed with APSIM-X
 #' ## but write to the current directory
 #' 
-#' ex.dir <- auto_detect_apsimx_examples()
+#' extd.dir <- system.file("extdata", package = "apsimx")
+#' ## This is an older XML 'Maize' file which is no longer distributed
 #' ocs <- rep(0.5, 7)
-#' edit_apsimx_xml("Maize.apsimx", src.dir = ex.dir,
+#' edit_apsimx_xml("Maize.apsimx", src.dir = extd.dir,
 #'                 wrt.dir = ".",
 #'                 node = "Soil",
 #'                 soil.child = "OrganicMatter", 

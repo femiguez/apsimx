@@ -285,7 +285,25 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
   }
   
   if(node == "Manager"){
-    stop("Not implemented yet")
+    wmmn <- grepl("Models.Manager", core.zone.node)
+    manager.node <- core.zone.node[wmmn]
+    ## Print available Manager components
+    manager.node.names <- sapply(manager.node, FUN = function(x) x$Name)
+    cat("Management Scripts: ", manager.node.names,"\n\n")
+    for(i in 1:length(manager.node.names)){
+      ms.params <- manager.node[[i]]$Parameters
+      if(length(ms.params) == 0) next
+      mat <- matrix(NA, ncol=2, nrow = length(ms.params),
+                    dimnames = list(NULL,c("parm","value")))
+      
+      for(j in 1:length(ms.params)){
+        mat[j,1] <- ms.params[[j]]$Key
+        mat[j,2] <- ms.params[[j]]$Value
+      }
+      cat("Name: ", manager.node.names[i],"\n")
+      print(kable(as.data.frame(mat), digits = digits))
+      cat("\n")
+    }
   }
 }
 
