@@ -2,10 +2,9 @@ apsimx
 R package for APSIM-X
 This package allows for interaction with APSIM ("Next Generation") or
 APSIM-X. It can inspect, edit, run and read APSIMX files. APSIMX now
-uses two different file types for .apsimx files: XML and JSON. This
-package can inspect and edit XML files and it can inspect JSON
-files. The editing of JSON files is slightly more limited than for
-XML at the moment (July 25th 2019).
+uses two different file types for .apsimx files: XML and JSON. The
+package can inspect and edit XML and JSON files. The inspecting and
+editing files is an area that I'm currently improving.
 
 * Package requirements:
 
