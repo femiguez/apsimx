@@ -47,10 +47,41 @@ ggplot(data = sim, aes(x = Date, y = Yield)) + geom_point()
 inspect_apsimx("Wheat", src.dir = ex.dir, node = "Crop")
 inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
 
+## ----inspect-replacement-node--------------------------------------------
+extd.dir <- system.file("extdata", package = "apsimx")
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                            node = "Maize", display.available = TRUE)
+
+## ----inspect-replacement-node-child--------------------------------------
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                            node = "Maize", node.child = "Phenology",
+                           display.available = TRUE)
+
+## ----inspect-replacement-node-subchild-----------------------------------
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                            node = "Maize", node.child = "Phenology",
+                           node.subchild = "ThermalTime",
+                           display.available = TRUE)
+
+## ----inspect-replacement-node-subchild-parm------------------------------
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                            node = "Maize", node.child = "Phenology",
+                            node.subchild = "ThermalTime", parm = c("X","Y")) 
+
+## ----inspect-replacement-soybean-cultivar-node---------------------------
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                            node = "Soybean", display.available = TRUE) 
+
+## ----inspect-replacement-soybean-cultivar-node-child---------------------
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                           node = "Soybean", 
+                           node.child = "PioneerP22T61_MG22",
+                           display.available = FALSE) 
+
 ## ----filetypes-----------------------------------------------------------
 ex.dir <- auto_detect_apsimx_examples()
 apsimx_filetype("Barley", src.dir = ex.dir)
 extd.dir <- system.file("extdata", package = "apsimx")
 ## This is an older XML 'Maize' file which is no longer distributed
-apsimx_filetype("Maize", src.dir = extd.dir)
+apsimx_filetype("Maize_old", src.dir = extd.dir)
 

@@ -54,6 +54,7 @@ The main functions in the package are (for now):
 * **apsimx** run an .apsimx simulation.
 * **read_apsimx** read files created by an .apsimx simulation run (.db files)
 * **read_apsimx_all** read all files created by one or more .apsimx simulation runs in a directory (.db files)
+* **inspect_apsimx_replacement** inspect a replacement component of an .apsimx file (JSON only)
 
 ### 'apsimx_exmple': Running a built-in example
 
@@ -140,6 +141,54 @@ inspect_apsimx("Wheat", src.dir = ex.dir, node = "Crop")
 inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
 ```
 
+## Inspecting a 'Replacement' component
+
+Many additional options in an APSIM-X simulation can be realized through the use of 'Replacements'. For this, there is a function that allows inspection. For this, it is important to know the structure of the 'replacement' but if exploring them, the available components will be displayed. For example, if we want to display the xy pair for the thermal time in the phenology component of the 'Maize' replacement:
+
+```{r inspect-replacement-node}
+extd.dir <- system.file("extdata", package = "apsimx")
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                            node = "Maize", display.available = TRUE)
+```
+
+```{r inspect-replacement-node-child}
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                            node = "Maize", node.child = "Phenology",
+                           display.available = TRUE)
+```
+
+```{r inspect-replacement-node-subchild}
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                            node = "Maize", node.child = "Phenology",
+                           node.subchild = "ThermalTime",
+                           display.available = TRUE)
+```
+
+```{r inspect-replacement-node-subchild-parm}
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                            node = "Maize", node.child = "Phenology",
+                            node.subchild = "ThermalTime", parm = c("X","Y")) 
+```
+
+The function shows the available replacements ("Maize" and "Soybean"), the 'CropType' if available, the subchild name and the xy pair in this example. If parm is not specified all elements will be displayed.
+
+Let's say we want to inspect details of soybean cultivars
+
+```{r inspect-replacement-soybean-cultivar-node}
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                            node = "Soybean", display.available = TRUE) 
+```
+
+In this case the cultivars are at the sub-node level.
+
+```{r inspect-replacement-soybean-cultivar-node-child}
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                           node = "Soybean", 
+                           node.child = "PioneerP22T61_MG22",
+                           display.available = FALSE) 
+```
+
+
 ### File Type (or File Format) Details
 
 APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance. All distributed APSIM-X examples are 'JSON' now.
@@ -151,7 +200,7 @@ ex.dir <- auto_detect_apsimx_examples()
 apsimx_filetype("Barley", src.dir = ex.dir)
 extd.dir <- system.file("extdata", package = "apsimx")
 ## This is an older XML 'Maize' file which is no longer distributed
-apsimx_filetype("Maize", src.dir = extd.dir)
+apsimx_filetype("Maize_old", src.dir = extd.dir)
 ```
 
 # Future features
