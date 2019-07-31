@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-07-30" />
+<meta name="date" content="2019-07-31" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author"><em>Fernando Miguez</em></h4>
-<h4 class="date"><em>2019-07-30</em></h4>
+<h4 class="date"><em>2019-07-31</em></h4>
 
 
 
@@ -312,7 +312,8 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 </div>
 <div id="inspecting-a-replacement-component" class="section level2">
 <h2>Inspecting a ‘Replacement’ component</h2>
-<p>Many additional options in an APSIM-X simulation can be realized through the use of ‘Replacements’. For this, there is a function that allows inspection. For this, it is important to know the structure of the ‘replacement’ but if exploring them, the available components will be displayed. For example, if we want to display the xy pair for the thermal time in the phenology component of the ‘Maize’ replacement:</p>
+<p>Many additional options in an APSIM-X simulation can be realized through the use of ‘Replacements’. For this, there is a function that allows inspection. For this, it is important to know the structure of the ‘replacement’ but if exploring them, the available components will be displayed. For example, if we want to display the xy pair for the thermal time in the phenology component of the ‘Maize’ replacement we might go through the following steps:</p>
+<p>State the node (“Maize”) and display available components:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
 <span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
@@ -320,6 +321,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## CropType Maize 
 ## Available node children:  Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
 ## missing node.child</code></pre>
+<p>Choose ‘Phenology’ as a ‘child’ of ‘Maize’:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
                            <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
@@ -328,6 +330,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## Available node children:  Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
 ## Available node sub-children:  ThermalTime Germinating Emerging Juvenile Photosensitive LeafAppearance FlagLeafToFlowering FloweringToGrainFilling GrainFilling Maturing MaturityToHarvestRipe ReadyForHarvesting Photoperiod FloweringDAS MaturityDAS BBCH 
 ## missing node.subchild</code></pre>
+<p>Choose ‘ThermalTime’ as a ‘sub.child’ of ‘Phenology’:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
                            <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>,
@@ -339,7 +342,8 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## Subchild Name:  ThermalTime 
 ## Name sub-sub-child:  BaseThermalTime 
 ## Available node sub-sub-child:  $type Name Children IncludeInDocumentation Enabled ReadOnly 
-## Available node children:  
+## Available node children (unpack_node):  
+##  
 ## $type : Models.Functions.XYPairs, Models 
 ## X : 0 18 26 34 44 
 ## Y : 0 10 18 26 0 
@@ -348,6 +352,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## IncludeInDocumentation : TRUE 
 ## Enabled : TRUE 
 ## ReadOnly : FALSE</code></pre>
+<p>Choose the ‘X’ and ‘Y’ parameters in the ‘ThermalTime’ sub.child.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
                             <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, <span class="dt">parm =</span> <span class="kw">c</span>(<span class="st">&quot;X&quot;</span>,<span class="st">&quot;Y&quot;</span>)) </code></pre></div>
@@ -355,10 +360,11 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## CropType Maize 
 ## Subchild Name:  ThermalTime 
 ## Name sub-sub-child:  BaseThermalTime 
+##  
 ## X : 0 18 26 34 44 
 ## Y : 0 10 18 26 0</code></pre>
 <p>The function shows the available replacements (“Maize” and “Soybean”), the ‘CropType’ if available, the subchild name and the xy pair in this example. If parm is not specified all elements will be displayed.</p>
-<p>Let’s say we want to inspect details of soybean cultivars</p>
+<p>Let’s say we want to inspect details of soybean cultivars in the same file:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Soybean&quot;</span>, <span class="dt">display.available =</span> <span class="ot">TRUE</span>) </code></pre></div>
 <pre><code>## Replacements:  Maize Soybean 
@@ -373,6 +379,12 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 <pre><code>## Replacements:  Maize Soybean 
 ## CropType Soybean 
 ## $type : Models.PMF.Cultivar, Models 
+## Command 
+##  : [Phenology].Vegetative.Target.FixedValue = 328 
+##  : [Phenology].EarlyFlowering.Target.FixedValue = 106 
+##  : [Phenology].EarlyGrainFilling.Target.FractionofGrainfilling.FixedValue = 0.3 
+##  : [Phenology].LateGrainFilling.Target.EntireGrainfillPeriod.FixedValue = 499 
+##  : [Phenology].PhotoperiodModifier.XYPairs.X = 13.59, 17.6 
 ## Name : PioneerP22T61_MG22 
 ## IncludeInDocumentation : TRUE 
 ## Enabled : TRUE 
@@ -395,8 +407,8 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 <div id="future-features" class="section level1">
 <h1>Future features</h1>
 <ul>
-<li>Provide additional support for editing ‘Manager’. Concentrate on JSON.</li>
-<li>Increase capabilities for more complex inspecting and editing</li>
+<li>Currently working on developing ‘inspect_apsimx_replacement’ (JSON only)</li>
+<li>Create function ‘edit_apsimx_replacement’ (JSON only)</li>
 <li>Improve implementation of read_apsimx_all</li>
 <li>Add tools for optimization and sensitivity analysis.</li>
 </ul>

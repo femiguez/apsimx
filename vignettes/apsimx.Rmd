@@ -143,7 +143,9 @@ inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
 
 ## Inspecting a 'Replacement' component
 
-Many additional options in an APSIM-X simulation can be realized through the use of 'Replacements'. For this, there is a function that allows inspection. For this, it is important to know the structure of the 'replacement' but if exploring them, the available components will be displayed. For example, if we want to display the xy pair for the thermal time in the phenology component of the 'Maize' replacement:
+Many additional options in an APSIM-X simulation can be realized through the use of 'Replacements'. For this, there is a function that allows inspection. For this, it is important to know the structure of the 'replacement' but if exploring them, the available components will be displayed. For example, if we want to display the xy pair for the thermal time in the phenology component of the 'Maize' replacement we might go through the following steps:
+
+State the node ("Maize") and display available components:
 
 ```{r inspect-replacement-node}
 extd.dir <- system.file("extdata", package = "apsimx")
@@ -151,11 +153,15 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                             node = "Maize", display.available = TRUE)
 ```
 
+Choose 'Phenology' as a 'child' of 'Maize':
+
 ```{r inspect-replacement-node-child}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                             node = "Maize", node.child = "Phenology",
                            display.available = TRUE)
 ```
+
+Choose 'ThermalTime' as a 'sub.child' of 'Phenology':
 
 ```{r inspect-replacement-node-subchild}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
@@ -163,6 +169,8 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.subchild = "ThermalTime",
                            display.available = TRUE)
 ```
+
+Choose the 'X' and 'Y' parameters in the 'ThermalTime' sub.child.
 
 ```{r inspect-replacement-node-subchild-parm}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
@@ -172,7 +180,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 
 The function shows the available replacements ("Maize" and "Soybean"), the 'CropType' if available, the subchild name and the xy pair in this example. If parm is not specified all elements will be displayed.
 
-Let's say we want to inspect details of soybean cultivars
+Let's say we want to inspect details of soybean cultivars in the same file:
 
 ```{r inspect-replacement-soybean-cultivar-node}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
@@ -187,7 +195,6 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.child = "PioneerP22T61_MG22",
                            display.available = FALSE) 
 ```
-
 
 ### File Type (or File Format) Details
 
@@ -205,7 +212,7 @@ apsimx_filetype("Maize_old", src.dir = extd.dir)
 
 # Future features
 
-* Provide additional support for editing 'Manager'. Concentrate on JSON.
-* Increase capabilities for more complex inspecting and editing
+* Currently working on developing 'inspect_apsimx_replacement' (JSON only)
+* Create function 'edit_apsimx_replacement' (JSON only)
 * Improve implementation of read_apsimx_all 
 * Add tools for optimization and sensitivity analysis.

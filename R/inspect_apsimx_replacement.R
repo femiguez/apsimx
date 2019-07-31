@@ -126,50 +126,65 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
 ## Not exported
 unpack_node <- function(x, parm=NULL, display.available = FALSE){
   
+  if(!is.list(x)) stop("x should be a list")
   ## I will do just three levels of unpacking
   ## x is a node
   lnode <- length(x)
   
   node.names <- names(x)
-  if(display.available) cat("Available node children: ",node.names,"\n")
+  if(display.available) cat("Available node children (unpack_node): ",node.names,"\n")
+  
+  ## Let's try to handle the different elements that x can be
+  ## If it is a list of length one and just one element, just cat
+  ## the key, value pair
+  if(is.list(x) & length(x) == 1 & length(x[[1]]) == 1){
+    return(cat("Key: ",names(x),"; Value: ",x[[1]],"\n"))
+  }
+  
+  if(all(sapply(x, is.atomic))){
+    ## This is for a list which has all atomic elements
+    ## If one of the elements is an empty list
+    ## This will fail
+    return(cat_parm(x, parm = parm))
+  }
   
   for(i in seq_len(lnode)){
     ## The components can either have multiple elements such as
     ## Command, or have children, in either case I need to unpack
-    node.child <- x[[i]]
-    if(is.atomic(node.child)){
-      if(is.null(parm)){
-        cat(node.names[i], ":",node.child,"\n")
-      }else{
-        if(node.names[i] %in% parm){
-          cat(node.names[i], ":",node.child,"\n")
-        }
-      }
+    node.child <- x[i]
+    ## If x is a list node.child will be a list
+    ## If it has just one element, then 
+    if(is.list(node.child) & length(node.child) == 1 & length(node.child[[1]]) == 1){
+      cat_parm(node.child, parm = parm)
     }else{
-      ## This can either have Children or be something like 
-      ## Command. Let's first assume it has children
-      if(length(names(node.child)) ==0 & is.recursive(node.child)){
-        node.subchild <- node.child$Children[[1]]
-        node.subchild.names <- names(node.subchild)
-        lnsc <- length(node.subchild)
-        for(j in seq_len(lnsc)){
-          if(is.null(parm)){
-            cat(node.subchild.names[j], ":",node.subchild[j],"\n")
+      ## Let's assume this is a list with multiple elements
+      ## Shouldn't 'cat_parm' be able to handle this?
+      if(length(node.child) == 1 & length(x[[i]]) > 1){
+        ## This is an element such as 'Command'
+        cat(names(node.child),"\n")
+        cat_parm(x[[i]], parm = parm)
+      }
+      ## Let's handle 'Children' now
+      if(length(node.child$Children) !=0){
+        for(j in seq_len(node.child$Children)){
+          if(names(node.child) == 0){
+            node.subchild <- node.child$Children[[1]]
           }else{
-            if(node.names[i] %in% parm){
-              cat(node.subchild.names[j], ":",node.subchild[j],"\n")
-            }
+            node.subchild <- node.child$Children
           }
+          cat_parm(nodel.subchild, parm = parm)
         }
-      }else{
-        cat_parm(node.child, parm = parm)
       }
     }
   }
 }
+      
         
 cat_parm <- function(x, parm = NULL){
-  ## Assume that x has multiple components
+  
+  ## This will print an element or multiple elements 
+  ## When x is a simple list structure, with no 
+  ## Children
   lx <- length(x)
   x.nms <- names(x)
   for(i in seq_len(lx)){
