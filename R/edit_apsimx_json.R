@@ -24,6 +24,7 @@
 #' @param parm parameter to be edited
 #' @param value new values for the parameter to be edited 
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
+#' @param edit.tag if the file is edited a different tag from the default '-edited' can be used.
 #' @param parm.path path to the attribute to edit when node is 'Other'
 #' @param verbose whether to print information about successful edit
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
@@ -73,6 +74,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
                             som.child = c("Pools","Other"),
                             manager.child = NULL,
                             parm=NULL, value=NULL, overwrite = FALSE,
+                            edit.tag = "-edited",
                             parm.path = NULL,
                             verbose = TRUE){
   
@@ -306,7 +308,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
   if(overwrite == FALSE){
     wr.path <- paste0(wrt.dir,"/",
                       strsplit(file,".",fixed = TRUE)[[1]][1],
-                      "-edited",".apsimx")
+                      edit.tag,".apsimx")
   }else{
     wr.path <- paste0(wrt.dir,"/",file)
   }

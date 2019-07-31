@@ -172,7 +172,7 @@ unpack_node <- function(x, parm=NULL, display.available = FALSE){
           }else{
             node.subchild <- node.child$Children
           }
-          cat_parm(nodel.subchild, parm = parm)
+          cat_parm(node.subchild, parm = parm)
         }
       }
     }

@@ -17,6 +17,11 @@ library(ggplot2)
 
 # Introduction
 
+Are you a user of APSIM-X ("Next Generation")? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the **apsimx** package, which allows you to inspect, edit, run and read files created by APSIM-X (.apsimx) files. New .apsimx files are based on the JSON (JavaScript Object Notation https://www.json.org/) format and it is used to communicate information to the APSIM-X engine. By using the 'jsonlite' R package **apsimx** can read and write ('inspect' and 'edit') files in this format. The older format based on XML is partially supported through the 'xml2' package. To run simulations the \code{apsimx} function is available and results from the simulation can be imported as an R object with a dedicated function (\code{read_apsimx}). If you need to write scripts (regardless of whether you use the **apsimx** package or not) the vignette 'writing scripts' might be useful. The package is curently being developed and available at: https://github.com/femiguez/apsimx. 
+If you have any questions write to: femiguez *at* iastate.edu. 
+
+### Additional information
+
 Before using this package it is recommended to become familiar with APSIM-X ("Next Generation").
 
 See the following for details

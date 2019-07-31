@@ -8,8 +8,8 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
   "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
   soil.child = c("Water", "OrganicMatter", "Analysis", "InitialWater",
   "Sample"), som.child = c("Pools", "Other"), manager.child = NULL,
-  parm = NULL, value = NULL, overwrite = FALSE, parm.path = NULL,
-  verbose = TRUE)
+  parm = NULL, value = NULL, overwrite = FALSE,
+  edit.tag = "-edited", parm.path = NULL, verbose = TRUE)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be edited}
@@ -31,6 +31,8 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
 \item{value}{new values for the parameter to be edited}
 
 \item{overwrite}{logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise}
+
+\item{edit.tag}{if the file is edited a different tag from the default '-edited' can be used.}
 
 \item{parm.path}{path to the attribute to edit when node is 'Other'}
 

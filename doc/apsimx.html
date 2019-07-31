@@ -76,6 +76,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
+<p>Are you a user of APSIM-X (“Next Generation”)? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the <strong>apsimx</strong> package, which allows you to inspect, edit, run and read files created by APSIM-X (.apsimx) files. New .apsimx files are based on the JSON (JavaScript Object Notation <a href="https://www.json.org/" class="uri">https://www.json.org/</a>) format and it is used to communicate information to the APSIM-X engine. By using the ‘jsonlite’ R package <strong>apsimx</strong> can read and write (‘inspect’ and ‘edit’) files in this format. The older format based on XML is partially supported through the ‘xml2’ package. To run simulations the  function is available and results from the simulation can be imported as an R object with a dedicated function (). If you need to write scripts (regardless of whether you use the <strong>apsimx</strong> package or not) the vignette ‘writing scripts’ might be useful. The package is curently being developed and available at: <a href="https://github.com/femiguez/apsimx" class="uri">https://github.com/femiguez/apsimx</a>. If you have any questions write to: femiguez <em>at</em> iastate.edu.</p>
+<div id="additional-information" class="section level3">
+<h3>Additional information</h3>
 <p>Before using this package it is recommended to become familiar with APSIM-X (“Next Generation”).</p>
 <p>See the following for details</p>
 <p><a href="https://www.apsim.info">APSIM</a></p>
@@ -86,6 +89,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><strong>Debian</strong>: ApsimX version 4000</p>
 <p><strong>Windows</strong>: ApsimX version 4025</p>
 <p>Other useful R packages are ‘APSIM’ and ‘apsimr’. The main difference is that these were written to work with the previous generation of APSIM (7.x). This package is thus an update for the new APSIM-X software.</p>
+</div>
 <div id="installing-apsim-x" class="section level2">
 <h2>Installing APSIM-X</h2>
 <p>For most functions in this pacakge you need to have a version of APSIM-X installed. For this you might first need to install mono (<a href="https://www.mono-project.com/download/stable/" class="uri">https://www.mono-project.com/download/stable/</a>) and then download and install APSIM-X (<a href="https://www.apsim.info/Products/Downloads.aspx" class="uri">https://www.apsim.info/Products/Downloads.aspx</a>). The  package will try to detect the install of both mono and APSIM-X.</p>
