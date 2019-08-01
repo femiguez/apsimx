@@ -2,7 +2,7 @@
 % Please edit documentation in R/inspect_apsimx_replacement.R
 \name{inspect_apsimx_replacement}
 \alias{inspect_apsimx_replacement}
-\title{Inspect an replacement component in an .apsimx (JSON) file}
+\title{Inspect a replacement component in an .apsimx (JSON) file}
 \usage{
 inspect_apsimx_replacement(file = "", src.dir = ".", node = NULL,
   node.child = NULL, node.subchild = NULL, node.subsubchild = NULL,

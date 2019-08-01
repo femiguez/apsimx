@@ -28,7 +28,7 @@
 #' @param parm.path path to the attribute to edit when node is 'Other'
 #' @param verbose whether to print information about successful edit
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
-#' As a side effect this function created a new (XML or JSON) .apsimx file.
+#' As a side effect this function creates a new (XML or JSON) .apsimx file.
 #' @note The components that can be edited are restricted becuase this is better in preventing
 #' errors of editing unintended parts of the file. The disadvantage is that there is less flexibility
 #' compared to the similar function in the 'apsimr' package. 

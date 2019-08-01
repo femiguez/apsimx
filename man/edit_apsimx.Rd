@@ -40,7 +40,7 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Weather",
 }
 \value{
 (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
-As a side effect this function created a new (XML or JSON) .apsimx file.
+As a side effect this function creates a new (XML or JSON) .apsimx file.
 }
 \description{
 This function allows editing of an APSIM-X (XML or JSON) simulation file.
