@@ -78,7 +78,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   
   ## Is it possible that we want to edit things at this level?
   ## Unlikely, but here it is
-  if(grepl(parm, names(rep.node.child))){
+  if(parm %in% names(rep.node.child)){
     lvl <- 1
     rep.node.child <- edit_node(rep.node.child, parm = parm, value = value)
     rep.node$Children[[wrnc]] <- rep.node.child
@@ -95,7 +95,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   
   if(verbose) cat("Subchild Name: ", rep.node.subchild$Name,"\n")
   
-  if(grepl(parm, names(rep.node.subchild))){
+  if(parm %in% names(rep.node.subchild)){
     rep.node.subchild <- edit_node(rep.node.subchild, parm = parm, value = value)
     lvl <- 2
     rep.node.child$Children[[wrnsc]] <- rep.node.subchild
@@ -119,7 +119,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     rep.node.sub3child <- rep.node.subsubchild$Children
   }
   
-  if(grepl(parm, names(rep.node.sub3child))){
+  if(parm %in% names(rep.node.sub3child)){
     rep.node.sub3child <- edit_node(rep.node.sub3child, parm = parm, value = value)
     lvl <- 4
     if(length(names(rep.node.subsubchild$Children)) == 0){
@@ -172,7 +172,7 @@ edit_node <- function(x, parm = NULL, value = NULL){
     x.nms <- names(x)
     wne <- which(x.nms == parm)
     ## x should be a list
-    if(length(x[[wne]]) != 1) stop("value should be of length = 1")
+##    if(length(x[[wne]]) != 1) stop("value should be of length = 1")
     x[[wne]] <- value
   }
   

@@ -201,6 +201,25 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            display.available = FALSE) 
 ```
 
+## Editing a 'Replacement' 
+
+After using the 'inspect' version of the file editing should be much more straight forward.
+
+```{r edit-replacement}
+edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                        node = "Maize", node.child = "Phenology",
+                        node.subchild = "ThermalTime", node.subsubchild = "BaseThermalTime",
+                        parm = "Y", value = c(0,12,20,28,0))
+```
+
+Let's inspect the edited file
+
+```{r inspect-edit-replacement}
+inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
+                            node = "Maize", node.child = "Phenology",
+                            node.subchild = "ThermalTime", parm = c("X","Y")) 
+```
+
 ### File Type (or File Format) Details
 
 APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance. All distributed APSIM-X examples are 'JSON' now.
