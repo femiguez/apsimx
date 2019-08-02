@@ -78,6 +78,17 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.child = "PioneerP22T61_MG22",
                            display.available = FALSE) 
 
+## ----edit-replacement----------------------------------------------------
+edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                        node = "Maize", node.child = "Phenology",
+                        node.subchild = "ThermalTime", node.subsubchild = "BaseThermalTime",
+                        parm = "Y", value = c(0,12,20,28,0))
+
+## ----inspect-edit-replacement--------------------------------------------
+inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
+                            node = "Maize", node.child = "Phenology",
+                            node.subchild = "ThermalTime", parm = c("X","Y")) 
+
 ## ----filetypes-----------------------------------------------------------
 ex.dir <- auto_detect_apsimx_examples()
 apsimx_filetype("Barley", src.dir = ex.dir)

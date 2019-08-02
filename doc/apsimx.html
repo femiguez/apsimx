@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-08-01" />
+<meta name="date" content="2019-08-02" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author"><em>Fernando Miguez</em></h4>
-<h4 class="date"><em>2019-08-01</em></h4>
+<h4 class="date"><em>2019-08-02</em></h4>
 
 
 
@@ -394,6 +394,38 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## Enabled : TRUE 
 ## ReadOnly : FALSE 
 ## no node sub-children available</code></pre>
+</div>
+<div id="editing-a-replacement" class="section level2">
+<h2>Editing a ‘Replacement’</h2>
+<p>After using the ‘inspect’ version of the file editing should be much more straight forward.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">edit_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
+                        <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
+                        <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, <span class="dt">node.subsubchild =</span> <span class="st">&quot;BaseThermalTime&quot;</span>,
+                        <span class="dt">parm =</span> <span class="st">&quot;Y&quot;</span>, <span class="dt">value =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">20</span>,<span class="dv">28</span>,<span class="dv">0</span>))</code></pre></div>
+<pre><code>## Replacements:  Maize Soybean 
+## CropType Maize 
+## Available node children:  Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
+## Subchild Name:  ThermalTime 
+## Subsubchild Name:  BaseThermalTime 
+## Edited (node):  Maize 
+## Edited (node.child):  Phenology 
+## Edited (node.subchild):  ThermalTime 
+## Edited (node.subsubchild):  BaseThermalTime 
+## Edit (level):  4 
+## Edited parameter:  Y 
+## New values:  0 12 20 28 0 
+## Created:  ./MaizeSoybean-edited.apsimx</code></pre>
+<p>Let’s inspect the edited file</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean-edited.apsimx&quot;</span>, <span class="dt">src.dir =</span> <span class="st">&quot;.&quot;</span>,
+                            <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
+                            <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, <span class="dt">parm =</span> <span class="kw">c</span>(<span class="st">&quot;X&quot;</span>,<span class="st">&quot;Y&quot;</span>)) </code></pre></div>
+<pre><code>## Replacements:  Maize Soybean 
+## CropType Maize 
+## Subchild Name:  ThermalTime 
+## Name sub-sub-child:  BaseThermalTime 
+##  
+## X : 0 18 26 34 44 
+## Y : 0 12 20 28 0</code></pre>
 <div id="file-type-or-file-format-details" class="section level3">
 <h3>File Type (or File Format) Details</h3>
 <p>APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance. All distributed APSIM-X examples are ‘JSON’ now.</p>
