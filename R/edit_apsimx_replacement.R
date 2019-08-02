@@ -37,8 +37,6 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                     parm = NULL, value = NULL, overwrite = FALSE,
                                     edit.tag = "-edited", verbose = TRUE){
   
-  lvl <- 0
-  
   fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
   if(length(fileNames)==0){
@@ -49,10 +47,11 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   ## Notice that the .apsimx extension will be added here
   file <- match.arg(file, fileNames, several.ok=FALSE)
   
+  if(missing(parm) | missing(value)) stop("'parm' and/or 'value' are missing")
+  
   apsimx_json <- read_json(paste0(src.dir,"/",file))
   
   ## Select Replacements node
-  
   frn <- grep("Models.Core.Replacements", apsimx_json$Children, fixed = TRUE)
   replacements.node <- apsimx_json$Children[[frn]]
   
@@ -60,28 +59,28 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   replacements.node.names <- sapply(replacements.node$Children, function(x) x$Name)
   if(verbose) cat("Replacements: ", replacements.node.names, "\n")
   
-  if(missing(node)) return(cat("Please provide a node\n"))
+  if(missing(node)) return(cat("Please provide a node \n"))
   ## Let's call this level = 0, at the 'node' level (nothing to edit)
+  lvl <- 0
   wrn <- grep(node, replacements.node$Children)
   rep.node <- replacements.node$Children[[wrn]]
   
   if(!is.null(rep.node$CropType) & verbose) cat("CropType", rep.node$CropType,"\n")
   
-  ## Available node children
   rep.node.children.names <- sapply(rep.node$Children, function(x) x$Name)
   if(verbose) cat("Available node children: ",rep.node.children.names,"\n")
   
   ## Select a specific node.child
   if(missing(node.child)) return(cat("missing node.child\n"))
   ## Node.child would be level = 1, still nothing to edit
-  wrnc <- which(rep.node.children.names == node.child)
+  wrnc <- grep(node.child, rep.node.children.names)
   rep.node.child <- rep.node$Children[[wrnc]]
   
   ## Is it possible that we want to edit things at this level?
   ## Unlikely, but here it is
   if(grepl(parm, names(rep.node.child))){
-    rep.node.child <- edit_node(rep.node.child, parm = parm, value = value)
     lvl <- 1
+    rep.node.child <- edit_node(rep.node.child, parm = parm, value = value)
     rep.node$Children[[wrnc]] <- rep.node.child
     replacements.node$Children[[wrn]] <- rep.node
     apsimx_json$Children[[frn]] <- replacements.node
@@ -90,8 +89,8 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   
   rep.node.subchildren.names <- sapply(rep.node.child$Children, function(x) x$Name)
   ## Select a specific node.subchild
-  if(missing(node.subchild)) return(cat("missing node.subchild\n"))
-  wrnsc <- which(rep.node.subchildren.names == node.subchild)
+  if(missing(node.subchild)) cat("missing node.subchild\n")
+  wrnsc <- grep(node.subchild, rep.node.subchildren.names)
   rep.node.subchild <- rep.node.child$Children[[wrnsc]]
   
   if(verbose) cat("Subchild Name: ", rep.node.subchild$Name,"\n")
@@ -109,14 +108,25 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   rep.node.subsubchildren.names <- sapply(rep.node.subchild$Children, function(x) x$Name)
   ## Select a specific node.subchild
   if(missing(node.subsubchild)) return(cat("missing node.subsubchild\n"))
-  wrnssc <- which(rep.node.subsubchildren.names == node.subsubchild)
+  wrnssc <- grepl(node.subsubchild, rep.node.subsubchildren.names)
   rep.node.subsubchild <- rep.node.subchild$Children[[wrnssc]]
   
   if(verbose) cat("Subsubchild Name: ", rep.node.subsubchild$Name,"\n")
   
-  if(grepl(parm, names(rep.node.subsubchild))){
-    rep.node.subsubchild <- edit_node(rep.node.subsubchild, parm = parm, value = value)
-    lvl <- 3
+  if(length(names(rep.node.subsubchild$Children)) == 0){
+    rep.node.sub3child <- rep.node.subsubchild$Children[[1]] 
+  }else{
+    rep.node.sub3child <- rep.node.subsubchild$Children
+  }
+  
+  if(grepl(parm, names(rep.node.sub3child))){
+    rep.node.sub3child <- edit_node(rep.node.sub3child, parm = parm, value = value)
+    lvl <- 4
+    if(length(names(rep.node.subsubchild$Children)) == 0){
+      rep.node.subsubchild$Children[[1]] <- rep.node.sub3child
+    }else{
+      rep.node.subsubchild$Children <- rep.node.sub3child 
+    }
     rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
     rep.node.child$Children[[wrnsc]] <- rep.node.subchild
     rep.node$Children[[wrnc]] <- rep.node.child
@@ -125,35 +135,6 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     ## apsimx_json is ready to be written back to file
   } 
 
-  ## Here I might need to consider what happens when the children don't have
-  ## names and the parameter is just an index. This might also be true for the
-  ## previous level, but I have no idea now
-  if(missing(node.subsubchild)) return(cat("missing node.subsubchild\n"))
-  if(length(names(rep.node.subchild$Children)) == 0){
-    ## For some reason at this level the Children are not named
-    rep.node.subsubchild <- rep.node.subchild$Children[[1]]
-    ## If these are not named then it is based on position
-    wrnssc <- parm
-  }else{
-    rep.node.subsubchild <- rep.node.subchild$Children
-    if(verbose) cat("Name sub-sub-child: ", rep.node.subsubchild$Name,"\n")
-    
-    rep.node.subsubchild.names <- names(rep.node.subsubchild)
-    wrnssc <- which(rep.node.subsubchild.names == node.subsubchild)
-  }
-  
-  rep.node.sub3child <- rep.node.subsubchild$Children[[wrnssc]]
-  
-  if(grepl(parm, names(rep.node.sub3child))){
-    rep.node.subsubchild <- edit_node(rep.node.subsubchild, parm = parm, value = value)
-    lvl <- 3
-    rep.node.child$Children[[wrnsc]] <- rep.node.subchild
-    rep.node$Children[[wrnc]] <- rep.node.child
-    replacements.node$Children[[wrn]] <- rep.node
-    apsimx_json$Children[[frn]] <- replacements.node
-    ## apsimx_json is ready to be written back to file
-  }
-  
   ## Write back to a file
   if(overwrite == FALSE){
     wr.path <- paste0(wrt.dir,"/",
