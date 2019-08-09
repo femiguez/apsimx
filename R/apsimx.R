@@ -5,7 +5,7 @@
 #' 
 #' @title Run an APSIM-X simulation
 #' @name apsimx
-#' @description Run apsimx from R. It uses 'system' and it attempts to be platform independent.
+#' @description Run apsimx from R. It uses 'system' (unix) or 'shell' (windows) and it attempts to be platform independent.
 #' @param file file name to be run (the extension .apsimx is optional)
 #' @param src.dir directory containing the .apsimx file to be run (defaults to the current directory)
 #' @param silent whether to print messages from apsim simulation
@@ -241,7 +241,7 @@ auto_detect_apsimx_examples <- function(){
   
   if(!is.na(apsimx::apsimx.options$examples.path)){
     ## Not sure if I need shQuote here
-    apsimx_ex_dir <- shQuote(apsimx::apsimx.options$examples.path, type = "cmd")
+    apsimx_ex_dir <- apsimx::apsimx.options$examples.path
   }
   return(apsimx_ex_dir)
 }
@@ -287,6 +287,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ex.dir <- auto_detect_apsimx_examples()
   ex <- paste0(ex.dir,"/",example,".apsimx")
   
+  if(!file.exists(ex)) stop("cannot find example files")
   ## Make a temporary copy of the file to the current directory
   ## Do not transfer permissions?
   file.copy(from = ex, to =".", copy.mode = FALSE)
