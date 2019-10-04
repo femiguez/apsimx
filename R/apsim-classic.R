@@ -4,7 +4,7 @@
 #' simple, especially for large scale simulations or parameter optimization
 #' 
 #' @title Run an APSIM (7.x) "Classic" simulation
-#' @name apsimx
+#' @name apsim
 #' @description Run apsim from R. It's for Windows only. It uses 'shell'.
 #' @param file file name to be run (the extension .apsim is optional)
 #' @param src.dir directory containing the .apsim file to be run (defaults to the current directory)
@@ -40,7 +40,7 @@ apsim <- function(file = "", src.dir=".",
   file <- match.arg(file, fileNames, several.ok=FALSE)
   
   if(length(fileNames)==0){
-    stop("There are no .apsimx files in the specified directory to run.")
+    stop("There are no .apsim files in the specified directory to run.")
   }
   
   if(length(grep(".apsim$",file)) != 0){
@@ -85,46 +85,49 @@ auto_detect_apsim <- function(){
   }
   
   ## Internal function to split APSIM name
-  fev <- function(x) as.numeric(strsplit(x, ".", fixed = TRUE)[[1]][4])
+  fev <- function(x) as.numeric(strsplit(x, "r", fixed = TRUE)[[1]][2])
   ## I need to deal with the fact that there might be multiple versions
   ## of APSIM installed
   
   if(.Platform$OS.type == "windows"){
-    st1 <- "C:/PROGRA~1/"
+    st1 <- "C:/PROGRA~2/"
     laf <- list.files(st1)
-    find.apsim <- grep("APSIM",laf)
-    apsimx.versions <- laf[find.apsim]
+    find.apsim <- grep("APSIM",laf,ignore.case = TRUE)
+    apsim.versions <- laf[find.apsim]
     if(length(find.apsim) > 1){
       versions <- sapply(apsimx.versions, fev)
       newest.version <- sort(versions, decreasing = TRUE)[1]
-      if(apsimx::apsimx.options$warn.versions){
+      if(apsimx::apsim.options$warn.versions){
         warning(paste("Multiple versions of APSIM installed. \n
                     Choosing the newest one:",newest.version))
       }
-      apsimx.name <- grep(newest.version, apsimx.versions, value = TRUE)
+      apsim.name <- grep(newest.version, apsim.versions, value = TRUE)
     }else{
-      apsimx.name <- laf[find.apsim]
+      apsim.name <- laf[find.apsim]
     }
     ## APSIM executable
-    st3 <- "/Bin/Models.exe" 
-    apsimx_dir <- paste0(st1,apsimx.name,st3)
+    st3 <- "/Model/Apsim.exe" 
+    apsim_dir <- paste0(st1,apsim.name,st3)
   }
   
-  if(!is.na(apsimx::apsimx.options$exe.path)){
+ if(!is.na(apsimx::apsim.options$exe.path)){
     ## Windows paths can contain white spaces which are
     ## problematic when running them at the command line
     ## shQuote might be useful for this purpose
-    apsimx_dir <- shQuote(apsimx::apsimx.options$exe.path)
+    ## Howver I think shQuote is not needed 
+    ## Because shell does its own translate
+    ## Need to test this
+    apsim_dir <- apsimx::apsim.options$exe.path
   }
-  return(apsimx_dir)
+  return(apsim_dir)
 }
 
-#' Auto detect where apsimx examples are located 
+#' Auto detect where APSIM (7.x) "Classic" examples are located 
 #' 
-#' @title Auto detect where apsimx examples are located
+#' @title Auto detect where apsim examples are located
 #' @name auto_detect_apsim_examples
-#' @description simple function to detect where APSIM-X examples are located
-#' @return will create a directory pointing to APSIM-X distributed examples
+#' @description simple function to detect where APSIM "Classic" examples are located
+#' @return will create a directory pointing to APSIM "Classic" distributed examples
 #' @export
 #' @examples 
 #' \dontrun{
@@ -139,32 +142,32 @@ auto_detect_apsim_examples <- function(){
   }
   
   ## Internal function to split APSIM name
-  fev <- function(x) as.numeric(strsplit(x, ".", fixed = TRUE)[[1]][4])
+  fev <- function(x) as.numeric(strsplit(x, "r", fixed = TRUE)[[1]][2])
   
   if(.Platform$OS.type == "windows"){
-      st1 <- "C:/PROGRA~1"
+      st1 <- "C:/PROGRA~2"
       laf <- list.files(st1)
-      find.apsim <- grep("APSIM",laf)
-      apsimx.versions <- laf[find.apsim]
-      if(length(apsimx.versions) > 1){
-        versions <- sapply(apsimx.versions, fev)
+      find.apsim <- grep("APSIM",laf, ignore.case = TRUE)
+      apsim.versions <- laf[find.apsim]
+      if(length(apsim.versions) > 1){
+        versions <- sapply(apsim.versions, fev)
         newest.version <- sort(versions, decreasing = TRUE)[1]
-        warning(paste("Multiple versions of APSIM-X installed. \n
+        warning(paste("Multiple versions of APSIM installed. \n
                     Choosing the newest one:",newest.version))
-        apsimx.name <- grep(newest.version, apsimx.versions, value = TRUE)
+        apsim.name <- grep(newest.version, apsim.versions, value = TRUE)
       }else{
-        apsimx.name <- apsimx.versions
+        apsim.name <- apsim.versions
       }
       ## APSIM path to examples
       st3 <- "/Examples" 
-      apsimx_ex_dir <- paste0(st1,"/",apsimx.name,st3)
+      apsim_ex_dir <- paste0(st1,"/",apsim.name,st3)
   }
   
-  if(!is.na(apsimx::apsimx.options$examples.path)){
+ if(!is.na(apsimx::apsim.options$examples.path)){
     ## Not sure if I need shQuote here
-    apsimx_ex_dir <- apsimx::apsimx.options$examples.path
+    apsim_ex_dir <- apsimx::apsim.options$examples.path
   }
-  return(apsimx_ex_dir)
+  return(apsim_ex_dir)
 }
 
 #'
@@ -180,59 +183,48 @@ auto_detect_apsim_examples <- function(){
 #' @export
 #' @examples 
 #' \dontrun{
-#' wheat <- apsim_example("Wheat")
-#' maize <- apsim_example("Maize")
-#' barley <- apsim_example("Barley")
+#' millet <- apsim_example("Millet")
+#' potato <- apsim_example("Potato")
+#' sugar <- apsim_example("Sugar")
 #' ## The 'Date' column is created by this function, based on apsim output.
-#' ggplot(data = wheat , aes(x = Date, y = Yield)) + 
-#'   geom_point()
+#' ggplot(data = millet , aes(x = Date, y = millet_biomass)) + 
+#'   geom_line()
 #' }
 #' 
 
-apsim_example <- function(example = "Wheat", silent = FALSE){
+apsim_example <- function(example = "Millet", silent = FALSE){
 
   ## Run a limited set of examples
   ## Now the only one missing is Graph, which I assume is about
-  ## graphics and not that relevant to apsimx
-  ## Examples not supported: 'Graph', 'FodderBeet'
-  ex.ch <- c("Barley","Chicory","ControlledEnvironment",
-             "Eucalyptus", "EucalyptusRotation",
-             "Factorial","FodderBeet",
-             "Maize","MorrisExample", "Oats", "OilPalm",
-             "Plantain","Potato","SCRUM","Slurp", "SobolExample",
-             "Sugarcane", "Wheat","WhiteClover")
+  ## graphics and not that relevant to apsim
+  ## Examples not supported: Several
+  ex.ch <- c("agpasture","Canopy","Centro",
+             "Millet", "Oryza",
+             "Potato","Sugar")
   
   example <- match.arg(example, choices = ex.ch)
   
-  ada <- auto_detect_apsimx()
-  ex.dir <- auto_detect_apsimx_examples()
-  ex <- paste0(ex.dir,"/",example,".apsimx")
+  ada <- auto_detect_apsim()
+  ex.dir <- auto_detect_apsim_examples()
+  ex <- paste0(ex.dir,"/",example,".apsim")
   
   if(!file.exists(ex)) stop("cannot find example files")
   ## Make a temporary copy of the file to the current directory
   ## Do not transfer permissions?
   file.copy(from = ex, to =".", copy.mode = FALSE)
   
-  if(.Platform$OS.type == "unix"){
-    mono <- system("which mono", intern = TRUE)
-    run.strng <- paste0(mono," ",ada," ./",paste0(example,".apsimx"))
-    ## Run APSIM
-    system(command = run.strng, ignore.stdout = silent)
-  }
-  
   if(.Platform$OS.type == "windows"){
-    run.strng <- paste0(ada," ",paste0("./",example,".apsimx"))
+    run.strng <- paste0(ada," ",paste0("./",example,".apsim"))
     shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   }
 
   ## Create database connection
   ## I don't need to specify the directory as it should be the current one
-  ans <- read_apsimx(paste0(example,".db"), value = "report")
+  ans <- read_apsim(paste0(example,".out"), value = "report")
   ## OS independent cleanup (risky?)
-  file.remove(paste0("./",example,".db"))
-  file.remove(paste0("./",example,".apsimx"))
-  ## Add the date
-  ans$Date <- as.Date(sapply(ans$Clock.Today, function(x) strsplit(x, " ")[[1]][1]))
+  file.remove(paste0("./",example,".out"))
+  file.remove(paste0("./",example,".sum"))
+  file.remove(paste0("./",example,".apsim"))
   ## Return data frame
   return(ans)
 }
@@ -308,7 +300,7 @@ read_apsim <- function(file = "", src.dir = ".",
 
 #' Read all APSIM generated .out files in a directory
 #' 
-#' @title Read all APSIM-X generated .db files in a directory
+#' @title Read all APSIM generated .out files in a directory
 #' @name read_apsim_all
 #' @description Like 'read_apsim', but it reads all .out files in a directory. 
 #' @param src.dir source directory where files are located
@@ -317,20 +309,21 @@ read_apsim <- function(file = "", src.dir = ".",
 #' @export
 #' 
 
-read_apsim_all <- function(src.dir = ".", value = c("report","all")){
+read_apsim_all <- function(src.dir = ".", value = c("report","all"),
+                           date.format = "%d/%m/%Y"){
   
   ## This is super memorey hungry and not efficient at all, but it might work 
   ## for now
   
   value <- match.arg(value)
   
-  fileNames <- dir(path = src.dir, pattern=".db$",ignore.case=TRUE)
+  fileNames <- dir(path = src.dir, pattern=".out$",ignore.case=TRUE)
   
   ans <- NULL
   
   for(i in fileNames){
     
-    tmp <- read_apsimx(fileNames[i], value = value)
+    tmp <- read_apsim(fileNames[i], value = value, date.format = date.format)
     tmp.d <- data.frame(file.name = fileNames[i], tmp)
     ans <- rbind(ans, tmp)
     
@@ -385,8 +378,5 @@ assign('exe.path', NA, apsim.options)
 assign('examples.path', NA, apsim.options)
 assign('warn.versions', TRUE, apsim.options)
 
-#' Import packages needed for apsimx to work correctly
-#' @import DBI RSQLite knitr xml2 jsonlite
-#' @importFrom utils read.table
-NULL
+
 

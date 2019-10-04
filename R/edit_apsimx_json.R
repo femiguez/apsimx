@@ -186,7 +186,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
     
     if(soil.child == "OrganicMatter"){
       edited.child <- "OrganicMatter"
-      wsomn <- grepl("OrganicMatter", soil.node0)
+      wsomn <- grepl("Organic", soil.node0)
       soil.om.node <- soil.node0[wsomn][[1]]
       
       som.parms1 <- c("RootCN", "EnrACoeff", "EnrBCoeff")

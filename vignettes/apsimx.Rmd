@@ -101,7 +101,7 @@ edit_apsimx("Maize.apsimx", src.dir = ex.dir,
              wrt.dir = ".",
              node = "Soil",
              soil.child = "OrganicMatter", 
-             parm = "OC", value = ocs)
+             parm = "Carbon", value = ocs)
 ```
 
 Let's make sure that we have changed the values successfully.

@@ -360,7 +360,7 @@ read_apsimx <- function(file = "", src.dir = ".",
   ## Disconnect
   DBI::dbDisconnect(con)
   
-  if(grep("Clock.Today",names(tbl0)){
+  if(grep("Clock.Today",names(tbl0))){
     tbl0$Date <- as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1]))
   }
   ## Return list

@@ -173,21 +173,18 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
     
     if(soil.child == "OrganicMatter"){
       ## Which soil organc matter
-      wsomn <- grepl("Models.Soils.SoilOrganicMatter", soil.node[[1]]$Children)
+      wsomn <- grepl("Organic", soil.node[[1]]$Children)
       soil.om.node <- soil.node[[1]]$Children[wsomn][[1]]
       
       tmp <- soil.om.node
-      soil.om.d1 <- data.frame(parm = names(tmp)[2:4],
-                               value = as.vector(unlist(tmp[2:4])))
+      icl <- as.vector(which(sapply(tmp, length) == 1))
+      soil.om.d1 <- data.frame(parm = names(tmp)[icl],
+                               value = as.vector(unlist(tmp[icl])))
       print(kable(soil.om.d1, digits = digits))
       
-      soil.om.d2 <- data.frame(Depth = soil.depths,
-                               Thickness = unlist(tmp$Thickness),
-                               OC = unlist(tmp$OC),
-                               SoilCN = unlist(tmp$SoilCN),
-                               RootWt = unlist(tmp$RootWt),
-                               FBiom = unlist(tmp$FBiom),
-                               FInert = unlist(tmp$FInert))
+      icl2 <- as.vector(which(sapply(tmp, length) > 1))
+      tmp2 <- tmp[icl2]
+      soil.om.d2 <- as.data.frame(sapply(tmp2, unlist))
       
       print(kable(soil.om.d2, digits = digits))
     }
