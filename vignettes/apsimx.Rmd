@@ -234,9 +234,13 @@ extd.dir <- system.file("extdata", package = "apsimx")
 apsimx_filetype("Maize_old", src.dir = extd.dir)
 ```
 
+# In Beta
+
+* inspect_aspimx_replacement
+* edit_apsimx_replacement
+
 # Future features
 
-* Currently working on developing 'inspect_apsimx_replacement' (JSON only)
-* Create function 'edit_apsimx_replacement' (JSON only)
+* Create custom function for editing the depth of the soil profile 'edit_apsimx_depth'
 * Improve implementation of read_apsimx_all 
 * Add tools for optimization and sensitivity analysis.
