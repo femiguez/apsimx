@@ -33,7 +33,7 @@
 
 inspect_apsimx_xml <- function(file = "", src.dir = ".", 
                                node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
-                                        "MicroClimate","Crop","Manager"),
+                                        "MicroClimate","Crop","Manager","Other"),
                                soil.child = c("Water","OrganicMatter",
                                               "Analysis","InitialWater","Sample"),
                                som.child = c("Pools","Other"),
