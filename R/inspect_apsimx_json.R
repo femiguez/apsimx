@@ -32,7 +32,7 @@
 inspect_apsimx_json <- function(file = "", src.dir = ".", 
                                 node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                          "MicroClimate","Crop","Manager"),
-                                soil.child = c("Water","OrganicMatter",
+                                soil.child = c("Water","OrganicMatter", "Chemical",
                                                "Analysis","InitialWater","Sample"),
                                 som.child = c("Pools","Other"),
                                 digits = 3){
@@ -61,14 +61,11 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
   
   ## The previous creates a list
   if(node == "Clock"){
-    ## Clock seems to be the first element in the list
-    ## parent.node[[1]]
-    ## Extract the list which has a component Name == "Clock"
     wlc <- function(x) grepl("Clock", x$Name, ignore.case = TRUE)
     wlcl <- sapply(parent.node, FUN = wlc)
     clock.node <- unlist(parent.node[wlcl])
-    cat("StartDate:", clock.node["StartDate"],"\n")
-    cat("EndDate:", clock.node["EndDate"],"\n")
+    cat("StartDate:", clock.node["Start"],"\n")
+    cat("EndDate:", clock.node["End"],"\n")
   }
   
   ## The previous creates a list
@@ -189,15 +186,14 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
       print(kable(soil.om.d2, digits = digits))
     }
     
-    if(soil.child == "Analysis"){
+    if(soil.child %in% c("Analysis","Chemical","Sample")){
       ## Which soil analysis
-      wsan <- grepl("Models.Soils.Analysis", soil.node[[1]]$Children)
+      wsan <- grepl(paste0("Models.Soils.", soil.child), 
+                    soil.node[[1]]$Children)
       soil.analysis.node <- soil.node[[1]]$Children[wsan][[1]]
       
-      tmp <- soil.analysis.node
-      soil.analysis.d <- data.frame(Depth = soil.depths,
-                                    Thickness = unlist(tmp$Thickness),
-                                    PH = unlist(tmp$PH))
+      wil <- which(sapply(soil.analysis.node, length) > 1)
+      soil.analysis.d <- as.data.frame(sapply(soil.analysis.node[wil], unlist))
       
       print(kable(soil.analysis.d, digits = digits))
     }
@@ -216,24 +212,6 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
                                          tmp$DepthWetSoil)
       
       print(kable(soil.initialwater.d, digits = digits))
-    }
-    
-    if(soil.child == "Sample"){
-      ## Which soil sample
-      wssn <- grepl("Models.Soils.Sample", soil.node[[1]]$Children)
-      soil.sample.node <- soil.node[[1]]$Children[wssn][[1]]
-      
-      
-      tmp <- soil.sample.node
-      
-      mat <- cbind(soil.depths, unlist(tmp$Thickness), unlist(tmp$NO3),
-                   unlist(tmp$NH4), unlist(tmp$SW), unlist(tmp$OC),
-                   unlist(tmp$EC), unlist(tmp$CL), unlist(tmp$ESP),
-                   unlist(tmp$PH))
-      soil.sample.d <- data.frame(mat)
-      names(soil.sample.d) <- c("Depth",names(tmp)[2:10])
-      
-      print(kable(soil.sample.d, digits = digits))
     }
   }
   

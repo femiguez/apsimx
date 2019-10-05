@@ -2,15 +2,18 @@ apsimx
 R package for APSIM-X
 This package allows for interaction with APSIM ("Next Generation") or
 APSIM-X. It can inspect, edit, run and read APSIMX files. APSIMX now
-uses two different file types for .apsimx files: XML and JSON. The
+uses file type JSON for .apsimx. The
 package can inspect and edit XML and JSON files. The inspecting and
-editing files is an area that I'm currently improving.
+editing files is an area that I'm currently improving. Since
+version 0.95, apsimx can inspect, run and read APSIM 'Classic'.
 
 * Package requirements:
 
 * Other R packages: DBI, jsonlite, knitr, RSQLite, xml2
 
 * APSIMX:
+
+* and/or APSIM (7.x) 'Classic'
 
 The new APSIM uses the mono framework to run on Windows, Mac and Linux
 (Debian). Mono should be installed first (in Mac and Linux).
@@ -21,7 +24,7 @@ https://www.mono-project.com/download/stable/
 **APSIMX download**:
 https://www.apsim.info/Products/Downloads.aspx
 
-If you need an R package to interact with the previous version(s) of
+If you need other R packages to interact with the previous version(s) of
 APSIM (7.x) try 'APSIM' and 'apsimr'.
 
 If you want to install this package from github try in R:

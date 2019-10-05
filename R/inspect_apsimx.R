@@ -24,7 +24,7 @@
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")        
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Water")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
-#' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
+#' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Sample")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.child = "Pools")
@@ -37,9 +37,9 @@
 
 inspect_apsimx <- function(file = "", src.dir = ".", 
                            node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
-                                    "MicroClimate","Crop","Manager"),
-                           soil.child = c("Water","OrganicMatter",
-                                          "Analysis","InitialWater","Sample"),
+                                    "MicroClimate","Crop","Manager","Other"),
+                           soil.child = c("Water","OrganicMatter", "Analysis",
+                                          "Chemical","InitialWater","Sample"),
                            som.child = c("Pools","Other"),
                            parm = NULL,
                            digits = 3){

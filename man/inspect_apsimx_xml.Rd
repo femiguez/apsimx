@@ -6,8 +6,8 @@
 \usage{
 inspect_apsimx_xml(file = "", src.dir = ".", node = c("Clock",
   "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-  "Manager"), soil.child = c("Water", "OrganicMatter", "Analysis",
-  "InitialWater", "Sample"), som.child = c("Pools", "Other"),
+  "Manager", "Other"), soil.child = c("Water", "OrganicMatter",
+  "Analysis", "InitialWater", "Sample"), som.child = c("Pools", "Other"),
   parm = NULL, digits = 3)
 }
 \arguments{

@@ -28,8 +28,8 @@ millet <- apsim_example("Millet")
 potato <- apsim_example("Potato")
 sugar <- apsim_example("Sugar")
 ## The 'Date' column is created by this function, based on apsim output.
-ggplot(data = millet , aes(x = Date, y = Yield)) + 
-  geom_point()
+ggplot(data = millet , aes(x = Date, y = millet_biomass)) + 
+  geom_line()
 }
 
 }
