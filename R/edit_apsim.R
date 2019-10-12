@@ -305,42 +305,28 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     
   }
   
-  if(node == "Crop"){
+  if(node == "Crop" | node == "Manager"){
     ## I'm not sure what kind of structure I can assume for 'Crop'
     ## in APSIM 'Classic'
-    parms.ch <- c("StartDate","EndDate","MinESW","MinRain",
-                  "RainDays","CultivarName","SowingDepth",
-                  "RowSpacing","Population")
     
-    parm <- match.arg(parm, choices = parm.ch)
+    parm.path <- paste0(".//manager/ui/",parm)
     
-    parm.path <- paste0(".//Manager/Script","/",parm)
+    crop.node <- xml_find_first(apsim_xml, parm.path)
     
-    soil.manager.sowingrule.node <- xml_find_first(apsim_xml, parm.path)
-    
-    if(length(value) != length(soil.manager.sowingrule.node))
+    if(length(value) != length(crop.node))
       stop("value vector of incorrect length")
     
-    xml_set_text(soil.manager.sowingrule.node, as.character(value))
-    
-    ## At the moment it seems that there is nothing to edit for 'Harvesting'
-  }
-  
-  if(node == "Manager"){
-    stop("This is an advanced feature, not implemented at the moment")
+    xml_set_text(crop.node, as.character(value))
   }
   
   if(node == "Other"){
-    stop("This is an advanced feature, not implemented at the moment")
+    other.node <- xml_find_first(apsim_xml, parm.path)
+    
+    if(length(value) != length(other.node))
+      stop("value vector of incorrect length")
+    
+    xml_set_text(other.node, as.character(value))
   }
-  
-  ## Still to do: Manager
-  ## It might not make sense to change all of these variables
-  ## For example, the plant is 'Maize' and if you really need to change this
-  ## create a different .apsimx file.
-  ## I'm against partial replacement as in the apsimr package
-  ## In general, I think strict total replacement might 
-  ## lead to fewer errors
   
   if(overwrite == FALSE){
     wr.path <- paste0(wrt.dir,"/",

@@ -6,11 +6,11 @@
 \usage{
 edit_apsim(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
   "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-  "Manager"), soil.child = c("Water", "OrganicMatter", "Analysis",
-  "InitialWater", "Sample"), som.child = c("Pools", "Other"),
-  manager.child = NULL, parm = NULL, value = NULL,
-  overwrite = FALSE, edit.tag = "-edited", parm.path = NULL,
-  verbose = TRUE)
+  "Manager", "Other"), soil.child = c("Water", "OrganicMatter",
+  "Chemical", "Analysis", "InitialWater", "Sample"),
+  som.child = c("Pools", "Other"), manager.child = NULL, parm = NULL,
+  value = NULL, overwrite = FALSE, edit.tag = "-edited",
+  parm.path = NULL, verbose = TRUE)
 }
 \arguments{
 \item{file}{file ending in .apsim to be edited}

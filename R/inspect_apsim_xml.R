@@ -7,12 +7,13 @@
 #' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
 #' @param soil.child specific soil component to be inspected
 #' @param som.child specific surface organic matter component to be inspected ('Pools' or 'Other')
-#' @param parm parameter to inspect when node = 'Other'
+#' @param parm parameter to inspect when node = 'Crop', 'Manager' or 'Other'
 #' @param digits number of decimals to print (default 3)
-#' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
+#' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsim file.
+#'          For 'Crop', 'Manager' and 'Other' 'parm' should be indicated with a first element to look for and a second with the relative position in case there are
+#'          multiple results.
 #' @return table with inspected parameters and values
 #' @export
-#' @note node 'Manager' can be complicated and it is not guranteed to work. 
 #' @examples 
 #' \dontrun{
 #' extd.dir <- system.file("extdata", package = "apsimx")
@@ -25,8 +26,20 @@
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Sample")
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "SurfaceOrganicMatter")
-#' inspect_apsim("Millet", src.dir = extd.dir, node = "Crop") 
+#' inspect_apsim("Millet", src.dir = extd.dir, node = "Crop", parm = list("sow",1)) 
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Manager") 
+#' 
+#' ## Testing with maize-soybean-rotation.apsim
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Clock")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Weather")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "OrganicMatter")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "Analysis")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "Sample")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "SurfaceOrganicMatter")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Crop", parm = list("sow",1))
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager")
 #' }
 #' 
 
@@ -95,8 +108,8 @@ inspect_apsim <- function(file = "", src.dir = ".",
     
     ## Print soil type, latitude and longitude
     cat("Soil Type: ",xml_text(xml_find_first(apsim_xml, ".//Soil/SoilType")),"\n")
-    cat("Local Name: ",xml_text(xml_find_first(apsim_xml, ".//Soil/LocalName")),"\n")
-    cat("Site: ",xml_text(xml_find_first(apsim_xml, ".//Soil/Site")),"\n")
+    cat("Latitude: ",xml_text(xml_find_first(apsim_xml, ".//Soil/Latitude")),"\n")
+    cat("Longitude: ",xml_text(xml_find_first(apsim_xml, ".//Soil/Longitude")),"\n")
     
     if(soil.child == "Water"){
       ## Crop specific
@@ -319,7 +332,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
     print(kable(microclimate.d, digits = digits))
   }
   
-  if(node == "Crop"){
+  if(node == "Crop" | node == "Manager"){
     ## It seems that for nodes Crop and Manager, the names can be arbitrary which
     ## makes this hard parsing complicated
     cat("Crop Type: ",xml_text(xml_find_first(apsim_xml, ".//manager/ui/crop")),"\n")
@@ -328,56 +341,26 @@ inspect_apsim <- function(file = "", src.dir = ".",
     cat("Management Scripts:", xfa.manager,"\n", sep = "\n")
     
     ## this makes a strong assumption that a sowing rule is present
-    find.sow <- grep("sow",xfa.manager, ignore.case = TRUE)
-    if(length(find.sow) == 0)
-      warning("Sowing not found")
+    if(missing(parm)) stop("parm is missing")
+    if(!is.list(parm)) stop("parm should be a list")
     
-    sowing <- xml_find_first(apsim_xml, ".//manager/ui")
-    descr <- sapply(xml_attrs(xml_children(sowing)),function(x) x[["description"]])
-    vals <- xml_text(xml_children(sowing))
+    parm1 <- parm[[1]]
+    position <- parm[[2]]
     
-    sowingrule.d <- data.frame(parm = descr, value = vals)
-    print(kable(sowingrule.d, digits = digits))
+    all.manager.names <- xml_attrs(xml_find_all(apsim_xml, ".//manager"))
     
-    ## Just check that there is a harvest rule
-    ## So far I looked into the Maize and Wheat examples. For Maize it is called
-    ## Harvesting. For Wheat it is called 'Harvest'. I suspect the user can give it
-    ## Other names too
-    if(length(grep("harvest", xfa.manager, ignore.case = TRUE)) == 0){
-      warning("Harvest[ing] not found")
-    }else{
-      ## For now it does not seem to make sense to print the harvest rule
-      harvest0 <- xml_find_all(apsim_xml, ".//manager/ui")
-      w.hrv <- grep("harvest", harvest0)
-      harvest <- harvest0[[w.hrv]]
-      descr <- sapply(xml_attrs(xml_children(harvest)),function(x) x[["description"]])
-      vals <- xml_text(xml_children(harvest))
-        
-      harvest.d <- data.frame(parm = descr, value = vals)
-      print(kable(harvest.d, digits = digits))
-    }
-  }
-  
-  if(node == "Manager"){
-    ## First print available 'Manager' options
-    ## This is not bullet-proof as I do not know what to expect with
-    ## 'Other' Manager options
-    xfa.manager <- as.vector(unlist(xml_attrs(xml_find_all(apsim_xml, ".//manager"))))
-    cat("Management Scripts:", xfa.manager,"\n")
-    cat("This is limited at the moment... more to come \n")
+    find.parm <- grep(parm1, all.manager.names, ignore.case = TRUE)[position]
+    cat("Selected manager: ", all.manager.names[[find.parm]],"\n")
+    if(length(find.parm) == 0)
+      warning(paste(parm1, " not found"))
     
-    ## This is rough at the moment
-    ## Available components within Other Manager Components
-    ## manager.d <- NULL
-    ## for(i in w.other.manager){
-    ##  amo <- xml_find_all(apsim_xml, paste0(".//manager/Script"))[w.other.manager]
-    ##  ms.attr <- xml_children(amo)
-    ##  ms.nm <- xml_name(ms.attr)
-    ##  ms.vl <- xml_text(ms.attr)
-    ##  tmp <- data.frame(parm = ms.nm, value = ms.vl)
-    ##  manager.d <- rbind(manager.d, tmp)
-    ## }
-    ## print(kable(manager.d, digits = digits))
+    crop <- xml_find_all(apsim_xml, paste0(".//manager"))[find.parm]
+    crop2 <- xml_find_first(crop, "ui")
+    descr <- sapply(xml_attrs(xml_children(crop2)),function(x) x[["description"]])
+    vals <- xml_text(xml_children(crop2))
+    
+    crop.d <- data.frame(parm = descr, value = vals)
+    print(kable(crop.d, digits = digits))
   }
   
   if(node == 'Other'){
@@ -386,8 +369,8 @@ inspect_apsim <- function(file = "", src.dir = ".",
     }
     
     other.d <- NULL
+    other <- xml_find_all(apsim_xml, paste0(parm.path,"/",parm))
     for(i in other){
-      other <- xml_find_all(apsim_xml, paste0(parm.path,"/",parm))
       ms.attr <- xml_children(other)
       ms.nm <- xml_name(ms.attr)
       ms.vl <- xml_text(ms.attr)

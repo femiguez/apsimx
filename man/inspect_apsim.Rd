@@ -49,7 +49,11 @@ inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Analysi
 inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
 inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Sample")
 inspect_apsim("Millet", src.dir = extd.dir, node = "SurfaceOrganicMatter")
+inspect_apsim("Millet", src.dir = extd.dir, node = "Crop") 
 inspect_apsim("Millet", src.dir = extd.dir, node = "Manager") 
+
+## Testing with maize-soybean-rotation.apsim
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Clock")
 }
 
 }
