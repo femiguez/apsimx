@@ -6,9 +6,9 @@
 \usage{
 inspect_apsimx_json(file = "", src.dir = ".", node = c("Clock",
   "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-  "Manager"), soil.child = c("Water", "OrganicMatter", "Analysis",
-  "InitialWater", "Sample"), som.child = c("Pools", "Other"),
-  digits = 3)
+  "Manager", "Other"), soil.child = c("Water", "OrganicMatter",
+  "Chemical", "Analysis", "InitialWater", "Sample"),
+  som.child = c("Pools", "Other"), digits = 3)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected (JSON)}

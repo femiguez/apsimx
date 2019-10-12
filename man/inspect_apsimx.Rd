@@ -5,10 +5,10 @@
 \title{Inspect an .apsimx file (XML or JSON)}
 \usage{
 inspect_apsimx(file = "", src.dir = ".", node = c("Clock", "Weather",
-  "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
-  soil.child = c("Water", "OrganicMatter", "Analysis", "InitialWater",
-  "Sample"), som.child = c("Pools", "Other"), parm = NULL,
-  digits = 3)
+  "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager",
+  "Other"), soil.child = c("Water", "OrganicMatter", "Analysis",
+  "Chemical", "InitialWater", "Sample"), som.child = c("Pools", "Other"),
+  parm = NULL, digits = 3)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected}
@@ -48,7 +48,7 @@ inspect_apsimx("Maize", src.dir = ex.dir, node = "Clock")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")        
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Water")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
-inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
+inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Soil", soil.child = "Sample")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.child = "Pools")

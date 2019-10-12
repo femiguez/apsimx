@@ -252,6 +252,7 @@ It is possible that the function above will soon be obsolete as all .apsimx file
 
 * inspect_aspimx_replacement
 * edit_apsimx_replacement
+* inspect_apsim
 
 # Future features
 

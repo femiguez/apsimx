@@ -31,7 +31,7 @@
 
 inspect_apsimx_json <- function(file = "", src.dir = ".", 
                                 node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
-                                         "MicroClimate","Crop","Manager"),
+                                         "MicroClimate","Crop","Manager","Other"),
                                 soil.child = c("Water","OrganicMatter", "Chemical",
                                                "Analysis","InitialWater","Sample"),
                                 som.child = c("Pools","Other"),
