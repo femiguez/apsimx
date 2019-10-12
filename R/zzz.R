@@ -2,6 +2,7 @@
 
 .onLoad <- function(libname, pkgname){
   
+  find.apsim <- NULL
   ## For unix
   if(.Platform$OS.type == "unix"){
     ## Check for mono
@@ -24,18 +25,27 @@
     }
   }else{
         if(grepl("Windows", Sys.info()[["sysname"]])){
-          laf <- list.files("c:/PROGRA~1")
+          laf <- list.files("C:/PROGRA~1")
+          laf2 <- list.file("C:/PROGRA~2")
       }
   }
   ## Check whether APSIM-X is detected
-  find.apsimx <- laf[grepl("APSIM", laf, ignore.case = TRUE)]
-  if(length(find.apsimx) > 0){
-    fax <- paste0("Found: ", find.apsimx)
+  if(!grepl("Windows", Sys.info()[["sysname"]])){
+    find.apsimx <- laf[grepl("APSIM", laf, ignore.case = TRUE)]
+  }else{
+    ## This is the location for APSIM-X
+    find.apsimx <- laf[grepl("APSIM", laf, ignore.case = TRUE)]
+    ## This is the location for APSIM "Classic"
+    find.apsim <- laf2[grepl("APSIM", laf2, ignore.case = TRUE)]
+  }
+  
+  if(length(find.apsimx) > 0 | length(find.apsim) > 0){
+    fax <- paste0("Found APSIM or APSIM-X")
     ## Won't print ApsimX at the moment but might change it in the future
     ## packageStartupMessage(fax)
   }else{
-    warning("APSIM-X not found. \n 
-             If APSIM-X is installed in an alternative location, \n
-            set paths manually using 'apsimx_options'")
+    warning("APSIM(X) not found. \n 
+             If APSIM(X) is installed in an alternative location, \n
+            set paths manually using 'apsimx_options' or 'apsim_options'")
   }
 }

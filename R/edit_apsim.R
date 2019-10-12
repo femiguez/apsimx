@@ -46,8 +46,8 @@
 
 edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                        node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
-                                     "MicroClimate","Crop","Manager"),
-                       soil.child = c("Water","OrganicMatter",
+                                     "MicroClimate","Crop","Manager","Other"),
+                       soil.child = c("Water","OrganicMatter", "Chemical",
                                            "Analysis","InitialWater","Sample"),
                        som.child = c("Pools","Other"),
                        manager.child = NULL,
@@ -89,7 +89,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   ## Editing the weather file name only
   if(node == "Weather"){
     if(missing(parm)){
-      parm.path <- paste0("//Weather/FileName")
+      parm.path <- paste0("//metfile/filename")
       weather.filename.node <- xml_find_first(apsim_xml, parm.path)
       if(length(grep(".met$",value)) == 0) 
         stop("value should be a .met file")
