@@ -1,0 +1,1051 @@
+<folder version="37" creator="Apsim 7.9-r4044" name="simulations">
+  <simulation name="Maize-soybean">
+    <metfile name="met">
+      <filename name="filename" input="yes">C:\Users\femiguez\Dropbox\csm\labs\06_lab\apsim\Iowa C.met</filename>
+    </metfile>
+    <clock>
+      <start_date type="date" description="Enter the start date of the simulation">01/01/2011</start_date>
+      <end_date type="date" description="Enter the end date of the simulation">31/12/2012</end_date>
+    </clock>
+    <summaryfile />
+    <area name="paddock">
+      <surfaceom name="SurfaceOrganicMatter">
+        <PoolName type="text" description="Organic Matter pool name">maize</PoolName>
+        <type type="text" description="Organic Matter type">maize</type>
+        <mass type="text" description="Initial surface residue (kg/ha)">1250</mass>
+        <cnr type="text" description="C:N ratio of initial residue">27</cnr>
+        <standing_fraction type="text" description="Fraction of residue standing">0.0</standing_fraction>
+      </surfaceom>
+      <fertiliser />
+      <folder name="Manager folder">
+        <manager name="Sow on a fixed date - maize">
+          <ui>
+            <category type="category" description="Sowing criteria" />
+            <date type="text" description="Enter sowing date (dd-mmm) : ">1-may</date>
+            <category type="category" description="Sowing parameters" />
+            <crop type="crop" description="Enter name of crop to sow : ">maize</crop>
+            <density type="text" description="Enter sowing density  (plants/m2) : ">7.5</density>
+            <depth type="text" description="Enter sowing depth  (mm) : ">50</depth>
+            <cultivar type="cultivars" description="Enter cultivar : ">B_110</cultivar>
+            <class type="classes" description="Enter crop growth class : ">maize</class>
+            <row_spacing type="text" description="Enter row spacing (mm) : ">760</row_spacing>
+          </ui>
+          <script>
+            <text>
+        if (today = date('[date]') then
+              [crop] sow plants =[density], sowing_depth = [depth], cultivar = [cultivar], row_spacing = [row_spacing], crop_class = [class]
+         endif
+               </text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+        <manager name="Sow on a fixed date - soybean">
+          <ui>
+            <category type="category" description="Sowing criteria" />
+            <date type="text" description="Enter sowing date (dd-mmm) : ">15-may</date>
+            <category type="category" description="Sowing parameters" />
+            <crop type="crop" description="Enter name of crop to sow : ">soybean</crop>
+            <density type="text" description="Enter sowing density  (plants/m2) : ">35</density>
+            <depth type="text" description="Enter sowing depth  (mm) : ">50</depth>
+            <cultivar type="cultivars" description="Enter cultivar : ">MG_2</cultivar>
+            <class type="classes" description="Enter crop growth class : ">plant</class>
+            <row_spacing type="text" description="Enter row spacing (mm) : ">500</row_spacing>
+          </ui>
+          <script>
+            <text>
+        if (today = date('[date]') then
+              [crop] sow plants =[density], sowing_depth = [depth], cultivar = [cultivar], row_spacing = [row_spacing], crop_class = [class]
+         endif
+				</text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+        <manager name="Tillage on fixed date">
+          <ui>
+            <category type="category" description="When should tillage be done" />
+            <tillage_date type="ddmmmdate" description="Enter tillage date (dd-mmm) : ">10-apr</tillage_date>
+            <category type="category" description="Tillage application details" />
+            <surfaceommodule type="modulename" description="Module used to apply the tillage : ">SurfaceOrganicMatter</surfaceommodule>
+            <tillage_type type="list" listvalues="user_defined, chisel, disc, planter, burn, burn_90, graze, scarifier, rip, blade, tine" description="Tillage type : "> disc</tillage_type>
+            <tillage_depth type="text" description="User_defined depth of seedbed preparation (mm) : ">110</tillage_depth>
+            <tillage_f_incorp type="text" description="User_defined fraction of surface residues to incorporate (0-1): ">0.4</tillage_f_incorp>
+          </ui>
+          <script>
+            <text>
+         if (today = date('[tillage_date]') then
+            if ('[tillage_type]' = 'user_defined') then
+                '[surfaceommodule]' tillage type = [tillage_type], f_incorp = [tillage_f_incorp] (), tillage_depth = [tillage_depth]
+            else
+                '[surfaceommodule]' tillage type = [tillage_type]
+            endif
+            ready_to_till_pre_sow = 0
+            till_day_pre_sow = 0
+         endif
+      </text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+        <manager name="Fertilise on fixed date">
+          <ui>
+            <category type="category" description="When should fertiliser be applied" />
+            <fert_date type="ddmmmdate" description="Enter fertiliser date (dd-mmm) : ">5-may</fert_date>
+            <fert_criteria type="text" description="Don't add fertiliser if N in top 2 layers exceeds (kg/ha) : ">1000</fert_criteria>
+            <category type="category" description="Fertiliser application details" />
+            <fertmodule type="modulename" description="Module used to apply the fertiliser : ">fertiliser</fertmodule>
+            <fert_amount type="text" description="Amount of fertiliser to apply (kg/ha) : ">150</fert_amount>
+            <fert_type type="list" listvalues="NO3_N, NH4_N, NH4NO3, urea_N, urea_no3, urea, nh4so4_n, rock_p, banded_p, broadcast_p" description="Fertiliser type : ">urea_N</fert_type>
+          </ui>
+          <script>
+            <text>
+         if (today = date('[fert_date]') then
+            N_topsoil = no3(1) + nh4(1) + no3(2) + nh4(2)
+            if (N_topsoil &lt; [fert_criteria]) then
+               [fertmodule] apply amount = [fert_amount] (kg/ha), depth = 50 (mm), type = [fert_type] ()
+            endif
+         endif </text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+        <manager name="UnitConversion">
+          <script>
+            <text>
+            </text>
+            <event>init</event>
+          </script>
+          <script>
+            <text>corn_buac   = maize_yield * 0.0159/0.85  ! corn yield in bushels/acre @15% moisture  
+
+</text>
+            <event>start_of_day</event>
+          </script>
+          <script>
+            <text>
+            </text>
+            <event>end_of_day</event>
+          </script>
+        </manager>
+        <manager name="Harvesting rule - maize">
+          <ui>
+            <category type="category" description="Harvesting criteria" />
+            <crop type="crop" description="Enter name of crop to harvest when ripe : ">maize</crop>
+          </ui>
+          <script>
+            <text>
+           if ('[crop]' = 'cotton') then
+              if ([crop].ozcot_status &gt; 0) then
+                  [crop] harvest
+              endif
+           elseif ([crop].StageName = 'harvest_ripe' or [crop].plant_status = 'dead') then
+              [crop]  harvest
+              [crop]  end_crop
+           endif
+</text>
+            <event>end_of_day</event>
+          </script>
+        </manager>
+        <manager name="Harvesting rule - soybean">
+          <ui>
+            <category type="category" description="Harvesting criteria" />
+            <crop type="crop" description="Enter name of crop to harvest when ripe : ">soybean</crop>
+          </ui>
+          <script>
+            <text>
+           if ([crop].StageName = 'harvest_ripe' or [crop].plant_status = 'dead') then
+              [crop]  harvest
+              [crop]  end_crop
+           endif
+        </text>
+            <event>end_of_day</event>
+          </script>
+        </manager>
+        <manager name="Rotations">
+          <ui>
+            <category type="category" description="Fallow options" />
+            <SummerFallowName type="text" description="Enter summer fallow name : ">sf</SummerFallowName>
+            <SummerFallowEndDate type="text" description="Enter summer fallow END date (dd-mmm) : ">15-nov</SummerFallowEndDate>
+            <WinterFallowName type="text" description="Enter winter fallow name : ">wf</WinterFallowName>
+            <WinterFallowEndDate type="text" description="Enter winter fallow END date (dd-mmm) : ">23-mar</WinterFallowEndDate>
+            <category type="category" description="Crop rotation sequence" />
+            <crop1 type="crop" description="Enter 1st crop : ">maize</crop1>
+            <crop2 type="crop" description="Enter 2nd crop : ">soybean</crop2>
+            <crop3 type="crop" description="Enter 3rd crop : ">nil</crop3>
+            <crop4 type="crop" description="Enter 4th crop : ">nil</crop4>
+            <crop5 type="crop" description="Enter 5th crop : ">nil</crop5>
+            <crop6 type="crop" description="Enter 6th crop : ">nil</crop6>
+            <crop7 type="crop" description="Enter 7th crop : ">nil</crop7>
+            <crop8 type="crop" description="Enter 8th crop : ">nil</crop8>
+            <crop9 type="crop" description="Enter 9th crop : ">nil</crop9>
+            <crop10 type="crop" description="Enter 10th crop : ">nil</crop10>
+            <crop11 type="crop" description="Enter 11th crop : ">nil</crop11>
+            <crop12 type="crop" description="Enter 12th crop : ">nil</crop12>
+            <crop13 type="crop" description="Enter 13th crop : ">nil</crop13>
+            <crop14 type="crop" description="Enter 14th crop : ">nil</crop14>
+            <crop15 type="crop" description="Enter 15th crop : ">nil</crop15>
+            <crop16 type="crop" description="Enter 16th crop : ">nil</crop16>
+            <crop17 type="crop" description="Enter 17th crop : ">nil</crop17>
+            <crop18 type="crop" description="Enter 18th crop : ">nil</crop18>
+            <crop19 type="crop" description="Enter 19th crop : ">nil</crop19>
+            <crop20 type="crop" description="Enter 20th crop : ">nil</crop20>
+          </ui>
+          <script>
+            <text>
+         NextCropIndex = 1
+         NextCrop = ' '
+         ChooseNextCrop = 'yes'
+         SummerFallowIn = 'no'
+         WinterFallowIn = 'no'
+         FallowIn = 'no'
+				</text>
+            <event>init</event>
+          </script>
+          <script>
+            <text>
+      if (ChooseNextCrop = 'yes') then
+         if (NextCropIndex = 1) then
+            NextCrop = '[crop1]'
+         elseif (NextCropIndex = 2) then
+            NextCrop = '[crop2]'
+         elseif (NextCropIndex = 3) then
+            NextCrop = '[crop3]'
+         elseif (NextCropIndex = 4) then
+            NextCrop = '[crop4]'
+         elseif (NextCropIndex = 5) then
+            NextCrop = '[crop5]'
+         elseif (NextCropIndex = 6) then
+            NextCrop = '[crop6]'
+         elseif (NextCropIndex = 7) then
+            NextCrop = '[crop7]'
+         elseif (NextCropIndex = 8) then
+            NextCrop = '[crop8]'
+         elseif (NextCropIndex = 9) then
+            NextCrop = '[crop9]'
+         elseif (NextCropIndex = 10) then
+            NextCrop = '[crop10]'
+         elseif (NextCropIndex = 11) then
+            NextCrop = '[crop11]'
+         elseif (NextCropIndex = 12) then
+            NextCrop = '[crop12]'
+         elseif (NextCropIndex = 13) then
+            NextCrop = '[crop13]'
+         elseif (NextCropIndex = 14) then
+            NextCrop = '[crop14]'
+         elseif (NextCropIndex = 15) then
+            NextCrop = '[crop15]'
+         elseif (NextCropIndex = 16) then
+            NextCrop = '[crop16]'
+         elseif (NextCropIndex = 17) then
+            NextCrop = '[crop17]'
+         elseif (NextCropIndex = 18) then
+            NextCrop = '[crop18]'
+         elseif (NextCropIndex = 19) then
+            NextCrop = '[crop19]'
+         elseif (NextCropIndex = 20) then
+            NextCrop = '[crop20]'
+         endif
+         if (NextCrop = 'nil' or NextCrop = ' ') then
+            NextCrop = '[crop1]'
+            NextCropIndex = 1
+         endif
+         NextCropIndex = NextCropIndex + 1
+         ChooseNextCrop = 'no'
+      endif
+      ! if the next crop is due to be a fallow and we're within the
+      ! correct date range then put a fallow in.
+      if (NextCrop = '[WinterFallowName]') then
+         if (paddock_is_fallow() = 1 and FallowIn = 'no') then
+            if (date_within('[SummerFallowEndDate], [WinterFallowEndDate]') then
+               WinterFallowIn = 'yes'
+               FallowIn = 'yes'
+               ChooseNextCrop = 'yes'
+            endif
+         endif
+      elseif (NextCrop = '[SummerFallowName]') then
+         if (paddock_is_fallow() = 1 and FallowIn = 'no') then
+            if (date_within('[WinterFallowEndDate], [SummerFallowEndDate]') then
+               SummerFallowIn = 'yes'
+               FallowIn = 'yes'
+               ChooseNextCrop = 'yes'
+            endif
+         endif
+      endif
+
+      ! if we currently have a fallow in and we're at the end of the fallow window
+      ! then remove the fallow.
+      if (WinterFallowIn = 'yes' and today = date('[WinterFallowEndDate]')+1) then
+         WinterFallowIn = 'no'
+         FallowIn = 'no'
+      endif
+      if (SummerFallowIn = 'yes' and today = date('[SummerFallowEndDate]')+1) then
+         SummerFallowIn = 'no'
+         FallowIn = 'no'
+      endif
+				</text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+      </folder>
+      <maize />
+      <soybean />
+      <Soil name="Loam (Nicollet, No1)">
+        <RecordNumber>0</RecordNumber>
+        <SoilType>Nicollet</SoilType>
+        <Region>Story</Region>
+        <State>Iowa</State>
+        <Country>US</Country>
+        <ApsoilNumber>1</ApsoilNumber>
+        <Latitude>42.049</Latitude>
+        <Longitude>-93.4345</Longitude>
+        <YearOfSampling>2015</YearOfSampling>
+        <DataSource>Original data by http://websoilsurvey.sc.egov.usda.gov/App/HomePage.htm 
+Profile developed by Integrated Cropping Systems Lab, Department of Agronomy, ISU
+                           </DataSource>
+        <Comments>The Nicollet series consists of very deep, somewhat poorly drained soils that formed in calcareous loamy glacial till on till plains and moraines. Slopes range from 0 to 5 percent. Mean annual air temperature is about 9 degrees C (48 degrees F). Mean annual precipitation is about 660 mm (28 inches).
+TAXONOMIC CLASS: Fine-loamy, mixed, superactive, mesic Aquic Hapludolls
+TYPICAL PEDON: Nicollet clay loam on a 2 percent plane slope in a cultivated field. (Colors are for moist soil unless otherwise stated.)
+Ap--0 to 25 cm (0 to 10 inches); black (10YR 2/1) clay loam; weak fine subangular blocky structure; friable; about 2 percent gravel; slightly acid; abrupt smooth boundary. [18 to 28 cm (7 to 12 inches thick)]
+A--25 to 43 cm (10 to 17 inches); very dark gray (10YR 3/1) clay loam; moderate fine subangular blocky structure; friable; about 5 percent gravel; common black (10YR 2/1) worm casts; slightly acid; gradual irregular boundary. [8 to 38 cm (3 to 15 inches thick)]
+Bw--43 to 53 cm (17 to 21 inches); dark grayish brown (10YR 4/2) clay loam; moderate fine subangular blocky structure; friable; common very dark gray (10YR 3/1) worm casts; about 5 percent gravel; moderately acid; clear smooth boundary.
+Bg1--53 to 74 cm (21 to 29 inches); dark grayish brown (2.5Y 4/2) clay loam; moderate fine prismatic structure parting to moderate fine subangular blocky; friable; few very dark gray (10YR 3/1) worm casts; about 5 percent gravel; common fine distinct olive brown (2.5Y 4/4) Fe concentrations; moderately acid; abrupt wavy boundary.
+Bg2--74 to 84 cm (29 to 33 inches); dark grayish brown (2.5Y 4/2) clay loam; weak medium prismatic structure parting to moderate fine and medium subangular blocky; friable; few very dark gray (10YR 3/1) worm casts; about 5 percent gravel; few fine faint grayish brown (2.5Y 5/2) Fe depletions and a few fine distinct light olive brown (2.5Y 5/4) and prominent brown (7.5YR 5/4) Fe concentrations; slightly acid; abrupt wavy boundary. [Combined thickness of the B horizon is 15 to 51 cm (6 to 20 inches.)
+BCg--84 to 91 cm (33 to 36 inches); grayish brown (2.5Y 5/2) clay loam; weak fine and medium subangular blocky structure; friable; few very dark gray (10YR 3/1) worm casts; about 5 percent gravel; many fine distinct light olive brown (2.5Y 5/4) Fe concentrations; slightly effervescent in parts; slightly alkaline; abrupt wavy boundary.[0 to 20 cm (0 to 8 inches thick) ]
+BCkg--91 to 152 cm (36 to 60 inches); grayish brown (2.5Y 5/2) loam; massive in place breaking to angular fragments with greater horizontal than vertical dimensions; friable; about 5 percent gravel; common lime masses; many fine distinct light olive brown (2.5Y 5/4) and few fine prominent yellowish brown (10YR 5/8) Fe concentrations; few black (N 2/0) Fe-Mn concretions; strongly effervescent; slightly alkaline.
+</Comments>
+        <Water>
+          <Thickness>
+            <double>220</double>
+            <double>220</double>
+            <double>240</double>
+            <double>240</double>
+            <double>310</double>
+            <double>310</double>
+          </Thickness>
+          <BD>
+            <double>1.2</double>
+            <double>1.2</double>
+            <double>1.3</double>
+            <double>1.3</double>
+            <double>1.45</double>
+            <double>1.45</double>
+          </BD>
+          <AirDry>
+            <double>0.1431</double>
+            <double>0.159</double>
+            <double>0.159</double>
+            <double>0.159</double>
+            <double>0.159</double>
+            <double>0.159</double>
+          </AirDry>
+          <LL15>
+            <double>0.159</double>
+            <double>0.159</double>
+            <double>0.159</double>
+            <double>0.159</double>
+            <double>0.159</double>
+            <double>0.159</double>
+          </LL15>
+          <DUL>
+            <double>0.305</double>
+            <double>0.305</double>
+            <double>0.292</double>
+            <double>0.292</double>
+            <double>0.289</double>
+            <double>0.289</double>
+          </DUL>
+          <SAT>
+            <double>0.497169811320755</double>
+            <double>0.497169811320755</double>
+            <double>0.459433962264151</double>
+            <double>0.459433962264151</double>
+            <double>0.402830188679245</double>
+            <double>0.402830188679245</double>
+          </SAT>
+          <KS>
+            <double>613.656006914434</double>
+            <double>613.656006914434</double>
+            <double>613.656006914434</double>
+            <double>613.656006914434</double>
+            <double>613.656006914434</double>
+            <double>613.656006914434</double>
+          </KS>
+          <BDMetadata>
+            <string>Field measured and checked for sensibility</string>
+            <string>Field measured and checked for sensibility</string>
+            <string>Field measured and checked for sensibility</string>
+            <string>Field measured and checked for sensibility</string>
+            <string>Field measured and checked for sensibility</string>
+            <string>Field measured and checked for sensibility</string>
+          </BDMetadata>
+          <AirDryMetadata>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+          </AirDryMetadata>
+          <LL15Metadata>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+          </LL15Metadata>
+          <DULMetadata>
+            <string>Field measured and checked for sensibility</string>
+            <string>Field measured and checked for sensibility</string>
+            <string>Field measured and checked for sensibility</string>
+            <string>Field measured and checked for sensibility</string>
+            <string>Field measured and checked for sensibility</string>
+            <string>Field measured and checked for sensibility</string>
+          </DULMetadata>
+          <SATMetadata>
+            <string>Calculated from measured, estimated or calculated BD</string>
+            <string>Calculated from measured, estimated or calculated BD</string>
+            <string>Calculated from measured, estimated or calculated BD</string>
+            <string>Calculated from measured, estimated or calculated BD</string>
+            <string>Calculated from measured, estimated or calculated BD</string>
+            <string>Calculated from measured, estimated or calculated BD</string>
+          </SATMetadata>
+          <SoilCrop name="maize">
+            <Thickness>
+              <double>220</double>
+              <double>220</double>
+              <double>240</double>
+              <double>240</double>
+              <double>310</double>
+              <double>310</double>
+            </Thickness>
+            <LL>
+              <double>0.159</double>
+              <double>0.159</double>
+              <double>0.159</double>
+              <double>0.159</double>
+              <double>0.159</double>
+              <double>0.159</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.0718125712966553</double>
+              <double>0.0612405445265024</double>
+              <double>0.0517699244570876</double>
+              <double>0.0427795108156789</double>
+              <double>0.0345552382876754</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+            <LLMetadata>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+            </LLMetadata>
+          </SoilCrop>
+          <SoilCrop name="soybean">
+            <Thickness>
+              <double>220</double>
+              <double>220</double>
+              <double>240</double>
+              <double>240</double>
+              <double>310</double>
+              <double>310</double>
+            </Thickness>
+            <LL>
+              <double>0.159</double>
+              <double>0.159</double>
+              <double>0.159</double>
+              <double>0.159</double>
+              <double>0.159</double>
+              <double>0.159</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.0718125712966553</double>
+              <double>0.0612405445265024</double>
+              <double>0.0517699244570876</double>
+              <double>0.0427795108156789</double>
+              <double>0.0345552382876754</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+            <LLMetadata>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+            </LLMetadata>
+          </SoilCrop>
+        </Water>
+        <SoilWater>
+          <SummerCona>3.9</SummerCona>
+          <SummerU>8.8</SummerU>
+          <SummerDate>1-jun</SummerDate>
+          <WinterCona>3.9</WinterCona>
+          <WinterU>8.8</WinterU>
+          <WinterDate>1-nov</WinterDate>
+          <DiffusConst>40</DiffusConst>
+          <DiffusSlope>16</DiffusSlope>
+          <Salb>0.13</Salb>
+          <CN2Bare>73</CN2Bare>
+          <CNRed>20</CNRed>
+          <CNCov>0.8</CNCov>
+          <Slope>NaN</Slope>
+          <DischargeWidth>NaN</DischargeWidth>
+          <CatchmentArea>NaN</CatchmentArea>
+          <MaxPond>NaN</MaxPond>
+          <Thickness>
+            <double>220</double>
+            <double>220</double>
+            <double>240</double>
+            <double>240</double>
+            <double>310</double>
+            <double>310</double>
+          </Thickness>
+          <SWCON>
+            <double>0.442586206896552</double>
+            <double>0.442586206896552</double>
+            <double>0.426814814814815</double>
+            <double>0.426814814814815</double>
+            <double>0.361791666666667</double>
+            <double>0.361791666666667</double>
+          </SWCON>
+        </SoilWater>
+        <SoilOrganicMatter>
+          <RootCN>45</RootCN>
+          <RootWt>1000</RootWt>
+          <SoilCN>13</SoilCN>
+          <EnrACoeff>7.4</EnrACoeff>
+          <EnrBCoeff>0.2</EnrBCoeff>
+          <Thickness>
+            <double>220</double>
+            <double>220</double>
+            <double>240</double>
+            <double>240</double>
+            <double>310</double>
+            <double>310</double>
+          </Thickness>
+          <OC>
+            <double>3.19767441860465</double>
+            <double>3.19767441860465</double>
+            <double>0.436046511627907</double>
+            <double>0.436046511627907</double>
+            <double>0.145348837209302</double>
+            <double>0.145348837209302</double>
+          </OC>
+          <OCMetadata>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+          </OCMetadata>
+          <FBiom>
+            <double>0.0388749912925</double>
+            <double>0.015149996517</double>
+            <double>0.01059999406</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+          </FBiom>
+          <FInert>
+            <double>0.40600004644</double>
+            <double>0.57800013932</double>
+            <double>0.7600002376</double>
+            <double>0.8</double>
+            <double>0.8</double>
+            <double>0.857600236304</double>
+          </FInert>
+          <OCUnits>Total</OCUnits>
+        </SoilOrganicMatter>
+        <Analysis>
+          <Thickness>
+            <double>220</double>
+            <double>220</double>
+            <double>240</double>
+            <double>240</double>
+            <double>310</double>
+            <double>310</double>
+          </Thickness>
+          <Texture>
+            <string>L</string>
+            <string>L</string>
+            <string>L</string>
+            <string>L</string>
+            <string>L</string>
+            <string>L</string>
+          </Texture>
+          <MunsellColour>
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+            <string />
+          </MunsellColour>
+          <PH>
+            <double>5.532</double>
+            <double>5.532</double>
+            <double>5.532</double>
+            <double>5.532</double>
+            <double>6.804</double>
+            <double>6.804</double>
+          </PH>
+          <PHMetadata>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+            <string>Estimated based on local knowledge</string>
+          </PHMetadata>
+          <CEC>
+            <double>20.5</double>
+            <double>20.5</double>
+            <double>20.5</double>
+            <double>20.5</double>
+            <double>20.5</double>
+            <double>20.5</double>
+          </CEC>
+          <CECMetadata>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+          </CECMetadata>
+          <ParticleSizeSand>
+            <double>38</double>
+            <double>38</double>
+            <double>34</double>
+            <double>34</double>
+            <double>37</double>
+            <double>37</double>
+          </ParticleSizeSand>
+          <ParticleSizeSandMetadata>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+          </ParticleSizeSandMetadata>
+          <ParticleSizeSilt>
+            <double>36</double>
+            <double>36</double>
+            <double>37</double>
+            <double>37</double>
+            <double>36</double>
+            <double>36</double>
+          </ParticleSizeSilt>
+          <ParticleSizeSiltMetadata>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+          </ParticleSizeSiltMetadata>
+          <ParticleSizeClay>
+            <double>26</double>
+            <double>26</double>
+            <double>29</double>
+            <double>29</double>
+            <double>27</double>
+            <double>27</double>
+          </ParticleSizeClay>
+          <ParticleSizeClayMetadata>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+            <string>Measured</string>
+          </ParticleSizeClayMetadata>
+          <PHUnits>Water</PHUnits>
+          <BoronUnits>HotWater</BoronUnits>
+        </Analysis>
+        <InitialWater>
+          <FractionFull>1</FractionFull>
+          <DepthWetSoil>NaN</DepthWetSoil>
+          <PercentMethod>FilledFromTop</PercentMethod>
+        </InitialWater>
+        <Sample name="InitialNitrogen">
+          <Thickness>
+            <double>220</double>
+            <double>220</double>
+            <double>240</double>
+            <double>240</double>
+            <double>310</double>
+            <double>310</double>
+          </Thickness>
+          <NO3>
+            <double>10</double>
+            <double>7</double>
+            <double>5</double>
+            <double>4</double>
+            <double>2</double>
+            <double>1</double>
+          </NO3>
+          <NH4>
+            <double>5</double>
+            <double>4</double>
+            <double>3</double>
+            <double>2</double>
+            <double>1</double>
+            <double>0</double>
+          </NH4>
+          <NO3Units>kgha</NO3Units>
+          <NH4Units>kgha</NH4Units>
+          <SWUnits>Volumetric</SWUnits>
+          <OCUnits>Total</OCUnits>
+          <PHUnits>Water</PHUnits>
+        </Sample>
+        <SoilTemperature>
+          <BoundaryLayerConductance>20</BoundaryLayerConductance>
+          <Thickness>
+            <double>100</double>
+            <double>200</double>
+            <double>300</double>
+            <double>600</double>
+          </Thickness>
+          <InitialSoilTemperature>
+            <double>20</double>
+            <double>22</double>
+            <double>25</double>
+            <double>25</double>
+          </InitialSoilTemperature>
+        </SoilTemperature>
+      </Soil>
+      <outputfile>
+        <filename name="filename" output="yes">Maize-soybean.out</filename>
+        <title>Maize-soybean</title>
+        <variables name="My Variables">
+          <variable>dd/mm/yyyy as Date</variable>
+          <variable>sw</variable>
+          <variable>ave_soil_temp</variable>
+        </variables>
+        <events name="My Variables Events">
+          <event>daily</event>
+        </events>
+      </outputfile>
+      <Graph name="biomass-yield-stover">
+        <Legend>
+          <CheckedTitles> Maize-soybean</CheckedTitles>
+        </Legend>
+        <Plot>
+          <SeriesType>Solid line</SeriesType>
+          <PointType>Circle</PointType>
+          <colour>
+          </colour>
+          <X>Date</X>
+          <Y>paddock.maize.biomass</Y>
+          <GDApsimFileReader name="ApsimFileReader" />
+        </Plot>
+      </Graph>
+      <Graph name="leaf_no">
+        <Legend>
+        </Legend>
+        <Plot>
+          <SeriesType>Solid line</SeriesType>
+          <PointType>Circle</PointType>
+          <colour>
+          </colour>
+          <X>Date</X>
+          <Y>leaf_no</Y>
+          <GDApsimFileReader name="ApsimFileReader" />
+        </Plot>
+      </Graph>
+      <Graph name="leaf_area">
+        <Legend>
+          <CheckedTitles> Maize</CheckedTitles>
+        </Legend>
+        <Plot>
+          <SeriesType>Solid line</SeriesType>
+          <PointType>Circle</PointType>
+          <colour>
+          </colour>
+          <X>Date</X>
+          <Y>lai_sum</Y>
+          <GDApsimFileReader name="ApsimFileReader" />
+        </Plot>
+      </Graph>
+      <Graph name="individual-leaf-area">
+        <Legend>
+          <CheckedTitles> leaf_area(1)</CheckedTitles>
+          <CheckedTitles> leaf_area(2)</CheckedTitles>
+          <CheckedTitles> leaf_area(3)</CheckedTitles>
+          <CheckedTitles> leaf_area(4)</CheckedTitles>
+          <CheckedTitles> leaf_area(5)</CheckedTitles>
+          <CheckedTitles> leaf_area(6)</CheckedTitles>
+          <CheckedTitles> leaf_area(7)</CheckedTitles>
+          <CheckedTitles> leaf_area(8)</CheckedTitles>
+          <CheckedTitles> leaf_area(9)</CheckedTitles>
+          <CheckedTitles> leaf_area(10)</CheckedTitles>
+          <CheckedTitles> leaf_area(11)</CheckedTitles>
+          <CheckedTitles> leaf_area(12)</CheckedTitles>
+          <CheckedTitles> leaf_area(13)</CheckedTitles>
+          <CheckedTitles> leaf_area(14)</CheckedTitles>
+          <CheckedTitles> leaf_area(15)</CheckedTitles>
+          <CheckedTitles> leaf_area(16)</CheckedTitles>
+          <CheckedTitles> leaf_area(17)</CheckedTitles>
+          <CheckedTitles> leaf_area(18)</CheckedTitles>
+        </Legend>
+        <Format>AAEAAAD/////AQAAAAAAAAAMAgAAAFhUZWVDaGFydC5DbGllbnQsIFZlcnNpb249NC4xLjIwMTEuNzI4MywgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj05YzgxMjYyNzZjNzdiZGI3DAMAAABXU3lzdGVtLldpbmRvd3MuRm9ybXMsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iNzdhNWM1NjE5MzRlMDg5DAQAAABRU3lzdGVtLkRyYXdpbmcsIFZlcnNpb249NC4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1iMDNmNWY3ZjExZDUwYTNhBQEAAAAVU3RlZW1hLlRlZUNoYXJ0LkNoYXJ0VwEAAA4uWm9vbS5BbmltYXRlZBMuWm9vbS5BbmltYXRlZFN0ZXBzFC5QYW5uaW5nLk1vdXNlQnV0dG9uEC5DdXN0b21DaGFydFJlY3QXLlBhbmVsLkltYWdlQmV2ZWwuV2lkdGgVLlBhbmVsLkJldmVsLkNvbG9yT25lGy5QYW5lbC5CZXZlbC5TdHJpbmdDb2xvck9uZRUuUGFuZWwuQmV2ZWwuQ29sb3JUd28bLlBhbmVsLkJldmVsLlN0cmluZ0NvbG9yVHdvEi5QYW5lbC5CZXZlbC5PdXRlchIuUGFuZWwuQnJ1c2guQ29sb3ISLkxlZ2VuZC5DaGVja0JveGVzEi5MZWdlbmQuTWF4TnVtUm93cxwuTGVnZW5kLlRpdGxlLkJldmVsLkNvbG9yT25lIi5MZWdlbmQuVGl0bGUuQmV2ZWwuU3RyaW5nQ29sb3JPbmUcLkxlZ2VuZC5UaXRsZS5CZXZlbC5Db2xvclR3byIuTGVnZW5kLlRpdGxlLkJldmVsLlN0cmluZ0NvbG9yVHdvFi5MZWdlbmQuQmV2ZWwuQ29sb3JPbmUcLkxlZ2VuZC5CZXZlbC5TdHJpbmdDb2xvck9uZRYuTGVnZW5kLkJldmVsLkNvbG9yVHdvHC5MZWdlbmQuQmV2ZWwuU3RyaW5nQ29sb3JUd28WLkxlZ2VuZC5TaGFkb3cuVmlzaWJsZRMuTGVnZW5kLlRyYW5zcGFyZW50DS5IZWFkZXIuTGluZXMRLkhlYWRlci5Gb250Lk5hbWURLkhlYWRlci5Gb250LlNpemUWLkhlYWRlci5Gb250LlNpemVGbG9hdBYuSGVhZGVyLkJldmVsLkNvbG9yT25lHC5IZWFkZXIuQmV2ZWwuU3RyaW5nQ29sb3JPbmUWLkhlYWRlci5CZXZlbC5Db2xvclR3bxwuSGVhZGVyLkJldmVsLlN0cmluZ0NvbG9yVHdvGS5TdWJIZWFkZXIuQmV2ZWwuQ29sb3JPbmUfLlN1YkhlYWRlci5CZXZlbC5TdHJpbmdDb2xvck9uZRkuU3ViSGVhZGVyLkJldmVsLkNvbG9yVHdvHy5TdWJIZWFkZXIuQmV2ZWwuU3RyaW5nQ29sb3JUd28WLkZvb3Rlci5CZXZlbC5Db2xvck9uZRwuRm9vdGVyLkJldmVsLlN0cmluZ0NvbG9yT25lFi5Gb290ZXIuQmV2ZWwuQ29sb3JUd28cLkZvb3Rlci5CZXZlbC5TdHJpbmdDb2xvclR3bxkuU3ViRm9vdGVyLkJldmVsLkNvbG9yT25lHy5TdWJGb290ZXIuQmV2ZWwuU3RyaW5nQ29sb3JPbmUZLlN1YkZvb3Rlci5CZXZlbC5Db2xvclR3bx8uU3ViRm9vdGVyLkJldmVsLlN0cmluZ0NvbG9yVHdvGS5Bc3BlY3QuQ29sb3JQYWxldHRlSW5kZXgOLkFzcGVjdC5WaWV3M0QIU2VyaWVzLjAVLlNlcmllcy4wLkJydXNoLkNvbG9yGS5TZXJpZXMuMC5Qb2ludGVyLlZpc2libGUXLlNlcmllcy4wLlBvaW50ZXIuU3R5bGUbLlNlcmllcy4wLlBvaW50ZXIuUGVuLkNvbG9yFy5TZXJpZXMuMC5MaW5lUGVuLldpZHRoEy5TZXJpZXMuMC5Db2xvckVhY2gPLlNlcmllcy4wLkNvbG9yDy5TZXJpZXMuMC5UaXRsZQhTZXJpZXMuMRUuU2VyaWVzLjEuQnJ1c2guQ29sb3IZLlNlcmllcy4xLlBvaW50ZXIuVmlzaWJsZRcuU2VyaWVzLjEuUG9pbnRlci5TdHlsZRsuU2VyaWVzLjEuUG9pbnRlci5QZW4uQ29sb3IXLlNlcmllcy4xLkxpbmVQZW4uV2lkdGgTLlNlcmllcy4xLkNvbG9yRWFjaA8uU2VyaWVzLjEuQ29sb3IPLlNlcmllcy4xLlRpdGxlCFNlcmllcy4yFS5TZXJpZXMuMi5CcnVzaC5Db2xvchkuU2VyaWVzLjIuUG9pbnRlci5WaXNpYmxlFy5TZXJpZXMuMi5Qb2ludGVyLlN0eWxlGy5TZXJpZXMuMi5Qb2ludGVyLlBlbi5Db2xvchcuU2VyaWVzLjIuTGluZVBlbi5XaWR0aBMuU2VyaWVzLjIuQ29sb3JFYWNoDy5TZXJpZXMuMi5Db2xvcg8uU2VyaWVzLjIuVGl0bGUIU2VyaWVzLjMVLlNlcmllcy4zLkJydXNoLkNvbG9yGS5TZXJpZXMuMy5Qb2ludGVyLlZpc2libGUXLlNlcmllcy4zLlBvaW50ZXIuU3R5bGUbLlNlcmllcy4zLlBvaW50ZXIuUGVuLkNvbG9yFy5TZXJpZXMuMy5MaW5lUGVuLldpZHRoEy5TZXJpZXMuMy5Db2xvckVhY2gPLlNlcmllcy4zLkNvbG9yDy5TZXJpZXMuMy5UaXRsZQhTZXJpZXMuNBUuU2VyaWVzLjQuQnJ1c2guQ29sb3IZLlNlcmllcy40LlBvaW50ZXIuVmlzaWJsZRcuU2VyaWVzLjQuUG9pbnRlci5TdHlsZRsuU2VyaWVzLjQuUG9pbnRlci5QZW4uQ29sb3IXLlNlcmllcy40LkxpbmVQZW4uV2lkdGgTLlNlcmllcy40LkNvbG9yRWFjaA8uU2VyaWVzLjQuQ29sb3IPLlNlcmllcy40LlRpdGxlCFNlcmllcy41FS5TZXJpZXMuNS5CcnVzaC5Db2xvchkuU2VyaWVzLjUuUG9pbnRlci5WaXNpYmxlFy5TZXJpZXMuNS5Qb2ludGVyLlN0eWxlGy5TZXJpZXMuNS5Qb2ludGVyLlBlbi5Db2xvchcuU2VyaWVzLjUuTGluZVBlbi5XaWR0aBMuU2VyaWVzLjUuQ29sb3JFYWNoDy5TZXJpZXMuNS5Db2xvcg8uU2VyaWVzLjUuVGl0bGUIU2VyaWVzLjYVLlNlcmllcy42LkJydXNoLkNvbG9yGS5TZXJpZXMuNi5Qb2ludGVyLlZpc2libGUXLlNlcmllcy42LlBvaW50ZXIuU3R5bGUbLlNlcmllcy42LlBvaW50ZXIuUGVuLkNvbG9yFy5TZXJpZXMuNi5MaW5lUGVuLldpZHRoEy5TZXJpZXMuNi5Db2xvckVhY2gPLlNlcmllcy42LkNvbG9yDy5TZXJpZXMuNi5UaXRsZQhTZXJpZXMuNxUuU2VyaWVzLjcuQnJ1c2guQ29sb3IZLlNlcmllcy43LlBvaW50ZXIuVmlzaWJsZRcuU2VyaWVzLjcuUG9pbnRlci5TdHlsZRsuU2VyaWVzLjcuUG9pbnRlci5QZW4uQ29sb3IXLlNlcmllcy43LkxpbmVQZW4uV2lkdGgTLlNlcmllcy43LkNvbG9yRWFjaA8uU2VyaWVzLjcuQ29sb3IPLlNlcmllcy43LlRpdGxlCFNlcmllcy44FS5TZXJpZXMuOC5CcnVzaC5Db2xvchkuU2VyaWVzLjguUG9pbnRlci5WaXNpYmxlFy5TZXJpZXMuOC5Qb2ludGVyLlN0eWxlGy5TZXJpZXMuOC5Qb2ludGVyLlBlbi5Db2xvchcuU2VyaWVzLjguTGluZVBlbi5XaWR0aBMuU2VyaWVzLjguQ29sb3JFYWNoDy5TZXJpZXMuOC5Db2xvcg8uU2VyaWVzLjguVGl0bGUIU2VyaWVzLjkVLlNlcmllcy45LkJydXNoLkNvbG9yGS5TZXJpZXMuOS5Qb2ludGVyLlZpc2libGUXLlNlcmllcy45LlBvaW50ZXIuU3R5bGUbLlNlcmllcy45LlBvaW50ZXIuUGVuLkNvbG9yFy5TZXJpZXMuOS5MaW5lUGVuLldpZHRoEy5TZXJpZXMuOS5Db2xvckVhY2gPLlNlcmllcy45LkNvbG9yDy5TZXJpZXMuOS5UaXRsZQlTZXJpZXMuMTAWLlNlcmllcy4xMC5CcnVzaC5Db2xvchouU2VyaWVzLjEwLlBvaW50ZXIuVmlzaWJsZRguU2VyaWVzLjEwLlBvaW50ZXIuU3R5bGUcLlNlcmllcy4xMC5Qb2ludGVyLlBlbi5Db2xvchguU2VyaWVzLjEwLkxpbmVQZW4uV2lkdGgULlNlcmllcy4xMC5Db2xvckVhY2gQLlNlcmllcy4xMC5Db2xvchAuU2VyaWVzLjEwLlRpdGxlCVNlcmllcy4xMRYuU2VyaWVzLjExLkJydXNoLkNvbG9yGi5TZXJpZXMuMTEuUG9pbnRlci5WaXNpYmxlGC5TZXJpZXMuMTEuUG9pbnRlci5TdHlsZRwuU2VyaWVzLjExLlBvaW50ZXIuUGVuLkNvbG9yGC5TZXJpZXMuMTEuTGluZVBlbi5XaWR0aBQuU2VyaWVzLjExLkNvbG9yRWFjaBAuU2VyaWVzLjExLkNvbG9yEC5TZXJpZXMuMTEuVGl0bGUJU2VyaWVzLjEyFi5TZXJpZXMuMTIuQnJ1c2guQ29sb3IaLlNlcmllcy4xMi5Qb2ludGVyLlZpc2libGUYLlNlcmllcy4xMi5Qb2ludGVyLlN0eWxlHC5TZXJpZXMuMTIuUG9pbnRlci5QZW4uQ29sb3IYLlNlcmllcy4xMi5MaW5lUGVuLldpZHRoFC5TZXJpZXMuMTIuQ29sb3JFYWNoEC5TZXJpZXMuMTIuQ29sb3IQLlNlcmllcy4xMi5UaXRsZQlTZXJpZXMuMTMWLlNlcmllcy4xMy5CcnVzaC5Db2xvchouU2VyaWVzLjEzLlBvaW50ZXIuVmlzaWJsZRguU2VyaWVzLjEzLlBvaW50ZXIuU3R5bGUcLlNlcmllcy4xMy5Qb2ludGVyLlBlbi5Db2xvchguU2VyaWVzLjEzLkxpbmVQZW4uV2lkdGgULlNlcmllcy4xMy5Db2xvckVhY2gQLlNlcmllcy4xMy5Db2xvchAuU2VyaWVzLjEzLlRpdGxlCVNlcmllcy4xNBYuU2VyaWVzLjE0LkJydXNoLkNvbG9yGi5TZXJpZXMuMTQuUG9pbnRlci5WaXNpYmxlGC5TZXJpZXMuMTQuUG9pbnRlci5TdHlsZRwuU2VyaWVzLjE0LlBvaW50ZXIuUGVuLkNvbG9yGC5TZXJpZXMuMTQuTGluZVBlbi5XaWR0aBQuU2VyaWVzLjE0LkNvbG9yRWFjaBAuU2VyaWVzLjE0LkNvbG9yEC5TZXJpZXMuMTQuVGl0bGUJU2VyaWVzLjE1Fi5TZXJpZXMuMTUuQnJ1c2guQ29sb3IaLlNlcmllcy4xNS5Qb2ludGVyLlZpc2libGUYLlNlcmllcy4xNS5Qb2ludGVyLlN0eWxlHC5TZXJpZXMuMTUuUG9pbnRlci5QZW4uQ29sb3IYLlNlcmllcy4xNS5MaW5lUGVuLldpZHRoFC5TZXJpZXMuMTUuQ29sb3JFYWNoEC5TZXJpZXMuMTUuQ29sb3IQLlNlcmllcy4xNS5UaXRsZQlTZXJpZXMuMTYWLlNlcmllcy4xNi5CcnVzaC5Db2xvchouU2VyaWVzLjE2LlBvaW50ZXIuVmlzaWJsZRguU2VyaWVzLjE2LlBvaW50ZXIuU3R5bGUcLlNlcmllcy4xNi5Qb2ludGVyLlBlbi5Db2xvchguU2VyaWVzLjE2LkxpbmVQZW4uV2lkdGgULlNlcmllcy4xNi5Db2xvckVhY2gQLlNlcmllcy4xNi5Db2xvchAuU2VyaWVzLjE2LlRpdGxlCVNlcmllcy4xNxYuU2VyaWVzLjE3LkJydXNoLkNvbG9yGi5TZXJpZXMuMTcuUG9pbnRlci5WaXNpYmxlGC5TZXJpZXMuMTcuUG9pbnRlci5TdHlsZRwuU2VyaWVzLjE3LlBvaW50ZXIuUGVuLkNvbG9yGC5TZXJpZXMuMTcuTGluZVBlbi5XaWR0aBQuU2VyaWVzLjE3LkNvbG9yRWFjaBAuU2VyaWVzLjE3LkNvbG9yEC5TZXJpZXMuMTcuVGl0bGUaLldhbGxzLkxlZnQuQmV2ZWwuQ29sb3JPbmUgLldhbGxzLkxlZnQuQmV2ZWwuU3RyaW5nQ29sb3JPbmUaLldhbGxzLkxlZnQuQmV2ZWwuQ29sb3JUd28gLldhbGxzLkxlZnQuQmV2ZWwuU3RyaW5nQ29sb3JUd28bLldhbGxzLlJpZ2h0LkJldmVsLkNvbG9yT25lIS5XYWxscy5SaWdodC5CZXZlbC5TdHJpbmdDb2xvck9uZRsuV2FsbHMuUmlnaHQuQmV2ZWwuQ29sb3JUd28hLldhbGxzLlJpZ2h0LkJldmVsLlN0cmluZ0NvbG9yVHdvGi5XYWxscy5CYWNrLkJldmVsLkNvbG9yT25lIC5XYWxscy5CYWNrLkJldmVsLlN0cmluZ0NvbG9yT25lGi5XYWxscy5CYWNrLkJldmVsLkNvbG9yVHdvIC5XYWxscy5CYWNrLkJldmVsLlN0cmluZ0NvbG9yVHdvHC5XYWxscy5Cb3R0b20uQmV2ZWwuQ29sb3JPbmUiLldhbGxzLkJvdHRvbS5CZXZlbC5TdHJpbmdDb2xvck9uZRwuV2FsbHMuQm90dG9tLkJldmVsLkNvbG9yVHdvIi5XYWxscy5Cb3R0b20uQmV2ZWwuU3RyaW5nQ29sb3JUd28OLldhbGxzLlZpc2libGUcLkF4ZXMuTGVmdC5MYWJlbHMuU2VwYXJhdGlvbh0uQXhlcy5MZWZ0LkxhYmVscy5WYWx1ZUZvcm1hdBsuQXhlcy5MZWZ0LkxhYmVscy5Gb250Lk5hbWUbLkF4ZXMuTGVmdC5MYWJlbHMuRm9udC5TaXplIC5BeGVzLkxlZnQuTGFiZWxzLkZvbnQuU2l6ZUZsb2F0IC5BeGVzLkxlZnQuTGFiZWxzLkJldmVsLkNvbG9yT25lJi5BeGVzLkxlZnQuTGFiZWxzLkJldmVsLlN0cmluZ0NvbG9yT25lIC5BeGVzLkxlZnQuTGFiZWxzLkJldmVsLkNvbG9yVHdvJi5BeGVzLkxlZnQuTGFiZWxzLkJldmVsLlN0cmluZ0NvbG9yVHdvGC5BeGVzLkxlZnQuQXhpc1Blbi5XaWR0aBkuQXhlcy5MZWZ0LkF4aXNQZW4uRW5kQ2FwFy5BeGVzLkxlZnQuR3JpZC5WaXNpYmxlGC5BeGVzLkxlZnQuTWF4aW11bU9mZnNldB0uQXhlcy5MZWZ0Lk1pbm9yVGlja3MuVmlzaWJsZRYuQXhlcy5MZWZ0LlRpY2tzLkNvbG9yGC5BeGVzLkxlZnQuVGl0bGUuQ2FwdGlvbhYuQXhlcy5MZWZ0LlRpdGxlLkxpbmVzGi5BeGVzLkxlZnQuVGl0bGUuRm9udC5OYW1lGi5BeGVzLkxlZnQuVGl0bGUuRm9udC5TaXplHy5BeGVzLkxlZnQuVGl0bGUuRm9udC5TaXplRmxvYXQoLkF4ZXMuTGVmdC5UaXRsZS5Gb250LlNoYWRvdy5CcnVzaC5Db2xvciEuQXhlcy5MZWZ0LlRpdGxlLkZvbnQuQnJ1c2guQ29sb3IfLkF4ZXMuTGVmdC5UaXRsZS5CZXZlbC5Db2xvck9uZSUuQXhlcy5MZWZ0LlRpdGxlLkJldmVsLlN0cmluZ0NvbG9yT25lHy5BeGVzLkxlZnQuVGl0bGUuQmV2ZWwuQ29sb3JUd28lLkF4ZXMuTGVmdC5UaXRsZS5CZXZlbC5TdHJpbmdDb2xvclR3bxsuQXhlcy5Ub3AuTGFiZWxzLlNlcGFyYXRpb24cLkF4ZXMuVG9wLkxhYmVscy5WYWx1ZUZvcm1hdBouQXhlcy5Ub3AuTGFiZWxzLkZvbnQuTmFtZRouQXhlcy5Ub3AuTGFiZWxzLkZvbnQuU2l6ZR8uQXhlcy5Ub3AuTGFiZWxzLkZvbnQuU2l6ZUZsb2F0Hy5BeGVzLlRvcC5MYWJlbHMuQmV2ZWwuQ29sb3JPbmUlLkF4ZXMuVG9wLkxhYmVscy5CZXZlbC5TdHJpbmdDb2xvck9uZR8uQXhlcy5Ub3AuTGFiZWxzLkJldmVsLkNvbG9yVHdvJS5BeGVzLlRvcC5MYWJlbHMuQmV2ZWwuU3RyaW5nQ29sb3JUd28XLkF4ZXMuVG9wLkF4aXNQZW4uV2lkdGgYLkF4ZXMuVG9wLkF4aXNQZW4uRW5kQ2FwFi5BeGVzLlRvcC5HcmlkLlZpc2libGUcLkF4ZXMuVG9wLk1pbm9yVGlja3MuVmlzaWJsZRUuQXhlcy5Ub3AuVGlja3MuQ29sb3IZLkF4ZXMuVG9wLlRpdGxlLkZvbnQuTmFtZRkuQXhlcy5Ub3AuVGl0bGUuRm9udC5TaXplHi5BeGVzLlRvcC5UaXRsZS5Gb250LlNpemVGbG9hdCAuQXhlcy5Ub3AuVGl0bGUuRm9udC5CcnVzaC5Db2xvch4uQXhlcy5Ub3AuVGl0bGUuQmV2ZWwuQ29sb3JPbmUkLkF4ZXMuVG9wLlRpdGxlLkJldmVsLlN0cmluZ0NvbG9yT25lHi5BeGVzLlRvcC5UaXRsZS5CZXZlbC5Db2xvclR3byQuQXhlcy5Ub3AuVGl0bGUuQmV2ZWwuU3RyaW5nQ29sb3JUd28RLkF4ZXMuVG9wLlZpc2libGUdLkF4ZXMuUmlnaHQuTGFiZWxzLlNlcGFyYXRpb24eLkF4ZXMuUmlnaHQuTGFiZWxzLlZhbHVlRm9ybWF0HC5BeGVzLlJpZ2h0LkxhYmVscy5Gb250Lk5hbWUcLkF4ZXMuUmlnaHQuTGFiZWxzLkZvbnQuU2l6ZSEuQXhlcy5SaWdodC5MYWJlbHMuRm9udC5TaXplRmxvYXQhLkF4ZXMuUmlnaHQuTGFiZWxzLkJldmVsLkNvbG9yT25lJy5BeGVzLlJpZ2h0LkxhYmVscy5CZXZlbC5TdHJpbmdDb2xvck9uZSEuQXhlcy5SaWdodC5MYWJlbHMuQmV2ZWwuQ29sb3JUd28nLkF4ZXMuUmlnaHQuTGFiZWxzLkJldmVsLlN0cmluZ0NvbG9yVHdvGS5BeGVzLlJpZ2h0LkF4aXNQZW4uV2lkdGgaLkF4ZXMuUmlnaHQuQXhpc1Blbi5FbmRDYXAYLkF4ZXMuUmlnaHQuR3JpZC5WaXNpYmxlGS5BeGVzLlJpZ2h0Lk1heGltdW1PZmZzZXQeLkF4ZXMuUmlnaHQuTWlub3JUaWNrcy5WaXNpYmxlFy5BeGVzLlJpZ2h0LlRpY2tzLkNvbG9yGy5BeGVzLlJpZ2h0LlRpdGxlLkZvbnQuTmFtZRsuQXhlcy5SaWdodC5UaXRsZS5Gb250LlNpemUgLkF4ZXMuUmlnaHQuVGl0bGUuRm9udC5TaXplRmxvYXQiLkF4ZXMuUmlnaHQuVGl0bGUuRm9udC5CcnVzaC5Db2xvciAuQXhlcy5SaWdodC5UaXRsZS5CZXZlbC5Db2xvck9uZSYuQXhlcy5SaWdodC5UaXRsZS5CZXZlbC5TdHJpbmdDb2xvck9uZSAuQXhlcy5SaWdodC5UaXRsZS5CZXZlbC5Db2xvclR3byYuQXhlcy5SaWdodC5UaXRsZS5CZXZlbC5TdHJpbmdDb2xvclR3bxMuQXhlcy5SaWdodC5WaXNpYmxlHi5BeGVzLkJvdHRvbS5MYWJlbHMuU2VwYXJhdGlvbiIuQXhlcy5Cb3R0b20uTGFiZWxzLkRhdGVUaW1lRm9ybWF0Hy5BeGVzLkJvdHRvbS5MYWJlbHMuVmFsdWVGb3JtYXQdLkF4ZXMuQm90dG9tLkxhYmVscy5Gb250Lk5hbWUdLkF4ZXMuQm90dG9tLkxhYmVscy5Gb250LlNpemUiLkF4ZXMuQm90dG9tLkxhYmVscy5Gb250LlNpemVGbG9hdCIuQXhlcy5Cb3R0b20uTGFiZWxzLkJldmVsLkNvbG9yT25lKC5BeGVzLkJvdHRvbS5MYWJlbHMuQmV2ZWwuU3RyaW5nQ29sb3JPbmUiLkF4ZXMuQm90dG9tLkxhYmVscy5CZXZlbC5Db2xvclR3byguQXhlcy5Cb3R0b20uTGFiZWxzLkJldmVsLlN0cmluZ0NvbG9yVHdvFi5BeGVzLkJvdHRvbS5BdXRvbWF0aWMdLkF4ZXMuQm90dG9tLkF1dG9tYXRpY01heGltdW0dLkF4ZXMuQm90dG9tLkF1dG9tYXRpY01pbmltdW0aLkF4ZXMuQm90dG9tLkF4aXNQZW4uV2lkdGgbLkF4ZXMuQm90dG9tLkF4aXNQZW4uRW5kQ2FwGS5BeGVzLkJvdHRvbS5HcmlkLlZpc2libGUaLkF4ZXMuQm90dG9tLk1heGltdW1PZmZzZXQULkF4ZXMuQm90dG9tLk1heGltdW0ULkF4ZXMuQm90dG9tLk1pbmltdW0aLkF4ZXMuQm90dG9tLk1pbmltdW1PZmZzZXQfLkF4ZXMuQm90dG9tLk1pbm9yVGlja3MuVmlzaWJsZRguQXhlcy5Cb3R0b20uVGlja3MuQ29sb3IcLkF4ZXMuQm90dG9tLlRpdGxlLkZvbnQuTmFtZRwuQXhlcy5Cb3R0b20uVGl0bGUuRm9udC5TaXplIS5BeGVzLkJvdHRvbS5UaXRsZS5Gb250LlNpemVGbG9hdCMuQXhlcy5Cb3R0b20uVGl0bGUuRm9udC5CcnVzaC5Db2xvciEuQXhlcy5Cb3R0b20uVGl0bGUuQmV2ZWwuQ29sb3JPbmUnLkF4ZXMuQm90dG9tLlRpdGxlLkJldmVsLlN0cmluZ0NvbG9yT25lIS5BeGVzLkJvdHRvbS5UaXRsZS5CZXZlbC5Db2xvclR3bycuQXhlcy5Cb3R0b20uVGl0bGUuQmV2ZWwuU3RyaW5nQ29sb3JUd28kLkF4ZXMuRGVwdGhUb3AuTGFiZWxzLkJldmVsLkNvbG9yT25lKi5BeGVzLkRlcHRoVG9wLkxhYmVscy5CZXZlbC5TdHJpbmdDb2xvck9uZSQuQXhlcy5EZXB0aFRvcC5MYWJlbHMuQmV2ZWwuQ29sb3JUd28qLkF4ZXMuRGVwdGhUb3AuTGFiZWxzLkJldmVsLlN0cmluZ0NvbG9yVHdvIy5BeGVzLkRlcHRoVG9wLlRpdGxlLkJldmVsLkNvbG9yT25lKS5BeGVzLkRlcHRoVG9wLlRpdGxlLkJldmVsLlN0cmluZ0NvbG9yT25lIy5BeGVzLkRlcHRoVG9wLlRpdGxlLkJldmVsLkNvbG9yVHdvKS5BeGVzLkRlcHRoVG9wLlRpdGxlLkJldmVsLlN0cmluZ0NvbG9yVHdvIS5BeGVzLkRlcHRoLkxhYmVscy5CZXZlbC5Db2xvck9uZScuQXhlcy5EZXB0aC5MYWJlbHMuQmV2ZWwuU3RyaW5nQ29sb3JPbmUhLkF4ZXMuRGVwdGguTGFiZWxzLkJldmVsLkNvbG9yVHdvJy5BeGVzLkRlcHRoLkxhYmVscy5CZXZlbC5TdHJpbmdDb2xvclR3byAuQXhlcy5EZXB0aC5UaXRsZS5CZXZlbC5Db2xvck9uZSYuQXhlcy5EZXB0aC5UaXRsZS5CZXZlbC5TdHJpbmdDb2xvck9uZSAuQXhlcy5EZXB0aC5UaXRsZS5CZXZlbC5Db2xvclR3byYuQXhlcy5EZXB0aC5UaXRsZS5CZXZlbC5TdHJpbmdDb2xvclR3bwAABAAABAEEAQQEAAAEAQQBBAEEAQAABgEAAAQBBAEEAQQBBAEEAQQBBAEAAAEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQEEAAQEAAAEAQQBBAEEAQQBBAEEAQQBBAEAAAEBAAAEAQQBAAQAAAAEAQYBAAAEBAQBBAEAAQEAAAQBBAEABAAABAEAAAQEAQQBAAABAQAABAEEAQAEAAAABAEAAAQEAQQBAAABAQEAAAQBBAEAAAAABAAAAAAAAAQBAAAEBAEEAQQBBAEEAQQBBAEEAQQBBAEBCCFTeXN0ZW0uV2luZG93cy5Gb3Jtcy5Nb3VzZUJ1dHRvbnMDAAAAAQgUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAACNTdGVlbWEuVGVlQ2hhcnQuRHJhd2luZy5CZXZlbFN0eWxlcwIAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAAQgUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAAQEICxRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAACAEUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAASRTdGVlbWEuVGVlQ2hhcnQuU3R5bGVzLlBvaW50ZXJTdHlsZXMCAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAgBFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAABJFN0ZWVtYS5UZWVDaGFydC5TdHlsZXMuUG9pbnRlclN0eWxlcwIAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAACAEUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAEkU3RlZW1hLlRlZUNoYXJ0LlN0eWxlcy5Qb2ludGVyU3R5bGVzAgAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAIARRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAASRTdGVlbWEuVGVlQ2hhcnQuU3R5bGVzLlBvaW50ZXJTdHlsZXMCAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAgBFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAABJFN0ZWVtYS5UZWVDaGFydC5TdHlsZXMuUG9pbnRlclN0eWxlcwIAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAACAEUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAEkU3RlZW1hLlRlZUNoYXJ0LlN0eWxlcy5Qb2ludGVyU3R5bGVzAgAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAIARRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAASRTdGVlbWEuVGVlQ2hhcnQuU3R5bGVzLlBvaW50ZXJTdHlsZXMCAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAgBFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAABJFN0ZWVtYS5UZWVDaGFydC5TdHlsZXMuUG9pbnRlclN0eWxlcwIAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAACAEUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAEkU3RlZW1hLlRlZUNoYXJ0LlN0eWxlcy5Qb2ludGVyU3R5bGVzAgAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAIARRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAASRTdGVlbWEuVGVlQ2hhcnQuU3R5bGVzLlBvaW50ZXJTdHlsZXMCAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAgBFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAABJFN0ZWVtYS5UZWVDaGFydC5TdHlsZXMuUG9pbnRlclN0eWxlcwIAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAACAEUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAEkU3RlZW1hLlRlZUNoYXJ0LlN0eWxlcy5Qb2ludGVyU3R5bGVzAgAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAIARRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAASRTdGVlbWEuVGVlQ2hhcnQuU3R5bGVzLlBvaW50ZXJTdHlsZXMCAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAgBFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAABJFN0ZWVtYS5UZWVDaGFydC5TdHlsZXMuUG9pbnRlclN0eWxlcwIAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAACAEUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAEkU3RlZW1hLlRlZUNoYXJ0LlN0eWxlcy5Qb2ludGVyU3R5bGVzAgAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAIARRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAASRTdGVlbWEuVGVlQ2hhcnQuU3R5bGVzLlBvaW50ZXJTdHlsZXMCAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAgBFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAABJFN0ZWVtYS5UZWVDaGFydC5TdHlsZXMuUG9pbnRlclN0eWxlcwIAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAACAEUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAEkU3RlZW1hLlRlZUNoYXJ0LlN0eWxlcy5Qb2ludGVyU3R5bGVzAgAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAIARRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAEICAsUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAggU3lzdGVtLkRyYXdpbmcuRHJhd2luZzJELkxpbmVDYXAEAAAAAQgBFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAgLFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAgICxRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAACCBTeXN0ZW0uRHJhd2luZy5EcmF3aW5nMkQuTGluZUNhcAQAAAABARRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAICxRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAEICAsUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAggU3lzdGVtLkRyYXdpbmcuRHJhd2luZzJELkxpbmVDYXAEAAAAAQgBFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAgLFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAAQgICxRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAAQEBCCBTeXN0ZW0uRHJhd2luZy5EcmF3aW5nMkQuTGluZUNhcAQAAAABCAYGCAEUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAACAsUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAABRTeXN0ZW0uRHJhd2luZy5Db2xvcgQAAAAUU3lzdGVtLkRyYXdpbmcuQ29sb3IEAAAAFFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAAIAAAABBAAAAAX7////IVN5c3RlbS5XaW5kb3dzLkZvcm1zLk1vdXNlQnV0dG9ucwEAAAAHdmFsdWVfXwAIAwAAAAAAQAAAAQAAAAX6////FFN5c3RlbS5EcmF3aW5nLkNvbG9yBAAAAARuYW1lBXZhbHVlCmtub3duQ29sb3IFc3RhdGUBAAAACQcHBAAAAAr/////AAAAAAAAAgAGBwAAAAhGRkZGRkZGRgH4////+v///wqAgID/AAAAAAAAAgAGCQAAAAhGRjgwODA4MAX2////I1N0ZWVtYS5UZWVDaGFydC5EcmF3aW5nLkJldmVsU3R5bGVzAQAAAAd2YWx1ZV9fAAgCAAAAAAAAAAH1////+v///wr/////AAAAAAAAAgABCAAAAAH0////+v///wr/////AAAAAAAAAgAGDQAAAAhGRkZGRkZGRgHy////+v///wqAgID/AAAAAAAAAgAGDwAAAAhGRjgwODA4MAHw////+v///wr/////AAAAAAAAAgAGEQAAAAhGRkZGRkZGRgHu////+v///wqAgID/AAAAAAAAAgAGEwAAAAhGRjgwODA4MAABCRQAAAAGFQAAAAZUYWhvbWEMAAAAAABAQQHq////+v///wr/////AAAAAAAAAgAGFwAAAAhGRkZGRkZGRgHo////+v///wqAgID/AAAAAAAAAgAGGQAAAAhGRjgwODA4MAHm////+v///wr/////AAAAAAAAAgAGGwAAAAhGRkZGRkZGRgHk////+v///wqAgID/AAAAAAAAAgAGHQAAAAhGRjgwODA4MAHi////+v///wr/////AAAAAAAAAgAGHwAAAAhGRkZGRkZGRgHg////+v///wqAgID/AAAAAAAAAgAGIQAAAAhGRjgwODA4MAHe////+v///wr/////AAAAAAAAAgAGIwAAAAhGRkZGRkZGRgHc////+v///wqAgID/AAAAAAAAAgAGJQAAAAhGRjgwODA4MAMAAAAABiYAAAAbU3RlZW1hLlRlZUNoYXJ0LlN0eWxlcy5MaW5lAdn////6////CgAAAAAAAAAAJQABAAEF2P///yRTdGVlbWEuVGVlQ2hhcnQuU3R5bGVzLlBvaW50ZXJTdHlsZXMBAAAAB3ZhbHVlX18ACAIAAAABAAAAAdf////6////CgAAAAAAAAAApAABAAIAAAAAAdb////6////CgAAAAAAAAAAJQABAAYrAAAADSBsZWFmX2FyZWEoMSkJJgAAAAHT////+v///woAAAAAAAAAAI0AAQABAdL////Y////AQAAAAHR////+v///woAAAAAAAAAAKQAAQACAAAAAAHQ////+v///woAAAAAAAAAAI0AAQAGMQAAAA0gbGVhZl9hcmVhKDIpCSYAAAABzf////r///8KAAAAAAAAAABPAAEAAQHM////2P///wEAAAABy/////r///8KAAAAAAAAAACkAAEAAgAAAAAByv////r///8KAAAAAAAAAABPAAEABjcAAAANIGxlYWZfYXJlYSgzKQkmAAAAAcf////6////CgAAAAAAAAAAfwABAAEBxv///9j///8BAAAAAcX////6////CgAAAAAAAAAApAABAAIAAAAAAcT////6////CgAAAAAAAAAAfwABAAY9AAAADSBsZWFmX2FyZWEoNCkJJgAAAAHB////+v///woAAAAAAAAAAGsAAQABAcD////Y////AQAAAAG/////+v///woAAAAAAAAAAKQAAQACAAAAAAG+////+v///woAAAAAAAAAAGsAAQAGQwAAAA0gbGVhZl9hcmVhKDUpCSYAAAABu/////r///8KAAAAAAAAAAAwAAEAAQG6////2P///wEAAAABuf////r///8KAAAAAAAAAACkAAEAAgAAAAABuP////r///8KAAAAAAAAAAAwAAEABkkAAAANIGxlYWZfYXJlYSg2KQkmAAAAAbX////6////CgAAAAAAAAAAJwABAAEBtP///9j///8BAAAAAbP////6////CgAAAAAAAAAApAABAAIAAAAAAbL////6////CgAAAAAAAAAAJwABAAZPAAAADSBsZWFmX2FyZWEoNykJJgAAAAGv////+v///woAAAAAAAAAAIwAAQABAa7////Y////AQAAAAGt////+v///woAAAAAAAAAAKQAAQACAAAAAAGs////+v///woAAAAAAAAAAIwAAQAGVQAAAA0gbGVhZl9hcmVhKDgpCSYAAAABqf////r///8KAAAAAAAAAABOAAEAAQGo////2P///wEAAAABp/////r///8KAAAAAAAAAACkAAEAAgAAAAABpv////r///8KAAAAAAAAAABOAAEABlsAAAANIGxlYWZfYXJlYSg5KQkmAAAAAaP////6////CgAAAAAAAAAAMQABAAEBov///9j///8BAAAAAaH////6////CgAAAAAAAAAApAABAAIAAAAAAaD////6////CgAAAAAAAAAAMQABAAZhAAAADiBsZWFmX2FyZWEoMTApCSYAAAABnf////r///8KAAAAAAAAAAA7AAEAAQGc////2P///wEAAAABm/////r///8KAAAAAAAAAACkAAEAAgAAAAABmv////r///8KAAAAAAAAAAA7AAEABmcAAAAOIGxlYWZfYXJlYSgxMSkJJgAAAAGX////+v///woAAAAAAAAAADUAAQABAZb////Y////AQAAAAGV////+v///woAAAAAAAAAAKQAAQACAAAAAAGU////+v///woAAAAAAAAAADUAAQAGbQAAAA4gbGVhZl9hcmVhKDEyKQkmAAAAAZH////6////CgAAAAAAAAAAOQABAAEBkP///9j///8BAAAAAY/////6////CgAAAAAAAAAApAABAAIAAAAAAY7////6////CgAAAAAAAAAAOQABAAZzAAAADiBsZWFmX2FyZWEoMTMpCSYAAAABi/////r///8KAAAAAAAAAAA3AAEAAQGK////2P///wEAAAABif////r///8KAAAAAAAAAACkAAEAAgAAAAABiP////r///8KAAAAAAAAAAA3AAEABnkAAAAOIGxlYWZfYXJlYSgxNCkJJgAAAAGF////+v///woAAAAAAAAAADIAAQABAYT////Y////AQAAAAGD////+v///woAAAAAAAAAAKQAAQACAAAAAAGC////+v///woAAAAAAAAAADIAAQAGfwAAAA4gbGVhZl9hcmVhKDE1KQkmAAAAAX/////6////CgAAAAAAAAAARgABAAEBfv///9j///8BAAAAAX3////6////CgAAAAAAAAAApAABAAIAAAAAAXz////6////CgAAAAAAAAAARgABAAaFAAAADiBsZWFmX2FyZWEoMTYpCSYAAAABef////r///8KAAAAAAAAAAA8AAEAAQF4////2P///wEAAAABd/////r///8KAAAAAAAAAACkAAEAAgAAAAABdv////r///8KAAAAAAAAAAA8AAEABosAAAAOIGxlYWZfYXJlYSgxNykJJgAAAAFz////+v///woAAAAAAAAAADQAAQABAXL////Y////AQAAAAFx////+v///woAAAAAAAAAAKQAAQACAAAAAAFw////+v///woAAAAAAAAAADQAAQAGkQAAAA4gbGVhZl9hcmVhKDE4KQFu////+v///wr/////AAAAAAAAAgAGkwAAAAhGRkZGRkZGRgFs////+v///wqAgID/AAAAAAAAAgAGlQAAAAhGRjgwODA4MAFq////+v///wr/////AAAAAAAAAgAGlwAAAAhGRkZGRkZGRgFo////+v///wqAgID/AAAAAAAAAgAGmQAAAAhGRjgwODA4MAFm////+v///wr/////AAAAAAAAAgAGmwAAAAhGRkZGRkZGRgFk////+v///wqAgID/AAAAAAAAAgAGnQAAAAhGRjgwODA4MAFi////+v///wr/////AAAAAAAAAgAGnwAAAAhGRkZGRkZGRgFg////+v///wqAgID/AAAAAAAAAgAGoQAAAAhGRjgwODA4MABQAAAABqIAAAAIIyMjMC4jIyMJFQAAAAkAAAAAABBBAVz////6////Cv////8AAAAAAAACAAalAAAACEZGRkZGRkZGAVr////6////CoCAgP8AAAAAAAACAAanAAAACEZGODA4MDgwAQAAAAVY////IFN5c3RlbS5EcmF3aW5nLkRyYXdpbmcyRC5MaW5lQ2FwAQAAAAd2YWx1ZV9fAAgEAAAAAgAAAAAKAAAAAAFX////+v///woAAAD/AAAAAAAAAgAGqgAAABRJbmRpdmlkdWFsIGxlYWYgYXJlYQmrAAAACRUAAAALAAAAAAAwQQFT////+v///wrAAAD/AAAAAAAAAgABUv////r///8K/wAA/wAAAAAAAAIAAVH////6////Cv////8AAAAAAAACAAawAAAACEZGRkZGRkZGAU/////6////CoCAgP8AAAAAAAACAAayAAAACEZGODA4MDgwUAAAAAmiAAAACRUAAAAJAAAAAAAQQQFL////+v///wr/////AAAAAAAAAgAGtgAAAAhGRkZGRkZGRgFJ////+v///wqAgID/AAAAAAAAAgAGuAAAAAhGRjgwODA4MAEAAAABR////1j///8CAAAAAAABRv////r///8KAAAA/wAAAAAAAAIACRUAAAALAAAAAAAwQQFE////+v///wr/AAD/AAAAAAAAAgABQ/////r///8K/////wAAAAAAAAIABr4AAAAIRkZGRkZGRkYBQf////r///8KgICA/wAAAAAAAAIABsAAAAAIRkY4MDgwODAAUAAAAAmiAAAACRUAAAAJAAAAAAAQQQE9////+v///wr/////AAAAAAAAAgAGxAAAAAhGRkZGRkZGRgE7////+v///wqAgID/AAAAAAAAAgAGxgAAAAhGRjgwODA4MAEAAAABOf///1j///8CAAAAAAoAAAAAATj////6////CgAAAP8AAAAAAAACAAkVAAAACwAAAAAAMEEBNv////r///8K/wAA/wAAAAAAAAIAATX////6////Cv////8AAAAAAAACAAbMAAAACEZGRkZGRkZGATP////6////CoCAgP8AAAAAAAACAAbOAAAACEZGODA4MDgwAFAAAAAGzwAAAAlkL01NL3l5eXkJogAAAAkVAAAACQAAAAAAEEEBLv////r///8K/////wAAAAAAAAIABtMAAAAIRkZGRkZGRkYBLP////r///8KgICA/wAAAAAAAAIABtUAAAAIRkY4MDgwODAAAAABAAAAASr///9Y////AgAAAAAKAAAAAAAAAKD540AAAAAAAMzjQAoAAAAAASn////6////CgAAAP8AAAAAAAACAAkVAAAACwAAAAAAMEEBJ/////r///8K/wAA/wAAAAAAAAIAASb////6////Cv////8AAAAAAAACAAbbAAAACEZGRkZGRkZGAST////6////CoCAgP8AAAAAAAACAAbdAAAACEZGODA4MDgwASL////6////Cv////8AAAAAAAACAAbfAAAACEZGRkZGRkZGASD////6////CoCAgP8AAAAAAAACAAbhAAAACEZGODA4MDgwAR7////6////Cv////8AAAAAAAACAAbjAAAACEZGRkZGRkZGARz////6////CoCAgP8AAAAAAAACAAblAAAACEZGODA4MDgwARr////6////Cv////8AAAAAAAACAAbnAAAACEZGRkZGRkZGARj////6////CoCAgP8AAAAAAAACAAbpAAAACEZGODA4MDgwARb////6////Cv////8AAAAAAAACAAbrAAAACEZGRkZGRkZGART////6////CoCAgP8AAAAAAAACAAbtAAAACEZGODA4MDgwERQAAAABAAAABu4AAAAAEasAAAABAAAABu8AAAAUSW5kaXZpZHVhbCBsZWFmIGFyZWEL</Format>
+        <Plot>
+          <SeriesType>Solid line</SeriesType>
+          <PointType>Circle</PointType>
+          <colour>
+          </colour>
+          <X>Date</X>
+          <Y>leaf_area(1)</Y>
+          <Y>leaf_area(2)</Y>
+          <Y>leaf_area(3)</Y>
+          <Y>leaf_area(4)</Y>
+          <Y>leaf_area(5)</Y>
+          <Y>leaf_area(6)</Y>
+          <Y>leaf_area(7)</Y>
+          <Y>leaf_area(8)</Y>
+          <Y>leaf_area(9)</Y>
+          <Y>leaf_area(10)</Y>
+          <Y>leaf_area(11)</Y>
+          <Y>leaf_area(12)</Y>
+          <Y>leaf_area(13)</Y>
+          <Y>leaf_area(14)</Y>
+          <Y>leaf_area(15)</Y>
+          <Y>leaf_area(16)</Y>
+          <Y>leaf_area(17)</Y>
+          <Y>leaf_area(18)</Y>
+          <GDApsimFileReader name="ApsimFileReader" />
+        </Plot>
+      </Graph>
+      <Graph name="Crop Nitrogen">
+        <Legend>
+          <CheckedTitles> n_conc_leaf_crit</CheckedTitles>
+          <CheckedTitles> n_conc_leaf_max</CheckedTitles>
+          <CheckedTitles> n_conc_leaf_min</CheckedTitles>
+        </Legend>
+        <Plot>
+          <SeriesType>Solid line</SeriesType>
+          <PointType>Circle</PointType>
+          <colour>
+          </colour>
+          <X>Date</X>
+          <Y>n_conc_leaf_crit</Y>
+          <Y>n_conc_leaf_max</Y>
+          <Y>n_conc_leaf_min</Y>
+          <GDApsimFileReader name="ApsimFileReader" />
+        </Plot>
+      </Graph>
+      <Graph name="Water stress">
+        <Legend>
+          <CheckedTitles> sw_stress_expan</CheckedTitles>
+          <CheckedTitles> sw_stress_pheno</CheckedTitles>
+          <CheckedTitles> sw_stress_photo</CheckedTitles>
+        </Legend>
+        <Plot>
+          <SeriesType>Solid line</SeriesType>
+          <PointType>Circle</PointType>
+          <colour>
+          </colour>
+          <X>Date</X>
+          <Y>sw_stress_expan</Y>
+          <Y>sw_stress_pheno</Y>
+          <Y>sw_stress_photo</Y>
+          <GDApsimFileReader name="ApsimFileReader" />
+        </Plot>
+      </Graph>
+    </area>
+  </simulation>
+  <factorial name="Factorials">
+    <active>0</active>
+    <settings />
+    <factor name="sowing">
+      <targets>
+        <Target>/simulations/Maize-soybean/paddock/Manager folder/Sow on a fixed date</Target>
+      </targets>
+      <vars>
+      </vars>
+      <manager name="Sow on a fixed date">
+        <ui>
+          <category type="category" description="Sowing criteria" />
+          <date type="text" description="Enter sowing date (dd-mmm) : ">1-may</date>
+          <category type="category" description="Sowing parameters" />
+          <crop type="crop" description="Enter name of crop to sow : ">maize</crop>
+          <density type="text" description="Enter sowing density  (plants/m2) : ">7.5</density>
+          <depth type="text" description="Enter sowing depth  (mm) : ">50</depth>
+          <cultivar type="cultivars" description="Enter cultivar : ">B_110</cultivar>
+          <class type="classes" description="Enter crop growth class : ">plant</class>
+          <row_spacing type="text" description="Enter row spacing (mm) : ">760</row_spacing>
+        </ui>
+        <script>
+          <text>
+        if (today = date('[date]') then
+              [crop] sow plants =[density], sowing_depth = [depth], cultivar = [cultivar], row_spacing = [row_spacing], crop_class = [class]
+         endif
+               </text>
+          <event>start_of_day</event>
+        </script>
+      </manager>
+      <manager name="Sow on a fixed date1">
+        <ui>
+          <category type="category" description="Sowing criteria" />
+          <date type="text" description="Enter sowing date (dd-mmm) : ">15-may</date>
+          <category type="category" description="Sowing parameters" />
+          <crop type="crop" description="Enter name of crop to sow : ">maize</crop>
+          <density type="text" description="Enter sowing density  (plants/m2) : ">7.5</density>
+          <depth type="text" description="Enter sowing depth  (mm) : ">50</depth>
+          <cultivar type="cultivars" description="Enter cultivar : ">B_110</cultivar>
+          <class type="classes" description="Enter crop growth class : ">plant</class>
+          <row_spacing type="text" description="Enter row spacing (mm) : ">760</row_spacing>
+        </ui>
+        <script>
+          <text>
+        if (today = date('[date]') then
+              [crop] sow plants =[density], sowing_depth = [depth], cultivar = [cultivar], row_spacing = [row_spacing], crop_class = [class]
+         endif
+               </text>
+          <event>start_of_day</event>
+        </script>
+      </manager>
+      <manager name="Sow on a fixed date2">
+        <ui>
+          <category type="category" description="Sowing criteria" />
+          <date type="text" description="Enter sowing date (dd-mmm) : ">20-may</date>
+          <category type="category" description="Sowing parameters" />
+          <crop type="crop" description="Enter name of crop to sow : ">maize</crop>
+          <density type="text" description="Enter sowing density  (plants/m2) : ">7.5</density>
+          <depth type="text" description="Enter sowing depth  (mm) : ">50</depth>
+          <cultivar type="cultivars" description="Enter cultivar : ">B_110</cultivar>
+          <class type="classes" description="Enter crop growth class : ">plant</class>
+          <row_spacing type="text" description="Enter row spacing (mm) : ">760</row_spacing>
+        </ui>
+        <script>
+          <text>
+        if (today = date('[date]') then
+              [crop] sow plants =[density], sowing_depth = [depth], cultivar = [cultivar], row_spacing = [row_spacing], crop_class = [class]
+         endif
+               </text>
+          <event>start_of_day</event>
+        </script>
+      </manager>
+    </factor>
+    <factor name="nitrogen">
+      <targets>
+        <Target>/simulations/Maize-soybean/paddock/Manager folder/Fertilise on fixed date</Target>
+      </targets>
+      <vars>
+      </vars>
+      <manager name="Fertilise on fixed date">
+        <ui>
+          <category type="category" description="When should fertiliser be applied" />
+          <fert_date type="ddmmmdate" description="Enter fertiliser date (dd-mmm) : ">5-may</fert_date>
+          <fert_criteria type="text" description="Don't add fertiliser if N in top 2 layers exceeds (kg/ha) : ">1000</fert_criteria>
+          <category type="category" description="Fertiliser application details" />
+          <fertmodule type="modulename" description="Module used to apply the fertiliser : ">fertiliser</fertmodule>
+          <fert_amount type="text" description="Amount of fertiliser to apply (kg/ha) : ">150</fert_amount>
+          <fert_type type="list" listvalues="NO3_N, NH4_N, NH4NO3, urea_N, urea_no3, urea, nh4so4_n, rock_p, banded_p, broadcast_p" description="Fertiliser type : ">urea_N</fert_type>
+        </ui>
+        <script>
+          <text>
+         if (today = date('[fert_date]') then
+            N_topsoil = no3(1) + nh4(1) + no3(2) + nh4(2)
+            if (N_topsoil &lt; [fert_criteria]) then
+               [fertmodule] apply amount = [fert_amount] (kg/ha), depth = 50 (mm), type = [fert_type] ()
+            endif
+         endif </text>
+          <event>start_of_day</event>
+        </script>
+      </manager>
+      <manager name="Fertilise on fixed date1">
+        <ui>
+          <category type="category" description="When should fertiliser be applied" />
+          <fert_date type="ddmmmdate" description="Enter fertiliser date (dd-mmm) : ">5-may</fert_date>
+          <fert_criteria type="text" description="Don't add fertiliser if N in top 2 layers exceeds (kg/ha) : ">1000</fert_criteria>
+          <category type="category" description="Fertiliser application details" />
+          <fertmodule type="modulename" description="Module used to apply the fertiliser : ">fertiliser</fertmodule>
+          <fert_amount type="text" description="Amount of fertiliser to apply (kg/ha) : ">100</fert_amount>
+          <fert_type type="list" listvalues="NO3_N, NH4_N, NH4NO3, urea_N, urea_no3, urea, nh4so4_n, rock_p, banded_p, broadcast_p" description="Fertiliser type : ">urea_N</fert_type>
+        </ui>
+        <script>
+          <text>
+         if (today = date('[fert_date]') then
+            N_topsoil = no3(1) + nh4(1) + no3(2) + nh4(2)
+            if (N_topsoil &lt; [fert_criteria]) then
+               [fertmodule] apply amount = [fert_amount] (kg/ha), depth = 50 (mm), type = [fert_type] ()
+            endif
+         endif </text>
+          <event>start_of_day</event>
+        </script>
+      </manager>
+      <manager name="Fertilise on fixed date2">
+        <ui>
+          <category type="category" description="When should fertiliser be applied" />
+          <fert_date type="ddmmmdate" description="Enter fertiliser date (dd-mmm) : ">5-may</fert_date>
+          <fert_criteria type="text" description="Don't add fertiliser if N in top 2 layers exceeds (kg/ha) : ">1000</fert_criteria>
+          <category type="category" description="Fertiliser application details" />
+          <fertmodule type="modulename" description="Module used to apply the fertiliser : ">fertiliser</fertmodule>
+          <fert_amount type="text" description="Amount of fertiliser to apply (kg/ha) : ">50</fert_amount>
+          <fert_type type="list" listvalues="NO3_N, NH4_N, NH4NO3, urea_N, urea_no3, urea, nh4so4_n, rock_p, banded_p, broadcast_p" description="Fertiliser type : ">urea_N</fert_type>
+        </ui>
+        <script>
+          <text>
+         if (today = date('[fert_date]') then
+            N_topsoil = no3(1) + nh4(1) + no3(2) + nh4(2)
+            if (N_topsoil &lt; [fert_criteria]) then
+               [fertmodule] apply amount = [fert_amount] (kg/ha), depth = 50 (mm), type = [fert_type] ()
+            endif
+         endif </text>
+          <event>start_of_day</event>
+        </script>
+      </manager>
+    </factor>
+    <factor name="cultivar">
+      <targets>
+        <Target>/simulations/Maize-soybean/paddock/Manager folder/Sow on a fixed date</Target>
+        <Target>/simulations/Maize-soybean/paddock/Manager folder/Sow on a fixed date</Target>
+      </targets>
+      <vars>
+        <cultivar>B_110, B_130</cultivar>
+      </vars>
+      <manager name="Sow on a fixed date">
+        <ui>
+          <category type="category" description="Sowing criteria" />
+          <date type="text" description="Enter sowing date (dd-mmm) : ">1-may</date>
+          <category type="category" description="Sowing parameters" />
+          <crop type="crop" description="Enter name of crop to sow : ">maize</crop>
+          <density type="text" description="Enter sowing density  (plants/m2) : ">7.5</density>
+          <depth type="text" description="Enter sowing depth  (mm) : ">50</depth>
+          <cultivar type="cultivars" description="Enter cultivar : ">B_110</cultivar>
+          <class type="classes" description="Enter crop growth class : ">plant</class>
+          <row_spacing type="text" description="Enter row spacing (mm) : ">760</row_spacing>
+        </ui>
+        <script>
+          <text>
+        if (today = date('[date]') then
+              [crop] sow plants =[density], sowing_depth = [depth], cultivar = [cultivar], row_spacing = [row_spacing], crop_class = [class]
+         endif
+               </text>
+          <event>start_of_day</event>
+        </script>
+      </manager>
+    </factor>
+  </factorial>
+</folder>
