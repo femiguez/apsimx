@@ -110,17 +110,31 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       if(parm %in% c("Thickness","BD","AirDry","LL15","DUL","SAT","KS")){
         parm.path <- paste0(".//Soil/Water","/",parm)
       }
-      ## With this code it is possible to provide an incorrect parameter
-      soil.water.node <- xml_find_first(apsim_xml, parm.path)
       
-      if(length(value) != length(xml_children(soil.water.node)))
-        stop("value vector of incorrect length")
+      ## Soil Water
+      soil.water.parms <- c("SummerCona", "SummerU", "SummerDate",
+                            "WinterCona", "WinterU", "WinterDate",
+                            "DiffusConst","DiffusSlope", "Salb",
+                            "CN2Bare","CNRed","CNCov")
       
+      if(parm %in% soil.water.parms){
+        parm.path <- paste0(".//Soil/Water","/",parm)
+        soil.water.node <- xml_find_first(apsim_xml, parm.path)
+        ## Error checking
+        if(length(value) != length(soil.water.node))
+          stop("value vector of incorrect length")
+      }else{
+        soil.water.node <- xml_find_first(apsim_xml, parm.path)
+        if(length(value) != length(xml_children(soil.water.node)))
+          stop("value vector of incorrect length")
+      }
+      ## With this code it is still possible to provide an incorrect parameter
+      ## Not sure...
       xml_set_text(xml_children(soil.water.node), as.character(value))
     }
     
     if(soil.child == "Nitrogen"){
-      
+      stop("not implemented yet")
       parm.choices <- c("fom_type","fract_carb","fract_cell","fract_lign")
       parm <- match.arg(parm, choices = parm.choices)
       
@@ -136,7 +150,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       ## State what are organic matter possible parameters
       parm.ch1 <- c("RootCN","RootWt","SoilCN","EnrACoeff",
                     "EnrBCoeff")
-      parm.ch2 <- c("Thickness","Depth","OC","FBiom","FInert")
+      parm.ch2 <- c("Thickness","OC","FBiom","FInert")
       
       parm.path <- paste0(".//Soil/SoilOrganicMatter","/",parm)
       
@@ -158,7 +172,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     
     if(soil.child == "Analysis"){
       ## State what are possible analysis parameters
-      parm.ch <- c("Thickness","PH")
+      parm.ch <- c("Thickness","PH","EC")
       
       parm <- match.arg(parm, choices = parm.ch)
       
@@ -210,11 +224,12 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     if(som.child == "Pools"){
       ## State what are possible Pools parameters
       parm.ch <- c("PoolName","ResidueType","Mass","CNRatio",
-                   "CPRatio","StandingFraction")
+                   "CPRatio","StandingFraction", "type", "mass",
+                   "cnr","standing_fraction")
       
       parm <- match.arg(parm, choices = parm.ch)
       
-      parm.path <- paste0(".//SurfaceOrganicMatter/Pools/Pool","/",parm)
+      parm.path <- paste0(".//surfaceom/",parm)
       
       soil.Pools.Pool.node <- xml_find_first(apsim_xml, parm.path)
       
@@ -244,7 +259,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     }
     
     if(som.child == "Other"){
-      
+      stop("Not relevant for APSIM Classic")
       parm.ch <- c("CriticalResidueWeight",
                    "OptimumDecompTemp","MaxCumulativeEOS",
                    "CNRatioDecompCoeff","CNRatioDecompThreshold",
@@ -268,6 +283,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   }
   
   if(node == "MicroClimate"){
+    stop("Not relevant for APSIM Classic")
     ## These are hard coded, might use them in the future
     ## parm.ch <- c("a_interception","b_interception","c_interception",
     ##             "d_interception", "soil_albedo", "sun_angle",
@@ -290,9 +306,8 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   }
   
   if(node == "Crop"){
-    ## I will assume that 'SowingRule' and 'Harvesing' are always present
-    ## Sowing is a case where it might not be easy to automatically 
-    ## get the parameter choices
+    ## I'm not sure what kind of structure I can assume for 'Crop'
+    ## in APSIM 'Classic'
     parms.ch <- c("StartDate","EndDate","MinESW","MinRain",
                   "RainDays","CultivarName","SowingDepth",
                   "RowSpacing","Population")
@@ -342,4 +357,10 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     cat("New values ",value, "\n")
     cat("Created ",wr.path,"\n")
   }
+}
+
+exclude <- function(x, names){
+  tmp <- which(x %in% names)
+  ans <- x[-tmp]
+  ans
 }

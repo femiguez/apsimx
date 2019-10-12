@@ -25,6 +25,7 @@
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Sample")
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "SurfaceOrganicMatter")
+#' inspect_apsim("Millet", src.dir = extd.dir, node = "Crop") 
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Manager") 
 #' }
 #' 
@@ -201,7 +202,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
     
     if(soil.child == "Analysis"){
       ## I will keep this one hard coded because it is simple
-      analysis.parms <- c("Thickness","PH")
+      analysis.parms <- c("Thickness","PH","EC")
       
       val.mat <- matrix(NA, ncol = (length(analysis.parms)+1),
                         nrow = number.soil.layers)
@@ -324,7 +325,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
     cat("Crop Type: ",xml_text(xml_find_first(apsim_xml, ".//manager/ui/crop")),"\n")
     ## Make sure sowing rule is present
     xfa.manager <- as.vector(unlist(xml_attrs(xml_find_all(apsim_xml, ".//manager"))))
-    cat("Management Scripts:", xfa.manager,"\n")
+    cat("Management Scripts:", xfa.manager,"\n", sep = "\n")
     
     ## this makes a strong assumption that a sowing rule is present
     find.sow <- grep("sow",xfa.manager, ignore.case = TRUE)
@@ -332,15 +333,11 @@ inspect_apsim <- function(file = "", src.dir = ".",
       warning("Sowing not found")
     
     sowing <- xml_find_first(apsim_xml, ".//manager/ui")
-    sowing.n <- length(xml_children(sowing))
+    descr <- sapply(xml_attrs(xml_children(sowing)),function(x) x[["description"]])
+    vals <- xml_text(xml_children(sowing))
     
-    sowingrule.d <- data.frame(parm = rep(NA, sowing.n), value = NA)
-    
-    for(i in 1:sowing.n){
-      parm.path <- paste0(".//manager/ui","/",i)
-      manager.sowingrule.node <- xml_find_first(apsim_xml, parm.path)
-      sowingrule.d[sowingrule.d$parm == i,2] <- xml_text(manager.sowingrule.node)
-    }
+    sowingrule.d <- data.frame(parm = descr, value = vals)
+    print(kable(sowingrule.d, digits = digits))
     
     ## Just check that there is a harvest rule
     ## So far I looked into the Maize and Wheat examples. For Maize it is called
@@ -349,23 +346,16 @@ inspect_apsim <- function(file = "", src.dir = ".",
     if(length(grep("harvest", xfa.manager, ignore.case = TRUE)) == 0){
       warning("Harvest[ing] not found")
     }else{
-      cat("Harvest rule found \n")
       ## For now it does not seem to make sense to print the harvest rule
-      if(FALSE){
-        w.harvest <- grep("harvest", xfa.manager, ignore.case = TRUE)
-        hrv <- xml_find_all(apsimx_xml, paste0(".//Manager"))[w.harvest]
-        hrv.attr <- xml_children(hrv)
-        hrv.nm <- xml_name(hrv.attr)
-        hrv.vl <- xml_text(hrv.attr)
-        w.hrv.nm.code <- which(hrv.nm == "Code" & hrv.nm == "Script")
-        ## Eliminate "Code"
-        hrv.nm <- hrv.nm[-w.hrv.nm.code]
-        hrv.vl <- hrv.vl[-w.hrv.nm.code]
-        print(kable(data.frame(parm = hrv.nm, value = hrv.vl)))
-      }
+      harvest0 <- xml_find_all(apsim_xml, ".//manager/ui")
+      w.hrv <- grep("harvest", harvest0)
+      harvest <- harvest0[[w.hrv]]
+      descr <- sapply(xml_attrs(xml_children(harvest)),function(x) x[["description"]])
+      vals <- xml_text(xml_children(harvest))
+        
+      harvest.d <- data.frame(parm = descr, value = vals)
+      print(kable(harvest.d, digits = digits))
     }
-    
-    print(kable(sowingrule.d, digits = digits))
   }
   
   if(node == "Manager"){
