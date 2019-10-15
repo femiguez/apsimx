@@ -26,7 +26,7 @@
   }else{
         if(grepl("Windows", Sys.info()[["sysname"]])){
           laf <- list.files("C:/PROGRA~1")
-          laf2 <- list.file("C:/PROGRA~2")
+          laf2 <- list.files("C:/PROGRA~2")
       }
   }
   ## Check whether APSIM-X is detected
