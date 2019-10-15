@@ -7,8 +7,8 @@
 inspect_apsimx(file = "", src.dir = ".", node = c("Clock", "Weather",
   "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager",
   "Other"), soil.child = c("Water", "OrganicMatter", "Analysis",
-  "Chemical", "InitialWater", "Sample"), som.child = c("Pools", "Other"),
-  parm = NULL, digits = 3)
+  "Physical", "Chemical", "InitialWater", "Sample"),
+  som.child = c("Pools", "Other"), parm = NULL, digits = 3)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected}
@@ -21,7 +21,7 @@ inspect_apsimx(file = "", src.dir = ".", node = c("Clock", "Weather",
 
 \item{som.child}{specific soil organic matter component to be inspected ('Pools' or 'Other')}
 
-\item{parm}{parameter to inspect when node = 'Other' (XML only)}
+\item{parm}{parameter to inspect when node = 'Manager' or 'Other'}
 
 \item{digits}{number of decimals to print}
 }
@@ -56,6 +56,7 @@ inspect_apsimx("Maize", src.dir = ex.dir, node = "SurfaceOrganicMatter", som.chi
 inspect_apsimx("Maize", src.dir = ex.dir, node = "MicroClimate")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Crop")
 inspect_apsimx("Maize", src.dir = ex.dir, node = "Manager")
+inspect_apsimx("Maize", src.dir = ex.dir, node = "Manager", parm = list('SowingRule',NA))
 }
 
 }

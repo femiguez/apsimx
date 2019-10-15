@@ -7,8 +7,8 @@
 inspect_apsimx_json(file = "", src.dir = ".", node = c("Clock",
   "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
   "Manager", "Other"), soil.child = c("Water", "OrganicMatter",
-  "Chemical", "Analysis", "InitialWater", "Sample"),
-  som.child = c("Pools", "Other"), digits = 3)
+  "Chemical", "Physical", "Analysis", "InitialWater", "Sample"),
+  som.child = c("Pools", "Other"), parm = NULL, digits = 3)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected (JSON)}
@@ -20,6 +20,8 @@ inspect_apsimx_json(file = "", src.dir = ".", node = c("Clock",
 \item{soil.child}{specific soil component to be inspected. The options are: 'Water', 'OrganicMatter', 'Analysis', 'InitalWater', 'Sample'}
 
 \item{som.child}{specific surface organic matter component to be inspected (not used)}
+
+\item{parm}{parameter to refine the inspection of the 'manager' list('parm','position'), use 'NA' for all the positions. 'parm' can be a regular expression for partial matching.}
 
 \item{digits}{number of decimals to print (default 3)}
 }
@@ -45,6 +47,7 @@ inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Sam
 inspect_apsimx_json("Barley", src.dir = ex.dir, node = "SurfaceOrganicMatter")
 inspect_apsimx_json("Barley", src.dir = ex.dir, node = "MicroClimate")
 inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Crop")
+inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Manager")
 
 }
 

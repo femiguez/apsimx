@@ -8,9 +8,9 @@ edit_apsim(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
   "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
   "Manager", "Other"), soil.child = c("Water", "OrganicMatter",
   "Chemical", "Analysis", "InitialWater", "Sample"),
-  som.child = c("Pools", "Other"), manager.child = NULL, parm = NULL,
-  value = NULL, overwrite = FALSE, edit.tag = "-edited",
-  parm.path = NULL, verbose = TRUE)
+  manager.child = NULL, parm = NULL, value = NULL,
+  overwrite = FALSE, edit.tag = "-edited", parm.path = NULL,
+  verbose = TRUE)
 }
 \arguments{
 \item{file}{file ending in .apsim to be edited}
@@ -22,8 +22,6 @@ edit_apsim(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
 \item{node}{either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'}
 
 \item{soil.child}{specific soil component to be edited}
-
-\item{som.child}{specific soil organic matter component to be edited}
 
 \item{manager.child}{specific manager component to be edited (not implemented yet)}
 

@@ -1,4 +1,3 @@
-
 #' 
 #' @title Inspect an .apsimx (JSON) file
 #' @name inspect_apsimx_json
@@ -8,6 +7,7 @@
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
 #' @param soil.child specific soil component to be inspected. The options are: 'Water', 'OrganicMatter', 'Analysis', 'InitalWater', 'Sample'
 #' @param som.child specific surface organic matter component to be inspected (not used)
+#' @param parm parameter to refine the inspection of the 'manager' list('parm','position'), use 'NA' for all the positions. 'parm' can be a regular expression for partial matching.
 #' @param digits number of decimals to print (default 3)
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 #' @return table with inspected parameters and values
@@ -25,6 +25,7 @@
 #' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "SurfaceOrganicMatter")
 #' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "MicroClimate")
 #' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Crop")
+#' inspect_apsimx_json("Barley", src.dir = ex.dir, node = "Manager")
 #' 
 #' }
 #'
@@ -33,8 +34,10 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
                                 node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                          "MicroClimate","Crop","Manager","Other"),
                                 soil.child = c("Water","OrganicMatter", "Chemical",
+                                               "Physical",
                                                "Analysis","InitialWater","Sample"),
                                 som.child = c("Pools","Other"),
+                                parm = NULL,
                                 digits = 3){
   
   fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
@@ -59,13 +62,18 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
   fcsn <- grep("Models.Core.Simulation", apsimx_json$Children, fixed = TRUE)
   parent.node <- apsimx_json$Children[[fcsn]]$Children
   
-  ## The previous creates a list
   if(node == "Clock"){
     wlc <- function(x) grepl("Clock", x$Name, ignore.case = TRUE)
     wlcl <- sapply(parent.node, FUN = wlc)
-    clock.node <- unlist(parent.node[wlcl])
-    cat("StartDate:", clock.node["Start"],"\n")
-    cat("EndDate:", clock.node["End"],"\n")
+    clock.node <- as.list(parent.node[wlcl])[[1]]
+    start.name <- grep("start", names(clock.node), ignore.case = TRUE, value = TRUE)
+    end.name <- grep("end", names(clock.node), ignore.case = TRUE, value = TRUE)
+    cat("Start:", clock.node[[start.name]], "\n")
+    cat("End:",  clock.node[[end.name]], "\n")
+    ## It is possible for the 'start' and 'end' to be called: 'Start' and 'End'
+    ## It is also possible for them to be called 'StartDate' and 'EndDate'
+    ## I think APSIM-X is in a state of change and eventually this will
+    ## stabilize. At the moment 'Maize' and 'Barley' do not agree.
   }
   
   ## The previous creates a list
@@ -100,8 +108,9 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
     soil.depths <- unlist(soil.depth.node0[[1]]$Depth)
     soil.depths <- gsub("-","_to_",soil.depths, fixed = TRUE)
     
-    if(soil.child == "Water"){
+    if(soil.child == "Water" | soil.child == "Physical"){
       
+      ## Does this assume that water is the first node?
       soil.water.node <- soil.node[[1]]$Children[[1]]
       
       soil.water.d <- data.frame(Thickness = unlist(soil.water.node$Thickness),
@@ -120,34 +129,34 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
       print(kable(crop.soil.water.d, digits = digits))
       
       ## Which soils water model
-      wswmn <- grepl("Models.Soils.SoilWater", soil.node[[1]]$Children)
-      soil.water.model.node <- soil.node[[1]]$Children[wswmn][[1]]
+      # wswmn <- grepl("Models.Soils.SoilCrop", soil.node[[1]]$Children)
+      # soil.water.model.node <- soil.node[[1]]$Children[wswmn][[1]]
+      # 
+      # tmp <- soil.water.model.node
+      # tmp1 <- data.frame(SummerDate = tmp$SummerDate,
+      #                    SummerU = tmp$SummerU,
+      #                    SummerCona = tmp$SummerCona,
+      #                    WinterDate = tmp$WinterDate,
+      #                    WinterU = tmp$WinterU,
+      #                    WinterCona = tmp$WinterCona,
+      #                    DiffusConst = tmp$DiffusConst,
+      #                    DiffusSlope = tmp$DiffusSlope,
+      #                    Salb = tmp$Salb,
+      #                    CNBare = tmp$CN2Bare,
+      #                    CNRed = tmp$CNRed,
+      #                    CNCov = tmp$CNCov,
+      #                    slope = tmp$slope,
+      #                    discharge_width = tmp$discharge_width,
+      #                    catchment_area = tmp$catchment_area,
+      #                    max_pond = tmp$max_pond)
+      # 
+      # soil.water.model.node.d1 <- as.data.frame(t(as.matrix(tmp1)))
       
-      tmp <- soil.water.model.node
-      tmp1 <- data.frame(SummerDate = tmp$SummerDate,
-                         SummerU = tmp$SummerU,
-                         SummerCona = tmp$SummerCona,
-                         WinterDate = tmp$WinterDate,
-                         WinterU = tmp$WinterU,
-                         WinterCona = tmp$WinterCona,
-                         DiffusConst = tmp$DiffusConst,
-                         DiffusSlope = tmp$DiffusSlope,
-                         Salb = tmp$Salb,
-                         CNBare = tmp$CN2Bare,
-                         CNRed = tmp$CNRed,
-                         CNCov = tmp$CNCov,
-                         slope = tmp$slope,
-                         discharge_width = tmp$discharge_width,
-                         catchment_area = tmp$catchment_area,
-                         max_pond = tmp$max_pond)
+      ##soil.water.model.node.d2 <- data.frame(Thickness = unlist(tmp$Thickness),
+      ##                                       SWCON = unlist(tmp$SWCON))
       
-      soil.water.model.node.d1 <- as.data.frame(t(as.matrix(tmp1)))
-      
-      soil.water.model.node.d2 <- data.frame(Thickness = unlist(tmp$Thickness),
-                                             SWCON = unlist(tmp$SWCON))
-      
-      ## I will not print these ones for now
       ## print(kable(soil.water.model.node.d1, digits = digits))
+      ## I will not print these ones for now
       ## print(kable(soil.water.model.node.d2, digits = digits))
       
     }
@@ -177,6 +186,11 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
       icl <- as.vector(which(sapply(tmp, length) == 1))
       soil.om.d1 <- data.frame(parm = names(tmp)[icl],
                                value = as.vector(unlist(tmp[icl])))
+      ## Exclude junk
+      selected.parms <- exclude(soil.om.d1$parm,
+                             c("IncludeInDocumentation",
+                               "Enabled", "ReadOnly"))
+      soil.om.d1 <- subset(soil.om.d1, parm %in% selected.parms)
       print(kable(soil.om.d1, digits = digits))
       
       icl2 <- as.vector(which(sapply(tmp, length) > 1))
@@ -190,6 +204,11 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
       ## Which soil analysis
       wsan <- grepl(paste0("Models.Soils.", soil.child), 
                     soil.node[[1]]$Children)
+      
+      if(all(wsan == FALSE)){
+        stop(paste0(soil.child," not found"))
+      }
+        
       soil.analysis.node <- soil.node[[1]]$Children[wsan][[1]]
       
       wil <- which(sapply(soil.analysis.node, length) > 1)
@@ -265,19 +284,47 @@ inspect_apsimx_json <- function(file = "", src.dir = ".",
     ## Print available Manager components
     manager.node.names <- sapply(manager.node, FUN = function(x) x$Name)
     cat("Management Scripts: ", manager.node.names,"\n\n")
-    for(i in 1:length(manager.node.names)){
-      ms.params <- manager.node[[i]]$Parameters
-      if(length(ms.params) == 0) next
-      mat <- matrix(NA, ncol=2, nrow = length(ms.params),
-                    dimnames = list(NULL,c("parm","value")))
+    
+    if(!is.null(parm)){
+      parm1 <- parm[[1]]
+      position <- parm[[2]]
+      find.manager <- grep(parm1, manager.node.names, ignore.case = TRUE)
+      selected.manager.node <- manager.node.names[find.manager]
       
-      for(j in 1:length(ms.params)){
-        mat[j,1] <- ms.params[[j]]$Key
-        mat[j,2] <- ms.params[[j]]$Value
+      if(is.na(position)){
+        ms.params <- manager.node[[find.manager]]$Parameters
+        if(length(ms.params) == 0) warning("parameter not found")
+        mat <- matrix(NA, ncol=2, nrow = length(ms.params),
+                      dimnames = list(NULL,c("parm","value")))
+      
+        for(j in 1:length(ms.params)){
+          mat[j,1] <- ms.params[[j]]$Key
+          mat[j,2] <- ms.params[[j]]$Value
+        }
+        cat("Name: ", selected.manager.node,"\n")
+        print(kable(as.data.frame(mat), digits = digits))
+        cat("\n") 
       }
-      cat("Name: ", manager.node.names[i],"\n")
-      print(kable(as.data.frame(mat), digits = digits))
-      cat("\n")
+      
+      if(!is.na(position)){
+        ms.params <- manager.node[[find.manager]]$Parameters
+        if(length(ms.params) == 0) warning("no parameters found")
+        mat <- matrix(NA, ncol=2, nrow = length(position),
+                      dimnames = list(NULL,c("parm","value")))
+        
+        k <- 1
+        for(j in 1:length(ms.params)){
+          if(j == position){
+            mat[k,1] <- ms.params[[j]]$Key
+            mat[k,2] <- ms.params[[j]]$Value
+            k <- k + 1
+          }
+        }
+        cat("Name: ", selected.manager.node,"\n")
+        cat("Key:", ms.params[[position]]$Key, "\n")
+        print(kable(as.data.frame(mat), digits = digits))
+        cat("\n")
+      }
     }
   }
 }

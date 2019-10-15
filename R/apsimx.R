@@ -273,24 +273,37 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## Run a limited set of examples
   ## Now the only one missing is Graph, which I assume is about
   ## graphics and not that relevant to apsimx
-  ## Examples not supported: 'Graph', 'FodderBeet'
-  ex.ch <- c("Barley","Chicory","ControlledEnvironment",
+  ## Several examples are not supported because they do not use
+  ## relative paths for the weather file
+  ex.ch <- c("Barley","ControlledEnvironment",
              "Eucalyptus", "EucalyptusRotation",
-             "Factorial","FodderBeet",
-             "Maize","MorrisExample", "Oats", "OilPalm",
-             "Plantain","Potato","SCRUM","Slurp", "SobolExample",
-             "Sugarcane", "Wheat","WhiteClover")
+             "Maize","Oats", "SCRUM", "Sugarcane",
+             "Wheat")
   
   example <- match.arg(example, choices = ex.ch)
   
   ada <- auto_detect_apsimx()
+  apsimx_options(warn.versions = FALSE)
   ex.dir <- auto_detect_apsimx_examples()
+  apsimx_options(warn.versions = TRUE)
   ex <- paste0(ex.dir,"/",example,".apsimx")
   
   if(!file.exists(ex)) stop("cannot find example files")
   ## Make a temporary copy of the file to the current directory
   ## Do not transfer permissions?
   file.copy(from = ex, to =".", copy.mode = FALSE)
+  
+  ## Need to edit the met file path
+  met.path <- capture.output(inspect_apsimx(example, src.dir = ex.dir, node = "Weather"))
+  
+  if(!grepl("%root%", met.path, fixed = TRUE)){
+    curr.met.path <- gsub("\\","/",strsplit(met.path, " ")[[1]][3], fixed = TRUE)
+    new.met.path <- paste0(ex.dir,"/",curr.met.path)
+    edit_apsimx(example, node = "Weather", 
+                value = new.met.path, 
+                overwrite = TRUE, 
+                verbose = FALSE)
+  }
   
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
@@ -360,13 +373,13 @@ read_apsimx <- function(file = "", src.dir = ".",
   ## Disconnect
   DBI::dbDisconnect(con)
   
-  if(grep("Clock.Today",names(tbl0))){
+  if(any(grepl("Clock.Today",names(tbl0)))){
     tbl0$Date <- as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1]))
   }
   ## Return list
   if(value == "all"){
     ans <- list(Report = tbl0, Checkpoints = tbl1, InitialConditions = tbl2,
-                Messages = tbl3, Simualtions = tbl4, Units = tbl5)
+                Messages = tbl3, Simulations = tbl4, Units = tbl5)
   }
   ## Return data.frame
   if(value == "report"){
@@ -455,7 +468,7 @@ assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 
 #' Import packages needed for apsimx to work correctly
-#' @import DBI RSQLite knitr xml2 jsonlite
+#' @import DBI jsonlite knitr RSQLite xml2 
 #' @importFrom utils read.table
 NULL
 

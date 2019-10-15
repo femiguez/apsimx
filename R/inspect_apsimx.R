@@ -10,7 +10,7 @@
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
 #' @param soil.child specific soil component to be inspected. For example, 'Water' or 'OrganicMatter'.
 #' @param som.child specific soil organic matter component to be inspected ('Pools' or 'Other')
-#' @param parm parameter to inspect when node = 'Other' (XML only)
+#' @param parm parameter to inspect when node = 'Manager' or 'Other'
 #' @param digits number of decimals to print
 #' @details The inspection has many elements that are hard coded, it is not a literal inspection tool for all aspects of the file. For this use a text editor.
 #' @return table with inspected parameters and values
@@ -32,6 +32,7 @@
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "MicroClimate")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Crop")
 #' inspect_apsimx("Maize", src.dir = ex.dir, node = "Manager")
+#' inspect_apsimx("Maize", src.dir = ex.dir, node = "Manager", parm = list('SowingRule',NA))
 #' }
 #' 
 
@@ -39,6 +40,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                            node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                     "MicroClimate","Crop","Manager","Other"),
                            soil.child = c("Water","OrganicMatter", "Analysis",
+                                          "Physical",
                                           "Chemical","InitialWater","Sample"),
                            som.child = c("Pools","Other"),
                            parm = NULL,
@@ -70,7 +72,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   if(apsimx_ft == "json"){
     inspect_apsimx_json(file = file, src.dir = src.dir, node = node,
                         soil.child = soil.child, som.child = som.child, 
-                        digits = digits) 
+                        parm = parm, digits = digits) 
   }
   
   if(apsimx_ft == "unknown"){

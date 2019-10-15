@@ -100,31 +100,41 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
   ## Parse apsimx file (JSON)
   apsimx_json <- read_json(paste0(src.dir,"/",file))
   
-  parent.node <- apsimx_json$Children[[1]]$Children
-
+  parent.node0 <- apsimx_json$Children
+  ## Where is the 'Core' simulation?
+  wcore <- grep("Core.Simulation", parent.node0)
+  parent.node <- parent.node0[[wcore]]$Children
+  
   ## Edit the 'Clock'
   if(node == "Clock"){
-    parm.choices <- c("StartDate","EndDate")
+    parm.choices <- c("Start","End")
     parm <- match.arg(parm, choices = parm.choices, several.ok = TRUE)
+    ## Find what the 'Start' and 'End' are actually called
     ## Find the 'Clock'
     wlc <- function(x) grepl("Clock", x$Name)
     wlcl <- sapply(parent.node, FUN = wlc)
+    
+    start <- grep("Start", names(parent.node[wlcl][[1]]), 
+                  ignore.case = TRUE, value = TRUE)
+    
+    end <- grep("End", names(parent.node[wlcl][[1]]), 
+                  ignore.case = TRUE, value = TRUE)
      
     if(length(parm) == 1){
-     if(parm == "StartDate"){
-       parent.node[wlcl][[1]]["StartDate"] <- value
+     if(parm == "Start"){
+       parent.node[wlcl][[1]][start] <- value
      }
-     if(parm == "EndDate"){
-        parent.node[wlcl][[1]]["EndDate"] <- value
+     if(parm == "End"){
+        parent.node[wlcl][[1]][end] <- value
       }
     }
     
     if(length(parm) == 2){
-      if(parm == "StartDate"){
-        parent.node[wlcl][[1]]["StartDate"] <- value[1]
+      if(parm == "Start"){
+        parent.node[wlcl][[1]][start] <- value[1]
       }
-      if(parm == "EndDate"){
-        parent.node[wlcl][[1]]["EndDate"] <- value[2]
+      if(parm == "End"){
+        parent.node[wlcl][[1]][end] <- value[2]
       }
     }
     apsimx_json$Children[[1]]$Children <- parent.node

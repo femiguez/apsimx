@@ -24,6 +24,7 @@ This function creates a new column 'Date' which is in the R 'Date' format which 
 }
 \examples{
 \dontrun{
+## Only run these if you have APSIM 'Classic' installed (Windows only)
 millet <- apsim_example("Millet")
 potato <- apsim_example("Potato")
 sugar <- apsim_example("Sugar")

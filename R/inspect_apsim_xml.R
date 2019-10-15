@@ -26,8 +26,9 @@
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Sample")
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "SurfaceOrganicMatter")
-#' inspect_apsim("Millet", src.dir = extd.dir, node = "Crop", parm = list("sow",1)) 
-#' inspect_apsim("Millet", src.dir = extd.dir, node = "Manager") 
+#' inspect_apsim("Millet", src.dir = extd.dir, node = "Crop", parm = list("sow",NA)) 
+#' inspect_apsim("Millet", src.dir = extd.dir, node = "Crop", parm = list("sow",7))
+#' 
 #' 
 #' ## Testing with maize-soybean-rotation.apsim
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Clock")
@@ -38,8 +39,14 @@
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "Sample")
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "SurfaceOrganicMatter")
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Crop", parm = list("sow",1))
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Crop")
+#' ## This has many options and a complex structure
+#' ## It is possible to select unique managements, but not non-unique ones
+#' ## The first element in parm can be a regular expression
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager", parm = list("rotat",NA))
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager", parm = list("sow on a fixed date - maize",NA))
+#' ## Select an individual row by position
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager", parm = list("sow on a fixed date - maize",7))
 #' }
 #' 
 
@@ -340,36 +347,37 @@ inspect_apsim <- function(file = "", src.dir = ".",
     xfa.manager <- as.vector(unlist(xml_attrs(xml_find_all(apsim_xml, ".//manager"))))
     cat("Management Scripts:", xfa.manager,"\n", sep = "\n")
     
-    ## this makes a strong assumption that a sowing rule is present
-    if(missing(parm)) stop("parm is missing")
-    if(!is.list(parm)) stop("parm should be a list")
+    if(!missing(parm)){
+      parm1 <- parm[[1]]
+      position <- parm[[2]]
     
-    parm1 <- parm[[1]]
-    position <- parm[[2]]
+      all.manager.names <- xml_attrs(xml_find_all(apsim_xml, ".//manager"))
     
-    all.manager.names <- xml_attrs(xml_find_all(apsim_xml, ".//manager"))
+      find.parm <- grep(parm1, all.manager.names, ignore.case = TRUE)
+      cat("Selected manager: ", all.manager.names[[find.parm]],"\n")
+      if(length(find.parm) == 0)
+            stop(paste(parm1, " not found"))
     
-    find.parm <- grep(parm1, all.manager.names, ignore.case = TRUE)[position]
-    cat("Selected manager: ", all.manager.names[[find.parm]],"\n")
-    if(length(find.parm) == 0)
-      warning(paste(parm1, " not found"))
+      crop <- xml_find_all(apsim_xml, paste0(".//manager"))[find.parm]
+      crop2 <- xml_find_first(crop, "ui")
+      descr <- sapply(xml_attrs(xml_children(crop2)),function(x) x[["description"]])
+      vals <- xml_text(xml_children(crop2))
     
-    crop <- xml_find_all(apsim_xml, paste0(".//manager"))[find.parm]
-    crop2 <- xml_find_first(crop, "ui")
-    descr <- sapply(xml_attrs(xml_children(crop2)),function(x) x[["description"]])
-    vals <- xml_text(xml_children(crop2))
-    
-    crop.d <- data.frame(parm = descr, value = vals)
-    print(kable(crop.d, digits = digits))
+      if(is.na(position)){
+        position <- 1:length(vals)
+      }
+      crop.d <- data.frame(parm = descr, value = vals)[position,]
+      print(kable(crop.d, digits = digits))
+    }
   }
   
   if(node == 'Other'){
-    if(missing(parm.path)){
-      stop("parm.path should be specified when node = 'Other'")
+    if(missing(parm)){
+      stop("parm should be specified when node = 'Other'")
     }
     
     other.d <- NULL
-    other <- xml_find_all(apsim_xml, paste0(parm.path,"/",parm))
+    other <- xml_find_all(apsim_xml, parm)
     for(i in other){
       ms.attr <- xml_children(other)
       ms.nm <- xml_name(ms.attr)

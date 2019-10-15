@@ -183,6 +183,7 @@ auto_detect_apsim_examples <- function(){
 #' @export
 #' @examples 
 #' \dontrun{
+#' ## Only run these if you have APSIM 'Classic' installed (Windows only)
 #' millet <- apsim_example("Millet")
 #' potato <- apsim_example("Potato")
 #' sugar <- apsim_example("Sugar")
@@ -233,11 +234,16 @@ apsim_example <- function(example = "Millet", silent = FALSE){
 #' 
 #' @title Read APSIM generated .out files
 #' @name read_apsim
-#' @description read 'output' databases created by APSIM-X runs. One file at a time.
+#' @description read 'output' databases created by APSIM runs (.out and .sim). One file at a time.
 #' @param file file name
 #' @param src.dir source directory where file is located
 #' @param value either 'report' (data.frame) or 'all' (list)
 #' @export
+#' @examples 
+#' \dontrun{
+#' extd.dir <- system.file("extdata", package = "apsimx")
+#' ans <- read_apsim("Maize", src.dir = extd.dir, value = "report")
+#' }
 #' 
 
 read_apsim <- function(file = "", src.dir = ".",

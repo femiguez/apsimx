@@ -15,8 +15,15 @@ read_apsim(file = "", src.dir = ".", value = c("report", "all"),
 \item{value}{either 'report' (data.frame) or 'all' (list)}
 }
 \description{
-read 'output' databases created by APSIM-X runs. One file at a time.
+read 'output' databases created by APSIM runs (.out and .sim). One file at a time.
 }
 \details{
 Read APSIM generated .out files
+}
+\examples{
+\dontrun{
+extd.dir <- system.file("extdata", package = "apsimx")
+ans <- read_apsim("Maize", src.dir = extd.dir, value = "report")
+}
+
 }

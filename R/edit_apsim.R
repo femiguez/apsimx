@@ -19,7 +19,6 @@
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other' 
 #' @param soil.child specific soil component to be edited
-#' @param som.child specific soil organic matter component to be edited
 #' @param manager.child specific manager component to be edited (not implemented yet)
 #' @param parm parameter to be edited
 #' @param value new values for the parameter to be edited 
@@ -49,9 +48,9 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                                      "MicroClimate","Crop","Manager","Other"),
                        soil.child = c("Water","OrganicMatter", "Chemical",
                                            "Analysis","InitialWater","Sample"),
-                       som.child = c("Pools","Other"),
                        manager.child = NULL,
-                       parm=NULL, value=NULL, overwrite = FALSE,
+                       parm=NULL, value=NULL, 
+                       overwrite = FALSE,
                        edit.tag = "-edited",
                        parm.path = NULL,
                        verbose = TRUE){
@@ -221,7 +220,6 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   }
   
   if(node == "SurfaceOrganicMatter"){
-    if(som.child == "Pools"){
       ## State what are possible Pools parameters
       parm.ch <- c("PoolName","ResidueType","Mass","CNRatio",
                    "CPRatio","StandingFraction", "type", "mass",
@@ -237,81 +235,15 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
         stop("value vector of incorrect length")
       
       xml_set_text(soil.Pools.Pool.node, as.character(value))
-      
-      ## The structure here is confusing because there are two places
-      ## to state what the Mass, CNRAtio and StandingFraction are
-      ## I'm assuming that if I change one, I need to change both
-      if(parm %in% c("Mass","CNRatio","StandingFraction")){
-        if(parm == "Mass")
-          parm.path2 <- ".//SurfaceOrganicMatter/mass"
-        if(parm == "CNRatio")
-          parm.path2 <- ".//SurfaceOrganicMatter/cnr"
-        if(parm == "StandingFraction")
-          parm.path2 <- ".//SurfaceOrganicMatter/standing_fraction"
-        
-        soil.Pools.node <- xml_find_first(apsim_xml, parm.path2)
-        
-        if(length(value) != length(soil.Pools.node))
-          stop("value vector of incorrect length")
-        
-        xml_set_text(soil.Pools.node, as.character(value))
-      }
-    }
-    
-    if(som.child == "Other"){
-      stop("Not relevant for APSIM Classic")
-      parm.ch <- c("CriticalResidueWeight",
-                   "OptimumDecompTemp","MaxCumulativeEOS",
-                   "CNRatioDecompCoeff","CNRatioDecompThreshold",
-                   "TotalLeachRain","MinRainToLeach",
-                   "CriticalMinimumOrganicC","DefaultCPRatio",
-                   "DefaultStandingFraction","StandingExtinctCoeff",
-                   "FractionFaecesAdded")
-      
-      parm <- match.arg(parm, choices = parm.ch)
-      
-      parm.path <- paste0(".//SurfaceOrganicMatter","/",parm)
-      
-      soil.Other.node <- xml_find_first(apsim_xml, parm.path)
-      
-      if(length(value) != length(soil.Other.node))
-        stop("value vector of incorrect length")
-      
-      xml_set_text(soil.Other.node, as.character(value))
-      
-    }
-  }
-  
-  if(node == "MicroClimate"){
-    stop("Not relevant for APSIM Classic")
-    ## These are hard coded, might use them in the future
-    ## parm.ch <- c("a_interception","b_interception","c_interception",
-    ##             "d_interception", "soil_albedo", "sun_angle",
-    ##             "soil_heat_flux_fraction", "night_interception_fraction",
-    ##             "refheight","albedo","emissivity","RadIntTotal")
-    
-    parm.ch <- xml_name(xml_children(xml_find_first(apsim_xml, ".//MicroClimate")))[-c(1:2)]
-    
-    parm <- match.arg(parm, choices = parm.ch)
-    
-    parm.path <- paste0(".//MicroClimate","/",parm)
-    
-    soil.MicroClimate.node <- xml_find_first(apsim_xml, parm.path)
-    
-    if(length(value) != length(soil.MicroClimate.node))
-      stop("value vector of incorrect length")
-    
-    xml_set_text(soil.MicroClimate.node, as.character(value))
-    
   }
   
   if(node == "Crop" | node == "Manager"){
-    ## I'm not sure what kind of structure I can assume for 'Crop'
-    ## in APSIM 'Classic'
     
-    parm.path <- paste0(".//manager/ui/",parm)
-    
-    crop.node <- xml_find_first(apsim_xml, parm.path)
+    ## Trying to figure this out
+    ## xml_text(xml_find_all(apsim_xml, ".//manager[4]/ui/fert_date"))
+    ## xml_path(xml_find_all(apsim_xml,".//fert_date"))
+
+    crop.node <- xml_find_first(apsim_xml, parm)
     
     if(length(value) != length(crop.node))
       stop("value vector of incorrect length")
@@ -345,8 +277,4 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   }
 }
 
-exclude <- function(x, names){
-  tmp <- which(x %in% names)
-  ans <- x[-tmp]
-  ans
-}
+

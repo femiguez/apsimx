@@ -21,7 +21,7 @@ inspect_apsim(file = "", src.dir = ".", node = c("Clock", "Weather",
 
 \item{som.child}{specific surface organic matter component to be inspected ('Pools' or 'Other')}
 
-\item{parm}{parameter to inspect when node = 'Other'}
+\item{parm}{parameter to inspect when node = 'Crop', 'Manager' or 'Other'}
 
 \item{digits}{number of decimals to print (default 3)}
 }
@@ -32,10 +32,9 @@ table with inspected parameters and values
 inspect an XML apsim file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
 }
 \details{
-This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
-}
-\note{
-node 'Manager' can be complicated and it is not guranteed to work.
+This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsim file.
+         For 'Crop', 'Manager' and 'Other' 'parm' should be indicated with a first element to look for and a second with the relative position in case there are
+         multiple results.
 }
 \examples{
 \dontrun{
@@ -49,11 +48,27 @@ inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Analysi
 inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
 inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Sample")
 inspect_apsim("Millet", src.dir = extd.dir, node = "SurfaceOrganicMatter")
-inspect_apsim("Millet", src.dir = extd.dir, node = "Crop") 
-inspect_apsim("Millet", src.dir = extd.dir, node = "Manager") 
+inspect_apsim("Millet", src.dir = extd.dir, node = "Crop", parm = list("sow",NA)) 
+inspect_apsim("Millet", src.dir = extd.dir, node = "Crop", parm = list("sow",7))
+
 
 ## Testing with maize-soybean-rotation.apsim
 inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Clock")
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Weather")
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil")
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "OrganicMatter")
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "Analysis")
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "Sample")
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "SurfaceOrganicMatter")
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Crop")
+## This has many options and a complex structure
+## It is possible to select unique managements, but not non-unique ones
+## The first element in parm can be a regular expression
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager", parm = list("rotat",NA))
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager", parm = list("sow on a fixed date - maize",NA))
+## Select an individual row by position
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager", parm = list("sow on a fixed date - maize",7))
 }
 
 }
