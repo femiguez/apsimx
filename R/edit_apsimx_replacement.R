@@ -10,6 +10,7 @@
 #' @param node.child specific node child component to edit.
 #' @param node.subchild specific node sub-child to edit.
 #' @param node.subsubchild specific node sub-subchild to edit.
+#' @param root 'root' node to explore (default = "Models.Core.Replacements")
 #' @param parm specific parameter to edit
 #' @param value new values for the parameter
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
@@ -34,6 +35,7 @@
 edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                     node = NULL, node.child = NULL,
                                     node.subchild = NULL, node.subsubchild = NULL,
+                                    root = "Models.Core.Replacements",
                                     parm = NULL, value = NULL, overwrite = FALSE,
                                     edit.tag = "-edited", verbose = TRUE){
   
@@ -52,7 +54,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   apsimx_json <- read_json(paste0(src.dir,"/",file))
   
   ## Select Replacements node
-  frn <- grep("Models.Core.Replacements", apsimx_json$Children, fixed = TRUE)
+  frn <- grep(root, apsimx_json$Children, fixed = TRUE)
   replacements.node <- apsimx_json$Children[[frn]]
   
   ## Print names of replacements

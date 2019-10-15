@@ -9,6 +9,7 @@
 #' @param node.child specific node child component to be inspected.
 #' @param node.subchild specific node sub-child to be inspected.
 #' @param node.subsubchild specific node sub-subchild to be inspected.
+#' @param root 
 #' @param parm specific parameter to display
 #' @param display.available logical. Whether to display available components to be inspected (default = FALSE)
 #' @param digits number of decimals to print (default 3)
@@ -21,11 +22,18 @@
 #' inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 #'                            node = "Maize", node.child = "Phenology",
 #'                            node.subchild = "ThermalTime", parm = c("X","Y")) 
+#'  
+#' ## This function can also be used to inspect more complex APSIM-X files
+#' ## For example the 'Factorial' example
+#' ex.dir <- auto_detect_apsimx_examples()
+#' inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
+#' root = list("Experiment", 1), node = "Base", node.child = "Weather")
 #' }
 #'
 
 inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, node.child = NULL,
-                                        node.subchild = NULL, node.subsubchild = NULL,
+                                       node.subchild = NULL, node.subsubchild = NULL,
+                                       root = list("Models.Core.Replacements",NA),
                                        parm = NULL, display.available = FALSE,
                                        digits = 3){
   
@@ -42,8 +50,20 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   apsimx_json <- read_json(paste0(src.dir,"/",file))
   
   ## Select Replacements node
-  frn <- grep("Models.Core.Replacements", apsimx_json$Children, fixed = TRUE)
-  replacements.node <- apsimx_json$Children[[frn]]
+  frn <- grep(root[[1]], apsimx_json$Children, fixed = TRUE)
+  
+  if(length(frn) == 0) stop(paste0(root," not found"))
+  
+  if(length(frn) > 1){
+    if(is.na(root[[2]])){
+      cat("These positions matched ",root[[1]]," ",frn, "\n")
+      stop("Multiple root nodes found. Please provide a position")
+    }else{
+      replacements.node <- apsimx_json$Children[frn][root[[2]]][[1]]
+    }
+  }else{
+    replacements.node <- apsimx_json$Children[[frn]]
+  }
   
   ## Print names of replacements
   replacements.node.names <- sapply(replacements.node$Children, function(x) x$Name)

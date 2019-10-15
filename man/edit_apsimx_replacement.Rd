@@ -6,8 +6,9 @@
 \usage{
 edit_apsimx_replacement(file = "", src.dir = ".", wrt.dir = ".",
   node = NULL, node.child = NULL, node.subchild = NULL,
-  node.subsubchild = NULL, parm = NULL, value = NULL,
-  overwrite = FALSE, edit.tag = "-edited", verbose = TRUE)
+  node.subsubchild = NULL, root = "Models.Core.Replacements",
+  parm = NULL, value = NULL, overwrite = FALSE,
+  edit.tag = "-edited", verbose = TRUE)
 }
 \arguments{
 \item{file}{file ending in .apsimx to edit (JSON)}
@@ -23,6 +24,8 @@ edit_apsimx_replacement(file = "", src.dir = ".", wrt.dir = ".",
 \item{node.subchild}{specific node sub-child to edit.}
 
 \item{node.subsubchild}{specific node sub-subchild to edit.}
+
+\item{root}{'root' node to explore (default = "Models.Core.Replacements")}
 
 \item{parm}{specific parameter to edit}
 

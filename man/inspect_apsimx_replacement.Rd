@@ -6,7 +6,8 @@
 \usage{
 inspect_apsimx_replacement(file = "", src.dir = ".", node = NULL,
   node.child = NULL, node.subchild = NULL, node.subsubchild = NULL,
-  parm = NULL, display.available = FALSE, digits = 3)
+  root = list("Models.Core.Replacements", NA), parm = NULL,
+  display.available = FALSE, digits = 3)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected (JSON)}
@@ -20,6 +21,8 @@ inspect_apsimx_replacement(file = "", src.dir = ".", node = NULL,
 \item{node.subchild}{specific node sub-child to be inspected.}
 
 \item{node.subsubchild}{specific node sub-subchild to be inspected.}
+
+\item{root}{}
 
 \item{parm}{specific parameter to display}
 
@@ -42,6 +45,12 @@ extd.dir <- system.file("extdata", package = "apsimx")
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", parm = c("X","Y")) 
+ 
+## This function can also be used to inspect more complex APSIM-X files
+## For example the 'Factorial' example
+ex.dir <- auto_detect_apsimx_examples()
+inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
+root = list("Experiment", 1), node = "Base", node.child = "Weather")
 }
 
 }

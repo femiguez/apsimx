@@ -13,6 +13,7 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 library(apsimx)
 library(ggplot2)
+apsimx_options(warn.versions = FALSE)
 ```
 
 # Introduction
@@ -212,6 +213,8 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            display.available = FALSE) 
 ```
 
+The function **inspect_apsimx_replacement** can also be used to inspect more complex file structures such as the 'Factorial' example distributed with APSIM-X. See '?inspect_apsimx_replacement'.
+
 ## Editing a 'Replacement' 
 
 After using the 'inspect' version of the file editing should be much more straight forward.
@@ -248,13 +251,53 @@ apsimx_filetype("Maize_old", src.dir = extd.dir)
 
 It is possible that the function above will soon be obsolete as all .apsimx files are JSON and all .apsim files are XML. 
 
+# Advanced example
+
+The complexity of APSIM-X files can be mind-boggling and it makes it difficult to write robust functions across all tasks that APSIM is able to accomplish. I wrote the 'inspect_apsimx_replacement' and 'edit_apsimx_replacement' specifically to edit replacements but these functions have much more flexibility than 'inspect_apsimx' and 'edit_apsimx'. The function 'apsimx_example' is limited in the number of examples that it is allowed to run, but this does not mean that you cannot run the other examples which are distributed with APSIM-X. Let's take the 'Factorial' example:
+
+```{r factorial-example}
+ex.dir <- auto_detect_apsimx_examples()
+fact <- apsimx("Factorial", src.dir = ex.dir, value = "report")
+## Summary of the data
+## Let's just look at a few variables
+summary(fact[,c(9,11,13)])
+```
+If we want to inspect and edit this file, we need the 'inspect_apsimx_replacement' function.
+
+```{r inspect-factorial-0, eval = FALSE}
+## There are multiple 'Experiments' so we need to pick one
+inspect_apsimx_replacement("Factorial", src.dir = ex.dir,
+                           root = list("Experiment",NA))
+##These positions matched  Experiment   1 2 3 4 5 
+## Show Traceback
+##Error in inspect_apsimx_replacement("Factorial", src.dir = ex.dir, root = ##list("Experiment", : Multiple root nodes found. Please provide a position
+```
+
+```{r inspect-factorial, eval = FALSE}
+## There are multiple 'Experiments' so we need to pick one
+inspect_apsimx_replacement("Factorial", src.dir = ex.dir,
+                           root = list("Experiment",1))
+## We need to provide a node
+inspect_apsimx_replacement("Factorial", src.dir = ex.dir,
+                           root = list("Experiment",1), 
+                           node = "Base", display.available = TRUE)
+## We need to provide a node child
+inspect_apsimx_replacement("Factorial", src.dir = ex.dir,
+                           root = list("Experiment",1), 
+                           node = "Base", node.child = "Clock",
+                           display.available = TRUE)
+```
+
 # In Beta
 
 * inspect_aspimx_replacement
 * edit_apsimx_replacement
 * inspect_apsim
+* edit_apsim
 
 # Future features
+
+* At the moment adding testing capabilities
 
 * Make inspect_apsimx and inspect_apsim more consistent
 

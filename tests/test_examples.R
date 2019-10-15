@@ -69,3 +69,23 @@ if(run.inspect.tests){
   
   ## Chemical works fine for Maize, but not for Barley and Oats
 }
+
+inspect.replacement.test <- FALSE
+
+if(inspect.replacement.test){
+  
+  ## Define the highest level
+  inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
+                             root = list("Experiment", 1),
+                             node = "Base", node.child = "Clock")
+  
+  inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
+                             root = list("Experiment", 1),
+                             node = "Base", node.child = "Weather")
+  
+  inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
+                             root = list("Experiment", 1),
+                             node = "Base", node.child = "Field",
+                             node.subchild = "Soil",
+                             display.available = TRUE)
+}
