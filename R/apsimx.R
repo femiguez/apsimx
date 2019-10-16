@@ -229,8 +229,10 @@ auto_detect_apsimx_examples <- function(){
       if(length(apsimx.versions) > 1){
         versions <- sapply(apsimx.versions, fev)
         newest.version <- sort(versions, decreasing = TRUE)[1]
-        warning(paste("Multiple versions of APSIM-X installed. \n
-                    Choosing the newest one:",newest.version))
+        if(apsimx.options$warn.versions){
+          warning(paste("Multiple versions of APSIM-X installed. \n
+                        Choosing the newest one:",newest.version))
+        }
         apsimx.name <- grep(newest.version, apsimx.versions, value = TRUE)
       }else{
         apsimx.name <- apsimx.versions

@@ -52,12 +52,9 @@ apsim <- function(file = "", src.dir=".",
   file.name.path <- paste0(src.dir,"/",file)
   
   ada <- auto_detect_apsim()
-
-  if(.Platform$OS.type == "windows"){
-    run.strng <- paste0(ada," ",file.name.path,".apsim")
-    shell(cmd = run.strng, translate = TRUE, intern = TRUE)
-  }
-
+  run.strng <- paste0(ada," ",file.name.path,".apsim")
+  shell(cmd = run.strng, translate = TRUE, intern = TRUE)
+  
   if(value != "none"){
     ans <- read_apsim(file = file, src.dir = src.dir, value = value)
   }else{
@@ -89,32 +86,30 @@ auto_detect_apsim <- function(){
   ## I need to deal with the fact that there might be multiple versions
   ## of APSIM installed
   
-  if(.Platform$OS.type == "windows"){
-    st1 <- "C:/PROGRA~2/"
-    laf <- list.files(st1)
-    find.apsim <- grep("APSIM",laf,ignore.case = TRUE)
-    apsim.versions <- laf[find.apsim]
-    if(length(find.apsim) > 1){
-      versions <- sapply(apsim.versions, fev)
-      newest.version <- sort(versions, decreasing = TRUE)[1]
-      if(apsimx::apsim.options$warn.versions){
-        warning(paste("Multiple versions of APSIM installed. \n
+  st1 <- "C:/PROGRA~2/"
+  laf <- list.files(st1)
+  find.apsim <- grep("APSIM",laf,ignore.case = TRUE)
+  apsim.versions <- laf[find.apsim]
+  if(length(find.apsim) > 1){
+    versions <- sapply(apsim.versions, fev)
+    newest.version <- sort(versions, decreasing = TRUE)[1]
+    if(apsimx::apsim.options$warn.versions){
+      warning(paste("Multiple versions of APSIM installed. \n
                     Choosing the newest one:",newest.version))
       }
-      apsim.name <- grep(newest.version, apsim.versions, value = TRUE)
-    }else{
-      apsim.name <- laf[find.apsim]
-    }
-    ## APSIM executable
-    st3 <- "/Model/Apsim.exe" 
-    apsim_dir <- paste0(st1,apsim.name,st3)
+    apsim.name <- grep(newest.version, apsim.versions, value = TRUE)
+  }else{
+    apsim.name <- laf[find.apsim]
   }
+  ## APSIM executable
+  st3 <- "/Model/Apsim.exe" 
+  apsim_dir <- paste0(st1,apsim.name,st3)
   
- if(!is.na(apsimx::apsim.options$exe.path)){
+  if(!is.na(apsimx::apsim.options$exe.path)){
     ## Windows paths can contain white spaces which are
     ## problematic when running them at the command line
     ## shQuote might be useful for this purpose
-    ## Howver I think shQuote is not needed 
+    ## However I think shQuote is not needed 
     ## Because shell does its own translate
     ## Need to test this
     apsim_dir <- apsimx::apsim.options$exe.path
@@ -144,26 +139,26 @@ auto_detect_apsim_examples <- function(){
   ## Internal function to split APSIM name
   fev <- function(x) as.numeric(strsplit(x, "r", fixed = TRUE)[[1]][2])
   
-  if(.Platform$OS.type == "windows"){
-      st1 <- "C:/PROGRA~2"
-      laf <- list.files(st1)
-      find.apsim <- grep("APSIM",laf, ignore.case = TRUE)
-      apsim.versions <- laf[find.apsim]
-      if(length(apsim.versions) > 1){
-        versions <- sapply(apsim.versions, fev)
-        newest.version <- sort(versions, decreasing = TRUE)[1]
+  st1 <- "C:/PROGRA~2"
+  laf <- list.files(st1)
+  find.apsim <- grep("APSIM",laf, ignore.case = TRUE)
+  apsim.versions <- laf[find.apsim]
+  if(length(apsim.versions) > 1){
+      versions <- sapply(apsim.versions, fev)
+      newest.version <- sort(versions, decreasing = TRUE)[1]
+      if(apsimx::apsim.options$warn.versions){
         warning(paste("Multiple versions of APSIM installed. \n
-                    Choosing the newest one:",newest.version))
-        apsim.name <- grep(newest.version, apsim.versions, value = TRUE)
-      }else{
-        apsim.name <- apsim.versions
+                      Choosing the newest one:",newest.version))
       }
-      ## APSIM path to examples
-      st3 <- "/Examples" 
-      apsim_ex_dir <- paste0(st1,"/",apsim.name,st3)
-  }
+      apsim.name <- grep(newest.version, apsim.versions, value = TRUE)
+    }else{
+      apsim.name <- apsim.versions
+    }
+    ## APSIM path to examples
+    st3 <- "/Examples" 
+    apsim_ex_dir <- paste0(st1,"/",apsim.name,st3)
   
- if(!is.na(apsimx::apsim.options$examples.path)){
+  if(!is.na(apsimx::apsim.options$examples.path)){
     ## Not sure if I need shQuote here
     apsim_ex_dir <- apsimx::apsim.options$examples.path
   }
