@@ -57,6 +57,7 @@ apsimx <- function(file = "", src.dir=".",
   }
   
   if(.Platform$OS.type == "windows"){
+    if(src.dir != ".") stop("In Windows you can only run a file from the current directory.")
     run.strng <- paste0(ada," ",file.name.path,".apsimx")
     shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   }
@@ -291,7 +292,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   if(!file.exists(ex)) stop("cannot find example files")
   ## Make a temporary copy of the file to the current directory
   ## Do not transfer permissions?
-  file.copy(from = ex, to =".", copy.mode = FALSE)
+  file.copy(from = ex, to = ".", copy.mode = FALSE)
   
   ## Need to edit the met file path
   met.path <- capture.output(inspect_apsimx(example, src.dir = ex.dir, node = "Weather"))

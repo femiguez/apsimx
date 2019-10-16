@@ -6,7 +6,7 @@
 \usage{
 edit_apsimx_replacement(file = "", src.dir = ".", wrt.dir = ".",
   node = NULL, node.child = NULL, node.subchild = NULL,
-  node.subsubchild = NULL, root = "Models.Core.Replacements",
+  node.subsubchild = NULL, root = list("Models.Core.Replacements", NA),
   parm = NULL, value = NULL, overwrite = FALSE,
   edit.tag = "-edited", verbose = TRUE)
 }

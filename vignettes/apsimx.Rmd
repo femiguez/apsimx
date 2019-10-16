@@ -13,6 +13,9 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 library(apsimx)
 library(ggplot2)
+```
+
+```{r apsimx-options, echo = FALSE}
 apsimx_options(warn.versions = FALSE)
 ```
 
@@ -158,7 +161,7 @@ inspect_apsimx("Wheat", src.dir = ex.dir, node = "Crop")
 inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
 ```
 
-## Inspecting a 'Replacement' component
+## Advanced example: Inspecting a 'Replacement' component
 
 Many additional options in an APSIM-X simulation can be realized through the use of 'Replacements'. For this, there is a function that allows inspection. For this, it is important to know the structure of the 'replacement'. It is possible to explore the available components. For example, if we want to display the xy pair for the thermal time in the phenology component of the 'Maize' replacement we might go through the following steps:
 
@@ -215,7 +218,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 
 The function **inspect_apsimx_replacement** can also be used to inspect more complex file structures such as the 'Factorial' example distributed with APSIM-X. See '?inspect_apsimx_replacement'.
 
-## Editing a 'Replacement' 
+## Advanced example: Editing a 'Replacement' 
 
 After using the 'inspect' version of the file editing should be much more straight forward.
 
@@ -235,33 +238,11 @@ inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
                             node.subchild = "ThermalTime", parm = c("X","Y")) 
 ```
 
-### File Type (or File Format) Details
 
-APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance. All distributed APSIM-X examples are 'JSON' now.
-
-The \code{apsimx} package supports inspection and editing of both file types for most components except for the 'Manager'; for which there is partial support. In most instances the parameters that are likely to need inspection and editing are supported but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON.
-
-```{r filetypes}
-ex.dir <- auto_detect_apsimx_examples()
-apsimx_filetype("Barley", src.dir = ex.dir)
-extd.dir <- system.file("extdata", package = "apsimx")
-## This is an older XML 'Maize' file which is no longer distributed
-apsimx_filetype("Maize_old", src.dir = extd.dir)
-```
-
-It is possible that the function above will soon be obsolete as all .apsimx files are JSON and all .apsim files are XML. 
-
-# Advanced example
+## Advanced example: Factorial
 
 The complexity of APSIM-X files can be mind-boggling and it makes it difficult to write robust functions across all tasks that APSIM is able to accomplish. I wrote the 'inspect_apsimx_replacement' and 'edit_apsimx_replacement' specifically to edit replacements but these functions have much more flexibility than 'inspect_apsimx' and 'edit_apsimx'. The function 'apsimx_example' is limited in the number of examples that it is allowed to run, but this does not mean that you cannot run the other examples which are distributed with APSIM-X. Let's take the 'Factorial' example:
 
-```{r factorial-example}
-ex.dir <- auto_detect_apsimx_examples()
-fact <- apsimx("Factorial", src.dir = ex.dir, value = "report")
-## Summary of the data
-## Let's just look at a few variables
-summary(fact[,c(9,11,13)])
-```
 If we want to inspect and edit this file, we need the 'inspect_apsimx_replacement' function.
 
 ```{r inspect-factorial-0, eval = FALSE}
@@ -269,7 +250,6 @@ If we want to inspect and edit this file, we need the 'inspect_apsimx_replacemen
 inspect_apsimx_replacement("Factorial", src.dir = ex.dir,
                            root = list("Experiment",NA))
 ##These positions matched  Experiment   1 2 3 4 5 
-## Show Traceback
 ##Error in inspect_apsimx_replacement("Factorial", src.dir = ex.dir, root = ##list("Experiment", : Multiple root nodes found. Please provide a position
 ```
 
@@ -287,6 +267,55 @@ inspect_apsimx_replacement("Factorial", src.dir = ex.dir,
                            node = "Base", node.child = "Clock",
                            display.available = TRUE)
 ```
+
+Here we stopped at this level but it is possible to dig deeper using 'node.subchild' and 'node.subsubchild'. It is not possible at this point to dig deeper in the hierarchy level.
+
+### Example for Unix/Linux Only
+
+```{r factorial-example, eval = FALSE}
+## This seems to be restricted to 'unix' because
+## Windows does not allow long paths to the file name.
+ex.dir <- auto_detect_apsimx_examples()
+if(.Platform$OS.type == "unix"){
+  fact <- apsimx("Factorial", src.dir = ex.dir, value = "report")
+  ## Summary of the data
+  ## Let's just look at a few variables
+  summary(fact[,c(9,11,13)])
+}
+```
+
+### Example for Windows
+
+Windows has some strange behavior involving paths that I do not quite understand yet. For this we need to use a modified version of Factorial. (This is a work in progress at this point).
+
+Preliminary Steps:
+
+* Copy Factorial example to current directory
+* Modify .met file path
+
+```{r deal-with-factorial-on-windows, eval = FALSE}
+fact.ex <- paste0(ex.dir,"/Factorial.apsimx")
+file.exists(fact.ex)
+file.copy(from = fact.ex,
+          to = ".", copy.mode = FALSE)
+fact <- apsimx("Factorial.apsimx")
+```
+
+# File Type (or File Format) Details
+
+APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance. All distributed APSIM-X examples are 'JSON' now.
+
+The \code{apsimx} package supports inspection and editing of both file types for most components except for the 'Manager'; for which there is partial support. In most instances the parameters that are likely to need inspection and editing are supported but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON.
+
+```{r filetypes}
+ex.dir <- auto_detect_apsimx_examples()
+apsimx_filetype("Barley", src.dir = ex.dir)
+extd.dir <- system.file("extdata", package = "apsimx")
+## This is an older XML 'Maize' file which is no longer distributed
+apsimx_filetype("Maize_old", src.dir = extd.dir)
+```
+
+It is possible that the function above will soon be obsolete as all .apsimx files are JSON and all .apsim files are XML. 
 
 # In Beta
 

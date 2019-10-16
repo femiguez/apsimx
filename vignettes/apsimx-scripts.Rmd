@@ -55,6 +55,8 @@ run.strng <- "C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx"
 shell(cmd = run.strng, translate = TRUE, intern = TRUE)
 ```
 
+Note: it seems that, in Windows, it is only possible to run files in the current directory. So, for example, if the file 'Wheat.apsimx' was in subdirectory './myApsimXsimulations' and you want to replace the './Wheat.apsimx' above with './myApsimXsimulations/Wheat.apsimx' this does not work. I do not know if there is a possible workaround. 
+
 ## Unix (Mac) or Linux (Debian)
 
 In Unix (Mac) or Linux (Debian) to be able to run APSIM-X the Mono Framework needs to be installed (https://www.mono-project.com/download/stable/). This is important because the command 'mono' needs to be available in order to run APSIM-X at the command line. The Mono Framework should be available to install APSIM-X in the first place, but it is important to be aware of this at this stage.

@@ -33,4 +33,9 @@ If you want to install this package from github try in R:
 > devtools::install_github("femiguez/apsimx") \
 > library(apsimx)
 
+If you are interested in the vignettes, you need instead:
+
+> devtools::install_github("femiguez/apsimx", build_vignettes = TRUE,
+> build_opts = c("--no-resave-data", "--no-manual")  ) \
+
 If you have any questions contact Fernando E. Miguez (femiguez *at* iastate.edu)

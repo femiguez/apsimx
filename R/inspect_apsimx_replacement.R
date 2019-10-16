@@ -59,7 +59,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
       cat("These positions matched ",root[[1]]," ",frn, "\n")
       stop("Multiple root nodes found. Please provide a position")
     }else{
-      replacements.node <- apsimx_json$Children[frn][root[[2]]][[1]]
+      replacements.node <- apsimx_json$Children[[frn[root[[2]]]]]
     }
   }else{
     replacements.node <- apsimx_json$Children[[frn]]

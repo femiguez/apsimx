@@ -35,7 +35,7 @@
 edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                     node = NULL, node.child = NULL,
                                     node.subchild = NULL, node.subsubchild = NULL,
-                                    root = "Models.Core.Replacements",
+                                    root = list("Models.Core.Replacements",NA),
                                     parm = NULL, value = NULL, overwrite = FALSE,
                                     edit.tag = "-edited", verbose = TRUE){
   
@@ -54,8 +54,20 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   apsimx_json <- read_json(paste0(src.dir,"/",file))
   
   ## Select Replacements node
-  frn <- grep(root, apsimx_json$Children, fixed = TRUE)
-  replacements.node <- apsimx_json$Children[[frn]]
+  frn <- grep(root[[1]], apsimx_json$Children, fixed = TRUE)
+  
+  if(length(frn) == 0) stop(paste0(root," not found"))
+
+  if(length(frn) > 1){
+    if(is.na(root[[2]])){
+      cat("These positions matched ",root[[1]]," ",frn, "\n")
+      stop("Multiple root nodes found. Please provide a position")
+    }else{
+      replacements.node <- apsimx_json$Children[[frn[root[[2]]]]]
+    }
+  }else{
+    replacements.node <- apsimx_json$Children[[frn]]
+  }
   
   ## Print names of replacements
   replacements.node.names <- sapply(replacements.node$Children, function(x) x$Name)
@@ -85,57 +97,75 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     rep.node.child <- edit_node(rep.node.child, parm = parm, value = value)
     rep.node$Children[[wrnc]] <- rep.node.child
     replacements.node$Children[[wrn]] <- rep.node
-    apsimx_json$Children[[frn]] <- replacements.node
+    if(length(frn) == 1){
+      apsimx_json$Children[[frn]] <- replacements.node
+    }else{
+      apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+    }
     ## apsimx_json is ready to be written back to file
   } 
   
   rep.node.subchildren.names <- sapply(rep.node.child$Children, function(x) x$Name)
   ## Select a specific node.subchild
   if(missing(node.subchild)) cat("missing node.subchild\n")
-  wrnsc <- grep(node.subchild, rep.node.subchildren.names)
-  rep.node.subchild <- rep.node.child$Children[[wrnsc]]
   
-  if(verbose) cat("Subchild Name: ", rep.node.subchild$Name,"\n")
+  if(!missing(node.subchild)){
+    wrnsc <- grep(node.subchild, rep.node.subchildren.names)
+    rep.node.subchild <- rep.node.child$Children[[wrnsc]]
   
-  if(parm %in% names(rep.node.subchild)){
-    rep.node.subchild <- edit_node(rep.node.subchild, parm = parm, value = value)
-    lvl <- 2
-    rep.node.child$Children[[wrnsc]] <- rep.node.subchild
-    rep.node$Children[[wrnc]] <- rep.node.child
-    replacements.node$Children[[wrn]] <- rep.node
-    apsimx_json$Children[[frn]] <- replacements.node
-    ## apsimx_json is ready to be written back to file
-  } 
+    if(verbose) cat("Subchild Name: ", rep.node.subchild$Name,"\n")
   
-  rep.node.subsubchildren.names <- sapply(rep.node.subchild$Children, function(x) x$Name)
-  ## Select a specific node.subchild
-  if(missing(node.subsubchild)) return(cat("missing node.subsubchild\n"))
-  wrnssc <- grepl(node.subsubchild, rep.node.subsubchildren.names)
-  rep.node.subsubchild <- rep.node.subchild$Children[[wrnssc]]
-  
-  if(verbose) cat("Subsubchild Name: ", rep.node.subsubchild$Name,"\n")
-  
-  if(length(names(rep.node.subsubchild$Children)) == 0){
-    rep.node.sub3child <- rep.node.subsubchild$Children[[1]] 
-  }else{
-    rep.node.sub3child <- rep.node.subsubchild$Children
+    if(parm %in% names(rep.node.subchild)){
+      rep.node.subchild <- edit_node(rep.node.subchild, parm = parm, value = value)
+      lvl <- 2
+      rep.node.child$Children[[wrnsc]] <- rep.node.subchild
+      rep.node$Children[[wrnc]] <- rep.node.child
+      replacements.node$Children[[wrn]] <- rep.node
+      if(length(frn) == 1){
+        apsimx_json$Children[[frn]] <- replacements.node
+      }else{
+        apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+      }
+      ## apsimx_json is ready to be written back to file
+    }
   }
   
-  if(parm %in% names(rep.node.sub3child)){
-    rep.node.sub3child <- edit_node(rep.node.sub3child, parm = parm, value = value)
-    lvl <- 4
+  if(missing(node.subsubchild)) cat("missing node.subsubchild\n")
+  
+  if(!missing(node.subsubchild)){
+    rep.node.subsubchildren.names <- sapply(rep.node.subchild$Children, function(x) x$Name)
+    ## Select a specific node.subchild
+    wrnssc <- grepl(node.subsubchild, rep.node.subsubchildren.names)
+    rep.node.subsubchild <- rep.node.subchild$Children[[wrnssc]]
+  
+    if(verbose) cat("Subsubchild Name: ", rep.node.subsubchild$Name,"\n")
+  
     if(length(names(rep.node.subsubchild$Children)) == 0){
-      rep.node.subsubchild$Children[[1]] <- rep.node.sub3child
+      rep.node.sub3child <- rep.node.subsubchild$Children[[1]] 
     }else{
-      rep.node.subsubchild$Children <- rep.node.sub3child 
+      rep.node.sub3child <- rep.node.subsubchild$Children
     }
-    rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
-    rep.node.child$Children[[wrnsc]] <- rep.node.subchild
-    rep.node$Children[[wrnc]] <- rep.node.child
-    replacements.node$Children[[wrn]] <- rep.node
-    apsimx_json$Children[[frn]] <- replacements.node
-    ## apsimx_json is ready to be written back to file
-  } 
+  
+    if(parm %in% names(rep.node.sub3child)){
+      rep.node.sub3child <- edit_node(rep.node.sub3child, parm = parm, value = value)
+      lvl <- 4
+      if(length(names(rep.node.subsubchild$Children)) == 0){
+        rep.node.subsubchild$Children[[1]] <- rep.node.sub3child
+      }else{
+        rep.node.subsubchild$Children <- rep.node.sub3child 
+      }
+      rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
+      rep.node.child$Children[[wrnsc]] <- rep.node.subchild
+      rep.node$Children[[wrnc]] <- rep.node.child
+      replacements.node$Children[[wrn]] <- rep.node
+      if(length(frn) == 1){
+        apsimx_json$Children[[frn]] <- replacements.node
+      }else{
+        apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+      }
+      ## apsimx_json is ready to be written back to file
+    }
+  }
 
   ## Write back to a file
   if(overwrite == FALSE){
@@ -151,10 +181,10 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
              auto_unbox = TRUE, null = "null")
   
   if(verbose){
-    cat("Edited (node): ",node, "\n")
-    cat("Edited (node.child): ", node.child,"\n")
-    cat("Edited (node.subchild): ", node.subchild,"\n")
-    cat("Edited (node.subsubchild): ", node.subsubchild,"\n")
+    if(!missing(node)) cat("Edited (node): ",node, "\n")
+    if(!missing(node.child)) cat("Edited (node.child): ", node.child,"\n")
+    if(!missing(node.subchild)) cat("Edited (node.subchild): ", node.subchild,"\n")
+    if(!missing(node.subsubchild)) cat("Edited (node.subsubchild): ", node.subsubchild,"\n")
     cat("Edit (level): ", lvl,"\n")
     cat("Edited parameter: ",parm, "\n")
     cat("New values: ",value, "\n")
