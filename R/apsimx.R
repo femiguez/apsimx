@@ -284,9 +284,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   example <- match.arg(example, choices = ex.ch)
   
   ada <- auto_detect_apsimx()
-  apsimx_options(warn.versions = FALSE)
   ex.dir <- auto_detect_apsimx_examples()
-  apsimx_options(warn.versions = TRUE)
   ex <- paste0(ex.dir,"/",example,".apsimx")
   
   if(!file.exists(ex)) stop("cannot find example files")

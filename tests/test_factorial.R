@@ -3,6 +3,7 @@
 run.factorial.example <- FALSE
 
 if(run.factorial.example){
+  ex.dir <- auto_detect_apsimx_examples()
   ## Copy 'Factorial' example to current directory
   fact.ex <- paste0(ex.dir,"/Factorial.apsimx")
   file.exists(fact.ex)
