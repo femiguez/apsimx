@@ -183,6 +183,7 @@ auto_detect_apsim_examples <- function(){
 #' potato <- apsim_example("Potato")
 #' sugar <- apsim_example("Sugar")
 #' ## The 'Date' column is created by this function, based on apsim output.
+#' require(ggplot2)
 #' ggplot(data = millet , aes(x = Date, y = millet_biomass)) + 
 #'   geom_line()
 #' }

@@ -17,7 +17,7 @@
 #' @export
 #' @examples 
 #' \dontrun{
-#' ## See function 'apsimx_example' 
+#' ## See function 'apsimx_example' and vignette 'apsimx'
 #' }
 #'
 
@@ -266,6 +266,7 @@ auto_detect_apsimx_examples <- function(){
 #' maize <- apsimx_example("Maize")
 #' barley <- apsimx_example("Barley")
 #' ## The 'Date' column is created by this function, based on apsim output.
+#' require(ggplot2)
 #' ggplot(data = wheat , aes(x = Date, y = Yield)) + 
 #'   geom_point()
 #' }
