@@ -276,10 +276,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## graphics and not that relevant to apsimx
   ## Several examples are not supported because they do not use
   ## relative paths for the weather file
-  ex.ch <- c("Barley","ControlledEnvironment",
-             "Eucalyptus", "EucalyptusRotation",
-             "Maize","Oats", "SCRUM", "Sugarcane",
-             "Wheat")
+  ex.ch <- c("Barley","Maize","Oats","Sugarcane","Wheat")
   
   example <- match.arg(example, choices = ex.ch)
   

@@ -31,4 +31,6 @@ if(run.factorial.example){
                              node.child = "Weather")
 
   fact <- apsimx("Factorial.apsimx")
+  file.remove("Factorial.apsimx")
+  file.remove("Factorial.db")
 }
