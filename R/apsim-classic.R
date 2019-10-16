@@ -95,7 +95,7 @@ auto_detect_apsim <- function(){
     find.apsim <- grep("APSIM",laf,ignore.case = TRUE)
     apsim.versions <- laf[find.apsim]
     if(length(find.apsim) > 1){
-      versions <- sapply(apsimx.versions, fev)
+      versions <- sapply(apsim.versions, fev)
       newest.version <- sort(versions, decreasing = TRUE)[1]
       if(apsimx::apsim.options$warn.versions){
         warning(paste("Multiple versions of APSIM installed. \n
