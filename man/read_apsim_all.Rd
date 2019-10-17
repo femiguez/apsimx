@@ -4,7 +4,7 @@
 \alias{read_apsim_all}
 \title{Read all APSIM generated .out files in a directory}
 \usage{
-read_apsim_all(src.dir = ".", value = c("report", "all"),
+read_apsim_all(filenames, src.dir = ".", value = c("report", "all"),
   date.format = "\%d/\%m/\%Y")
 }
 \arguments{

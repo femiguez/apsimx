@@ -8,7 +8,7 @@ inspect_apsim(file = "", src.dir = ".", node = c("Clock", "Weather",
   "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager",
   "Other"), soil.child = c("Water", "OrganicMatter", "Analysis",
   "InitialWater", "Sample"), som.child = c("Pools", "Other"),
-  parm = NULL, digits = 3)
+  parm = NULL, digits = 3, print.path = FALSE)
 }
 \arguments{
 \item{file}{file ending in .apsim (Classic) to be inspected (XML)}
@@ -24,6 +24,8 @@ inspect_apsim(file = "", src.dir = ".", node = c("Clock", "Weather",
 \item{parm}{parameter to inspect when node = 'Crop', 'Manager' or 'Other'}
 
 \item{digits}{number of decimals to print (default 3)}
+
+\item{print.path}{whether to print the parameter path (default = FALSE)}
 }
 \value{
 table with inspected parameters and values

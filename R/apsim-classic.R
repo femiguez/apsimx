@@ -55,8 +55,17 @@ apsim <- function(file = "", src.dir=".",
   run.strng <- paste0(ada," ",file.name.path,".apsim")
   shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   
+  ## It turns out that the name of the .out file is not as simple
+  ## as the name of the input file
+  output.names <- find_output_names(file = file, src.dir = src.dir)
+  
   if(value != "none"){
-    ans <- read_apsim(file = file, src.dir = src.dir, value = value)
+    if(length(output.names) == 1){
+      ans <- read_apsim(file = output.names, src.dir = src.dir, value = value)
+    }else{
+      ans <- read_apsim_all(filenames = output.names, 
+                            src.dir = src.dir, value = "report")
+    }
   }else{
     if(value == "none" & !silent){
       cat("APSIM created .out files, but nothing is returned \n")
@@ -313,7 +322,7 @@ read_apsim <- function(file = "", src.dir = ".",
 #' @export
 #' 
 
-read_apsim_all <- function(src.dir = ".", value = c("report","all"),
+read_apsim_all <- function(filenames, src.dir = ".", value = c("report","all"),
                            date.format = "%d/%m/%Y"){
   
   ## This is super memorey hungry and not efficient at all, but it might work 
@@ -321,14 +330,18 @@ read_apsim_all <- function(src.dir = ".", value = c("report","all"),
   
   value <- match.arg(value)
   
-  fileNames <- dir(path = src.dir, pattern=".out$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".out$",ignore.case=TRUE)
+  
+  if(!missing(filenames)){
+   file.names <- filenames
+  }
   
   ans <- NULL
   
-  for(i in fileNames){
+  for(i in file.names){
     
-    tmp <- read_apsim(fileNames[i], value = value, date.format = date.format)
-    tmp.d <- data.frame(file.name = fileNames[i], tmp)
+    tmp <- read_apsim(i, value = value, date.format = date.format)
+    tmp.d <- data.frame(file.name = i, tmp)
     ans <- rbind(ans, tmp)
     
   }

@@ -9,6 +9,7 @@
 #' @param som.child specific surface organic matter component to be inspected ('Pools' or 'Other')
 #' @param parm parameter to inspect when node = 'Crop', 'Manager' or 'Other'
 #' @param digits number of decimals to print (default 3)
+#' @param print.path whether to print the parameter path (default = FALSE)
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsim file.
 #'          For 'Crop', 'Manager' and 'Other' 'parm' should be indicated with a first element to look for and a second with the relative position in case there are
 #'          multiple results.
@@ -57,7 +58,8 @@ inspect_apsim <- function(file = "", src.dir = ".",
                                               "Analysis","InitialWater","Sample"),
                                som.child = c("Pools","Other"),
                                parm = NULL,
-                               digits = 3){
+                               digits = 3,
+                          print.path = FALSE){
   
   fileNames <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
   
@@ -354,12 +356,18 @@ inspect_apsim <- function(file = "", src.dir = ".",
       all.manager.names <- xml_attrs(xml_find_all(apsim_xml, ".//manager"))
     
       find.parm <- grep(parm1, all.manager.names, ignore.case = TRUE)
-      cat("Selected manager: ", all.manager.names[[find.parm]],"\n")
+      
       if(length(find.parm) == 0)
-            stop(paste(parm1, " not found"))
-    
+        stop(paste(parm1, " not found"))
+      if(length(find.parm) > 1) stop("parm selection should be unique")
+      
+      cat("Selected manager: ", all.manager.names[[find.parm]],"\n")
+
       crop <- xml_find_all(apsim_xml, paste0(".//manager"))[find.parm]
       crop2 <- xml_find_first(crop, "ui")
+      if(print.path){
+        cat("parm path:", xml_path(xml_children(crop2)[[position]]),"\n")
+      }
       descr <- sapply(xml_attrs(xml_children(crop2)),function(x) x[["description"]])
       vals <- xml_text(xml_children(crop2))
     

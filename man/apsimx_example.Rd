@@ -28,6 +28,7 @@ wheat <- apsimx_example("Wheat")
 maize <- apsimx_example("Maize")
 barley <- apsimx_example("Barley")
 ## The 'Date' column is created by this function, based on apsim output.
+require(ggplot2)
 ggplot(data = wheat , aes(x = Date, y = Yield)) + 
   geom_point()
 }

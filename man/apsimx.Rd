@@ -32,7 +32,7 @@ simple, especially for large scale simulations or parameter optimization
 }
 \examples{
 \dontrun{
-## See function 'apsimx_example' 
+## See function 'apsimx_example' and vignette 'apsimx'
 }
 
 }

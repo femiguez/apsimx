@@ -65,7 +65,6 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)
-  som.child <- match.arg(som.child)
   
   ## For now we just edit one file at a time
   file <- match.arg(file, fileNames, several.ok=FALSE)
@@ -77,11 +76,13 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   if(node == "Clock"){
     parm.choices <- c("start_date","end_date")
     parm <- match.arg(parm, choices = parm.choices, several.ok = TRUE)
+    j <- 1
     for(i in parm){
-      parm.path <- paste0(".//Clock","/",i)
+      parm.path <- paste0(".//clock","/",i)
       startend.node <- xml_find_first(apsim_xml, parm.path)
       ## apsim requires %Y-%m-%d
-      xml_set_text(startend.node, as.character(value))
+      xml_set_text(startend.node, as.character(value[j]))
+      j <- j + 1
     }
   }
   
@@ -243,7 +244,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     ## xml_text(xml_find_all(apsim_xml, ".//manager[4]/ui/fert_date"))
     ## xml_path(xml_find_all(apsim_xml,".//fert_date"))
 
-    crop.node <- xml_find_first(apsim_xml, parm)
+    crop.node <- xml_find_all(apsim_xml, parm)
     
     if(length(value) != length(crop.node))
       stop("value vector of incorrect length")
