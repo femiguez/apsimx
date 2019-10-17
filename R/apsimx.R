@@ -94,6 +94,7 @@ auto_detect_apsimx <- function(){
     if(grepl("Darwin", Sys.info()[["sysname"]])){
       laf <- list.files("/Applications/")
       find.apsim <- grep("APSIM",laf)
+      if(length(find.apsim) == 0) stop("APSIM-X not found")
       if(length(find.apsim) > 1){
         apsimx.versions <- sapply(laf[find.apsim],fev)
         newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
@@ -112,6 +113,10 @@ auto_detect_apsimx <- function(){
     }
   
     if(grepl("Linux", Sys.info()[["sysname"]])){
+      
+      find.apsim <- grep("apsim", list.files("/usr/local/lib"))
+      if(length(find.apsim) == 0) stop("APSIM-X not found")
+      
       apsimx.versions <- list.files("/usr/local/lib/apsim")
       if(length(apsimx.versions) > 1){
         versions <- sapply(apsimx.versions, fev)
@@ -135,6 +140,7 @@ auto_detect_apsimx <- function(){
     st1 <- "C:/PROGRA~1/"
     laf <- list.files(st1)
     find.apsim <- grep("APSIM",laf)
+    if(length(find.apsim) == 0) stop("APSIM-X not found")
     apsimx.versions <- laf[find.apsim]
     if(length(find.apsim) > 1){
       versions <- sapply(apsimx.versions, fev)
@@ -287,7 +293,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ex.dir <- auto_detect_apsimx_examples()
   ex <- paste0(ex.dir,"/",example,".apsimx")
   
-  if(!file.exists(ex)) stop("cannot find example files")
+  if(!file.exists(ex)) stop(paste0("cannot find example file ",example))
   ## Make a temporary copy of the file to the current directory
   ## Do not transfer permissions?
   file.copy(from = ex, to = ".", copy.mode = FALSE)

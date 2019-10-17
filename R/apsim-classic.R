@@ -89,6 +89,7 @@ auto_detect_apsim <- function(){
   st1 <- "C:/PROGRA~2/"
   laf <- list.files(st1)
   find.apsim <- grep("APSIM",laf,ignore.case = TRUE)
+  if(length(find.apsim) == 0) stop("APSIM 'Classic' not found")
   apsim.versions <- laf[find.apsim]
   if(length(find.apsim) > 1){
     versions <- sapply(apsim.versions, fev)
@@ -142,6 +143,7 @@ auto_detect_apsim_examples <- function(){
   st1 <- "C:/PROGRA~2"
   laf <- list.files(st1)
   find.apsim <- grep("APSIM",laf, ignore.case = TRUE)
+  if(length(find.apsim) == 0) stop("APSIM 'Classic' not found")
   apsim.versions <- laf[find.apsim]
   if(length(apsim.versions) > 1){
       versions <- sapply(apsim.versions, fev)
