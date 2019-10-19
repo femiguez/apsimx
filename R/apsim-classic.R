@@ -37,34 +37,36 @@ apsim <- function(file = "", src.dir=".",
   ## The following lines are somewhat not needed
   fileNames <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
   
-  file <- match.arg(file, fileNames, several.ok=FALSE)
-  
   if(length(fileNames)==0){
     stop("There are no .apsim files in the specified directory to run.")
   }
   
-  if(length(grep(".apsim$",file)) != 0){
-    ## I assume the extention was included
-    ## Only use the name from here 
-    file <- strsplit(file, ".", fixed = TRUE)[[1]][1]
-  }
+  file <- match.arg(file, fileNames, several.ok=FALSE)
   
   file.name.path <- paste0(src.dir,"/",file)
   
+  ## Can you run in APSIM 'Classic' from any directory or only from the current one?
+  ## I'm assuming only from the current one
+  if(src.dir != "."){
+    file.copy(file.name.path, ".")
+  }
+  
   ada <- auto_detect_apsim()
-  run.strng <- paste0(ada," ",file.name.path,".apsim")
+  run.strng <- paste0(ada," ./",file)
   shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   
   ## It turns out that the name of the .out file is not as simple
   ## as the name of the input file
   output.names <- find_output_names(file = file, src.dir = src.dir)
   
+  ## With the current implementation the source directory will
+  ## always be the current one
   if(value != "none"){
     if(length(output.names) == 1){
-      ans <- read_apsim(file = output.names, src.dir = src.dir, value = value)
+      ans <- read_apsim(file = output.names, src.dir = ".", value = value)
     }else{
       ans <- read_apsim_all(filenames = output.names, 
-                            src.dir = src.dir, value = "report")
+                            src.dir = ".", value = "report")
     }
   }else{
     if(value == "none" & !silent){
@@ -76,7 +78,9 @@ apsim <- function(file = "", src.dir=".",
     ## Default is not to cleanup
     if(value == "none") stop("do not clean up if you choose value = 'none' ")
     ## Delete the apsim-generated out file
-    file.remove(paste0("./",file.name.path,".out"))
+    for(i in seq_along(output.names)){
+        file.remove(sub("apsim","out",output.names[i]))
+      }
   }
   
   if(value != "none")

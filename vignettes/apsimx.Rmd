@@ -150,15 +150,15 @@ Another proposed more advanced workflow would involve calibrating or optimizing 
 
 ```{r apsimx}
 ## One example ('Wheat') is included with the package for the vignette
-ex.dir <- system.file("extdata", package = "apsimx")
-sim <- apsimx("Wheat.apsimx", src.dir = ex.dir, value = "report")
+extd.dir <- system.file("extdata", package = "apsimx")
+sim <- apsimx("Wheat.apsimx", src.dir = extd.dir, value = "report")
 ## Calcualte summary statistics on all variables
 summary(sim)
 ## Plot data
 ggplot(data = sim, aes(x = Date, y = Yield)) + geom_point()
 ## Inspect the Wheat .apsimx file
-inspect_apsimx("Wheat", src.dir = ex.dir, node = "Crop")
-inspect_apsimx("Wheat", src.dir = ex.dir, node = "Manager")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
 ```
 
 ## Advanced example: Inspecting a 'Replacement' component
@@ -290,10 +290,16 @@ apsimx_filetype("Maize_old", src.dir = extd.dir)
 
 It is possible that the function above will soon be obsolete as all .apsimx files are JSON and all .apsim files are XML. 
 
+# To-Do
+
+* figure out why some of the 'inspect' features is not working for some of the files (Wheat, Barley)
+
+* Add more tests using the 'CoverCrop example'
+
+* Figure out if I can print the path when using inspect_apsimx
+
 # In Beta
 
-* inspect_aspimx_replacement
-* edit_apsimx_replacement
 * inspect_apsim
 * edit_apsim
 
@@ -301,9 +307,9 @@ It is possible that the function above will soon be obsolete as all .apsimx file
 
 * At the moment adding testing capabilities
 
-* Make inspect_apsimx and inspect_apsim more consistent
+* Make inspect_apsimx and inspect_apsim more consistent 
 
-* Add the new feature of 'batch' editing made possible since a recent update to ApsimX (thanks to Drew H.)
+* Add the new feature of 'batch' editing made possible since a recent update to ApsimX (thanks to Drew H., but not available on precompiled versions yet)
 
 * Create custom function for editing the depth of the soil profile 'edit_apsimx_depth'. The issue really is what kind of inconsistencies are possible if depth is not consistent across variables because it is possible to edit the depth now.
 

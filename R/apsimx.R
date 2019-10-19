@@ -30,20 +30,14 @@ apsimx <- function(file = "", src.dir=".",
   
   if(file == "") stop("need to specify file name")
   
-  ## The following lines are somewhat not needed
-  fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  ## The might offer suggestions in case there is a typo in 'file'
+  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
-  file <- match.arg(file, fileNames, several.ok=FALSE)
-  
-  if(length(fileNames)==0){
+  if(length(file.names)==0){
     stop("There are no .apsimx files in the specified directory to run.")
   }
   
-  if(length(grep(".apsimx$",file)) != 0){
-    ## I assume the extention was included
-    ## Only use the name from here 
-    file <- strsplit(file, ".", fixed = TRUE)[[1]][1]
-  }
+  file <- match.arg(file, file.names)
   
   file.name.path <- paste0(src.dir,"/",file)
   
@@ -51,19 +45,20 @@ apsimx <- function(file = "", src.dir=".",
 
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
-    run.strng <- paste0(mono," ",ada," ",file.name.path,".apsimx")
+    run.strng <- paste0(mono," ",ada," ",file.name.path)
     ## Run APSIM-X on the command line
     system(command = run.strng, ignore.stdout = silent)
   }
   
   if(.Platform$OS.type == "windows"){
     if(src.dir != ".") stop("In Windows you can only run a file from the current directory.")
-    run.strng <- paste0(ada," ",file.name.path,".apsimx")
+    run.strng <- paste0(ada," ",file.name.path)
     shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   }
 
   if(value != "none"){
-    ans <- read_apsimx(file = file, src.dir = src.dir, value = value)
+    ans <- read_apsimx(file = sub("apsimx","db",file), 
+                       src.dir = src.dir, value = value)
   }else{
     if(value == "none" & !silent){
       cat("APSIM created .db files, but nothing is returned \n")
@@ -74,7 +69,7 @@ apsimx <- function(file = "", src.dir=".",
     ## Default is not to cleanup
     if(value == "none") stop("do not clean up if you choose value = 'none' ")
     ## Delete the apsim-generated sql database 
-    file.remove(paste0("./",file.name.path,".db"))
+    file.remove(paste0(src.dir,sub("apsimx","db",file)))
   }
   
   if(value != "none")
@@ -285,11 +280,13 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## graphics and not that relevant to apsimx
   ## Several examples are not supported because they do not use
   ## relative paths for the weather file
-  ex.ch <- c("Barley","Maize","Oats","Sugarcane","Wheat")
-  
+  ## Examples which do not run: Chicory
+  ex.ch <- c("Barley","ControlledEnvironment","Eucalyptus",
+             "EucalyptusRotation",
+             "Maize","Oats","Sugarcane","Wheat")
+
   example <- match.arg(example, choices = ex.ch)
   
-  ada <- auto_detect_apsimx()
   ex.dir <- auto_detect_apsimx_examples()
   ex <- paste0(ex.dir,"/",example,".apsimx")
   
@@ -298,40 +295,13 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## Do not transfer permissions?
   file.copy(from = ex, to = ".", copy.mode = FALSE)
   
-  ## Need to edit the met file path
-  met.path <- capture.output(inspect_apsimx(example, src.dir = ex.dir, node = "Weather"))
-  
-  if(!grepl("%root%", met.path, fixed = TRUE)){
-    curr.met.path <- gsub("\\","/",strsplit(met.path, " ")[[1]][3], fixed = TRUE)
-    new.met.path <- paste0(ex.dir,"/",curr.met.path)
-    edit_apsimx(example, node = "Weather", 
-                value = new.met.path, 
-                overwrite = TRUE, 
-                verbose = FALSE)
-  }
-  
-  if(.Platform$OS.type == "unix"){
-    mono <- system("which mono", intern = TRUE)
-    run.strng <- paste0(mono," ",ada," ./",paste0(example,".apsimx"))
-    ## Run APSIM
-    system(command = run.strng, ignore.stdout = silent)
-  }
-  
-  if(.Platform$OS.type == "windows"){
-    run.strng <- paste0(ada," ",paste0("./",example,".apsimx"))
-    shell(cmd = run.strng, translate = TRUE, intern = TRUE)
-  }
+  sim <- apsimx(paste0(example,".apsimx"), src.dir = ".", value = "report")
 
-  ## Create database connection
-  ## I don't need to specify the directory as it should be the current one
-  ans <- read_apsimx(paste0(example,".db"), value = "report")
   ## OS independent cleanup (risky?)
   file.remove(paste0("./",example,".db"))
   file.remove(paste0("./",example,".apsimx"))
-  ## Add the date
-  ans$Date <- as.Date(sapply(ans$Clock.Today, function(x) strsplit(x, " ")[[1]][1]))
-  ## Return data frame
-  return(ans)
+
+  return(sim)
 }
 
 #' Read APSIM-X generated .db files
@@ -358,16 +328,9 @@ read_apsimx <- function(file = "", src.dir = ".",
   
   value <- match.arg(value)
   
-  if(length(grep(".db$",file)) != 0){
-    ## I assume the extention was included
-    ## Only use the name from here 
-    ## This strips the extension
-    file <- strsplit(file, ".", fixed = TRUE)[[1]][1]
-  }
-  
   file.name.path <- paste0(src.dir,"/",file)
   
-  con <- DBI::dbConnect(RSQLite::SQLite(), paste0(file.name.path,".db"))
+  con <- DBI::dbConnect(RSQLite::SQLite(), file.name.path)
   ## create data frame for each table
   tbl0 <- DBI::dbGetQuery(con, "SELECT * FROM Report")
   tbl1 <- DBI::dbGetQuery(con, "SELECT * FROM _Checkpoints")
