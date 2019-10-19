@@ -4,13 +4,14 @@
 #' @description inspect a JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
 #' @param file file ending in .apsimx to be inspected (JSON)
 #' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
-#' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
-#' @param soil.child specific soil component to be inspected. The options are: 'Water', 'OrganicMatter', 'Analysis', 'InitalWater', 'Sample'
-#' @param som.child specific surface organic matter component to be inspected (not used)
+#' @param node specific node to be inspected either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
+#' @param soil.child specific soil component to be inspected. The options vary depending on what is available (see details)
 #' @param parm parameter to refine the inspection of the 'manager' list('parm','position'), use 'NA' for all the positions. 'parm' can be a regular expression for partial matching.
-#' @param digits number of decimals to print (default 3)
+#' @param digits number of decimals to print (default 3). Not used now because everything is a character.
+#' @param print.path whether to print the path to the specific parameter. Useful to give the later editing. (Also returned as 'invisible')
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
-#' @return table with inspected parameters and values
+#'          To investigate the available 'soil.childs' specify 'Soil' for 'node' and do not specify the 'soil.child'.
+#' @return prints a table with inspected parameters and values (and 'parm path' when 'print.path' = TRUE).
 #' @export
 #' @examples 
 #' \dontrun{
@@ -18,15 +19,15 @@
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Clock") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Weather")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
+#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilWater") 
+#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilOrganicMatter")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Sample")
+#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialN")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "SurfaceOrganicMatter")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "MicroClimate")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Crop")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Manager")
-#' 
 #' }
 #'
 
@@ -127,6 +128,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     selected.soil.node.child <- soil.node[[1]]$Children[wsc]
     
     ## For some variables now it is the time to print
+    ## The code below is not strictly needed but it is here
+    ## in case I need a second level of soil in the future
     first.level.soil <- c("SoilOrganicMatter","Water","Physical",
                           "Chemical","Analysis","InitialWater",
                           "InitialN","SoilWater","Analysis",
@@ -155,7 +158,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       }
       ## Print first set of soil parameters
       if(!is.null(soil.d1)) print(kable(soil.d1, digits = digits))
-      
+      ## Print second set of soil parameters
       if(!is.null(soil.d2)){ 
         soil.d2 <- as.data.frame(soil.d2)
         names(soil.d2) <- col.nms
@@ -166,7 +169,6 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   
   if(node == "SurfaceOrganicMatter"){
     ## Which is 'SurfaceOrganicMatter'
-    ## som.child is not relevant at the moment
     wsomn <- grepl("Models.Surface.SurfaceOrganicMatter", core.zone.node)
     som.node <- core.zone.node[wsomn][[1]]
     

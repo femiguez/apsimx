@@ -7,7 +7,7 @@
 inspect_apsimx_replacement(file = "", src.dir = ".", node = NULL,
   node.child = NULL, node.subchild = NULL, node.subsubchild = NULL,
   root = list("Models.Core.Replacements", NA), parm = NULL,
-  display.available = FALSE, digits = 3)
+  display.available = FALSE, digits = 3, print.path = FALSE)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected (JSON)}
@@ -22,13 +22,15 @@ inspect_apsimx_replacement(file = "", src.dir = ".", node = NULL,
 
 \item{node.subsubchild}{specific node sub-subchild to be inspected.}
 
-\item{root}{}
+\item{root}{'root' for the inspection of a replacement file (it gives flexibility to inspect other types of files).}
 
 \item{parm}{specific parameter to display}
 
 \item{display.available}{logical. Whether to display available components to be inspected (default = FALSE)}
 
 \item{digits}{number of decimals to print (default 3)}
+
+\item{print.path}{print the path to the inspected parameter (default FALSE)}
 }
 \value{
 table with inspected parameters and values

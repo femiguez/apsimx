@@ -1,4 +1,3 @@
-
 #' 
 #' @title Inspect a replacement component in an .apsimx (JSON) file
 #' @name inspect_apsimx_replacement
@@ -9,10 +8,11 @@
 #' @param node.child specific node child component to be inspected.
 #' @param node.subchild specific node sub-child to be inspected.
 #' @param node.subsubchild specific node sub-subchild to be inspected.
-#' @param root 
+#' @param root 'root' for the inspection of a replacement file (it gives flexibility to inspect other types of files).
 #' @param parm specific parameter to display
 #' @param display.available logical. Whether to display available components to be inspected (default = FALSE)
 #' @param digits number of decimals to print (default 3)
+#' @param print.path print the path to the inspected parameter (default FALSE)
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 #' @return table with inspected parameters and values
 #' @export
@@ -35,7 +35,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
                                        node.subchild = NULL, node.subsubchild = NULL,
                                        root = list("Models.Core.Replacements",NA),
                                        parm = NULL, display.available = FALSE,
-                                       digits = 3){
+                                       digits = 3, print.path = FALSE){
   
   fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
@@ -49,6 +49,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   
   apsimx_json <- read_json(paste0(src.dir,"/",file))
   
+  parm.path.0 <- paste0(".",apsimx_json$Name)
   ## Select Replacements node
   frn <- grep(root[[1]], apsimx_json$Children, fixed = TRUE)
   
@@ -65,6 +66,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
     replacements.node <- apsimx_json$Children[[frn]]
   }
   
+  parm.path.0.1 <- paste0(parm.path.0, ".",replacements.node$Name)
   ## Print names of replacements
   replacements.node.names <- sapply(replacements.node$Children, function(x) x$Name)
   cat("Replacements: ", replacements.node.names, "\n")
@@ -72,7 +74,10 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   if(missing(node)) return(cat("Please provide a node\n"))
   
   wrn <- grep(node, replacements.node$Children)
+  if(length(wrn) > 1) stop("node should result in a unique result")
   rep.node <- replacements.node$Children[[wrn]]
+  
+  parm.path <- paste0(parm.path.0.1,".",rep.node$Name)
   
   if(!is.null(rep.node$CropType)) cat("CropType", rep.node$CropType,"\n")
   
@@ -139,6 +144,20 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
     }
     unpack_node(rep.node.sub3child, parm = parm, display.available = display.available)
   }
+  
+  if(print.path){
+    cat("Parm path:", parm.path,"\n")
+    if(missing(parm)){
+      invisible(parm.path)
+    }else{
+      if(length(parm) == 1){
+        invisible(paste0(parm.path,".",parm))
+      }else{
+        invisible(paste0(parm.path,".",parm[[1]]))
+      }
+    }
+  }
+  
 }
 
 

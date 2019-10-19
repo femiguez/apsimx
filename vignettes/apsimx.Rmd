@@ -105,7 +105,7 @@ Let's say we want to modify the values of 'Organic Carbon' in the soil in the 'M
 
 ```{r inspect-maize-oc}
 inspect_apsimx("Maize.apsimx", src.dir = ex.dir, node = "Soil",
-               soil.child = "SoilOrganicMatter")
+               soil.child = "Organic")
 ```
 
 The function 'inspect_apsimx', in this example, displays various information about the organic matter in the soil. (See the help page for more options). In the next step we 'edit' or change the values.
@@ -124,7 +124,7 @@ Let's make sure that we have changed the values successfully.
 ```{r inspect-maize-oc-check}
 inspect_apsimx("Maize-edited.apsimx", src.dir = ".", 
                node = "Soil",
-               soil.child = "SoilOrganicMatter")
+               soil.child = "Organic")
 ```
 
 Deleting the file.
@@ -158,7 +158,11 @@ summary(sim)
 ggplot(data = sim, aes(x = Date, y = Yield)) + geom_point()
 ## Inspect the Wheat .apsimx file
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop")
+## This only displays the available 'Manager' components
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
+## Looking more in-depth into 'SowingRule1'
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
+               node = "Manager", parm = list("SowingRule1",NA))
 ```
 
 ## Advanced example: Inspecting a 'Replacement' component
@@ -278,7 +282,7 @@ I won't be running the 'Factorial' example here, but if you are interested this 
 
 APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance. All distributed APSIM-X examples are 'JSON' now.
 
-The \code{apsimx} package supports inspection and editing of both file types for most components except for the 'Manager'; for which there is partial support. In most instances the parameters that are likely to need inspection and editing are supported but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON (note: this is fragile and might not even be needed in the future).
+The apsimx package supports inspection and editing of both file types, but XML is for 'Classic' only and JSON is for APSIM-X. In most instances the parameters that are likely to need inspection and editing are supported but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON (note: this is fragile and might not even be needed in the future).
 
 ```{r filetypes}
 ex.dir <- auto_detect_apsimx_examples()
@@ -292,11 +296,15 @@ It is possible that the function above will soon be obsolete as all .apsimx file
 
 # To-Do
 
-* figure out why some of the 'inspect' features is not working for some of the files (Wheat, Barley)
+* upgrade 'edit_apsimx'
 
-* Add more tests using the 'CoverCrop example'
+* Make inspect_apsimx and inspect_apsim more consistent 
 
-* Figure out if I can print the path when using inspect_apsimx
+* Add more tests using the 'CoverCrop example' (APSIM 'Classic')
+
+# Working
+
+* **inspect_apsimx** New version of this function seems to be working well
 
 # In Beta
 
@@ -304,10 +312,6 @@ It is possible that the function above will soon be obsolete as all .apsimx file
 * edit_apsim
 
 # Future features
-
-* At the moment adding testing capabilities
-
-* Make inspect_apsimx and inspect_apsim more consistent 
 
 * Add the new feature of 'batch' editing made possible since a recent update to ApsimX (thanks to Drew H., but not available on precompiled versions yet)
 

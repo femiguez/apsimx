@@ -13,13 +13,12 @@
 #'  The function inspect_apsimx is for a quick look from within R. The APSIM GUI provides a more
 #'  complete examination of the .apsimx file
 #' 
-#' @name edit_apsimx_json
+#' @name edit_apsimx
 #' @param file file ending in .apsimx to be edited (JSON)
 #' @param src.dir directory containing the .apsimx file to be edited; defaults to the current working directory
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
 #' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other' 
 #' @param soil.child specific soil component to be edited
-#' @param som.child specific surface organic matter component to be edited (not used)
 #' @param manager.child specific manager component to be edited
 #' @param parm parameter to be edited
 #' @param value new values for the parameter to be edited 
@@ -41,24 +40,24 @@
 #' ## Edit Bulk density
 #' ex.dir <- auto_detect_apsimx_examples()
 #' bds <- c(1.02, 1.03, 1.09, 1.16, 1.18, 1.19, 1.20)
-#' edit_apsimx_json("Barley.apsimx", src.dir = ex.dir,
-#'                  wrt.dir = ".",
-#'                  node = "Soil",
-#'                  soil.child = "Water", 
-#'                  parm = "BD", value = bds,
-#'                  verbose = FALSE)
+#' edit_apsimx("Barley.apsimx", src.dir = ex.dir,
+#'             wrt.dir = ".",
+#'             node = "Soil",
+#'             soil.child = "Water", 
+#'             parm = "BD", value = bds,
+#'             verbose = FALSE)
 #' ## Inspect file
 #' inspect_apsimx("Barley-edited.apsimx", node = "Soil", soil.child = "Water")
 #' ## To delete the file...
 #' file.remove("./Barley-edited.apsimx")
 #' 
 #' ## Edit the fertilizer amount in 'Maize.apsimx'
-#' edit_apsimx_json("Maize.apsimx", src.dir = ex.dir,
-#'                  wrt.dir = ".",
-#'                  node = "Manager",
-#'                  manager.child = "SowingFertiliser",
-#'                  parm = "Amount",
-#'                  value = 200, verbose = TRUE)
+#' edit_apsimx("Maize.apsimx", src.dir = ex.dir,
+#'              wrt.dir = ".",
+#'              node = "Manager",
+#'              manager.child = "SowingFertiliser",
+#'              parm = "Amount",
+#'              value = 200, verbose = TRUE)
 #' ## Make sure it worked
 #' inspect_apsimx("Maize-edited.apsimx", node = "Manager")
 #' ## Remove the file
@@ -66,33 +65,31 @@
 #' }
 #' 
 
-edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
-                            node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
-                                     "MicroClimate","Crop","Manager"),
-                            soil.child = c("Water","OrganicMatter",
-                                           "Analysis","InitialWater","Sample"),
-                            som.child = c("Pools","Other"),
-                            manager.child = NULL,
-                            parm=NULL, value=NULL, overwrite = FALSE,
-                            edit.tag = "-edited",
-                            parm.path = NULL,
-                            verbose = TRUE){
+edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
+                        node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
+                                 "MicroClimate","Crop","Manager"),
+                        soil.child = c("Water","OrganicMatter",
+                                       "Analysis","InitialWater","Sample"),
+                        manager.child = NULL,
+                        parm=NULL, value=NULL, overwrite = FALSE,
+                        edit.tag = "-edited",
+                        parm.path = NULL,
+                        verbose = TRUE){
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
-  fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
-  if(length(fileNames)==0){
+  if(length(file.names)==0){
     stop("There are no .apsimx files in the specified directory to edit.")
   }
   
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)
-  som.child <- match.arg(som.child)
   edited.child <- "none"
   
   ## For now we just edit one file at a time
-  file <- match.arg(file, fileNames, several.ok=FALSE)
+  file <- match.arg(file, file.names)
   
   if(apsimx_filetype(file = file, src.dir = src.dir) != "json")
     stop("This function only edits JSON files")
