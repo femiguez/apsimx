@@ -52,13 +52,13 @@
 #' 
 
 inspect_apsim <- function(file = "", src.dir = ".", 
-                               node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
+                          node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                         "MicroClimate","Crop","Manager","Other"),
-                               soil.child = c("Water","OrganicMatter",
+                          soil.child = c("Water","OrganicMatter",
                                               "Analysis","InitialWater","Sample"),
-                               som.child = c("Pools","Other"),
-                               parm = NULL,
-                               digits = 3,
+                          som.child = c("Pools","Other"),
+                          parm = NULL,
+                          digits = 3,
                           print.path = FALSE){
   
   fileNames <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)

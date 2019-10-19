@@ -105,7 +105,7 @@ Let's say we want to modify the values of 'Organic Carbon' in the soil in the 'M
 
 ```{r inspect-maize-oc}
 inspect_apsimx("Maize.apsimx", src.dir = ex.dir, node = "Soil",
-               soil.child = "OrganicMatter")
+               soil.child = "SoilOrganicMatter")
 ```
 
 The function 'inspect_apsimx', in this example, displays various information about the organic matter in the soil. (See the help page for more options). In the next step we 'edit' or change the values.
@@ -124,7 +124,7 @@ Let's make sure that we have changed the values successfully.
 ```{r inspect-maize-oc-check}
 inspect_apsimx("Maize-edited.apsimx", src.dir = ".", 
                node = "Soil",
-               soil.child = "OrganicMatter")
+               soil.child = "SoilOrganicMatter")
 ```
 
 Deleting the file.

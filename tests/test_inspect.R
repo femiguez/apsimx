@@ -1,10 +1,11 @@
 ## Run a few tests for the examples
+require(apsimx)
 
 ex.dir <- auto_detect_apsimx_examples()
 
 ## Run inspect tests
 
-run.inspect.tests <- FALSE
+run.inspect.tests <- TRUE
 
 if(run.inspect.tests){
   
@@ -13,10 +14,13 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Clock")        
   inspect_apsimx(i, src.dir = ex.dir, node = "Weather")        
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
-  ## inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical") This does not work at the moment
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Water")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilOrganicMatter")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Sample")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialN")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "CERESSoilTemperature")
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
   inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
@@ -26,12 +30,14 @@ if(run.inspect.tests){
   ## Maize
   i <- "Maize.apsimx"
   inspect_apsimx(i, src.dir = ex.dir, node = "Clock")        
-  inspect_apsimx(i, src.dir = ex.dir, node = "Weather")        
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Weather") 
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Physical")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Organic")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Sample")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialN")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
   inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
@@ -43,20 +49,18 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Clock")        
   inspect_apsimx(i, src.dir = ex.dir, node = "Weather")        
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "OrganicMatter")
-  ## inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical") This does not work at the moment
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilOrganicMatter")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Sample")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
   inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule',NA))
-  
-  ## Chemical works fine for Maize, but not for Barley and Oats
 }
 
-inspect.replacement.test <- FALSE
+inspect.replacement.test <- TRUE
 
 if(inspect.replacement.test){
   
