@@ -1,6 +1,6 @@
 ## Run a few tests for the examples
 require(apsimx)
-
+apsimx_options(warn.versions = FALSE)
 ex.dir <- auto_detect_apsimx_examples()
 
 ## Run inspect tests
@@ -78,6 +78,7 @@ if(inspect.replacement.test){
                              node = "Base", node.child = "Field",
                              node.subchild = "Soil",
                              display.available = TRUE)
+  
 }
 
  

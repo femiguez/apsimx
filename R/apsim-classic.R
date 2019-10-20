@@ -35,13 +35,13 @@ apsim <- function(file = "", src.dir=".",
   if(file == "") stop("need to specify file name")
   
   ## The following lines are somewhat not needed
-  fileNames <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
   
-  if(length(fileNames)==0){
+  if(length(file.names)==0){
     stop("There are no .apsim files in the specified directory to run.")
   }
   
-  file <- match.arg(file, fileNames, several.ok=FALSE)
+  file <- match.arg(file, file.names, several.ok=FALSE)
   
   file.name.path <- paste0(src.dir,"/",file)
   
@@ -206,6 +206,9 @@ auto_detect_apsim_examples <- function(){
 
 apsim_example <- function(example = "Millet", silent = FALSE){
 
+  if(.Platform$OS.type != "windows"){
+    stop("This is only for windows. Use apsimx instead.")
+  }
   ## Run a limited set of examples
   ## Now the only one missing is Graph, which I assume is about
   ## graphics and not that relevant to apsim
@@ -225,11 +228,9 @@ apsim_example <- function(example = "Millet", silent = FALSE){
   ## Do not transfer permissions?
   file.copy(from = ex, to =".", copy.mode = FALSE)
   
-  if(.Platform$OS.type == "windows"){
-    run.strng <- paste0(ada," ",paste0("./",example,".apsim"))
-    shell(cmd = run.strng, translate = TRUE, intern = TRUE)
-  }
-
+  run.strng <- paste0(ada," ",paste0("./",example,".apsim"))
+  shell(cmd = run.strng, translate = TRUE, intern = TRUE)
+  
   ## Create database connection
   ## I don't need to specify the directory as it should be the current one
   ans <- read_apsim(paste0(example,".out"), value = "report")
@@ -249,6 +250,7 @@ apsim_example <- function(example = "Millet", silent = FALSE){
 #' @param file file name
 #' @param src.dir source directory where file is located
 #' @param value either 'report' (data.frame) or 'all' (list)
+#' @param date.format format for adding 'Date' column 
 #' @export
 #' @examples 
 #' \dontrun{
@@ -320,8 +322,10 @@ read_apsim <- function(file = "", src.dir = ".",
 #' @title Read all APSIM generated .out files in a directory
 #' @name read_apsim_all
 #' @description Like 'read_apsim', but it reads all .out files in a directory. 
+#' @param filenames names of files to be read
 #' @param src.dir source directory where files are located
 #' @param value either 'report' or 'all' (only 'report' implemented at the moment)
+#' @param date.format format for adding 'Date' column 
 #' @note Warning: very simple function at the moment, not optimized for memory or speed.
 #' @export
 #' 

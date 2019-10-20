@@ -37,15 +37,15 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
                                        parm = NULL, display.available = FALSE,
                                        digits = 3, print.path = FALSE){
   
-  fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
-  if(length(fileNames)==0){
+  if(length(file.names)==0){
     stop("There are no .apsimx files in the specified directory to inspect.")
   }
   
   ## This matches the specified file from a list of files
   ## Notice that the .apsimx extension will be added here
-  file <- match.arg(file, fileNames, several.ok=FALSE)
+  file <- match.arg(file, file.names)
   
   apsimx_json <- read_json(paste0(src.dir,"/",file))
   
@@ -71,13 +71,17 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   replacements.node.names <- sapply(replacements.node$Children, function(x) x$Name)
   cat("Replacements: ", replacements.node.names, "\n")
   
-  if(missing(node)) return(cat("Please provide a node\n"))
+  if(missing(node)){
+    parm.path <- parm.path.0.1
+    if(print.path) print(parm.path); invisible(parm.path)
+    return(cat("Please provide a node\n"))
+  } 
   
   wrn <- grep(node, replacements.node$Children)
   if(length(wrn) > 1) stop("node should result in a unique result")
   rep.node <- replacements.node$Children[[wrn]]
   
-  parm.path <- paste0(parm.path.0.1,".",rep.node$Name)
+  parm.path.0.1.1 <- paste0(parm.path.0.1,".",rep.node$Name)
   
   if(!is.null(rep.node$CropType)) cat("CropType", rep.node$CropType,"\n")
   
@@ -86,13 +90,21 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   if(display.available) cat("Available node children: ",rep.node.children.names,"\n")
   
   ## Select a specific node.child
-  if(missing(node.child)) return(cat("missing node.child\n"))
-  wrnc <- which(rep.node.children.names == node.child)
+  if(missing(node.child)){
+    parm.path <- parm.path.0.1.1
+    if(print.path) print(parm.path); invisible(parm.path)
+    return(cat("missing node.child\n"))
+  } 
+  wrnc <- grep(node.child, rep.node.children.names)
   rep.node.child <- rep.node$Children[[wrnc]]
+  
+  parm.path.0.1.1.1 <- paste0(parm.path.0.1.1,".",rep.node.child$Name)
   
   ## If children are missing display data at this level
   if(length(rep.node.child$Children) == 0){
     unpack_node(rep.node.child, parm = parm, display.available = display.available)
+    parm.path <- parm.path.0.1.1.1
+    if(print.path) print(parm.path); invisible(parm.path)
     return(cat("no node sub-children available \n"))
   }else{
     rep.node.subchildren.names <- sapply(rep.node.child$Children, function(x) x$Name)
@@ -102,15 +114,22 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   }
   
   ## Select a specific node.subchild
-  if(missing(node.subchild)) return(cat("missing node.subchild\n"))
-  wrnsc <- which(rep.node.subchildren.names == node.subchild)
+  if(missing(node.subchild)){
+    parm.path <- parm.path.0.1.1.1
+    if(print.path) print(parm.path); invisible(parm.path)
+    return(cat("missing node.subchild\n"))
+  } 
+  wrnsc <- grep(node.subchild, rep.node.subchildren.names)
   rep.node.subchild <- rep.node.child$Children[[wrnsc]]
   
+  parm.path.0.1.1.1.1 <- paste0(parm.path.0.1.1.1,".",rep.node.subchild$Name)
   ## Let's just print this information somehow
   cat("Subchild Name: ", rep.node.subchild$Name,"\n")
   
   if(is.atomic(rep.node.subchild$Children)){
     unpack_node(rep.node.subchild, parm = parm, display.available = display.available)
+    parm.path <- parm.path.0.1.1.1.1
+    if(print.path) print(parm.path); invisible(parm.path)
     return(cat("no node sub-sub-children available \n"))
   }else{
 
@@ -122,13 +141,17 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
     }
     cat("Name sub-sub-child: ", rep.node.subsubchild$Name,"\n")
     
+    parm.path.0.1.1.1.1.1 <- paste0(parm.path.0.1.1.1.1,".",rep.node.subsubchild$Name)
+    
     rep.node.subsubchild.names <- names(rep.node.subsubchild)
     if(display.available){ 
-      cat("Available node sub-sub-child: ",rep.node.subsubchild.names,"\n")
+      cat("Available node sub-sub-child names: ",rep.node.subsubchild.names,"\n")
     }
     
     if(is.atomic(rep.node.subsubchild$Children)){
       unpack_node(rep.node.subsubchild, parm = parm, display.available = display.available)
+      parm.path <- parm.path.0.1.1.1.1.1
+      if(print.path) print(parm.path); invisible(parm.path)
       return(cat("no node sub-sub-sub-children available \n"))
     }
     

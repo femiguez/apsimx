@@ -35,19 +35,29 @@
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Clock")
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Weather")
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil")
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "OrganicMatter")
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "Analysis")
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", soil.child = "Sample")
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "SurfaceOrganicMatter")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", 
+#'                soil.child = "OrganicMatter")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", 
+#'                soil.child = "Analysis")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", 
+#'                soil.child = "InitialWater")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", 
+#'                soil.child = "Sample")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, 
+#'                node = "SurfaceOrganicMatter")
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Crop")
 #' ## This has many options and a complex structure
 #' ## It is possible to select unique managements, but not non-unique ones
 #' ## The first element in parm can be a regular expression
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager", parm = list("rotat",NA))
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager", parm = list("sow on a fixed date - maize",NA))
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, 
+#'                node = "Manager", parm = list("rotat",NA))
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, 
+#'                node = "Manager", 
+#'                parm = list("sow on a fixed date - maize",NA))
 #' ## Select an individual row by position
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Manager", parm = list("sow on a fixed date - maize",7))
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, 
+#'               node = "Manager", 
+#'               parm = list("sow on a fixed date - maize",7))
 #' }
 #' 
 
@@ -61,9 +71,9 @@ inspect_apsim <- function(file = "", src.dir = ".",
                           digits = 3,
                           print.path = FALSE){
   
-  fileNames <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
   
-  if(length(fileNames)==0){
+  if(length(file.names)==0){
     stop("There are no .apsim files in the specified directory to inspect.")
   }
   
@@ -73,7 +83,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
   
   ## This matches the specified file from a list of files
   ## Notice that the .apsimx extension will be added here
-  file <- match.arg(file, fileNames, several.ok=FALSE)
+  file <- match.arg(file, file.names, several.ok=FALSE)
   
   ## Read the file
   apsim_xml <- read_xml(paste0(src.dir,"/",file))
@@ -181,7 +191,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
       k <- 1
       for(i in nitrogen.parms){
         parm.path <- paste0(".//Soil/SoilNitrogen","/",i)
-        soil.nitrogen.node <- xml_find_first(apsimx_xml, parm.path)
+        soil.nitrogen.node <- xml_find_first(apsim_xml, parm.path)
         nitro.d[,k] <- xml_text(xml_children(soil.nitrogen.node))
         k <- k + 1
       }
@@ -329,13 +339,13 @@ inspect_apsim <- function(file = "", src.dir = ".",
     ##             "refheight","albedo","emissivity","RadIntTotal")
     
     ## Names 'Name' and 'IncludeInDocumentation' will not be inspected
-    microclimate.parms <- xml_name(xml_children(xml_find_first(apsimx_xml, ".//MicroClimate")))[-c(1:2)]
+    microclimate.parms <- xml_name(xml_children(xml_find_first(apsim_xml, ".//MicroClimate")))[-c(1:2)]
     
     microclimate.d <- data.frame(parm = microclimate.parms, value = NA)
     
     for(i in microclimate.parms){
       parm.path <- paste0(".//MicroClimate","/",i)
-      soil.microclimate.node <- xml_find_first(apsimx_xml, parm.path)
+      soil.microclimate.node <- xml_find_first(apsim_xml, parm.path)
       microclimate.d[microclimate.d$parm == i,2] <- xml_text(soil.microclimate.node)
     }
     print(kable(microclimate.d, digits = digits))

@@ -8,9 +8,13 @@ read_apsim_all(filenames, src.dir = ".", value = c("report", "all"),
   date.format = "\%d/\%m/\%Y")
 }
 \arguments{
+\item{filenames}{names of files to be read}
+
 \item{src.dir}{source directory where files are located}
 
 \item{value}{either 'report' or 'all' (only 'report' implemented at the moment)}
+
+\item{date.format}{format for adding 'Date' column}
 }
 \description{
 Like 'read_apsim', but it reads all .out files in a directory.

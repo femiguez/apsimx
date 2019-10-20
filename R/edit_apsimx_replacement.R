@@ -210,7 +210,7 @@ edit_node <- function(x, parm = NULL, value = NULL){
   
   if(length(parm) > 1){
     x.nms <- names(x)
-    wne <- grepl(parm, n.nms)
+    wne <- grepl(parm, x.nms)
     j <- 1
     for(i in wne){
       x[[i]] <- value[j]

@@ -296,15 +296,17 @@ It is possible that the function above will soon be obsolete as all .apsimx file
 
 # To-Do
 
-* upgrade 'edit_apsimx'
-
 * Make inspect_apsimx and inspect_apsim more consistent 
+
+* **inspect_apsimx_replacement** challenge this function with more complex
+examples
 
 * Add more tests using the 'CoverCrop example' (APSIM 'Classic')
 
 # Working
 
 * **inspect_apsimx** New version of this function seems to be working well
+
 
 # In Beta
 

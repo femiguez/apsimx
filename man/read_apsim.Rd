@@ -13,6 +13,8 @@ read_apsim(file = "", src.dir = ".", value = c("report", "all"),
 \item{src.dir}{source directory where file is located}
 
 \item{value}{either 'report' (data.frame) or 'all' (list)}
+
+\item{date.format}{format for adding 'Date' column}
 }
 \description{
 read 'output' databases created by APSIM runs (.out and .sim). One file at a time.
