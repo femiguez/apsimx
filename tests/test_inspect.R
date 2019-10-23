@@ -79,6 +79,13 @@ if(inspect.replacement.test){
                              node.subchild = "Soil",
                              display.available = TRUE)
   
+  ## If we want to look at the second Factorial 'Experiment'
+  inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
+                             root = list("Experiment", 2),
+                             node = "Base", node.child = "Field",
+                             node.subchild = "Soil",
+                             display.available = TRUE)
+  
 }
 
  

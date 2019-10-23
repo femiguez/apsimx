@@ -342,7 +342,7 @@ read_apsimx <- function(file = "", src.dir = ".",
   DBI::dbDisconnect(con)
   
   if(any(grepl("Clock.Today",names(tbl0)))){
-    tbl0$Date <- as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1]))
+    tbl0$Date <- as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, "T")[[1]][1]))
   }
   ## Return list
   if(value == "all"){
