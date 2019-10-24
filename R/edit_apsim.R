@@ -57,9 +57,9 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
-  fileNames <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
   
-  if(length(fileNames)==0){
+  if(length(file.names)==0){
     stop("There are no .apsim files in the specified directory to edit.")
   }
   
@@ -67,7 +67,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   soil.child <- match.arg(soil.child)
   
   ## For now we just edit one file at a time
-  file <- match.arg(file, fileNames, several.ok=FALSE)
+  file <- match.arg(file, file.names)
   
   ## Parse apsim file (XML)
   apsim_xml <- read_xml(paste0(src.dir,"/",file))
@@ -243,20 +243,21 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     ## Trying to figure this out
     ## xml_text(xml_find_all(apsim_xml, ".//manager[4]/ui/fert_date"))
     ## xml_path(xml_find_all(apsim_xml,".//fert_date"))
-
     crop.node <- xml_find_all(apsim_xml, parm)
     
+    if(length(crop.node) == 0) stop("parm not found")
+    
     if(length(value) != length(crop.node))
-      stop("value vector of incorrect length")
+        stop("value vector of incorrect length")
     
     xml_set_text(crop.node, as.character(value))
+    
   }
   
   if(node == "Other"){
     other.node <- xml_find_first(apsim_xml, parm.path)
     
-    if(length(value) != length(other.node))
-      stop("value vector of incorrect length")
+    if(length(other.node) == 0) stop("other node parameter not found")
     
     xml_set_text(other.node, as.character(value))
   }

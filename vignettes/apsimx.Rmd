@@ -303,7 +303,7 @@ examples
 
 * Add more tests using the 'CoverCrop example' (APSIM 'Classic')
 
-* Include parameter estimation example for soybeans
+* Include parameter estimation example for maize
 
 # Working
 

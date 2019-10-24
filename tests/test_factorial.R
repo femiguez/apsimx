@@ -1,6 +1,8 @@
 ## A few steps
+require(apsimx)
+apsimx_options(warn.versions = FALSE)
 
-run.factorial.example <- FALSE
+run.factorial.example <- TRUE
 
 if(run.factorial.example){
   ex.dir <- auto_detect_apsimx_examples()
@@ -9,6 +11,9 @@ if(run.factorial.example){
   file.exists(fact.ex)
   file.copy(from = fact.ex,
             to = ".", copy.mode = FALSE)
+  
+  ## I ran these commands at the command line
+  ## sed -i'.bak' -e 's/\bWeatherFiles/%root%\\\\\\\\Examples\\\\\\\\WeatherFiles/g *
 
   inspect_apsimx_replacement("Factorial", src.dir = ".",
                              root = list("Experiment",1),
