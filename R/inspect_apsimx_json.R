@@ -139,7 +139,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       ## This parameter level would be 2.1.1
       parm.path <- paste0(parm.path.2.1,".",selected.soil.node.child[[1]]$Name) 
       enms <- c("IncludeInDocumentation","Enabled","ReadOnly","Children","Name")
-      cnms <- exclude(names(selected.soil.node.child[[1]]),enms)
+      cnms <- setdiff(names(selected.soil.node.child[[1]]),enms)
       soil.d1 <- NULL
       soil.d2 <- NULL
       col.nms <- NULL

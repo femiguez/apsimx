@@ -5,10 +5,10 @@
 \title{Inspect an .apsim (XML) file}
 \usage{
 inspect_apsim(file = "", src.dir = ".", node = c("Clock", "Weather",
-  "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager",
-  "Other"), soil.child = c("Water", "OrganicMatter", "Analysis",
-  "InitialWater", "Sample"), som.child = c("Pools", "Other"),
-  parm = NULL, digits = 3, print.path = FALSE)
+  "Soil", "SurfaceOrganicMatter", "Crop", "Manager", "Other"),
+  soil.child = c("Water", "OrganicMatter", "Nitrogen", "Analysis",
+  "InitialWater", "Sample"), parm = NULL, digits = 3,
+  print.path = FALSE)
 }
 \arguments{
 \item{file}{file ending in .apsim (Classic) to be inspected (XML)}
@@ -18,8 +18,6 @@ inspect_apsim(file = "", src.dir = ".", node = c("Clock", "Weather",
 \item{node}{either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'}
 
 \item{soil.child}{specific soil component to be inspected}
-
-\item{som.child}{specific surface organic matter component to be inspected ('Pools' or 'Other')}
 
 \item{parm}{parameter to inspect when node = 'Crop', 'Manager' or 'Other'}
 
@@ -81,6 +79,16 @@ inspect_apsim("maize-soybean-rotation", src.dir = extd.dir,
 inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, 
               node = "Manager", 
               parm = list("sow on a fixed date - maize",7))
+              
+## Illustrating the 'print.path' feature.
+inspect_apsim("Millet", src.dir = extd.dir, 
+               node = "Soil", soil.child = "Water", 
+               parm = "DUL", print.path = TRUE)
+## But the path can also be returned as a string
+## Which is useful for later editing
+pp <-  inspect_apsim("Millet", src.dir = extd.dir, 
+               node = "Soil", soil.child = "Water", 
+               parm = "DUL", print.path = TRUE)
 }
 
 }

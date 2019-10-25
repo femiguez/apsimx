@@ -6,7 +6,6 @@
 #' @param src.dir directory containing the .apsim file to be inspected; defaults to the current working directory
 #' @param node either 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
 #' @param soil.child specific soil component to be inspected
-#' @param som.child specific surface organic matter component to be inspected ('Pools' or 'Other')
 #' @param parm parameter to inspect when node = 'Crop', 'Manager' or 'Other'
 #' @param digits number of decimals to print (default 3)
 #' @param print.path whether to print the parameter path (default = FALSE)
@@ -58,15 +57,24 @@
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, 
 #'               node = "Manager", 
 #'               parm = list("sow on a fixed date - maize",7))
+#'               
+#' ## Illustrating the 'print.path' feature.
+#' inspect_apsim("Millet", src.dir = extd.dir, 
+#'                node = "Soil", soil.child = "Water", 
+#'                parm = "DUL", print.path = TRUE)
+#' ## But the path can also be returned as a string
+#' ## Which is useful for later editing
+#' pp <-  inspect_apsim("Millet", src.dir = extd.dir, 
+#'                node = "Soil", soil.child = "Water", 
+#'                parm = "DUL", print.path = TRUE)
 #' }
 #' 
 
 inspect_apsim <- function(file = "", src.dir = ".", 
                           node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
-                                        "MicroClimate","Crop","Manager","Other"),
-                          soil.child = c("Water","OrganicMatter",
-                                              "Analysis","InitialWater","Sample"),
-                          som.child = c("Pools","Other"),
+                                        "Crop","Manager","Other"),
+                          soil.child = c("Water","OrganicMatter", "Nitrogen",
+                                         "Analysis","InitialWater","Sample"),
                           parm = NULL,
                           digits = 3,
                           print.path = FALSE){
@@ -79,11 +87,13 @@ inspect_apsim <- function(file = "", src.dir = ".",
   
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)
-  som.child <- match.arg(som.child)
+  
+  if(print.path & missing(parm) & node != "Weather") 
+    stop("parm should be specified when print.path is TRUE")
   
   ## This matches the specified file from a list of files
   ## Notice that the .apsimx extension will be added here
-  file <- match.arg(file, file.names, several.ok=FALSE)
+  file <- match.arg(file, file.names)
   
   ## Read the file
   apsim_xml <- read_xml(paste0(src.dir,"/",file))
@@ -95,10 +105,13 @@ inspect_apsim <- function(file = "", src.dir = ".",
       clock.node <- xml_find_first(apsim_xml, paste0(parm.path,"/",i))
       cat(i,":",xml_text(clock.node),"\n")
     }
+    if(!missing(parm)){
+      parm.path <- paste0(parm.path,"/",parm)
+    }
   }
   
   if(node == "Weather"){
-    parm.path <- paste0(".//metfile/filename")
+    parm.path <- ".//metfile/filename"
     weather.filename.node <- xml_find_first(apsim_xml, parm.path)
     cat("Met file:",(xml_text(weather.filename.node)),"\n")
   }
@@ -147,6 +160,9 @@ inspect_apsim <- function(file = "", src.dir = ".",
         j <- j + 1
       }
       
+      if(!missing(parm) && parm %in% crop.parms)
+          parm.path0 <- ".//Soil/Water/SoilCrop"
+
       soil.parms <- c("Thickness","BD","AirDry","LL15","DUL","SAT","KS")
       val.mat <- matrix(NA, ncol = length(soil.parms),
                         nrow = number.soil.layers)
@@ -160,6 +176,9 @@ inspect_apsim <- function(file = "", src.dir = ".",
         j <- j + 1
       }
       print(kable(cbind(crop.d,soil.d), digits = digits))
+      
+      if(!missing(parm) && parm %in% soil.parms) 
+        parm.path0 <- ".//Soil/Water"
       
       ## Soil Water
       soil.water.parms <- c("SummerCona", "SummerU", "SummerDate",
@@ -177,6 +196,9 @@ inspect_apsim <- function(file = "", src.dir = ".",
         j <- j + 1
       }
       print(kable(soil.water.d, digits = digits))
+      
+      if(!missing(parm) && parm %in% soil.water.parms) 
+          parm.path0 <- ".//Soil/SoilWater"
     }
     
     if(soil.child == "Nitrogen"){
@@ -213,7 +235,6 @@ inspect_apsim <- function(file = "", src.dir = ".",
       }
       print(kable(som.d1, digits = digits))
       
-      ## I delete Depth because it was extracted before
       som.parms2 <- c("Thickness","OC","FBiom","FInert")
       
       val.mat <- matrix(NA, ncol = (length(som.parms2)+1),
@@ -230,6 +251,10 @@ inspect_apsim <- function(file = "", src.dir = ".",
         j <- j + 1
       }
       print(kable(som.d2, digits = digits))
+      
+      if(!missing(parm) && parm %in% c(som.parms1,som.parms2)){
+        parm.path0 <- ".//Soil/SoilOrganicMatter"
+      }
     }
     
     if(soil.child == "Analysis"){
@@ -250,6 +275,10 @@ inspect_apsim <- function(file = "", src.dir = ".",
         j <- j + 1
       }
       print(kable(analysis.d, digits = digits))
+      
+      if(!missing(parm) && parm %in% analysis.parms){
+        parm.path0 <- ".//Soil/Analysis"
+      }
     }
     
     if(soil.child == "InitialWater"){
@@ -263,6 +292,10 @@ inspect_apsim <- function(file = "", src.dir = ".",
         initial.water.d[initial.water.d$parm == i,2] <- xml_text(soil.InitialWater.node)
       }
       print(kable(initial.water.d, digits = digits))
+      
+      if(!missing(parm) && parm %in% analysis.parms){
+        parm.path0 <- ".//Soil/Analysis"
+      }
     }
     
     if(soil.child == "Sample"){
@@ -282,75 +315,35 @@ inspect_apsim <- function(file = "", src.dir = ".",
         j <- j + 1
       }
       print(kable(sample.d, digits = digits))
+      
+      if(!missing(parm) && parm %in% sample.parms){
+        parm.path0 <- ".//Soil/Sample"
+      }
     }
   }
   
   if(node == "SurfaceOrganicMatter"){
-    if(som.child == "Pools"){
-      ## The lines below are hardcoded, which could be used if we want to
-      ## restrict the variables to inspect
-      ## pools.parms <- c("PoolName","ResidueType","Mass","CNRatio",
-      ##             "CPRatio","StandingFraction")
-      pools.path <- ".//surfaceom"
-      pools.parms <- xml_name(xml_children(xml_find_first(apsim_xml, pools.path)))
+    ## The lines below are hardcoded, which could be used if we want to
+    ## restrict the variables to inspect
+    ## pools.parms <- c("PoolName","ResidueType","Mass","CNRatio",
+    ##             "CPRatio","StandingFraction")
+    pools.path <- ".//surfaceom"
+    pools.parms <- xml_name(xml_children(xml_find_first(apsim_xml, pools.path)))
       
-      pools.d <- data.frame(parm = pools.parms, value = NA)
+    pools.d <- data.frame(parm = pools.parms, value = NA)
       
-      for(i in pools.parms){
-        parm.path <- paste0(pools.path,"/",i)
-        soil.pools.node <- xml_find_first(apsim_xml, parm.path)
-        pools.d[pools.d$parm == i,2] <- xml_text(soil.pools.node)
-      }
-      print(kable(pools.d, digits = digits))
+    for(i in pools.parms){
+      parm.path <- paste0(pools.path,"/",i)
+      soil.pools.node <- xml_find_first(apsim_xml, parm.path)
+      pools.d[pools.d$parm == i,2] <- xml_text(soil.pools.node)
     }
+    print(kable(pools.d, digits = digits))
     
-    if(som.child == "Other"){
-      stop("Not relevant at the moment")
-      ## The lines below are hardcoded, which could be used if we want to
-      ## restrict the variables to inspect
-      ## other.parms <- c("CriticalResidueWeight",
-      ##             "OptimumDecompTemp","MaxCumulativeEOS",
-      ##             "CNRatioDecompCoeff","CNRatioDecompThreshold",
-      ##             "TotalLeachRain","MinRainToLeach",
-      ##             "CriticalMinimumOrganicC","DefaultCPRatio",
-      ##             "DefaultStandingFraction","StandingExtinctCoeff",
-      ##             "FractionFaecesAdded")
-      
-      other.parms <- xml_name(xml_children(xml_find_first(apsim_xml, ".//SurfaceOrganicMatter")))[-c(1:10)]
-      
-      other.d <- data.frame(parm = other.parms, value = NA)
-      
-      for(i in other.parms){
-        parm.path <- paste0(".//SurfaceOrganicMatter","/",i)
-        soil.other.node <- xml_find_first(apsim_xml, parm.path)
-        other.d[other.d$parm == i,2] <- xml_text(soil.other.node)
-      }
-      print(kable(other.d, digits = digits))
+    if(!missing(parm) && parm %in% pools.parms){
+      parm.path0 <- ".//surfaceom"
     }
   }
-  
-  if(node == "MicroClimate"){
-    stop("not relevant for APSIM Classic")
-    ## The lines below would be the hard coded version which could work
-    ## If we want to restrict the variables which can be inspected
-    ## microclimate.parms <- c("a_interception","b_interception","c_interception",
-    ##             "d_interception", "soil_albedo", "sun_angle",
-    ##             "soil_heat_flux_fraction", "night_interception_fraction",
-    ##             "refheight","albedo","emissivity","RadIntTotal")
-    
-    ## Names 'Name' and 'IncludeInDocumentation' will not be inspected
-    microclimate.parms <- xml_name(xml_children(xml_find_first(apsim_xml, ".//MicroClimate")))[-c(1:2)]
-    
-    microclimate.d <- data.frame(parm = microclimate.parms, value = NA)
-    
-    for(i in microclimate.parms){
-      parm.path <- paste0(".//MicroClimate","/",i)
-      soil.microclimate.node <- xml_find_first(apsim_xml, parm.path)
-      microclimate.d[microclimate.d$parm == i,2] <- xml_text(soil.microclimate.node)
-    }
-    print(kable(microclimate.d, digits = digits))
-  }
-  
+
   if(node == "Crop" | node == "Manager"){
     ## It seems that for nodes Crop and Manager, the names can be arbitrary which
     ## makes this hard parsing complicated
@@ -358,6 +351,8 @@ inspect_apsim <- function(file = "", src.dir = ".",
     ## Make sure sowing rule is present
     xfa.manager <- as.vector(unlist(xml_attrs(xml_find_all(apsim_xml, ".//manager"))))
     cat("Management Scripts:", xfa.manager,"\n", sep = "\n")
+    
+    if(missing(parm)) parm.path <- ".//manager"
     
     if(!missing(parm)){
       parm1 <- parm[[1]]
@@ -375,9 +370,13 @@ inspect_apsim <- function(file = "", src.dir = ".",
 
       crop <- xml_find_all(apsim_xml, paste0(".//manager"))[find.parm]
       crop2 <- xml_find_first(crop, "ui")
-      if(print.path){
-        cat("parm path:", xml_path(xml_children(crop2)[[position]]),"\n")
+      
+      if(!is.na(position)){
+        parm.path <- xml_path(xml_children(crop2)[[position]])
+      }else{
+        parm.path <- ".//manager"
       }
+      
       descr <- sapply(xml_attrs(xml_children(crop2)),function(x) x[["description"]])
       vals <- xml_text(xml_children(crop2))
     
@@ -404,5 +403,16 @@ inspect_apsim <- function(file = "", src.dir = ".",
       other.d <- rbind(other.d, tmp)
     }
     print(kable(other.d))
+    
+    parm.path <- xml_path(other)
+    if(length(parm.path) > 1) stop("figure out why parm.path is greater than 1 for 'Other'")
   }
+  
+  if(!node %in% c("Crop","Manager"))
+    parm.path <- xml_path(xml_find_first(apsim_xml,paste0(parm.path0,"/",parm)))
+  
+  if(print.path){
+    cat("Parm path:", parm.path,"\n")
+  }
+  invisible(parm.path)
 }

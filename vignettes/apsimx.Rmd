@@ -17,6 +17,8 @@ library(ggplot2)
 
 ```{r apsimx-options, echo = FALSE}
 apsimx_options(warn.versions = FALSE)
+ava <- apsim_version()
+if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
 ```
 
 # Introduction
@@ -294,9 +296,34 @@ apsimx_filetype("Maize_old", src.dir = extd.dir)
 
 It is possible that the function above will soon be obsolete as all .apsimx files are JSON and all .apsim files are XML. 
 
-# To-Do
+# Why inspect?
 
-* Make inspect_apsimx and inspect_apsim more consistent 
+One of the difficulties with working with APSIM(X) in scripting efforts is that the names of the parameters that we might want to edit can be buried deep in the .apsim(x) file and that there might be multiple instances of those parameters. To overcome this (to some extent) the 'inspect' functions can provide the path to the parameter to edit. For example,
+
+```{r Millet}
+extd.dir <- system.file("extdata", package = "apsimx")
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager")
+```
+
+We can see that we have 'Sow on a fixed date' as one of the options. Let's say that we want to edit the planting density
+
+```{r Millet-sow}
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
+              parm = list("Sow on a fixed date",NA))
+```
+
+Planting density is the fifth element in that table. We can obtain the full path with the inspect function.
+
+```{r Millet-sow-plt-dens}
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
+              parm = list("Sow on a fixed date",5), print.path = TRUE)
+## Or store it in an object for later editing
+pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
+              parm = list("Sow on a fixed date",5), print.path = TRUE)
+```
+
+
+# To-Do
 
 * **inspect_apsimx_replacement** challenge this function with more complex
 examples
@@ -304,11 +331,6 @@ examples
 * Add more tests using the 'CoverCrop example' (APSIM 'Classic')
 
 * Include parameter estimation example for maize
-
-# Working
-
-* **inspect_apsimx** New version of this function seems to be working well
-
 
 # In Beta
 
