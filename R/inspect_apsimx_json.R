@@ -20,7 +20,7 @@
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Weather")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilWater") 
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilOrganicMatter")
+#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Organic")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialN")
@@ -34,7 +34,7 @@
 inspect_apsimx <- function(file = "", src.dir = ".", 
                            node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                    "MicroClimate","Crop","Manager","Other"),
-                           soil.child = c("Water","SoilOrganicMatter", "InitialWater",
+                           soil.child = c("Water","InitialWater",
                                           "Chemical","Physical","Analysis","SoilWater",
                                           "InitialN", "CERESSoilTemperature","Sample",
                                           "Nutrient","Organic"),
@@ -130,7 +130,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     ## For some variables now it is the time to print
     ## The code below is not strictly needed but it is here
     ## in case I need a second level of soil in the future
-    first.level.soil <- c("SoilOrganicMatter","Water","Physical",
+    first.level.soil <- c("Water","Physical",
                           "Chemical","Analysis","InitialWater",
                           "InitialN","SoilWater","Analysis",
                           "CERESSoilTemperature","Organic")

@@ -68,7 +68,7 @@
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                  "MicroClimate","Crop","Manager"),
-                        soil.child = c("Water","OrganicMatter",
+                        soil.child = c("Water","Organic",
                                        "Analysis","InitialWater","Sample"),
                         manager.child = NULL,
                         parm=NULL, value=NULL, overwrite = FALSE,
@@ -191,8 +191,8 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.node[[1]]$Children[wnn][[1]] <- soil.nitrogen.node
     }
     
-    if(soil.child == "OrganicMatter"){
-      edited.child <- "OrganicMatter"
+    if(soil.child == "Organic"){
+      edited.child <- "Organic"
       wsomn <- grepl("Organic", soil.node0)
       soil.om.node <- soil.node0[wsomn][[1]]
       

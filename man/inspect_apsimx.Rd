@@ -6,10 +6,10 @@
 \usage{
 inspect_apsimx(file = "", src.dir = ".", node = c("Clock", "Weather",
   "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager",
-  "Other"), soil.child = c("Water", "SoilOrganicMatter", "InitialWater",
-  "Chemical", "Physical", "Analysis", "SoilWater", "InitialN",
-  "CERESSoilTemperature", "Sample", "Nutrient", "Organic"), parm = NULL,
-  digits = 3, print.path = FALSE)
+  "Other"), soil.child = c("Water", "InitialWater", "Chemical",
+  "Physical", "Analysis", "SoilWater", "InitialN", "CERESSoilTemperature",
+  "Sample", "Nutrient", "Organic"), parm = NULL, digits = 3,
+  print.path = FALSE)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected (JSON)}
@@ -43,7 +43,7 @@ inspect_apsimx("Barley", src.dir = ex.dir, node = "Clock")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Weather")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilWater") 
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilOrganicMatter")
+inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Organic")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialN")

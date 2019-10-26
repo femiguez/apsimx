@@ -35,7 +35,7 @@ If you want to install this package from github try in R:
 
 If you are interested in the vignettes, first you need to make sure
 that you have a version of APSIM-X installed and then use this instead
-of the lines above:
+of the second line above:
 
 > devtools::install_github("femiguez/apsimx", build_vignettes = TRUE,
 > build_opts = c("--no-resave-data", "--no-manual")) 

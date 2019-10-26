@@ -23,12 +23,12 @@ if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
 
 # Introduction
 
-Are you a user of APSIM-X ("Next Generation")? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the **apsimx** package, which allows you to inspect, edit, run and read files created by APSIM-X (.apsimx) files. New .apsimx files are based on the JSON (JavaScript Object Notation https://www.json.org/) format and it is used to communicate information to the APSIM-X engine. By using the 'jsonlite' R package **apsimx** can read and write ('inspect' and 'edit') files in this format. The older format based on XML is partially supported through the 'xml2' package. To run simulations the *apsimx* function is available and results from the simulation can be imported as an R object with a dedicated function (*read_apsimx*). If you need to write scripts (regardless of whether you use the **apsimx** package or not) the vignette 'writing scripts' might be useful. The package is currently being developed and available at: https://github.com/femiguez/apsimx. 
+Are you a user of APSIM-X ("Next Generation")? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the **apsimx** package, which allows you to inspect, edit, run and read files created by APSIM-X (.apsimx) files. New .apsimx files are based on the JSON (JavaScript Object Notation https://www.json.org/) format and it is used to communicate information to the APSIM-X engine. By using the 'jsonlite' R package **apsimx** can read and write ('inspect' and 'edit') files in this format. APSIM 'Classic' used an XML format and this type is now fully supported ('inspect', 'edit', 'run' and 'read').  For 'inspect' and 'edit' in the APSIM 'Classic' version I use the 'xml2' package. To run simulations the *apsimx* function (*apsim* for 'Classic') is available and results from the simulation can be imported as an R object with a dedicated function (*read_apsimx* 'NG' and *read_apsim* for 'Classic'). If you need to write scripts (regardless of whether you use the **apsimx** package or not) the vignette 'writing scripts' might be useful. The package is currently being developed and available at: https://github.com/femiguez/apsimx. 
 If you have any questions write to: femiguez *at* iastate.edu. 
 
 ### Additional information
 
-Before using this package it is recommended to become familiar with APSIM-X ("Next Generation").
+To install this vignette, you need to have APSIM 'Next Generation' installed. However, if you have not used APSIM it is recommended that you become familiar with it before hand.
 
 See the following for details
 
@@ -46,26 +46,28 @@ This package has been tested on:
 
 **Windows**: ApsimX version 4236
 
-Other useful R packages are 'APSIM' and 'apsimr'. The main difference is that these were written to work with the previous generation of APSIM (7.x). This package is thus an update for the new APSIM-X software. Recently, (Oct 2019) I added support for APSIM 'Classic'.
+Other useful R packages are 'APSIM' and 'apsimr'. The main difference is that these were written to work with the previous generation of APSIM (7.x). They are both still useful but they have not been updated in a while. This package is thus an update for the new APSIM-X software. Recently, (Oct 2019) I added support for APSIM 'Classic'. This package has alternative implementations to those in the 'apsimr' package. A couple of differences is that with standard installations you do not need to supply the 'exe' path and I do not mess with working directories. 
 
 ## Installing APSIM-X
 
-For most functions in this pacakge you need to have a version of APSIM-X installed. For this you might first need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM-X (https://www.apsim.info/Products/Downloads.aspx). The \code{apsimx} package will try to detect the install of both mono and APSIM-X. 
+For most functions in this pacakge you need to have a version of APSIM-X installed (or APSIM 'Classic'). For Mac and Linux, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM-X (https://www.apsim.info/Products/Downloads.aspx). The \code{apsimx} package will try to detect the install of both mono and APSIM-X. 
 
 **Mac**: For Mac it is also assumed that APSIM-X has been moved to 'Applications'.
 
 **Windows**: In Windows the default install location is in 'Program Files'.
+
+**Linux (Debian)**: It assumed that APSIM-X is in '/usr/local/lib/apsim/'.
 
 ## R functions for APSIM-X
 
 The main functions in the package are (for now):
 
 * **inspect_apsimx** simple inspecting of an .apsimx file. (It does not replace the GUI.)
-* **edit_apsimx** edit/modify an .apsimx file. (Limited options are available at the moment).
+* **edit_apsimx** edit/modify an .apsimx file.
 * **apsimx** run an .apsimx simulation.
 * **read_apsimx** read files created by an .apsimx simulation run (.db files)
 * **read_apsimx_all** read all files created by one or more .apsimx simulation runs in a directory (.db files)
-* **inspect_apsimx_replacement** inspect a replacement component of an .apsimx file (JSON only)
+* **inspect_apsimx_replacement** inspect a replacement component of an .apsimx file.
 
 ## R functions for APSIM 'Classic' (7.x) - Only for Windows
 
@@ -73,8 +75,8 @@ The main functions relevant for 'Classic' are:
 
 * **apsim** runs an .apsim file.
 * **read_apsim** reads files (.out and .sim) generated by apsim into a data frame.
-* **inspect_apsim** allows for inspection of .apsim file (under development).
-* **edit_apsim** edit an .apsim file (under development).
+* **inspect_apsim** allows for inspection of .apsim file.
+* **edit_apsim** edit an .apsim file.
 * **apsim_example** runs (only a few) of the built-in examples.
 * **apsim_options** sets path for executable, examples and warnings.
 
@@ -92,7 +94,7 @@ ggplot(data = maize , aes(x = Date, y = Maize.AboveGround.Wt)) +
 
 ### 'inspect_apsimx': Inspecting a file
 
-A function to inspect an .apsimx file is included. This is meant to be used simply to avoid the need to use the GUI when a quick inspection of a given component is needed. For example, if you edit a file and want to make sure that the intended component was edited correctly just inspect it. For complex inspections and manipulations of an .apsimx file the GUI is recommended.
+A function to inspect an .apsimx file is included. This is meant to be used simply to avoid the need to use the GUI when a quick inspection of a given component is needed. In addition, it can make it easier to supply the path for editing later (see example below). For example, if you edit a file and want to make sure that the intended component was edited correctly just inspect it. For complex inspections and manipulations of an .apsimx file the GUI is recommended.
 
 ```{r inspect-apsimx}
 ex.dir <- auto_detect_apsimx_examples()
@@ -101,7 +103,7 @@ inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")
 
 ### 'edit_apsimx': Editing a file
 
-Editing a file has the side effect of creating a new file with '-edited' added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the 'apsimr' package. This code does not run an APSIM simulation, it only edits the file. 
+Editing a file has the side effect of creating a new file with '-edited' added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the 'apsimr' package. One difference is that it is possible to supply a different 'edit.tag'. This code does not run an APSIM simulation, it only edits the file. 
 
 Let's say we want to modify the values of 'Organic Carbon' in the soil in the 'Maize.apsimx' example. First we should inspect the current values.
 
@@ -117,7 +119,7 @@ ocs <- c(1.5,1.4,1.3,1.2,1.1,1.0,0.9)
 edit_apsimx("Maize.apsimx", src.dir = ex.dir,
              wrt.dir = ".",
              node = "Soil",
-             soil.child = "OrganicMatter", 
+             soil.child = "Organic", 
              parm = "Carbon", value = ocs)
 ```
 
@@ -312,7 +314,7 @@ inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
               parm = list("Sow on a fixed date",NA))
 ```
 
-Planting density is the fifth element in that table. We can obtain the full path with the inspect function.
+Planting density is the fifth element in that table. We can obtain the full path by using the 'print.path' option. It makes sense to use this option once you have found the parameter you are looking for. 
 
 ```{r Millet-sow-plt-dens}
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
@@ -322,6 +324,18 @@ pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
               parm = list("Sow on a fixed date",5), print.path = TRUE)
 ```
 
+Once we have identified the parameter we want to edit, we can do so using the 'edit_apsim' function. When using the 'parm.path' argument, node should be "Other".
+
+```{r Millet-edit}
+edit_apsim("Millet", src.dir = extd.dir, node = "Other",
+           parm.path = pp, value = 8, edit.tag = "-pp")
+```
+
+```{r Millet-delete}
+file.remove("Millet-pp.apsim")
+```
+
+This provides a template for creating complex simulations out of simple ones.
 
 # To-Do
 
@@ -334,14 +348,11 @@ examples
 
 # In Beta
 
-* inspect_apsim
-* edit_apsim
+* edit_apsimx_batch
 
 # Future features
 
-* Add the new feature of 'batch' editing made possible since a recent update to ApsimX (thanks to Drew H., but not available on precompiled versions yet)
-
-* Create custom function for editing the depth of the soil profile 'edit_apsimx_depth'. The issue really is what kind of inconsistencies are possible if depth is not consistent across variables because it is possible to edit the depth now.
+* Do we need a custom function for editing the depth of the soil profile? 'edit_apsimx_depth'? The issue really is what kind of inconsistencies are possible if depth is not consistent across variables because it is possible to edit the depth now.
 
 * Improve implementation of read_apsimx_all 
 
