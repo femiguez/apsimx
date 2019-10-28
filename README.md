@@ -15,7 +15,7 @@ version 0.95, apsimx can inspect, run and read APSIM 'Classic'.
 
 * and/or APSIM (7.x) 'Classic'
 
-The new APSIM uses the mono framework to run on Windows, Mac and Linux
+The new APSIM uses the mono framework to run on Mac and Linux
 (Debian). Mono should be installed first (in Mac and Linux).
 
 **Mono framework download**:
@@ -39,5 +39,14 @@ of the second line above:
 
 > devtools::install_github("femiguez/apsimx", build_vignettes = TRUE,
 > build_opts = c("--no-resave-data", "--no-manual")) 
+
+For an introduction after you load the packge read the vignette
+
+> vignette("apsimx")
+
+If you want to write scripts but are not interested in 'apsimx'
+specifically read the "apsimx-scripts" vignette.
+
+> vignette("apsimx-scripts")
 
 If you have any questions contact Fernando E. Miguez (femiguez *at* iastate.edu)

@@ -26,6 +26,8 @@ if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
 Are you a user of APSIM-X ("Next Generation")? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the **apsimx** package, which allows you to inspect, edit, run and read files created by APSIM-X (.apsimx) files. New .apsimx files are based on the JSON (JavaScript Object Notation https://www.json.org/) format and it is used to communicate information to the APSIM-X engine. By using the 'jsonlite' R package **apsimx** can read and write ('inspect' and 'edit') files in this format. APSIM 'Classic' used an XML format and this type is now fully supported ('inspect', 'edit', 'run' and 'read').  For 'inspect' and 'edit' in the APSIM 'Classic' version I use the 'xml2' package. To run simulations the *apsimx* function (*apsim* for 'Classic') is available and results from the simulation can be imported as an R object with a dedicated function (*read_apsimx* 'NG' and *read_apsim* for 'Classic'). If you need to write scripts (regardless of whether you use the **apsimx** package or not) the vignette 'writing scripts' might be useful. The package is currently being developed and available at: https://github.com/femiguez/apsimx. 
 If you have any questions write to: femiguez *at* iastate.edu. 
 
+In part this package is inspired by previous work done by Bryan Stanfill on the 'apsimr' package (available from CRAN and github: https://github.com/stanfill/apsimr). That pacakge made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using 'GAMS'. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package is 'APSIM', but as with 'apsimr' it has not been updated and it has somewhat of a different functionality. The 'APSIM' package is especially useful for creating weahter ('.met') files for APSIM 'Classic' or 'Next Generation'. 
+
 ### Additional information
 
 To install this vignette, you need to have APSIM 'Next Generation' installed. However, if you have not used APSIM it is recommended that you become familiar with it before hand.
@@ -46,7 +48,7 @@ This package has been tested on:
 
 **Windows**: ApsimX version 4236
 
-Other useful R packages are 'APSIM' and 'apsimr'. The main difference is that these were written to work with the previous generation of APSIM (7.x). They are both still useful but they have not been updated in a while. This package is thus an update for the new APSIM-X software. Recently, (Oct 2019) I added support for APSIM 'Classic'. This package has alternative implementations to those in the 'apsimr' package. A couple of differences is that with standard installations you do not need to supply the 'exe' path and I do not mess with working directories. 
+
 
 ## Installing APSIM-X
 
