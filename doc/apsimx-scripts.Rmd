@@ -22,7 +22,7 @@ Even though this package is meant to simplify writing scripts in R that require 
 
 APSIM-X is an effort at modernizing and improving the previous versions of APSIM 7.x. The program is primarily written in C# and it uses the Mono Framework and GTK# (https://apsimnextgeneration.netlify.com/). Note that in the previous website there is also information about using Cloud Services and Microsoft Azure.
 
-If you are using a previous version of APSIM (7.x) you might be interested in either the 'APSIM' or 'apsimr' R packages.
+If you are using a previous version of APSIM (7.x) you might be interested in either the 'APSIM' or 'apsimr' R packages. Recently, I added support for APSIM 'Classic' within **apsimx**.
 
 Let's see what is needed to run APSIM-X at the command line.
 
@@ -30,23 +30,23 @@ Let's see what is needed to run APSIM-X at the command line.
 
 In Windows if you use the current (`r Sys.Date()`) version of the installer the program will be, most likely, in:
 
-**C:\\Program Files\\APSIM2019.07.19.4025\\Bin\\Models.exe**
+**C:\\Program Files\\APSIM2019.10.04.4236\\Bin\\Models.exe**
 
-Notice that for each new build of APSIM-X the path will change. After 'APSIM' is the year, month, date and version separated by a period. In this case '2019.07.19.4000'. In the folder 'Bin'(for 'binary') there are many libraries ('.dll files') and some executables. The 'Models.exe' is the one that can run .apsimx files.
+Notice that for each new build of APSIM-X the path will change. After 'APSIM' is the year, month, date and version separated by a period. In this case '2019.10.04.4236'. In the folder 'Bin'(for 'binary') there are many libraries ('.dll files') and some executables. The 'Models.exe' is the one that can run .apsimx files.
 
 When trying to invoke that line at the command line, the space after 'Program' is a problem. There are some possible solutions. One is to add quotations (for example see 'shQuote' function in R). Another option is to use Windows short name paths, which in this case, for 'Program Files' is 'PROGRA~1' (but this can change). If running the program from R, for example, the separator needs to be either a double backslash '\\\\' or a forward slash '/'. So one example would be:
 
-**C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe** or
+**C:/PROGRA~1/APSIM2019.10.04.4236/Bin/Models.exe** or
 
-**C:\\\\PROGRA~1\\\\APSIM2019.07.19.4025\\\\Bin\\\\Models.exe**
+**C:\\\\PROGRA~1\\\\APSIM2019.10.04.4236\\\\Bin\\\\Models.exe**
 
 The backslash ("\\") is an escape character in R, so you can't use it within strings.
 
 After this, the name of the file that you want to run needs to be included. For example,
 
-**C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx**.
+**C:/PROGRA~1/APSIM2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx**.
 
-However, the previous string cannot be passed directly to a Windows shell. It needs to be translated, because the 'PROGRA~1' needs to be expanded and the forward slashes ("/") need to be converted to backslashes ("\\").
+Notice the "./", without this, I have not been able to get it to work under Windows. However, the previous string cannot be passed directly to a Windows shell. It needs to be translated, because the 'PROGRA~1' needs to be expanded and the forward slashes ("/") need to be converted to backslashes ("\\").
 
 So to run the previous command in Windows from within R this is one way:
 
@@ -54,6 +54,8 @@ So to run the previous command in Windows from within R this is one way:
 run.strng <- "C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx"
 shell(cmd = run.strng, translate = TRUE, intern = TRUE)
 ```
+
+Note: it seems that, in Windows, it is only possible to run files in the current directory. So, for example, if the file 'Wheat.apsimx' was in subdirectory './myApsimXsimulations' and you want to replace the './Wheat.apsimx' above with './myApsimXsimulations/Wheat.apsimx' this does not work. I do not know if there is a possible workaround. 
 
 ## Unix (Mac) or Linux (Debian)
 
@@ -93,11 +95,11 @@ Then find out where APSIM-X is installed, but this will change with each new ver
 
 Mac:
 
-**/Applications/APSIM2019.07.25.4035.app**
+**/Applications/APSIM2019.10.04.4236.app**
 
 Debian:
 
-apsim lib: **/usr/local/lib/apsim/2019.07.09.4000**
+apsim lib: **/usr/local/lib/apsim/2019.10.04.4236**
 
 The apsim binary is in: **/usr/local/bin/apsim**
 
@@ -105,15 +107,15 @@ Finally, to run an example at the command line:
 
 Mac:
 
-**mono /Applications/APSIM2019.07.25.4035.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx**
+**mono /Applications/APSIM2019.10.04.4236.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx**
 
 Debian:
 
-**mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe ./Wheat.apsimx**
+**mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx**
 
 The previous two commands assume that the file "Wheat.apsimx" is present in the current working directory. A detail that seems to have changed with recent versions of 'mono' (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:
 
-**mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe Wheat.apsimx**
+**mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe Wheat.apsimx**
 
 but the line above which points to the current directory ("./") did work.
 
@@ -121,10 +123,10 @@ So to run this from within R, the following is one possibility
 
 ```{r run-apsimx, eval = FALSE}
 ## Mac
-run.string.mac <- "mono /Applications/APSIM2019.07.25.4035.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx"
+run.string.mac <- "mono /Applications/APSIM2019.10.04.4236.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx"
 system(command = run.string.mac, intern = TRUE)
 ## Debian
-run.string.debian <- "mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe ./Wheat.apsimx"
+run.string.debian <- "mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx"
 system(command = run.string.debian, intern = TRUE)
 ```
 
@@ -140,7 +142,7 @@ Examples: **auto_detect_apsimx_examples()**
 
 Which will return the path to the executable and the directory where the examples are located. These functions are supposed to work whether you are using Windows, Mac or Linux. The function 'auto_detect_apsimx' is not exported, so in order to expose it, you need 'apsimx:::auto_detect_apsimx()'. This function is meant to work with the current binary distributions (as opposed to source code). (I'm guessing that if you are building APSIM-X from source code, you do not need this information.) 
 
-If multiple versions of APSIM-X are installed apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the 'apsimx_options'. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the 'apsimx_options' function.
+If multiple versions of APSIM-X are installed apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the 'apsimx_options'. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the 'apsimx_options' function. This information applies to APSIM 'Classic' (use apsim_options instead).
 
 In addition, when loaded, the apsimx package will try to detect the presence of APSIM-X and, if not found, it will issue a warning with instructions to set the path manually using 'apsimx_options'. If you have a previous version of APSIM installed (7.x) or multiple versions of both the 'old' and 'new' this might be potentially problematic, but it is hard for me now to consider these endless possibilities.
 

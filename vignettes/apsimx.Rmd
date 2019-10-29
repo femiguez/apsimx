@@ -344,13 +344,13 @@ This provides a template for creating complex simulations out of simple ones.
 * **inspect_apsimx_replacement** challenge this function with more complex
 examples
 
-* Add more tests using the 'CoverCrop example' (APSIM 'Classic')
+* Add more tests using the 'CoverCrop example' (APSIM 'Classic'). This would be the motivation for writing a function for 'factorials'. 'edit_apsimx_factorial'.
 
 * Include parameter estimation example for maize
 
 # In Beta
 
-* edit_apsimx_batch
+* edit_apsimx_batch (never tested)
 
 # Future features
 

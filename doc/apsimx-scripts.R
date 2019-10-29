@@ -8,10 +8,10 @@ require(apsimx)
 
 ## ----run-apsimx, eval = FALSE--------------------------------------------
 #  ## Mac
-#  run.string.mac <- "mono /Applications/APSIM2019.07.25.4035.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx"
+#  run.string.mac <- "mono /Applications/APSIM2019.10.04.4236.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx"
 #  system(command = run.string.mac, intern = TRUE)
 #  ## Debian
-#  run.string.debian <- "mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe ./Wheat.apsimx"
+#  run.string.debian <- "mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx"
 #  system(command = run.string.debian, intern = TRUE)
 
 ## ----sisd----------------------------------------------------------------

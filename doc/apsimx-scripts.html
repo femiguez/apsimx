@@ -13,7 +13,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-08-09" />
+<meta name="date" content="2019-10-28" />
 
 <title>apsimx: writing scripts</title>
 
@@ -96,7 +96,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: writing scripts</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2019-08-09</h4>
+<h4 class="date">2019-10-28</h4>
 
 
 
@@ -105,23 +105,24 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The reason for running APSIM without the use of the GUI is to be able to perform a variety of more complex analysis, but the diversity of problems that a user might want to solve are not likely to be addressed by this package alone. Since it is possible to run APSIM-X from the command line it is also possible to write custom scripts in R, Python or other languages. Within APSIM-X it is also possible to write C# and VB.NET scripts to control field and management operations.</p>
 <p>Even though this package is meant to simplify writing scripts in R that require the use of APSIM “Next Generation”, it is likely that a user might decide not to use this package, but still the information below will be useful in writing scripts. Other users are likely to run into problems when trying to run APSIM-X at the command line and the material below is meant to try to help with this process.</p>
 <p>APSIM-X is an effort at modernizing and improving the previous versions of APSIM 7.x. The program is primarily written in C# and it uses the Mono Framework and GTK# (<a href="https://apsimnextgeneration.netlify.com/" class="uri">https://apsimnextgeneration.netlify.com/</a>). Note that in the previous website there is also information about using Cloud Services and Microsoft Azure.</p>
-<p>If you are using a previous version of APSIM (7.x) you might be interested in either the ‘APSIM’ or ‘apsimr’ R packages.</p>
+<p>If you are using a previous version of APSIM (7.x) you might be interested in either the ‘APSIM’ or ‘apsimr’ R packages. Recently, I added support for APSIM ‘Classic’ within <strong>apsimx</strong>.</p>
 <p>Let’s see what is needed to run APSIM-X at the command line.</p>
 <div id="windows" class="section level2">
 <h2>Windows</h2>
-<p>In Windows if you use the current (2019-08-09) version of the installer the program will be, most likely, in:</p>
-<p><strong>C:\Program Files\APSIM2019.07.19.4025\Bin\Models.exe</strong></p>
-<p>Notice that for each new build of APSIM-X the path will change. After ‘APSIM’ is the year, month, date and version separated by a period. In this case ‘2019.07.19.4000’. In the folder ‘Bin’(for ‘binary’) there are many libraries (‘.dll files’) and some executables. The ‘Models.exe’ is the one that can run .apsimx files.</p>
+<p>In Windows if you use the current (2019-10-28) version of the installer the program will be, most likely, in:</p>
+<p><strong>C:\Program Files\APSIM2019.10.04.4236\Bin\Models.exe</strong></p>
+<p>Notice that for each new build of APSIM-X the path will change. After ‘APSIM’ is the year, month, date and version separated by a period. In this case ‘2019.10.04.4236’. In the folder ‘Bin’(for ‘binary’) there are many libraries (‘.dll files’) and some executables. The ‘Models.exe’ is the one that can run .apsimx files.</p>
 <p>When trying to invoke that line at the command line, the space after ‘Program’ is a problem. There are some possible solutions. One is to add quotations (for example see ‘shQuote’ function in R). Another option is to use Windows short name paths, which in this case, for ‘Program Files’ is ‘PROGRA~1’ (but this can change). If running the program from R, for example, the separator needs to be either a double backslash ‘\\’ or a forward slash ‘/’. So one example would be:</p>
-<p><strong>C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe</strong> or</p>
-<p><strong>C:\\PROGRA~1\\APSIM2019.07.19.4025\\Bin\\Models.exe</strong></p>
+<p><strong>C:/PROGRA~1/APSIM2019.10.04.4236/Bin/Models.exe</strong> or</p>
+<p><strong>C:\\PROGRA~1\\APSIM2019.10.04.4236\\Bin\\Models.exe</strong></p>
 <p>The backslash (“\”) is an escape character in R, so you can’t use it within strings.</p>
 <p>After this, the name of the file that you want to run needs to be included. For example,</p>
-<p><strong>C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx</strong>.</p>
-<p>However, the previous string cannot be passed directly to a Windows shell. It needs to be translated, because the ‘PROGRA~1’ needs to be expanded and the forward slashes (“/”) need to be converted to backslashes (“\”).</p>
+<p><strong>C:/PROGRA~1/APSIM2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx</strong>.</p>
+<p>Notice the “./”, without this, I have not been able to get it to work under Windows. However, the previous string cannot be passed directly to a Windows shell. It needs to be translated, because the ‘PROGRA~1’ needs to be expanded and the forward slashes (“/”) need to be converted to backslashes (“\”).</p>
 <p>So to run the previous command in Windows from within R this is one way:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">run.strng &lt;-<span class="st"> &quot;C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx&quot;</span>
 <span class="kw">shell</span>(<span class="dt">cmd =</span> run.strng, <span class="dt">translate =</span> <span class="ot">TRUE</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p>Note: it seems that, in Windows, it is only possible to run files in the current directory. So, for example, if the file ‘Wheat.apsimx’ was in subdirectory ‘./myApsimXsimulations’ and you want to replace the ‘./Wheat.apsimx’ above with ‘./myApsimXsimulations/Wheat.apsimx’ this does not work. I do not know if there is a possible workaround.</p>
 </div>
 <div id="unix-mac-or-linux-debian" class="section level2">
 <h2>Unix (Mac) or Linux (Debian)</h2>
@@ -143,24 +144,24 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><strong>/home/femiguez/Documents/myApsimWork</strong></p>
 <p>Then find out where APSIM-X is installed, but this will change with each new version. For example, I have these versions installed now:</p>
 <p>Mac:</p>
-<p><strong>/Applications/APSIM2019.07.25.4035.app</strong></p>
+<p><strong>/Applications/APSIM2019.10.04.4236.app</strong></p>
 <p>Debian:</p>
-<p>apsim lib: <strong>/usr/local/lib/apsim/2019.07.09.4000</strong></p>
+<p>apsim lib: <strong>/usr/local/lib/apsim/2019.10.04.4236</strong></p>
 <p>The apsim binary is in: <strong>/usr/local/bin/apsim</strong></p>
 <p>Finally, to run an example at the command line:</p>
 <p>Mac:</p>
-<p><strong>mono /Applications/APSIM2019.07.25.4035.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx</strong></p>
+<p><strong>mono /Applications/APSIM2019.10.04.4236.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx</strong></p>
 <p>Debian:</p>
-<p><strong>mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe ./Wheat.apsimx</strong></p>
+<p><strong>mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx</strong></p>
 <p>The previous two commands assume that the file “Wheat.apsimx” is present in the current working directory. A detail that seems to have changed with recent versions of ‘mono’ (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:</p>
-<p><strong>mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe Wheat.apsimx</strong></p>
+<p><strong>mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe Wheat.apsimx</strong></p>
 <p>but the line above which points to the current directory (“./”) did work.</p>
 <p>So to run this from within R, the following is one possibility</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Mac
-run.string.mac &lt;-<span class="st"> &quot;mono /Applications/APSIM2019.07.25.4035.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx&quot;</span>
+run.string.mac &lt;-<span class="st"> &quot;mono /Applications/APSIM2019.10.04.4236.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx&quot;</span>
 <span class="kw">system</span>(<span class="dt">command =</span> run.string.mac, <span class="dt">intern =</span> <span class="ot">TRUE</span>)
 ## Debian
-run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.07.09.4000/Bin/Models.exe ./Wheat.apsimx&quot;</span>
+run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx&quot;</span>
 <span class="kw">system</span>(<span class="dt">command =</span> run.string.debian, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p>As mentioned before, if the simulation is successful, a database will be written to the current directory (where the file “Wheat.apsimx” is located in the previous example). In this case it will be a file with the name ‘Wheat.db’.</p>
 </div>
@@ -170,7 +171,7 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.07
 <p>Executable: <strong>auto_detect_apsimx()</strong></p>
 <p>Examples: <strong>auto_detect_apsimx_examples()</strong></p>
 <p>Which will return the path to the executable and the directory where the examples are located. These functions are supposed to work whether you are using Windows, Mac or Linux. The function ‘auto_detect_apsimx’ is not exported, so in order to expose it, you need ‘apsimx:::auto_detect_apsimx()’. This function is meant to work with the current binary distributions (as opposed to source code). (I’m guessing that if you are building APSIM-X from source code, you do not need this information.)</p>
-<p>If multiple versions of APSIM-X are installed apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the ‘apsimx_options’. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the ‘apsimx_options’ function.</p>
+<p>If multiple versions of APSIM-X are installed apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the ‘apsimx_options’. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the ‘apsimx_options’ function. This information applies to APSIM ‘Classic’ (use apsim_options instead).</p>
 <p>In addition, when loaded, the apsimx package will try to detect the presence of APSIM-X and, if not found, it will issue a warning with instructions to set the path manually using ‘apsimx_options’. If you have a previous version of APSIM installed (7.x) or multiple versions of both the ‘old’ and ‘new’ this might be potentially problematic, but it is hard for me now to consider these endless possibilities.</p>
 <div id="session-information" class="section level3">
 <h3>Session information</h3>
@@ -191,32 +192,33 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.07
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] apsimx_0.85
+## [1] apsimx_1.41
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_1.0.2        pillar_1.4.2      compiler_3.6.1   
 ##  [4] prettyunits_1.0.2 remotes_2.1.0     tools_3.6.1      
-##  [7] zeallot_0.1.0     testthat_2.2.1    digest_0.6.20    
-## [10] pkgbuild_1.0.3    pkgload_1.0.2     bit_1.1-14       
-## [13] jsonlite_1.6      tibble_2.1.3      memoise_1.1.0    
-## [16] evaluate_0.14     RSQLite_2.1.2     pkgconfig_2.0.2  
+##  [7] zeallot_0.1.0     bit_1.1-14        testthat_2.2.1   
+## [10] digest_0.6.20     pkgbuild_1.0.3    pkgload_1.0.2    
+## [13] jsonlite_1.6      tibble_2.1.3      RSQLite_2.1.2    
+## [16] memoise_1.1.0     evaluate_0.14     pkgconfig_2.0.2  
 ## [19] rlang_0.4.0       cli_1.1.0         DBI_1.0.0        
 ## [22] rstudioapi_0.10   yaml_2.2.0        xfun_0.8         
 ## [25] xml2_1.2.1        withr_2.1.2       stringr_1.4.0    
 ## [28] knitr_1.23        vctrs_0.2.0       desc_1.2.0       
-## [31] fs_1.3.1          devtools_2.1.0    rprojroot_1.3-2  
-## [34] bit64_0.9-7       glue_1.3.1        R6_2.4.0         
-## [37] processx_3.4.1    rmarkdown_1.14    sessioninfo_1.1.1
-## [40] blob_1.2.0        callr_3.3.1       magrittr_1.5     
-## [43] backports_1.1.4   ps_1.3.0          htmltools_0.3.6  
-## [46] usethis_1.5.1     assertthat_0.2.1  stringi_1.4.3    
-## [49] crayon_1.3.4</code></pre>
+## [31] htmlwidgets_1.3   fs_1.3.1          devtools_2.2.0   
+## [34] bit64_0.9-7       rprojroot_1.3-2   DT_0.8           
+## [37] glue_1.3.1        R6_2.4.0          processx_3.4.1   
+## [40] rmarkdown_1.14    sessioninfo_1.1.1 blob_1.2.0       
+## [43] callr_3.3.1       magrittr_1.5      backports_1.1.4  
+## [46] ps_1.3.0          ellipsis_0.2.0.1  htmltools_0.3.6  
+## [49] usethis_1.5.1     assertthat_0.2.1  stringi_1.4.3    
+## [52] crayon_1.3.4</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.info</span>()[[<span class="st">&quot;sysname&quot;</span>]]</code></pre></div>
 <pre><code>## [1] &quot;Darwin&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.info</span>()[[<span class="st">&quot;release&quot;</span>]]</code></pre></div>
 <pre><code>## [1] &quot;17.7.0&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.info</span>()[[<span class="st">&quot;version&quot;</span>]]</code></pre></div>
-<pre><code>## [1] &quot;Darwin Kernel Version 17.7.0: Wed Apr 24 21:17:24 PDT 2019; root:xnu-4570.71.45~1/RELEASE_X86_64&quot;</code></pre>
+<pre><code>## [1] &quot;Darwin Kernel Version 17.7.0: Sun Jun  2 20:31:42 PDT 2019; root:xnu-4570.71.46~1/RELEASE_X86_64&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(.Platform<span class="op">$</span>OS.type <span class="op">==</span><span class="st"> &quot;unix&quot;</span>) <span class="kw">system</span>(<span class="dt">command =</span> <span class="st">&quot;mono --version&quot;</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>##  [1] &quot;Mono JIT compiler version 5.18.1.3 (2018-08/fdb26b0a445 Wed Mar 20 10:02:02 EDT 2019)&quot;  
 ##  [2] &quot;Copyright (C) 2002-2014 Novell, Inc, Xamarin Inc and Contributors. www.mono-project.com&quot;

@@ -13,7 +13,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-08-09" />
+<meta name="date" content="2019-10-28" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -96,42 +96,55 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2019-08-09</h4>
+<h4 class="date">2019-10-28</h4>
 
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>Are you a user of APSIM-X (“Next Generation”)? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the <strong>apsimx</strong> package, which allows you to inspect, edit, run and read files created by APSIM-X (.apsimx) files. New .apsimx files are based on the JSON (JavaScript Object Notation <a href="https://www.json.org/" class="uri">https://www.json.org/</a>) format and it is used to communicate information to the APSIM-X engine. By using the ‘jsonlite’ R package <strong>apsimx</strong> can read and write (‘inspect’ and ‘edit’) files in this format. The older format based on XML is partially supported through the ‘xml2’ package. To run simulations the <em>apsimx</em> function is available and results from the simulation can be imported as an R object with a dedicated function (<em>read_apsimx</em>). If you need to write scripts (regardless of whether you use the <strong>apsimx</strong> package or not) the vignette ‘writing scripts’ might be useful. The package is currently being developed and available at: <a href="https://github.com/femiguez/apsimx" class="uri">https://github.com/femiguez/apsimx</a>. If you have any questions write to: femiguez <em>at</em> iastate.edu.</p>
+<p>Are you a user of APSIM-X (“Next Generation”)? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the <strong>apsimx</strong> package, which allows you to inspect, edit, run and read files created by APSIM-X (.apsimx) files. New .apsimx files are based on the JSON (JavaScript Object Notation <a href="https://www.json.org/" class="uri">https://www.json.org/</a>) format and it is used to communicate information to the APSIM-X engine. By using the ‘jsonlite’ R package <strong>apsimx</strong> can read and write (‘inspect’ and ‘edit’) files in this format. APSIM ‘Classic’ used an XML format and this type is now fully supported (‘inspect’, ‘edit’, ‘run’ and ‘read’). For ‘inspect’ and ‘edit’ in the APSIM ‘Classic’ version I use the ‘xml2’ package. To run simulations the <em>apsimx</em> function (<em>apsim</em> for ‘Classic’) is available and results from the simulation can be imported as an R object with a dedicated function (<em>read_apsimx</em> ‘NG’ and <em>read_apsim</em> for ‘Classic’). If you need to write scripts (regardless of whether you use the <strong>apsimx</strong> package or not) the vignette ‘writing scripts’ might be useful. The package is currently being developed and available at: <a href="https://github.com/femiguez/apsimx" class="uri">https://github.com/femiguez/apsimx</a>. If you have any questions write to: femiguez <em>at</em> iastate.edu.</p>
+<p>In part this package is inspired by previous work done by Bryan Stanfill on the ‘apsimr’ package (available from CRAN and github: <a href="https://github.com/stanfill/apsimr" class="uri">https://github.com/stanfill/apsimr</a>). That pacakge made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using ‘GAMS’. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package is ‘APSIM’, but as with ‘apsimr’ it has not been updated and it has somewhat of a different functionality. The ‘APSIM’ package is especially useful for creating weahter (‘.met’) files for APSIM ‘Classic’ or ‘Next Generation’.</p>
 <div id="additional-information" class="section level3">
 <h3>Additional information</h3>
-<p>Before using this package it is recommended to become familiar with APSIM-X (“Next Generation”).</p>
+<p>To install this vignette, you need to have APSIM ‘Next Generation’ installed. However, if you have not used APSIM it is recommended that you become familiar with it before hand.</p>
 <p>See the following for details</p>
 <p><a href="https://www.apsim.info">APSIM</a></p>
 <p><a href="https://apsimnextgeneration.netlify.com/">APSIM-X</a></p>
 <p><a href="https://www.sciencedirect.com/science/article/pii/S1364815217311921">Holzworth et al. (2018)</a></p>
 <p>This package has been tested on:</p>
-<p><strong>Mac</strong>: ApsimX version 4035</p>
-<p><strong>Debian</strong>: ApsimX version 4000</p>
-<p><strong>Windows</strong>: ApsimX version 4025</p>
-<p>Other useful R packages are ‘APSIM’ and ‘apsimr’. The main difference is that these were written to work with the previous generation of APSIM (7.x). This package is thus an update for the new APSIM-X software.</p>
+<p><strong>Mac</strong>: ApsimX version 4236</p>
+<p><strong>Debian</strong>: ApsimX version 4236</p>
+<p><strong>Windows</strong>: ApsimX version 4236</p>
 </div>
 <div id="installing-apsim-x" class="section level2">
 <h2>Installing APSIM-X</h2>
-<p>For most functions in this pacakge you need to have a version of APSIM-X installed. For this you might first need to install mono (<a href="https://www.mono-project.com/download/stable/" class="uri">https://www.mono-project.com/download/stable/</a>) and then download and install APSIM-X (<a href="https://www.apsim.info/Products/Downloads.aspx" class="uri">https://www.apsim.info/Products/Downloads.aspx</a>). The  package will try to detect the install of both mono and APSIM-X.</p>
+<p>For most functions in this pacakge you need to have a version of APSIM-X installed (or APSIM ‘Classic’). For Mac and Linux, first you need to install mono (<a href="https://www.mono-project.com/download/stable/" class="uri">https://www.mono-project.com/download/stable/</a>) and then download and install APSIM-X (<a href="https://www.apsim.info/Products/Downloads.aspx" class="uri">https://www.apsim.info/Products/Downloads.aspx</a>). The  package will try to detect the install of both mono and APSIM-X.</p>
 <p><strong>Mac</strong>: For Mac it is also assumed that APSIM-X has been moved to ‘Applications’.</p>
 <p><strong>Windows</strong>: In Windows the default install location is in ‘Program Files’.</p>
+<p><strong>Linux (Debian)</strong>: It assumed that APSIM-X is in ‘/usr/local/lib/apsim/’.</p>
 </div>
 <div id="r-functions-for-apsim-x" class="section level2">
 <h2>R functions for APSIM-X</h2>
 <p>The main functions in the package are (for now):</p>
 <ul>
 <li><strong>inspect_apsimx</strong> simple inspecting of an .apsimx file. (It does not replace the GUI.)</li>
-<li><strong>edit_apsimx</strong> edit/modify an .apsimx file. (Limited options are available at the moment).</li>
+<li><strong>edit_apsimx</strong> edit/modify an .apsimx file.</li>
 <li><strong>apsimx</strong> run an .apsimx simulation.</li>
 <li><strong>read_apsimx</strong> read files created by an .apsimx simulation run (.db files)</li>
 <li><strong>read_apsimx_all</strong> read all files created by one or more .apsimx simulation runs in a directory (.db files)</li>
-<li><strong>inspect_apsimx_replacement</strong> inspect a replacement component of an .apsimx file (JSON only)</li>
+<li><strong>inspect_apsimx_replacement</strong> inspect a replacement component of an .apsimx file.</li>
+</ul>
+</div>
+<div id="r-functions-for-apsim-classic-7.x---only-for-windows" class="section level2">
+<h2>R functions for APSIM ‘Classic’ (7.x) - Only for Windows</h2>
+<p>The main functions relevant for ‘Classic’ are:</p>
+<ul>
+<li><strong>apsim</strong> runs an .apsim file.</li>
+<li><strong>read_apsim</strong> reads files (.out and .sim) generated by apsim into a data frame.</li>
+<li><strong>inspect_apsim</strong> allows for inspection of .apsim file.</li>
+<li><strong>edit_apsim</strong> edit an .apsim file.</li>
+<li><strong>apsim_example</strong> runs (only a few) of the built-in examples.</li>
+<li><strong>apsim_options</strong> sets path for executable, examples and warnings.</li>
 </ul>
 <div id="apsimx_exmple-running-a-built-in-example" class="section level3">
 <h3>‘apsimx_exmple’: Running a built-in example</h3>
@@ -173,75 +186,75 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="inspect_apsimx-inspecting-a-file" class="section level3">
 <h3>‘inspect_apsimx’: Inspecting a file</h3>
-<p>A function to inspect an .apsimx file is included. This is meant to be used simply to avoid the need to use the GUI when a quick inspection of a given component is needed. For example, if you edit a file and want to make sure that the intended component was edited correctly just inspect it. For complex inspections and manipulations of an .apsimx file the GUI is recommended.</p>
+<p>A function to inspect an .apsimx file is included. This is meant to be used simply to avoid the need to use the GUI when a quick inspection of a given component is needed. In addition, it can make it easier to supply the path for editing later (see example below). For example, if you edit a file and want to make sure that the intended component was edited correctly just inspect it. For complex inspections and manipulations of an .apsimx file the GUI is recommended.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
 <span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">node =</span> <span class="st">&quot;Weather&quot;</span>)</code></pre></div>
 <pre><code>## Met file: %root%\Examples\WeatherFiles\Dalby.met</code></pre>
 </div>
 <div id="edit_apsimx-editing-a-file" class="section level3">
 <h3>‘edit_apsimx’: Editing a file</h3>
-<p>Editing a file has the side effect of creating a new file with ‘-edited’ added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the ‘apsimr’ package. This code does not run an APSIM simulation, it only edits the file.</p>
+<p>Editing a file has the side effect of creating a new file with ‘-edited’ added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the ‘apsimr’ package. One difference is that it is possible to supply a different ‘edit.tag’. This code does not run an APSIM simulation, it only edits the file.</p>
 <p>Let’s say we want to modify the values of ‘Organic Carbon’ in the soil in the ‘Maize.apsimx’ example. First we should inspect the current values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
-               <span class="dt">soil.child =</span> <span class="st">&quot;OrganicMatter&quot;</span>)</code></pre></div>
+               <span class="dt">soil.child =</span> <span class="st">&quot;Organic&quot;</span>)</code></pre></div>
 <pre><code>## Soil Type:  Clay 
 ## Latitude:  -27.58184 
 ## Longitude:  151.3202 
+## Soil children: Physical SoilWater Organic Chemical InitialWater InitialN CERESSoilTemperature Nutrient 
 ## 
 ## 
-## parm         value
-## ----------  ------
-## RootCN        40.0
-## EnrACoeff      7.4
-## EnrBCoeff      0.2
+## parm         value                        
+## -----------  -----------------------------
+## $type        Models.Soils.Organic, Models 
+## FOMCNRatio   40                           
 ## 
 ## 
-## Depth         Thickness     OC   SoilCN    RootWt   FBiom   FInert
-## -----------  ----------  -----  -------  --------  ------  -------
-## 0_to_15             150   1.20       12   347.129    0.04      0.4
-## 15_to_30            150   0.96       12   270.344    0.02      0.6
-## 30_to_60            300   0.60       12   163.972    0.02      0.8
-## 60_to_90            300   0.30       12    99.454    0.02      1.0
-## 90_to_120           300   0.18       12    60.322    0.01      1.0
-## 120_to_150          300   0.12       12    36.587    0.01      1.0
-## 150_to_180          300   0.12       12    22.191    0.01      1.0</code></pre>
+## Depth     Thickness   Carbon   SoilCNRatio   FBiom   FInert   FOM              
+## --------  ----------  -------  ------------  ------  -------  -----------------
+## 0-15      150         1.2      12            0.04    0.4      347.129032312756 
+## 15-30     150         0.96     12            0.02    0.6      270.344362191994 
+## 30-60     300         0.6      12            0.02    0.8      163.972144349901 
+## 60-90     300         0.3      12            0.02    1        99.4541328870406 
+## 90-120    300         0.18     12            0.01    1        60.3219808311247 
+## 120-150   300         0.12     12            0.01    1        36.5871308286749 
+## 150-180   300         0.12     12            0.01    1        22.1912165985086</code></pre>
 <p>The function ‘inspect_apsimx’, in this example, displays various information about the organic matter in the soil. (See the help page for more options). In the next step we ‘edit’ or change the values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ocs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">1.5</span>,<span class="fl">1.4</span>,<span class="fl">1.3</span>,<span class="fl">1.2</span>,<span class="fl">1.1</span>,<span class="fl">1.0</span>,<span class="fl">0.9</span>)
 <span class="kw">edit_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir,
              <span class="dt">wrt.dir =</span> <span class="st">&quot;.&quot;</span>,
              <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
-             <span class="dt">soil.child =</span> <span class="st">&quot;OrganicMatter&quot;</span>, 
-             <span class="dt">parm =</span> <span class="st">&quot;OC&quot;</span>, <span class="dt">value =</span> ocs)</code></pre></div>
+             <span class="dt">soil.child =</span> <span class="st">&quot;Organic&quot;</span>, 
+             <span class="dt">parm =</span> <span class="st">&quot;Carbon&quot;</span>, <span class="dt">value =</span> ocs)</code></pre></div>
 <pre><code>## Edited (node):  Soil 
-## Edited (child):  OrganicMatter 
-## Edited parameter:  OC 
+## Edited (child):  Organic 
+## Edited parameter:  Carbon 
 ## New values:  1.5 1.4 1.3 1.2 1.1 1 0.9 
 ## Created:  ./Maize-edited.apsimx</code></pre>
 <p>Let’s make sure that we have changed the values successfully.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize-edited.apsimx&quot;</span>, <span class="dt">src.dir =</span> <span class="st">&quot;.&quot;</span>, 
                <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
-               <span class="dt">soil.child =</span> <span class="st">&quot;OrganicMatter&quot;</span>)</code></pre></div>
+               <span class="dt">soil.child =</span> <span class="st">&quot;Organic&quot;</span>)</code></pre></div>
 <pre><code>## Soil Type:  Clay 
 ## Latitude:  -27.58184 
 ## Longitude:  151.3202 
+## Soil children: Physical SoilWater Organic Chemical InitialWater InitialN CERESSoilTemperature Nutrient 
 ## 
 ## 
-## parm         value
-## ----------  ------
-## RootCN        40.0
-## EnrACoeff      7.4
-## EnrBCoeff      0.2
+## parm         value                        
+## -----------  -----------------------------
+## $type        Models.Soils.Organic, Models 
+## FOMCNRatio   40                           
 ## 
 ## 
-## Depth         Thickness    OC   SoilCN    RootWt   FBiom   FInert
-## -----------  ----------  ----  -------  --------  ------  -------
-## 0_to_15             150   1.5       12   347.129    0.04      0.4
-## 15_to_30            150   1.4       12   270.344    0.02      0.6
-## 30_to_60            300   1.3       12   163.972    0.02      0.8
-## 60_to_90            300   1.2       12    99.454    0.02      1.0
-## 90_to_120           300   1.1       12    60.322    0.01      1.0
-## 120_to_150          300   1.0       12    36.587    0.01      1.0
-## 150_to_180          300   0.9       12    22.191    0.01      1.0</code></pre>
+## Depth     Thickness   Carbon   SoilCNRatio   FBiom   FInert   FOM              
+## --------  ----------  -------  ------------  ------  -------  -----------------
+## 0-15      150         1.5      12            0.04    0.4      347.129032312756 
+## 15-30     150         1.4      12            0.02    0.6      270.344362191994 
+## 30-60     300         1.3      12            0.02    0.8      163.972144349901 
+## 60-90     300         1.2      12            0.02    1        99.4541328870406 
+## 90-120    300         1.1      12            0.01    1        60.3219808311247 
+## 120-150   300         1        12            0.01    1        36.5871308286749 
+## 150-180   300         0.9      12            0.01    1        22.1912165985086</code></pre>
 <p>Deleting the file.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## delete the created file
 <span class="kw">file.remove</span>(<span class="st">&quot;./Maize-edited.apsimx&quot;</span>)</code></pre></div>
@@ -253,17 +266,17 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The proposed workflow is to start by creating an .apsimx file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The funcitons included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. This is the proposed workflow:</p>
 <ol style="list-style-type: decimal">
 <li>Create a simualtion using the APSIM GUI</li>
-<li>Identify variables/parameters that you want to modify (they need to be exposed in the .apsimx XML o JSON file)</li>
-<li>Edit the file using ‘edit_apsimx’</li>
-<li>Run the simulation using ‘apsimx’</li>
+<li>Identify variables/parameters that you want to modify (they need to be exposed in the .apsimx (JSON) or .apsim (XML) file)</li>
+<li>Edit the file using ‘edit_apsim(x)’</li>
+<li>Run the simulation using ‘apsim(x)’</li>
 <li>Repeat steps 3 and 4 as needed</li>
-<li>Read in the results, possibly using ‘read_apsimx’</li>
+<li>Read in the results, possibly using ‘read_apsim(x)’</li>
 <li>Perform visual and statistical analysis on the results</li>
 </ol>
 <p>Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## One example ('Wheat') is included with the package for the vignette
-ex.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
-sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>)
+extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
+sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>)
 ## Calcualte summary statistics on all variables
 <span class="kw">summary</span>(sim)</code></pre></div>
 <pre><code>##   CheckpointID  SimulationID     Zone           Clock.Today       
@@ -281,26 +294,26 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ##  3rd Qu.:0                                                   
 ##  Max.   :0                                                   
 ##  Wheat.AboveGround.Wt Wheat.AboveGround.N     Yield       
-##  Min.   :  64.59      Min.   : 2.516      Min.   : 251.3  
-##  1st Qu.: 766.44      1st Qu.:22.120      1st Qu.:3155.3  
+##  Min.   :  64.59      Min.   : 2.619      Min.   : 251.3  
+##  1st Qu.: 766.44      1st Qu.:22.448      1st Qu.:3155.3  
 ##  Median :1061.98      Median :26.816      Median :4050.3  
-##  Mean   :1028.84      Mean   :25.611      Mean   :4122.3  
-##  3rd Qu.:1355.02      3rd Qu.:30.875      3rd Qu.:5347.4  
-##  Max.   :1661.96      Max.   :35.665      Max.   :7232.9  
+##  Mean   :1029.24      Mean   :25.734      Mean   :4126.6  
+##  3rd Qu.:1355.02      3rd Qu.:30.893      3rd Qu.:5347.4  
+##  Max.   :1654.14      Max.   :35.665      Max.   :7204.5  
 ##  Wheat.Grain.Protein Wheat.Grain.Size  Wheat.Grain.Number
-##  Min.   :10.14       Min.   :0.01855   Min.   : 1112     
-##  1st Qu.:15.12       1st Qu.:0.02196   1st Qu.:13476     
+##  Min.   :10.78       Min.   :0.01992   Min.   : 1112     
+##  1st Qu.:15.12       1st Qu.:0.02196   1st Qu.:13475     
 ##  Median :15.15       Median :0.02334   Median :17118     
-##  Mean   :15.06       Mean   :0.02487   Mean   :16240     
-##  3rd Qu.:15.20       3rd Qu.:0.02627   3rd Qu.:19980     
+##  Mean   :15.08       Mean   :0.02492   Mean   :16240     
+##  3rd Qu.:15.20       3rd Qu.:0.02646   3rd Qu.:19980     
 ##  Max.   :15.35       Max.   :0.04120   Max.   :24042     
 ##  Wheat.Grain.Total.Wt Wheat.Grain.Total.N Wheat.Total.Wt   
 ##  Min.   : 25.13       Min.   : 0.6662     Min.   :  79.04  
-##  1st Qu.:315.53       1st Qu.: 8.1924     1st Qu.: 889.73  
+##  1st Qu.:315.53       1st Qu.: 8.3994     1st Qu.: 889.73  
 ##  Median :405.03       Median :10.6031     Median :1236.50  
-##  Mean   :412.23       Mean   :10.8849     Mean   :1192.80  
+##  Mean   :412.66       Mean   :10.9070     Mean   :1193.27  
 ##  3rd Qu.:534.74       3rd Qu.:14.1672     3rd Qu.:1563.53  
-##  Max.   :723.29       Max.   :19.3396     Max.   :1931.43  
+##  Max.   :720.45       Max.   :19.2557     Max.   :1922.30  
 ##       Date           
 ##  Min.   :1900-11-14  
 ##  1st Qu.:1927-05-14  
@@ -310,12 +323,31 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ##  Max.   :2000-11-18</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Plot data
 <span class="kw">ggplot</span>(<span class="dt">data =</span> sim, <span class="kw">aes</span>(<span class="dt">x =</span> Date, <span class="dt">y =</span> Yield)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_point</span>()</code></pre></div>
-<p><img src="data:image/png;base64,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f/3rXzohWbYZEclEWvIZEX/55Rffl5KMiDCgH3/8UXFd3AmL3ddffx33ZqjNN99ckUmw2G154okn1BdffKH22Wcf1aRJk5xwTVJGxO222077wvG+ZEMwrCDyFwuC7pJzgkAJIHDwwQdrCyizOJPThRdeqPr3718CLY+uiaIDig5reVKMELjlllvU8uXLFct3IxnjBzZnzpwYtcL+qgoDsr+PpIZFQGD69OkVnko84Lx58yoclwO5IyAMKHfs5M4EI4DTKfpBJ6233noKHZtQeAiURzi8cqUkQSDWCAwaNEjBcAwTwrrIvl4dOnSIdbtsq7wwINt6ROpjBQK1atVSS5YsUYceeqiqX7++Ouuss9QHH3ygmZIVFUxIJcQKlpCOlGaEjwCuAGPHjg2/YCkxjYBIQGko5IsgEC4CWNA6d+6skKb4mzlzZrgPSEBpwoAS0InSBPsQQF+06667qpdeekk7uZLI7owzzlCvvvqqfZUtYo2EARURfHl0chF49tlntSe3M2SBjJrXXHNNchudQ8uEAeUAWlJu+eSTT9S7776bdrRLSrtsaAebGHjFH7IsE/ofAqKE/h8WJfWNkIIJEyYozMvfffedmjVrltppp51KCoNCNrZ58+bq119/LfcI4qKOOuqocsdK/YdIQCU4Av7zn/+ohx56SAcVwnygww8/XH377bcliEbFJrMl0wUXXKBOOeUUNWrUqIoXZHEER8ZHHnlEX4nzIha1I444Qrl3W8miqERfIhJQorvXu3ETJ06ssOzacMMNtZXGuRea993JPsoS6YADDlCEXaC/mT17tnrsscfU888/X+mG77fffmrx4sVq6dKlaosttlB77LFHhTLmz5+vJk2apCXR7t27q+23377CNUk+IAwoi95FechMiL6E3NC9evVKe8hmcbt1l3ilSMBqs/7661tX16grBBMAC/4MrVixQj3zzDPqmGOOMYey/kT6admypS7PvSSDsSFpQXhcE+z61FNPqYYNG2ZdftwvlCVYhh5kJtxtt90UyxZyw4wYMUL7dPz2228Z7rT39CWXXKITS5kaEnLAPmiHHXaYOVSyn2vXri3HfAACZsTGBGHSN998k2Y+5hl8nnfeeSrOY6uyGAkDyoAYsxL5YMzsxXcSmMGI4kpsOUSsE4QSulGjRuqdd97R3/XBEv7HsglMnIRFq0GDBs5DeX8n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mTO1Jyw+InjJssGdUDACeA6jM3nvvfcUismzzjqrwmAPLkHOFhqBESNGqH333Vdb/NBp4e/EBo5k2bSFhAH93RNYQtD9hEH4lSANoPRjBrrvvvt0atEwyrapjMqGJNhU91KoCzuLYAW79957dQQ/sXINGza0qunCgELuDhTabByIpcUoatu1a6eDJEWvFDLYCS6OnEMvvfSSti62bt065/zfLI8vvPBCa5ESBhRy17B/ultBizJw0KBBekCF/DgpLoEIvPPOO+qYY47Rjossm4jcx3y+9dZbJ661Ja+EDrtHsQxh0nWTmPXdiNjze+HChQrrF4YHPOKN5FqMGrJ8P/LII3UdGDM4/LGMp15JpIpvShJbGWGbDjroIO0d7Hwk3qCsv4XsQwCTNNKG8QXDM75ly5Y6sb3XRFLoFqCzcW9LTd3efvvtQj86XT5MEL8urMKF3g5JJKA07OF8gdn06NFDF1alShWdsxgF95AhQ8J5gJQSKgLoRwzzoWBePLb5mTJlSqjPybYwmI8zHMTc53XMnAvz86677tLhJyirsZaFlVvbr47CgPyQyeE4sVBs23L33XfrmCj2ch89erS2guVQnNwSAQJecV4swYq1ZGYHjvbt25eLQyTMhYRohaannnpKT5RYg4nxg8g0SUxcoUgYUEjIovtB0uGTOCmzdh8+fHhIT7C/mCeeeEJdf/31OtDTKVXYXPOjjz66gs6OJciBBx5YtGpfe+216sorr9TeykgimNGjSAFLdgPDeEzjkQhxJykUiQ4oJGSRfrzW7m+++WZIT7C7GFwNaKtRwrPkxEnR5FK2tfa9evVSzPzoXojA54UjerxQoQqzZ89WZFpged65c+cKzM/gRCB01MHQXpMGVrhCKuWFAZkez/OTweu1Tvc6luejrLudpF14kxvC7QA/KFJ08ILbTChZX3nlFa10RgGNxLHzzjsXpMo333yzQiLmpYYxDxgwQC1dujQwV1VBKuJTKAyxT58+5c6yFEUpXyiSJVhIyO60006KGClSORhi7c5LmHRC+nMTovyCBQvch6393apVK50rp1DMB1M/2zvDnGFAJo/S//3f/1mDyZlnnpnOfc2EusMOOygkNr4XikQCChFZ4myqV6+uY6TwQL300ktVmzZtQnyCnUVtu+222mkO3YkhTNi1a9c2P0v+891339UvslO5DTOybYk+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" /><!-- --></p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Inspect the Wheat .apsimx file
-<span class="kw">inspect_apsimx</span>(<span class="st">&quot;Wheat&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">node =</span> <span class="st">&quot;Crop&quot;</span>)</code></pre></div>
-<pre><code>## Crop Type:  Wheat 
-## Management Scripts: SowingFertiliser Harvest SowingRule1 
-## Harvest rule found 
+<span class="kw">inspect_apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node =</span> <span class="st">&quot;Crop&quot;</span>)</code></pre></div>
+<pre><code>## 
+## 
+## parm           value  
+## -------------  -------
+## StartDate      1-may  
+## EndDate        10-jul 
+## MinESW         100    
+## MinRain        25     
+## RainDays       7      
+## CultivarName   Hartog 
+## SowingDepth    30     
+## RowSpacing     250    
+## Population     120</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## This only displays the available 'Manager' components
+<span class="kw">inspect_apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node =</span> <span class="st">&quot;Manager&quot;</span>)</code></pre></div>
+<pre><code>## Management Scripts:  SowingFertiliser Harvest SowingRule1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Looking more in-depth into 'SowingRule1'
+<span class="kw">inspect_apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, 
+               <span class="dt">node =</span> <span class="st">&quot;Manager&quot;</span>, <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;SowingRule1&quot;</span>,<span class="ot">NA</span>))</code></pre></div>
+<pre><code>## Management Scripts:  SowingFertiliser Harvest SowingRule1 
+## 
+## Name:  SowingRule1 
 ## 
 ## 
 ## parm           value  
@@ -329,20 +361,10 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## SowingDepth    30     
 ## RowSpacing     250    
 ## Population     120</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx</span>(<span class="st">&quot;Wheat&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">node =</span> <span class="st">&quot;Manager&quot;</span>)</code></pre></div>
-<pre><code>## Management Scripts: SowingFertiliser Harvest SowingRule1 
-## Other Manager: 
-##  SowingFertiliser 
-## 
-## 
-## parm       value 
-## ---------  ------
-## Amount     160   
-## CropName   wheat</code></pre>
 </div>
-<div id="inspecting-a-replacement-component" class="section level2">
-<h2>Inspecting a ‘Replacement’ component</h2>
-<p>Many additional options in an APSIM-X simulation can be realized through the use of ‘Replacements’. For this, there is a function that allows inspection. For this, it is important to know the structure of the ‘replacement’ but if exploring them, the available components will be displayed. For example, if we want to display the xy pair for the thermal time in the phenology component of the ‘Maize’ replacement we might go through the following steps:</p>
+<div id="advanced-example-inspecting-a-replacement-component" class="section level2">
+<h2>Advanced example: Inspecting a ‘Replacement’ component</h2>
+<p>Many additional options in an APSIM-X simulation can be realized through the use of ‘Replacements’. For this, there is a function that allows inspection. For this, it is important to know the structure of the ‘replacement’. It is possible to explore the available components. For example, if we want to display the xy pair for the thermal time in the phenology component of the ‘Maize’ replacement we might go through the following steps:</p>
 <p>State the node (“Maize”) and display available components:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
 <span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
@@ -371,7 +393,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## Available node sub-children:  ThermalTime Germinating Emerging Juvenile Photosensitive LeafAppearance FlagLeafToFlowering FloweringToGrainFilling GrainFilling Maturing MaturityToHarvestRipe ReadyForHarvesting Photoperiod FloweringDAS MaturityDAS BBCH 
 ## Subchild Name:  ThermalTime 
 ## Name sub-sub-child:  BaseThermalTime 
-## Available node sub-sub-child:  $type Name Children IncludeInDocumentation Enabled ReadOnly 
+## Available node sub-sub-child names:  $type Name Children IncludeInDocumentation Enabled ReadOnly 
 ## Available node children (unpack_node):  
 ##  
 ## $type : Models.Functions.XYPairs, Models 
@@ -420,13 +442,15 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## Enabled : TRUE 
 ## ReadOnly : FALSE 
 ## no node sub-children available</code></pre>
+<p>The function <strong>inspect_apsimx_replacement</strong> can also be used to inspect more complex file structures such as the ‘Factorial’ example distributed with APSIM-X. See ‘?inspect_apsimx_replacement’.</p>
 </div>
-<div id="editing-a-replacement" class="section level2">
-<h2>Editing a ‘Replacement’</h2>
+<div id="advanced-example-editing-a-replacement" class="section level2">
+<h2>Advanced example: Editing a ‘Replacement’</h2>
 <p>After using the ‘inspect’ version of the file editing should be much more straight forward.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">edit_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                         <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
-                        <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, <span class="dt">node.subsubchild =</span> <span class="st">&quot;BaseThermalTime&quot;</span>,
+                        <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, 
+                        <span class="dt">node.subsubchild =</span> <span class="st">&quot;BaseThermalTime&quot;</span>,
                         <span class="dt">parm =</span> <span class="st">&quot;Y&quot;</span>, <span class="dt">value =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">20</span>,<span class="dv">28</span>,<span class="dv">0</span>))</code></pre></div>
 <pre><code>## Replacements:  Maize Soybean 
 ## CropType Maize 
@@ -452,10 +476,55 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ##  
 ## X : 0 18 26 34 44 
 ## Y : 0 12 20 28 0</code></pre>
-<div id="file-type-or-file-format-details" class="section level3">
-<h3>File Type (or File Format) Details</h3>
+</div>
+<div id="advanced-example-factorial" class="section level2">
+<h2>Advanced example: Factorial</h2>
+<p>The complexity of APSIM-X files can be mind-boggling and it makes it difficult to write robust functions across all tasks that APSIM is able to accomplish. I wrote the ‘inspect_apsimx_replacement’ and ‘edit_apsimx_replacement’ specifically to edit replacements but these functions have much more flexibility than ‘inspect_apsimx’ and ‘edit_apsimx’. The function ‘apsimx_example’ is limited in the number of examples that it is allowed to run, but this does not mean that you cannot run the other examples which are distributed with APSIM-X. Let’s take the ‘Factorial’ example:</p>
+<p>If we want to inspect and edit this file, we need the ‘inspect_apsimx_replacement’ function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## There are multiple 'Experiments' so we need to pick one
+<span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;Factorial&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
+                           <span class="dt">root =</span> <span class="kw">list</span>(<span class="st">&quot;Experiment&quot;</span>,<span class="ot">NA</span>))
+##These positions matched  Experiment   1 2 3 4 5 
+##Error in inspect_apsimx_replacement(&quot;Factorial&quot;, src.dir = ex.dir, root = ##list(&quot;Experiment&quot;, : Multiple root nodes found. Please provide a position</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## There are multiple 'Experiments' so we need to pick one
+<span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;Factorial&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
+                           <span class="dt">root =</span> <span class="kw">list</span>(<span class="st">&quot;Experiment&quot;</span>,<span class="dv">1</span>))</code></pre></div>
+<pre><code>## Replacements:  Factors Base 
+## Please provide a node</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## We need to provide a node
+<span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;Factorial&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
+                           <span class="dt">root =</span> <span class="kw">list</span>(<span class="st">&quot;Experiment&quot;</span>,<span class="dv">1</span>), 
+                           <span class="dt">node =</span> <span class="st">&quot;Base&quot;</span>, <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Replacements:  Factors Base 
+## Available node children:  Weather Clock Summary Field 
+## missing node.child</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## We need to provide a node child
+<span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;Factorial&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
+                           <span class="dt">root =</span> <span class="kw">list</span>(<span class="st">&quot;Experiment&quot;</span>,<span class="dv">1</span>), 
+                           <span class="dt">node =</span> <span class="st">&quot;Base&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Clock&quot;</span>,
+                           <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Replacements:  Factors Base 
+## Available node children:  Weather Clock Summary Field 
+## Available node children (unpack_node):  $type StartDate EndDate Name Children IncludeInDocumentation Enabled ReadOnly 
+## $type : Models.Clock, Models 
+## StartDate : 2003-10-20T00:00:00 
+## EndDate : 2004-05-23T00:00:00 
+## Name : Clock 
+## IncludeInDocumentation : TRUE 
+## Enabled : TRUE 
+## ReadOnly : FALSE 
+## no node sub-children available</code></pre>
+<p>Here we stopped at this level but it is possible to dig deeper using ‘node.subchild’ and ‘node.subsubchild’. It is not possible at this point to dig deeper in the hierarchy level.</p>
+<div id="running-the-factorial-example" class="section level3">
+<h3>Running the ‘Factorial’ example</h3>
+<p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge.</p>
+</div>
+</div>
+</div>
+<div id="file-type-or-file-format-details" class="section level1">
+<h1>File Type (or File Format) Details</h1>
 <p>APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance. All distributed APSIM-X examples are ‘JSON’ now.</p>
-<p>The  package supports inspection and editing of both file types for most components except for the ‘Manager’; for which there is partial support. In most instances the parameters that are likely to need inspection and editing are supported but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON.</p>
+<p>The apsimx package supports inspection and editing of both file types, but XML is for ‘Classic’ only and JSON is for APSIM-X. In most instances the parameters that are likely to need inspection and editing are supported but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON (note: this is fragile and might not even be needed in the future).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
 <span class="kw">apsimx_filetype</span>(<span class="st">&quot;Barley&quot;</span>, <span class="dt">src.dir =</span> ex.dir)</code></pre></div>
 <pre><code>## [1] &quot;json&quot;</code></pre>
@@ -463,16 +532,107 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## This is an older XML 'Maize' file which is no longer distributed
 <span class="kw">apsimx_filetype</span>(<span class="st">&quot;Maize_old&quot;</span>, <span class="dt">src.dir =</span> extd.dir)</code></pre></div>
 <pre><code>## [1] &quot;xml&quot;</code></pre>
+<p>It is possible that the function above will soon be obsolete as all .apsimx files are JSON and all .apsim files are XML.</p>
 </div>
+<div id="why-inspect" class="section level1">
+<h1>Why inspect?</h1>
+<p>One of the difficulties with working with APSIM(X) in scripting efforts is that the names of the parameters that we might want to edit can be buried deep in the .apsim(x) file and that there might be multiple instances of those parameters. To overcome this (to some extent) the ‘inspect’ functions can provide the path to the parameter to edit. For example,</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
+<span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>)</code></pre></div>
+<pre><code>## Crop Type:  millet 
+## Management Scripts:
+## Sow on a fixed date
+## Harvesting rule
+## Tiller Aggregation</code></pre>
+<p>We can see that we have ‘Sow on a fixed date’ as one of the options. Let’s say that we want to edit the planting density</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>,
+              <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;Sow on a fixed date&quot;</span>,<span class="ot">NA</span>))</code></pre></div>
+<pre><code>## Crop Type:  millet 
+## Management Scripts:
+## Sow on a fixed date
+## Harvesting rule
+## Tiller Aggregation
+## 
+## 
+## Selected manager:  Sow on a fixed date 
+## 
+## 
+## parm                                  value   
+## ------------------------------------  --------
+## Sowing criteria                               
+## Enter sowing date (dd-mmm) :          1-dec   
+## Sowing parameters                             
+## Enter name of crop to sow :           millet  
+## Enter sowing density  (plants/m2) :   7.5     
+## Enter sowing depth  (mm) :            30      
+## Enter cultivar :                      wrajpop</code></pre>
+<p>Planting density is the fifth element in that table. We can obtain the full path by using the ‘print.path’ option. It makes sense to use this option once you have found the parameter you are looking for.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>,
+              <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;Sow on a fixed date&quot;</span>,<span class="dv">5</span>), <span class="dt">print.path =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Crop Type:  millet 
+## Management Scripts:
+## Sow on a fixed date
+## Harvesting rule
+## Tiller Aggregation
+## 
+## 
+## Selected manager:  Sow on a fixed date 
+## 
+## 
+##      parm                                  value 
+## ---  ------------------------------------  ------
+## 5    Enter sowing density  (plants/m2) :   7.5   
+## Parm path: /folder/simulation/area/folder/manager[1]/ui/density</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Or store it in an object for later editing
+pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>,
+              <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;Sow on a fixed date&quot;</span>,<span class="dv">5</span>), <span class="dt">print.path =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Crop Type:  millet 
+## Management Scripts:
+## Sow on a fixed date
+## Harvesting rule
+## Tiller Aggregation
+## 
+## 
+## Selected manager:  Sow on a fixed date 
+## 
+## 
+##      parm                                  value 
+## ---  ------------------------------------  ------
+## 5    Enter sowing density  (plants/m2) :   7.5   
+## Parm path: /folder/simulation/area/folder/manager[1]/ui/density</code></pre>
+<p>Once we have identified the parameter we want to edit, we can do so using the ‘edit_apsim’ function. When using the ‘parm.path’ argument, node should be “Other”.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">edit_apsim</span>(<span class="st">&quot;Millet&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node =</span> <span class="st">&quot;Other&quot;</span>,
+           <span class="dt">parm.path =</span> pp, <span class="dt">value =</span> <span class="dv">8</span>, <span class="dt">edit.tag =</span> <span class="st">&quot;-pp&quot;</span>)</code></pre></div>
+<pre><code>## Edited /folder/simulation/area/folder/manager[1]/ui/density 
+## Edited parameter 
+## New values  8 
+## Created  /private/var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T/RtmpxyAhfY/temp_libpath99626c96081/apsimx/extdata/Millet-pp.apsim</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">file.remove</span>(<span class="st">&quot;Millet-pp.apsim&quot;</span>)</code></pre></div>
+<pre><code>## Warning in file.remove(&quot;Millet-pp.apsim&quot;): cannot remove file 'Millet-
+## pp.apsim', reason 'No such file or directory'</code></pre>
+<pre><code>## [1] FALSE</code></pre>
+<p>This provides a template for creating complex simulations out of simple ones.</p>
 </div>
+<div id="to-do" class="section level1">
+<h1>To-Do</h1>
+<ul>
+<li><p><strong>inspect_apsimx_replacement</strong> challenge this function with more complex examples</p></li>
+<li><p>Add more tests using the ‘CoverCrop example’ (APSIM ‘Classic’). This would be the motivation for writing a function for ‘factorials’. ‘edit_apsimx_factorial’.</p></li>
+<li><p>Include parameter estimation example for maize</p></li>
+</ul>
+</div>
+<div id="in-beta" class="section level1">
+<h1>In Beta</h1>
+<ul>
+<li>edit_apsimx_batch (never tested)</li>
+</ul>
 </div>
 <div id="future-features" class="section level1">
 <h1>Future features</h1>
 <ul>
-<li>Currently working on developing ‘inspect_apsimx_replacement’ (JSON only)</li>
-<li>Create function ‘edit_apsimx_replacement’ (JSON only)</li>
-<li>Improve implementation of read_apsimx_all</li>
-<li>Add tools for optimization and sensitivity analysis.</li>
+<li><p>Do we need a custom function for editing the depth of the soil profile? ‘edit_apsimx_depth’? The issue really is what kind of inconsistencies are possible if depth is not consistent across variables because it is possible to edit the depth now.</p></li>
+<li><p>Improve implementation of read_apsimx_all</p></li>
+<li><p>Add tools for optimization and sensitivity analysis.</p></li>
 </ul>
 </div>
 
