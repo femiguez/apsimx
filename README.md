@@ -36,9 +36,6 @@ If you want to install this package from github try in R:
 It is **not** necessary to build the vignettes as they are also at:
 https://femiguez.github.io/apsimx-docs/
 
-In addition, you need to have installed a distributed version of
-APSIM-X 'Next Generation'.
-
 Still, if you want to build the vignettes, first you need to make sure
 that you have a version of APSIM-X installed and then use this instead
 of the second line above:
