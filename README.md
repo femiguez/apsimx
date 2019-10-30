@@ -43,12 +43,12 @@ of the second line above:
 > devtools::install_github("femiguez/apsimx", build_vignettes = TRUE,
 > build_opts = c("--no-resave-data", "--no-manual")) 
 
-For an introduction after you load the packge read the vignette
+If you do build the vignettes, there is an  introduction to the package
 
 > vignette("apsimx")
 
-If you want to write scripts but are not interested in 'apsimx'
-specifically read the "apsimx-scripts" vignette.
+and a document which might help you build your own scripts either in R
+or other languages
 
 > vignette("apsimx-scripts")
 
