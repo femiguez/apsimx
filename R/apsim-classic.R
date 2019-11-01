@@ -65,6 +65,7 @@ apsim <- function(file = "", src.dir=".",
     if(length(output.names) == 1){
       ans <- read_apsim(file = output.names, src.dir = ".", value = value)
     }else{
+      ## This will only work when output files have the same columns
       ans <- read_apsim_all(filenames = output.names, 
                             src.dir = ".", value = "report")
     }
@@ -79,7 +80,8 @@ apsim <- function(file = "", src.dir=".",
     if(value == "none") stop("do not clean up if you choose value = 'none' ")
     ## Delete the apsim-generated out file
     for(i in seq_along(output.names)){
-        file.remove(sub("apsim","out",output.names[i]))
+        file.remove(output.names[i])
+        file.remove(sub("out$","sum",output.names[i]))
       }
   }
   
@@ -233,10 +235,19 @@ apsim_example <- function(example = "Millet", silent = FALSE){
   
   ## Create database connection
   ## I don't need to specify the directory as it should be the current one
-  ans <- read_apsim(paste0(example,".out"), value = "report")
+  ## I do need to find out the output name
+  out.name <- find_output_names(paste0(example,".apsim"), src.dir = ".")
+  if(length(out.name) == 1){
+    ans <- read_apsim(out.name, value = "report")
+  }
+  if(length(out.name) > 1){
+    stop("not ready to handle this yet")
+  }
   ## OS independent cleanup (risky?)
-  file.remove(paste0("./",example,".out"))
-  file.remove(paste0("./",example,".sum"))
+  for(i in out.name){
+    file.remove(paste0("./",i))
+    file.remove(paste0("./",strsplit(i,".",fixed=TRUE)[[1]][1],".sum"))
+  }
   file.remove(paste0("./",example,".apsim"))
   ## Return data frame
   return(ans)

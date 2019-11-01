@@ -4,7 +4,7 @@
 \alias{apsim_version}
 \title{Display available APSIM and APSIM-X versions}
 \usage{
-apsim_version(which = c("all", "inuse"), verbose = FALSE)
+apsim_version(which = c("all", "inuse"), verbose = TRUE)
 }
 \arguments{
 \item{which}{either 'all' or 'inuse'}

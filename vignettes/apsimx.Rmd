@@ -175,10 +175,16 @@ inspect_apsimx("Wheat.apsimx", src.dir = extd.dir,
 
 Many additional options in an APSIM-X simulation can be realized through the use of 'Replacements'. For this, there is a function that allows inspection. For this, it is important to know the structure of the 'replacement'. It is possible to explore the available components. For example, if we want to display the xy pair for the thermal time in the phenology component of the 'Maize' replacement we might go through the following steps:
 
+```{r run-replacement-example}
+### This takes a long time, but it is important to make sure
+### The replacement example works
+soy.maize <- apsimx("MaizeSoybean.apsimx", 
+                    src.dir = extd.dir, value = "report", cleanup = TRUE)
+```
+
 State the node ("Maize") and display available components:
 
 ```{r inspect-replacement-node}
-extd.dir <- system.file("extdata", package = "apsimx")
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                             node = "Maize", display.available = TRUE)
 ```
