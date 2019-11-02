@@ -1,5 +1,5 @@
-apsimx
-R package for APSIM-X
+**apsimx: R package for APSIM-X**
+
 This package allows for interaction with APSIM ("Next Generation") or
 APSIM-X. It can inspect, edit, run and read APSIMX files. APSIMX now
 uses file type JSON for .apsimx. The
@@ -36,14 +36,16 @@ If you want to install this package from github try in R:
 It is **not** necessary to build the vignettes as they are also at:
 https://femiguez.github.io/apsimx-docs/
 
-Still, if you want to build the vignettes, first you need to make sure
-that you have a version of APSIM-X installed and then use this instead
+*Note*: Building the vignettes does not require the presence of APSIM-X as I
+have recently eliminated the APSIM-X runs in it.
+
+Still, if you want to build the vignettes then use this instead
 of the second line above:
 
 > devtools::install_github("femiguez/apsimx", build_vignettes = TRUE,
 > build_opts = c("--no-resave-data", "--no-manual")) 
 
-If you do build the vignettes, there is an  introduction to the package
+If you do build the vignettes, there is an introduction to the package
 
 > vignette("apsimx")
 

@@ -113,7 +113,7 @@ A function to inspect an .apsimx file is included. This is meant to be used simp
 
 ```{r inspect-apsimx}
 extd.dir <- system.file("extdata", package = "apsimx")
-inspect_apsimx("Maize", src.dir = extd.dir, node = "Weather")
+inspect_apsimx("Maize.apsimx", src.dir = extd.dir, node = "Weather")
 ```
 
 ### 'edit_apsimx': Editing a file
@@ -164,12 +164,12 @@ Another proposed more advanced workflow would involve calibrating or optimizing 
 
 The 'Wheat' example is distributed with the 'apsimx' package.
 
-```{r apsimx-wheat, eval = FALSE}
+```{r apsimx-wheat-no-run, eval = FALSE}
 sim <- apsimx("Wheat.apsimx", src.dir = extd.dir, value = "report")
 ```
 
 If you have APSIM-X installed you can also run it in this way.
-```{r apsimx-wheat, eval = FALSE}
+```{r apsimx-wheat-no-run-two, eval = FALSE}
 ex.dir <- auto_detect_apsimx_examples()
 ## Copy 'Wheat' file to your current directory
 file.copy(paste0(ex.dir,"/","Wheat.apsimx"),".")
