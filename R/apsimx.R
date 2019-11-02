@@ -69,7 +69,7 @@ apsimx <- function(file = "", src.dir=".",
     ## Default is not to cleanup
     if(value == "none") stop("do not clean up if you choose value = 'none' ")
     ## Delete the apsim-generated sql database 
-    file.remove(paste0(src.dir,sub("apsimx","db",file)))
+    file.remove(paste0(src.dir,"/",sub("apsimx","db",file)))
   }
   
   if(value != "none")

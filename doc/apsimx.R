@@ -5,11 +5,21 @@ library(ggplot2)
 
 ## ----apsimx-options, echo = FALSE----------------------------------------
 apsimx_options(warn.versions = FALSE)
-ava <- apsim_version()
-if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
+ava <- apsim_version(verbose = FALSE)
+##if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
 
-## ----apsimx-example, eval = TRUE-----------------------------------------
-maize <- apsimx_example("Maize")
+## ----create-temp-dir, echo = FALSE, eval = FALSE-------------------------
+#  tmp.dir <- tempdir()
+#  setwd(tmp.dir)
+
+## ----apsimx-example, eval = FALSE----------------------------------------
+#  maize <- apsimx_example("Maize")
+
+## ----read-in-maize-example, eval = TRUE, echo = FALSE--------------------
+extd.dir <- system.file("extdata", package = "apsimx")
+maize <- read_apsimx("Maize.db", src.dir = extd.dir)
+
+## ----summary-ggplot-maize------------------------------------------------
 summary(maize)
 ## Simple data plotting
 ggplot(data = maize , aes(x = Date, y = Maize.AboveGround.Wt)) + 
@@ -36,14 +46,15 @@ inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
                node = "Soil",
                soil.child = "Organic")
 
-## ----edit-apsimx-delete, echo = TRUE-------------------------------------
-## delete the created file
-file.remove("./Maize-edited.apsimx")
+## ----apsimx-wheat, eval = FALSE------------------------------------------
+#  ## One example ('Wheat') is included with the package for the vignette
+#  extd.dir <- system.file("extdata", package = "apsimx")
+#  sim <- apsimx("Wheat.apsimx", src.dir = extd.dir, value = "report")
 
-## ----apsimx--------------------------------------------------------------
-## One example ('Wheat') is included with the package for the vignette
-extd.dir <- system.file("extdata", package = "apsimx")
-sim <- apsimx("Wheat.apsimx", src.dir = extd.dir, value = "report")
+## ----apsimx-wheat-read, echo = FALSE-------------------------------------
+sim <- read_apsimx("Wheat.db", src.dir = extd.dir)
+
+## ----apsimx-wheat-summary------------------------------------------------
 ## Calcualte summary statistics on all variables
 summary(sim)
 ## Plot data
@@ -57,7 +68,6 @@ inspect_apsimx("Wheat.apsimx", src.dir = extd.dir,
                node = "Manager", parm = list("SowingRule1",NA))
 
 ## ----inspect-replacement-node--------------------------------------------
-extd.dir <- system.file("extdata", package = "apsimx")
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                             node = "Maize", display.available = TRUE)
 
@@ -143,9 +153,10 @@ pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
               parm = list("Sow on a fixed date",5), print.path = TRUE)
 
 ## ----Millet-edit---------------------------------------------------------
-edit_apsim("Millet", src.dir = extd.dir, node = "Other",
-           parm.path = pp, value = 8, edit.tag = "-pp")
+edit_apsim("Millet", src.dir = extd.dir, wrt.dir = ".",
+           node = "Other", parm.path = pp, value = 8, 
+           edit.tag = "-pp")
 
-## ----Millet-delete-------------------------------------------------------
-file.remove("Millet-pp.apsim")
+## ----removing-Millet-pp, echo = FALSE, eval = TRUE-----------------------
+file.remove("Millet-pp.apsimx")
 

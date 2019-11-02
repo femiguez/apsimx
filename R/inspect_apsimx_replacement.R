@@ -77,7 +77,8 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
     return(cat("Please provide a node\n"))
   } 
   
-  wrn <- grep(node, replacements.node$Children)
+  ## wrn <- grep(node, replacements.node$Children) old version
+  wrn <- grep(node, replacements.node.names)
   if(length(wrn) > 1) stop("node should result in a unique result")
   rep.node <- replacements.node$Children[[wrn]]
   

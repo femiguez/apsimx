@@ -17,8 +17,13 @@ library(ggplot2)
 
 ```{r apsimx-options, echo = FALSE}
 apsimx_options(warn.versions = FALSE)
-ava <- apsim_version()
-if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
+ava <- apsim_version(verbose = FALSE)
+##if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
+```
+
+```{r create-temp-dir, echo = FALSE, eval = FALSE}
+tmp.dir <- tempdir()
+setwd(tmp.dir)
 ```
 
 # Introduction
@@ -47,8 +52,6 @@ This package has been tested on:
 **Debian**: ApsimX version 4236
 
 **Windows**: ApsimX version 4236
-
-
 
 ## Installing APSIM-X
 
@@ -86,8 +89,18 @@ The main functions relevant for 'Classic' are:
 
 To get started you can run one of the examples distributed with APSIM-X. This function does the following: it detects where the APSIM examples are located, it runs the example indicated and it returns the 'report' as a data.frame. After that you can do the usual manipulations, including visualization.
 
-```{r apsimx-example, eval = TRUE}
+```{r apsimx-example, eval = FALSE}
 maize <- apsimx_example("Maize")
+```
+
+After we run this example we can treat it as a standard data frame in R.
+
+```{r read-in-maize-example, eval = TRUE, echo = FALSE}
+extd.dir <- system.file("extdata", package = "apsimx")
+maize <- read_apsimx("Maize.db", src.dir = extd.dir)
+```
+
+```{r summary-ggplot-maize}
 summary(maize)
 ## Simple data plotting
 ggplot(data = maize , aes(x = Date, y = Maize.AboveGround.Wt)) + 
@@ -133,13 +146,6 @@ inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
                soil.child = "Organic")
 ```
 
-Deleting the file.
-
-```{r edit-apsimx-delete, echo = TRUE}
-## delete the created file
-file.remove("./Maize-edited.apsimx")
-```
-
 ## Running a simulation
 
 The proposed workflow is to start by creating an .apsimx file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The funcitons included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. This is the proposed workflow:
@@ -154,10 +160,17 @@ The proposed workflow is to start by creating an .apsimx file using the GUI. In 
 
 Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.
 
-```{r apsimx}
+```{r apsimx-wheat, eval = FALSE}
 ## One example ('Wheat') is included with the package for the vignette
 extd.dir <- system.file("extdata", package = "apsimx")
 sim <- apsimx("Wheat.apsimx", src.dir = extd.dir, value = "report")
+```
+
+```{r apsimx-wheat-read, echo = FALSE}
+sim <- read_apsimx("Wheat.db", src.dir = extd.dir)
+```
+
+```{r apsimx-wheat-summary}
 ## Calcualte summary statistics on all variables
 summary(sim)
 ## Plot data
@@ -174,13 +187,6 @@ inspect_apsimx("Wheat.apsimx", src.dir = extd.dir,
 ## Advanced example: Inspecting a 'Replacement' component
 
 Many additional options in an APSIM-X simulation can be realized through the use of 'Replacements'. For this, there is a function that allows inspection. For this, it is important to know the structure of the 'replacement'. It is possible to explore the available components. For example, if we want to display the xy pair for the thermal time in the phenology component of the 'Maize' replacement we might go through the following steps:
-
-```{r run-replacement-example}
-### This takes a long time, but it is important to make sure
-### The replacement example works
-soy.maize <- apsimx("MaizeSoybean.apsimx", 
-                    src.dir = extd.dir, value = "report", cleanup = TRUE)
-```
 
 State the node ("Maize") and display available components:
 
@@ -253,7 +259,6 @@ inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
                             node = "Maize", node.child = "Phenology",
                             node.subchild = "ThermalTime", parm = c("X","Y")) 
 ```
-
 
 ## Advanced example: Factorial
 
@@ -335,15 +340,20 @@ pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
 Once we have identified the parameter we want to edit, we can do so using the 'edit_apsim' function. When using the 'parm.path' argument, node should be "Other".
 
 ```{r Millet-edit}
-edit_apsim("Millet", src.dir = extd.dir, node = "Other",
-           parm.path = pp, value = 8, edit.tag = "-pp")
+edit_apsim("Millet", src.dir = extd.dir, wrt.dir = ".",
+           node = "Other", parm.path = pp, value = 8, 
+           edit.tag = "-pp")
 ```
 
-```{r Millet-delete}
-file.remove("Millet-pp.apsim")
+```{r removing-Millet-pp, echo = FALSE, eval = TRUE}
+file.remove("Millet-pp.apsimx")
 ```
 
 This provides a template for creating complex simulations out of simple ones.
+
+# Additional functions
+
+**apsim_version** displays which version(s) of APSIM(X) are available
 
 # To-Do
 

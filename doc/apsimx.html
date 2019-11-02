@@ -13,7 +13,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-10-28" />
+<meta name="date" content="2019-11-02" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -96,7 +96,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2019-10-28</h4>
+<h4 class="date">2019-11-02</h4>
 
 
 
@@ -149,8 +149,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="apsimx_exmple-running-a-built-in-example" class="section level3">
 <h3>‘apsimx_exmple’: Running a built-in example</h3>
 <p>To get started you can run one of the examples distributed with APSIM-X. This function does the following: it detects where the APSIM examples are located, it runs the example indicated and it returns the ‘report’ as a data.frame. After that you can do the usual manipulations, including visualization.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maize &lt;-<span class="st"> </span><span class="kw">apsimx_example</span>(<span class="st">&quot;Maize&quot;</span>)
-<span class="kw">summary</span>(maize)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maize &lt;-<span class="st"> </span><span class="kw">apsimx_example</span>(<span class="st">&quot;Maize&quot;</span>)</code></pre></div>
+<p>After we run this example we can treat it as a standard data frame in R.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(maize)</code></pre></div>
 <pre><code>##   CheckpointID  SimulationID     Zone           Clock.Today       
 ##  Min.   :1     Min.   :1     Length:10          Length:10         
 ##  1st Qu.:1     1st Qu.:1     Class :character   Class :character  
@@ -255,10 +256,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ## 90-120    300         1.1      12            0.01    1        60.3219808311247 
 ## 120-150   300         1        12            0.01    1        36.5871308286749 
 ## 150-180   300         0.9      12            0.01    1        22.1912165985086</code></pre>
-<p>Deleting the file.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## delete the created file
-<span class="kw">file.remove</span>(<span class="st">&quot;./Maize-edited.apsimx&quot;</span>)</code></pre></div>
-<pre><code>## [1] TRUE</code></pre>
 </div>
 </div>
 <div id="running-a-simulation" class="section level2">
@@ -276,8 +273,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## One example ('Wheat') is included with the package for the vignette
 extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
-sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>)
-## Calcualte summary statistics on all variables
+sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Calcualte summary statistics on all variables
 <span class="kw">summary</span>(sim)</code></pre></div>
 <pre><code>##   CheckpointID  SimulationID     Zone           Clock.Today       
 ##  Min.   :1     Min.   :1     Length:79          Length:79         
@@ -366,10 +363,9 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 <h2>Advanced example: Inspecting a ‘Replacement’ component</h2>
 <p>Many additional options in an APSIM-X simulation can be realized through the use of ‘Replacements’. For this, there is a function that allows inspection. For this, it is important to know the structure of the ‘replacement’. It is possible to explore the available components. For example, if we want to display the xy pair for the thermal time in the phenology component of the ‘Maize’ replacement we might go through the following steps:</p>
 <p>State the node (“Maize”) and display available components:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
-<span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Replacements:  Maize Soybean 
+<pre><code>## Replacements:  Soybean Maize 
 ## CropType Maize 
 ## Available node children:  Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
 ## missing node.child</code></pre>
@@ -377,7 +373,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
                            <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Replacements:  Maize Soybean 
+<pre><code>## Replacements:  Soybean Maize 
 ## CropType Maize 
 ## Available node children:  Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
 ## Available node sub-children:  ThermalTime Germinating Emerging Juvenile Photosensitive LeafAppearance FlagLeafToFlowering FloweringToGrainFilling GrainFilling Maturing MaturityToHarvestRipe ReadyForHarvesting Photoperiod FloweringDAS MaturityDAS BBCH 
@@ -387,7 +383,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
                            <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>,
                            <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Replacements:  Maize Soybean 
+<pre><code>## Replacements:  Soybean Maize 
 ## CropType Maize 
 ## Available node children:  Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
 ## Available node sub-children:  ThermalTime Germinating Emerging Juvenile Photosensitive LeafAppearance FlagLeafToFlowering FloweringToGrainFilling GrainFilling Maturing MaturityToHarvestRipe ReadyForHarvesting Photoperiod FloweringDAS MaturityDAS BBCH 
@@ -408,7 +404,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
                             <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, <span class="dt">parm =</span> <span class="kw">c</span>(<span class="st">&quot;X&quot;</span>,<span class="st">&quot;Y&quot;</span>)) </code></pre></div>
-<pre><code>## Replacements:  Maize Soybean 
+<pre><code>## Replacements:  Soybean Maize 
 ## CropType Maize 
 ## Subchild Name:  ThermalTime 
 ## Name sub-sub-child:  BaseThermalTime 
@@ -419,7 +415,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 <p>Let’s say we want to inspect details of soybean cultivars in the same file:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Soybean&quot;</span>, <span class="dt">display.available =</span> <span class="ot">TRUE</span>) </code></pre></div>
-<pre><code>## Replacements:  Maize Soybean 
+<pre><code>## Replacements:  Soybean Maize 
 ## CropType Soybean 
 ## Available node children:  Arbitrator Phenology Structure Grain Root Nodule Shell Leaf Stem AboveGround BelowGround Total TotalLive TotalDead Pod Memo PioneerP932T16R_MG32 PioneerP22T69R_MG22 Trial_MG00 Lambert_MG0 IA1006_MG10 IA2008_MG20 Macon_MG30 Pioneer94B01_MG40 Hutcheson_MG50 NK622_MG60 Becks367NRR_MG37 AsgrowAG4403_MG40 HornbeckHBK4891_MG40 AsgrowAG5701_MG50 PioneerP9504_MG50 Pioneer92MGI_MG26 Becks321NRR_MG32 Hooper_MG40 Stephens_MG40 Davis PioneerP92Y75_MG27 PioneerP22T61_MG22 Buchanan Djakal PioneerP93M11_MG31 
 ## missing node.child</code></pre>
@@ -428,7 +424,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
                            <span class="dt">node =</span> <span class="st">&quot;Soybean&quot;</span>, 
                            <span class="dt">node.child =</span> <span class="st">&quot;PioneerP22T61_MG22&quot;</span>,
                            <span class="dt">display.available =</span> <span class="ot">FALSE</span>) </code></pre></div>
-<pre><code>## Replacements:  Maize Soybean 
+<pre><code>## Replacements:  Soybean Maize 
 ## CropType Soybean 
 ## $type : Models.PMF.Cultivar, Models 
 ## Command 
@@ -452,7 +448,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
                         <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, 
                         <span class="dt">node.subsubchild =</span> <span class="st">&quot;BaseThermalTime&quot;</span>,
                         <span class="dt">parm =</span> <span class="st">&quot;Y&quot;</span>, <span class="dt">value =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">12</span>,<span class="dv">20</span>,<span class="dv">28</span>,<span class="dv">0</span>))</code></pre></div>
-<pre><code>## Replacements:  Maize Soybean 
+<pre><code>## Replacements:  Soybean Maize 
 ## CropType Maize 
 ## Available node children:  Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
 ## Subchild Name:  ThermalTime 
@@ -469,7 +465,7 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean-edited.apsimx&quot;</span>, <span class="dt">src.dir =</span> <span class="st">&quot;.&quot;</span>,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
                             <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, <span class="dt">parm =</span> <span class="kw">c</span>(<span class="st">&quot;X&quot;</span>,<span class="st">&quot;Y&quot;</span>)) </code></pre></div>
-<pre><code>## Replacements:  Maize Soybean 
+<pre><code>## Replacements:  Soybean Maize 
 ## CropType Maize 
 ## Subchild Name:  ThermalTime 
 ## Name sub-sub-child:  BaseThermalTime 
@@ -601,17 +597,21 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 ## 5    Enter sowing density  (plants/m2) :   7.5   
 ## Parm path: /folder/simulation/area/folder/manager[1]/ui/density</code></pre>
 <p>Once we have identified the parameter we want to edit, we can do so using the ‘edit_apsim’ function. When using the ‘parm.path’ argument, node should be “Other”.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">edit_apsim</span>(<span class="st">&quot;Millet&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node =</span> <span class="st">&quot;Other&quot;</span>,
-           <span class="dt">parm.path =</span> pp, <span class="dt">value =</span> <span class="dv">8</span>, <span class="dt">edit.tag =</span> <span class="st">&quot;-pp&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">edit_apsim</span>(<span class="st">&quot;Millet&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">wrt.dir =</span> <span class="st">&quot;.&quot;</span>,
+           <span class="dt">node =</span> <span class="st">&quot;Other&quot;</span>, <span class="dt">parm.path =</span> pp, <span class="dt">value =</span> <span class="dv">8</span>, 
+           <span class="dt">edit.tag =</span> <span class="st">&quot;-pp&quot;</span>)</code></pre></div>
 <pre><code>## Edited /folder/simulation/area/folder/manager[1]/ui/density 
 ## Edited parameter 
 ## New values  8 
-## Created  /private/var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T/RtmpxyAhfY/temp_libpath99626c96081/apsimx/extdata/Millet-pp.apsim</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">file.remove</span>(<span class="st">&quot;Millet-pp.apsim&quot;</span>)</code></pre></div>
-<pre><code>## Warning in file.remove(&quot;Millet-pp.apsim&quot;): cannot remove file 'Millet-
-## pp.apsim', reason 'No such file or directory'</code></pre>
+## Created  ./Millet-pp.apsim</code></pre>
+<pre><code>## Warning in file.remove(&quot;Millet-pp.apsimx&quot;): cannot remove file 'Millet-
+## pp.apsimx', reason 'No such file or directory'</code></pre>
 <pre><code>## [1] FALSE</code></pre>
 <p>This provides a template for creating complex simulations out of simple ones.</p>
+</div>
+<div id="additional-functions" class="section level1">
+<h1>Additional functions</h1>
+<p><strong>apsim_version</strong> displays which version(s) of APSIM(X) are available</p>
 </div>
 <div id="to-do" class="section level1">
 <h1>To-Do</h1>
