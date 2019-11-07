@@ -37,6 +37,8 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
                                        parm = NULL, display.available = FALSE,
                                        digits = 3, print.path = FALSE){
   
+  check_apsim_name(file)
+  
   file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
   if(length(file.names)==0){

@@ -30,6 +30,8 @@ apsimx <- function(file = "", src.dir=".",
   
   if(file == "") stop("need to specify file name")
   
+  check_apsim_name(file)
+  
   ## The might offer suggestions in case there is a typo in 'file'
   file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   

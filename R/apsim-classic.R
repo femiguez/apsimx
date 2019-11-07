@@ -34,6 +34,8 @@ apsim <- function(file = "", src.dir=".",
   
   if(file == "") stop("need to specify file name")
   
+  check_apsim_name(file)
+  
   ## The following lines are somewhat not needed
   file.names <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
   
@@ -216,7 +218,7 @@ apsim_example <- function(example = "Millet", silent = FALSE){
   ## graphics and not that relevant to apsim
   ## Examples not supported: Several
   ex.ch <- c("agpasture","Canopy","Centro",
-             "Millet", "Oryza",
+             "Millet",
              "Potato","Sugar")
   
   example <- match.arg(example, choices = ex.ch)
@@ -314,8 +316,8 @@ read_apsim <- function(file = "", src.dir = ".",
   file.name.summary <- paste0(src.dir,"/",file,".sum")
   sum.file <- readLines(con = file.name.summary)
   
-  if(grep("Date",hdr)){
-    out.file$Date <- as.Date(out.file$Date, format = date.format)
+  if(grepl("Date",hdr)){
+    out.file$Date <- try(as.Date(out.file$Date, format = date.format), silent=TRUE)
   }
   ## Return list
   if(value == "all"){

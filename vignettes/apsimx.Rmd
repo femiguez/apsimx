@@ -18,6 +18,7 @@ library(ggplot2)
 ```{r apsimx-options, echo = FALSE}
 apsimx_options(warn.versions = FALSE)
 ava <- apsim_version(verbose = FALSE)
+aiu <- apsim_version(which = "inuse")
 ##if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
 ```
 
@@ -360,7 +361,17 @@ This provides a template for creating complex simulations out of simple ones.
 
 # Additional functions
 
-**apsim_version** displays which version(s) of APSIM(X) are available
+**apsim_version** displays which version(s) of APSIM(X) are available. For example,
+
+```{r apsim-verions-tail}
+ava <- apsim_version()
+aiu <- apsim_version(which = "inuse")
+```
+
+
+# In Beta
+
+* edit_apsimx_batch (never tested)
 
 # To-Do
 
@@ -369,11 +380,10 @@ examples
 
 * Add more tests using the 'CoverCrop example' (APSIM 'Classic'). This would be the motivation for writing a function for 'factorials'. 'edit_apsimx_factorial'.
 
+* Create and reaplce an APSIM soil profile out of SSURGO data
+
 * Include parameter estimation example for maize
 
-# In Beta
-
-* edit_apsimx_batch (never tested)
 
 # Future features
 

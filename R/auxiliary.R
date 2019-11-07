@@ -11,3 +11,13 @@ find_output_names <- function(file, src.dir = "."){
   
   return(ans)
 }
+
+## Check the name 
+
+check_apsim_name <- function(file){
+  
+  ## No spaces are allowed, provide informative error
+  if(grepl("\\s", file))
+    stop("White spaces are not allowed in file names")
+  
+}

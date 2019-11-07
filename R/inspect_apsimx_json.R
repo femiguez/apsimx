@@ -42,6 +42,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                            digits = 3,
                            print.path = FALSE){
   
+  check_apsim_name(file)
+  
   file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
   if(length(file.names)==0){
