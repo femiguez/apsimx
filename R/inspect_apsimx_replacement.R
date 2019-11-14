@@ -82,6 +82,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   ## wrn <- grep(node, replacements.node$Children) old version
   wrn <- grep(node, replacements.node.names)
   if(length(wrn) > 1) stop("node should result in a unique result")
+  if(length(wrn) == 0) stop("node not found")
   rep.node <- replacements.node$Children[[wrn]]
   
   parm.path.0.1.1 <- paste0(parm.path.0.1,".",rep.node$Name)
@@ -99,6 +100,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
     return(cat("missing node.child\n"))
   } 
   wrnc <- grep(node.child, rep.node.children.names)
+  if(length(wrnc) == 0) stop("node.child not found")
   rep.node.child <- rep.node$Children[[wrnc]]
   
   parm.path.0.1.1.1 <- paste0(parm.path.0.1.1,".",rep.node.child$Name)
@@ -129,7 +131,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   ## Let's just print this information somehow
   cat("Subchild Name: ", rep.node.subchild$Name,"\n")
   
-  if(is.atomic(rep.node.subchild$Children)){
+  if(is.atomic(rep.node.subchild$Children) || length(rep.node.subchild) == 0){
     unpack_node(rep.node.subchild, parm = parm, display.available = display.available)
     parm.path <- parm.path.0.1.1.1.1
     if(print.path) print(parm.path); invisible(parm.path)

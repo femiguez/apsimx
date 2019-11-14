@@ -239,12 +239,15 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       if(is.na(position)){
         ms.params <- manager.node[[find.manager]]$Parameters
         if(length(ms.params) == 0) warning("parameter not found")
+        
         mat <- matrix(NA, ncol=2, nrow = length(ms.params),
                       dimnames = list(NULL,c("parm","value")))
-      
-        for(j in 1:length(ms.params)){
-          mat[j,1] <- ms.params[[j]]$Key
-          mat[j,2] <- ms.params[[j]]$Value
+        
+        if(length(ms.params) > 0){
+          for(j in 1:length(ms.params)){
+            mat[j,1] <- ms.params[[j]]$Key
+            mat[j,2] <- ms.params[[j]]$Value
+          }
         }
         cat("Name: ", selected.manager.node,"\n")
         print(kable(as.data.frame(mat), digits = digits))

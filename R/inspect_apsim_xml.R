@@ -97,22 +97,27 @@ inspect_apsim <- function(file = "", src.dir = ".",
   
   ## Read the file
   apsim_xml <- read_xml(paste0(src.dir,"/",file))
+  
+  ## parm.path.0 is the 'root' path
+  parm.path <- NULL
+  parm.path.0 <- NULL
+  parm.path.1 <- NULL
 
   if(node == "Clock"){
-    parm.path <- ".//clock"
+    parm.path.0 <- ".//clock"
     parms <- c("start_date", "end_date")
     for(i in parms){
-      clock.node <- xml_find_first(apsim_xml, paste0(parm.path,"/",i))
+      clock.node <- xml_find_first(apsim_xml, paste0(parm.path.0,"/",i))
       cat(i,":",xml_text(clock.node),"\n")
     }
     if(!missing(parm)){
-      parm.path <- paste0(parm.path,"/",parm)
+      parm.path.1 <- paste0(parm.path.0,"/",parm)
     }
   }
   
   if(node == "Weather"){
-    parm.path <- ".//metfile/filename"
-    weather.filename.node <- xml_find_first(apsim_xml, parm.path)
+    parm.path.0 <- ".//metfile/filename"
+    weather.filename.node <- xml_find_first(apsim_xml, parm.path.0)
     cat("Met file:",(xml_text(weather.filename.node)),"\n")
   }
   
@@ -154,14 +159,15 @@ inspect_apsim <- function(file = "", src.dir = ".",
       names(crop.d) <- c("Depth",crop.parms)
       j <- 2
       for(i in crop.parms){
-        parm.path <- paste0(".//Soil/Water/SoilCrop","/",i)
-        soil.water.crop.node <- xml_find_first(apsim_xml, parm.path)
+        parm.path.0 <- ".//Soil/Water/SoilCrop"
+        parm.path.1 <- paste0(parm.path.0,"/",i)
+        soil.water.crop.node <- xml_find_first(apsim_xml, parm.path.1)
         crop.d[,j] <- xml_double(xml_children(soil.water.crop.node))
         j <- j + 1
       }
       
       if(!missing(parm) && parm %in% crop.parms)
-          parm.path0 <- ".//Soil/Water/SoilCrop"
+          parm.path.0 <- ".//Soil/Water/SoilCrop"
 
       soil.parms <- c("Thickness","BD","AirDry","LL15","DUL","SAT","KS")
       val.mat <- matrix(NA, ncol = length(soil.parms),
@@ -170,15 +176,16 @@ inspect_apsim <- function(file = "", src.dir = ".",
       names(soil.d) <- soil.parms
       j <- 1
       for(i in soil.parms){
-        parm.path <- paste0(".//Soil/Water","/",i)
-        soil.water.node <- xml_find_first(apsim_xml, parm.path)
+        parm.path.0 <- ".//Soil/Water"
+        parm.path.1 <- paste0(parm.path.0,"/",i)
+        soil.water.node <- xml_find_first(apsim_xml, parm.path.1)
         soil.d[,j] <- xml_double(xml_children(soil.water.node))
         j <- j + 1
       }
       print(kable(cbind(crop.d,soil.d), digits = digits))
       
       if(!missing(parm) && parm %in% soil.parms) 
-        parm.path0 <- ".//Soil/Water"
+        parm.path.0 <- ".//Soil/Water"
       
       ## Soil Water
       soil.water.parms <- c("SummerCona", "SummerU", "SummerDate",
@@ -190,15 +197,16 @@ inspect_apsim <- function(file = "", src.dir = ".",
                                  value = NA)
       j <- 1
       for(i in soil.water.parms){
-        parm.path <- paste0(".//Soil/SoilWater","/",i)
-        soil.water.node <- xml_find_first(apsim_xml, parm.path)
+        parm.path.0 <- ".//Soil/SoilWater"
+        parm.path.1 <- paste0(parm.path.0,"/",i)
+        soil.water.node <- xml_find_first(apsim_xml, parm.path.1)
         soil.water.d[j,"value"] <- xml_text(soil.water.node)
         j <- j + 1
       }
       print(kable(soil.water.d, digits = digits))
       
       if(!missing(parm) && parm %in% soil.water.parms) 
-          parm.path0 <- ".//Soil/SoilWater"
+          parm.path.0 <- ".//Soil/SoilWater"
     }
     
     if(soil.child == "Nitrogen"){
@@ -229,8 +237,9 @@ inspect_apsim <- function(file = "", src.dir = ".",
       som.d1 <- data.frame(parm = som.parms1, value = NA)
       
       for(i in som.parms1){
-        parm.path <- paste0(".//Soil/SoilOrganicMatter","/",i)
-        soil.som1.node <- xml_find_first(apsim_xml, parm.path)
+        parm.path.0 <- ".//Soil/SoilOrganicMatter"
+        parm.path.1 <- paste0(parm.path.0,"/",i)
+        soil.som1.node <- xml_find_first(apsim_xml, parm.path.1)
         som.d1[som.d1$parm == i,2] <- xml_text(soil.som1.node)
       }
       print(kable(som.d1, digits = digits))
@@ -245,15 +254,16 @@ inspect_apsim <- function(file = "", src.dir = ".",
       
       j <- 2
       for(i in som.parms2){
-        parm.path <- paste0(".//Soil/SoilOrganicMatter","/",i)
-        soil.som2.node <- xml_find_first(apsim_xml, parm.path)
+        parm.path.0 <- ".//Soil/SoilOrganicMatter"
+        parm.path.1 <- paste0(parm.path.0,"/",i)
+        soil.som2.node <- xml_find_first(apsim_xml, parm.path.1)
         som.d2[,j] <- xml_text(xml_children(soil.som2.node))
         j <- j + 1
       }
       print(kable(som.d2, digits = digits))
       
       if(!missing(parm) && parm %in% c(som.parms1,som.parms2)){
-        parm.path0 <- ".//Soil/SoilOrganicMatter"
+        parm.path.0 <- ".//Soil/SoilOrganicMatter"
       }
     }
     
@@ -269,15 +279,16 @@ inspect_apsim <- function(file = "", src.dir = ".",
       
       j <- 2
       for(i in analysis.parms){
-        parm.path <- paste0(".//Soil/Analysis","/",i)
-        soil.analysis.node <- xml_find_first(apsim_xml, parm.path)
+        parm.path.0 <- ".//Soil/Analysis"
+        parm.path.1 <- paste0(parm.path.1,"/",i)
+        soil.analysis.node <- xml_find_first(apsim_xml, parm.path.1)
         analysis.d[,j] <- xml_text(xml_children(soil.analysis.node))
         j <- j + 1
       }
       print(kable(analysis.d, digits = digits))
       
       if(!missing(parm) && parm %in% analysis.parms){
-        parm.path0 <- ".//Soil/Analysis"
+        parm.path.0 <- ".//Soil/Analysis"
       }
     }
     
@@ -287,14 +298,15 @@ inspect_apsim <- function(file = "", src.dir = ".",
       initial.water.d <- data.frame(parm = initialwater.parms, value = NA)
       
       for(i in initialwater.parms){
-        parm.path <- paste0(".//Soil/InitialWater","/",i)
-        soil.InitialWater.node <- xml_find_first(apsim_xml, parm.path)
+        parm.path.0 <- ".//Soil/InitialWater"
+        parm.path.1 <- paste0(parm.path.0,"/",i)
+        soil.InitialWater.node <- xml_find_first(apsim_xml, parm.path.1)
         initial.water.d[initial.water.d$parm == i,2] <- xml_text(soil.InitialWater.node)
       }
       print(kable(initial.water.d, digits = digits))
       
       if(!missing(parm) && parm %in% analysis.parms){
-        parm.path0 <- ".//Soil/Analysis"
+        parm.path.0 <- ".//Soil/Analysis"
       }
     }
     
@@ -309,15 +321,16 @@ inspect_apsim <- function(file = "", src.dir = ".",
       
       j <- 2
       for(i in sample.parms){
-        parm.path <- paste0(".//Soil/Sample","/",i)
-        soil.sample.node <- xml_find_first(apsim_xml, parm.path)
+        parm.path.0 <- ".//Soil/Sample"
+        parm.path.1 <- paste0(parm.path.0,"/",i)
+        soil.sample.node <- xml_find_first(apsim_xml, parm.path.1)
         sample.d[,j] <- xml_text(xml_children(soil.sample.node))
         j <- j + 1
       }
       print(kable(sample.d, digits = digits))
       
       if(!missing(parm) && parm %in% sample.parms){
-        parm.path0 <- ".//Soil/Sample"
+        parm.path.0 <- ".//Soil/Sample"
       }
     }
   }
@@ -333,14 +346,14 @@ inspect_apsim <- function(file = "", src.dir = ".",
     pools.d <- data.frame(parm = pools.parms, value = NA)
       
     for(i in pools.parms){
-      parm.path <- paste0(pools.path,"/",i)
-      soil.pools.node <- xml_find_first(apsim_xml, parm.path)
+      parm.path.1 <- paste0(pools.path,"/",i)
+      soil.pools.node <- xml_find_first(apsim_xml, parm.path.1)
       pools.d[pools.d$parm == i,2] <- xml_text(soil.pools.node)
     }
     print(kable(pools.d, digits = digits))
     
     if(!missing(parm) && parm %in% pools.parms){
-      parm.path0 <- ".//surfaceom"
+      parm.path.0 <- ".//surfaceom"
     }
   }
 
@@ -352,7 +365,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
     xfa.manager <- as.vector(unlist(xml_attrs(xml_find_all(apsim_xml, ".//manager"))))
     cat("Management Scripts:", xfa.manager,"\n", sep = "\n")
     
-    if(missing(parm)) parm.path <- ".//manager"
+    if(missing(parm)) parm.path.0 <- ".//manager"
     
     if(!missing(parm)){
       parm1 <- parm[[1]]
@@ -372,9 +385,9 @@ inspect_apsim <- function(file = "", src.dir = ".",
       crop2 <- xml_find_first(crop, "ui")
       
       if(!is.na(position)){
-        parm.path <- xml_path(xml_children(crop2)[[position]])
+        parm.path.0 <- xml_path(xml_children(crop2)[[position]])
       }else{
-        parm.path <- ".//manager"
+        parm.path.0 <- ".//manager"
       }
       
       descr <- sapply(xml_attrs(xml_children(crop2)),function(x) x[["description"]])
@@ -404,14 +417,21 @@ inspect_apsim <- function(file = "", src.dir = ".",
     }
     print(kable(other.d))
     
-    parm.path <- xml_path(other)
-    if(length(parm.path) > 1) stop("figure out why parm.path is greater than 1 for 'Other'")
+    parm.path.0 <- xml_path(other)
+    if(length(parm.path.0) > 1) stop("figure out why parm.path is greater than 1 for 'Other'")
   }
   
-  if(!node %in% c("Crop","Manager"))
-    parm.path <- xml_path(xml_find_first(apsim_xml,paste0(parm.path0,"/",parm)))
+  if(!node %in% c("Crop","Manager") && !is.null(parm)){
+    parm.path <- xml_path(xml_find_first(apsim_xml,paste0(parm.path.0,"/",parm)))
+  }
+    
   
   if(print.path){
+    if(is.null(parm.path.0)) stop("root parm path not found")
+    parm.path <- parm.path.0
+    if(!is.null(parm.path.1)){
+      parm.path <- parm.path.1
+    }
     cat("Parm path:", parm.path,"\n")
   }
   invisible(parm.path)
