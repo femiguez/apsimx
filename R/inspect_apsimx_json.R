@@ -175,7 +175,6 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     som.node <- core.zone.node[wsomn][[1]]
     
     parm.path <- paste0(parm.path.2,".",som.node$Name)
-    
     ## The relevant components might be unpredictable
     ## Will need to find a better method in the future
     som.d <- data.frame(parm = names(som.node)[2:8],
@@ -190,7 +189,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     microclimate.node <- core.zone.node[wmcn][[1]]
     
     parm.path <- paste0(parm.path.2,".",microclimate.node$Name)
-    
+
     microclimate.d <- data.frame(parm = names(microclimate.node)[2:9],
                                  value = as.vector(unlist(microclimate.node)[2:9]))
     print(kable(microclimate.d, digits = digits))
@@ -269,6 +268,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           }
         }
         cat("Name: ", selected.manager.node,"\n")
+        parm2 <- ms.params[[position]]$Key
         cat("Key:", ms.params[[position]]$Key, "\n")
         print(kable(as.data.frame(mat), digits = digits))
         cat("\n")
@@ -277,17 +277,18 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   }
   
   if(print.path){
-    cat("Parm path:", parm.path,"\n")
-    if(missing(parm)){
-      invisible(parm.path)
-    }else{
+    if(!missing(parm)){
       if(length(parm) == 1){
-        invisible(paste0(parm.path,".",parm))
+        parm.path <- paste0(parm.path,".",parm)
       }else{
-        invisible(paste0(parm.path,".",parm[[1]]))
+        if(!is.na(position)){
+          parm.path <- paste0(parm.path,".",parm2)
+        }
       }
     }
+    cat("Parm path:", parm.path,"\n")
   }
+  invisible(parm.path)
 }
 
 

@@ -6,6 +6,7 @@ library(ggplot2)
 ## ----apsimx-options, echo = FALSE----------------------------------------
 apsimx_options(warn.versions = FALSE)
 ava <- apsim_version(verbose = FALSE)
+aiu <- apsim_version(which = "inuse")
 ##if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
 
 ## ----create-temp-dir, echo = FALSE, eval = FALSE-------------------------
@@ -26,16 +27,16 @@ ggplot(data = maize , aes(x = Date, y = Maize.AboveGround.Wt)) +
   geom_point()
 
 ## ----inspect-apsimx------------------------------------------------------
-ex.dir <- auto_detect_apsimx_examples()
-inspect_apsimx("Maize", src.dir = ex.dir, node = "Weather")
+extd.dir <- system.file("extdata", package = "apsimx")
+inspect_apsimx("Maize.apsimx", src.dir = extd.dir, node = "Weather")
 
 ## ----inspect-maize-oc----------------------------------------------------
-inspect_apsimx("Maize.apsimx", src.dir = ex.dir, node = "Soil",
+inspect_apsimx("Maize.apsimx", src.dir = extd.dir, node = "Soil",
                soil.child = "Organic")
 
 ## ----edit-maize-oc-------------------------------------------------------
 ocs <- c(1.5,1.4,1.3,1.2,1.1,1.0,0.9)
-edit_apsimx("Maize.apsimx", src.dir = ex.dir,
+edit_apsimx("Maize.apsimx", src.dir = extd.dir,
              wrt.dir = ".",
              node = "Soil",
              soil.child = "Organic", 
@@ -46,10 +47,14 @@ inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
                node = "Soil",
                soil.child = "Organic")
 
-## ----apsimx-wheat, eval = FALSE------------------------------------------
-#  ## One example ('Wheat') is included with the package for the vignette
-#  extd.dir <- system.file("extdata", package = "apsimx")
+## ----apsimx-wheat-no-run, eval = FALSE-----------------------------------
 #  sim <- apsimx("Wheat.apsimx", src.dir = extd.dir, value = "report")
+
+## ----apsimx-wheat-no-run-two, eval = FALSE-------------------------------
+#  ex.dir <- auto_detect_apsimx_examples()
+#  ## Copy 'Wheat' file to your current directory
+#  file.copy(paste0(ex.dir,"/","Wheat.apsimx"),".")
+#  sim <- apsimx("Wheat.apsimx")
 
 ## ----apsimx-wheat-read, echo = FALSE-------------------------------------
 sim <- read_apsimx("Wheat.db", src.dir = extd.dir)
@@ -66,6 +71,29 @@ inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
 ## Looking more in-depth into 'SowingRule1'
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
                node = "Manager", parm = list("SowingRule1",NA))
+
+## ----Millet--------------------------------------------------------------
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager")
+
+## ----Millet-sow----------------------------------------------------------
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
+              parm = list("Sow on a fixed date",NA))
+
+## ----Millet-sow-plt-dens-------------------------------------------------
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
+              parm = list("Sow on a fixed date",5), print.path = TRUE)
+## Or store it in an object for later editing
+pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
+              parm = list("Sow on a fixed date",5), print.path = TRUE)
+
+## ----Millet-edit---------------------------------------------------------
+edit_apsim("Millet", src.dir = extd.dir, wrt.dir = ".",
+           node = "Other", parm.path = pp, value = 8, 
+           edit.tag = "-pp")
+
+## ----removing-Millet-pp, echo = FALSE, eval = FALSE----------------------
+#  ## Apparently this is not needed
+#  file.remove("Millet-pp.apsimx")
 
 ## ----inspect-replacement-node--------------------------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
@@ -131,32 +159,11 @@ inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
                            display.available = TRUE)
 
 ## ----filetypes-----------------------------------------------------------
-ex.dir <- auto_detect_apsimx_examples()
-apsimx_filetype("Barley", src.dir = ex.dir)
-extd.dir <- system.file("extdata", package = "apsimx")
+apsimx_filetype("Wheat.apsimx", src.dir = extd.dir)
 ## This is an older XML 'Maize' file which is no longer distributed
 apsimx_filetype("Maize_old", src.dir = extd.dir)
 
-## ----Millet--------------------------------------------------------------
-extd.dir <- system.file("extdata", package = "apsimx")
-inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager")
-
-## ----Millet-sow----------------------------------------------------------
-inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
-              parm = list("Sow on a fixed date",NA))
-
-## ----Millet-sow-plt-dens-------------------------------------------------
-inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
-              parm = list("Sow on a fixed date",5), print.path = TRUE)
-## Or store it in an object for later editing
-pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
-              parm = list("Sow on a fixed date",5), print.path = TRUE)
-
-## ----Millet-edit---------------------------------------------------------
-edit_apsim("Millet", src.dir = extd.dir, wrt.dir = ".",
-           node = "Other", parm.path = pp, value = 8, 
-           edit.tag = "-pp")
-
-## ----removing-Millet-pp, echo = FALSE, eval = TRUE-----------------------
-file.remove("Millet-pp.apsimx")
+## ----apsim-verions-tail--------------------------------------------------
+ava <- apsim_version()
+aiu <- apsim_version(which = "inuse")
 

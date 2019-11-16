@@ -78,6 +78,41 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',9))
 }
 
+run.inspect.print.path.tests <- TRUE
+
+if(run.inspect.print.path.tests){
+  
+  i <- "Barley.apsimx"
+  pp <- inspect_apsimx(i, src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Clock") 
+    stop("Error in inspect_apsimx, Barley, Clock, print.path")
+  pp <- inspect_apsimx(i, src.dir = ex.dir, parm = "Start", print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Clock.Start") 
+    stop("Error in inspect_apsimx, Barley, Start, print.path")
+  pp <- inspect_apsimx(i, node = "Weather", src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Weather") 
+    stop("Error in inspect_apsimx, Barley, Weather, print.path")
+  pp <- inspect_apsimx(i, node = "Soil", src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.Water") 
+    stop("Error in inspect_apsimx, Barley, Soil, Water, print.path")
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "Water",
+                       parm = "DUL", src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.Water.DUL") 
+    stop("Error in inspect_apsimx, Barley, Soil, Water, DUL, print.path")
+  pp <- inspect_apsimx(i, node = "Manager", src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field") 
+    stop("Error in inspect_apsimx, Barley, Manager, print.path")
+  pp <- inspect_apsimx(i, node = "Manager", parm = list("SowingFertiliser",NA),
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.SowingFertiliser") 
+    stop("Error in inspect_apsimx, Barley, Manager, SowingFertiliser, print.path")
+  pp <- inspect_apsimx(i, node = "Manager", parm = list("SowingFertiliser",1),
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.SowingFertiliser.Amount") 
+    stop("Error in inspect_apsimx, Barley, Manager, SowingFertiliser, Amount, print.path")
+}
+
+
 inspect.replacement.test <- TRUE
 
 if(inspect.replacement.test){
@@ -108,9 +143,7 @@ if(inspect.replacement.test){
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
                              root = list("Experiment", 2),
                              node = "Base2", node.child = "Field",
-                             node.subchild = "Soil",
-                             node.subsubchild = "Water",
-                             parm = "DUL")
+                             node.subchild = "Soil")
   
 }
 

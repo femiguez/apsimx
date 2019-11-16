@@ -66,12 +66,11 @@
 #' 
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
-                        node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
-                                 "MicroClimate","Crop","Manager"),
-                        soil.child = c("Water","Organic",
-                                       "Analysis","InitialWater","Sample"),
+                        node = c("Clock","Weather","Soil","SurfaceOrganicMatter","MicroClimate","Crop","Manager"),
+                        soil.child = c("Water","Organic","Physical","Analysis","InitialWater","Sample"),
                         manager.child = NULL,
-                        parm=NULL, value=NULL, overwrite = FALSE,
+                        parm=NULL, value=NULL, 
+                        overwrite = FALSE,
                         edit.tag = "-edited",
                         parm.path = NULL,
                         verbose = TRUE){

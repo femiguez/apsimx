@@ -13,7 +13,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-11-02" />
+<meta name="date" content="2019-11-16" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -96,16 +96,22 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2019-11-02</h4>
+<h4 class="date">2019-11-16</h4>
 
 
 
+<pre><code>## OS: Darwin 
+## 
+## 
+## |x                        |
+## |:------------------------|
+## |APSIM2019.10.04.4236.app |</code></pre>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>Are you a user of APSIM-X (“Next Generation”)? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the <strong>apsimx</strong> package, which allows you to inspect, edit, run and read files created by APSIM-X (.apsimx) files. New .apsimx files are based on the JSON (JavaScript Object Notation <a href="https://www.json.org/" class="uri">https://www.json.org/</a>) format and it is used to communicate information to the APSIM-X engine. By using the ‘jsonlite’ R package <strong>apsimx</strong> can read and write (‘inspect’ and ‘edit’) files in this format. APSIM ‘Classic’ used an XML format and this type is now fully supported (‘inspect’, ‘edit’, ‘run’ and ‘read’). For ‘inspect’ and ‘edit’ in the APSIM ‘Classic’ version I use the ‘xml2’ package. To run simulations the <em>apsimx</em> function (<em>apsim</em> for ‘Classic’) is available and results from the simulation can be imported as an R object with a dedicated function (<em>read_apsimx</em> ‘NG’ and <em>read_apsim</em> for ‘Classic’). If you need to write scripts (regardless of whether you use the <strong>apsimx</strong> package or not) the vignette ‘writing scripts’ might be useful. The package is currently being developed and available at: <a href="https://github.com/femiguez/apsimx" class="uri">https://github.com/femiguez/apsimx</a>. If you have any questions write to: femiguez <em>at</em> iastate.edu.</p>
 <p>In part this package is inspired by previous work done by Bryan Stanfill on the ‘apsimr’ package (available from CRAN and github: <a href="https://github.com/stanfill/apsimr" class="uri">https://github.com/stanfill/apsimr</a>). That pacakge made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using ‘GAMS’. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package is ‘APSIM’, but as with ‘apsimr’ it has not been updated and it has somewhat of a different functionality. The ‘APSIM’ package is especially useful for creating weahter (‘.met’) files for APSIM ‘Classic’ or ‘Next Generation’.</p>
-<div id="additional-information" class="section level3">
-<h3>Additional information</h3>
+<div id="additional-information" class="section level2">
+<h2>Additional information</h2>
 <p>To install this vignette, you need to have APSIM ‘Next Generation’ installed. However, if you have not used APSIM it is recommended that you become familiar with it before hand.</p>
 <p>See the following for details</p>
 <p><a href="https://www.apsim.info">APSIM</a></p>
@@ -146,8 +152,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><strong>apsim_example</strong> runs (only a few) of the built-in examples.</li>
 <li><strong>apsim_options</strong> sets path for executable, examples and warnings.</li>
 </ul>
-<div id="apsimx_exmple-running-a-built-in-example" class="section level3">
-<h3>‘apsimx_exmple’: Running a built-in example</h3>
+</div>
+</div>
+<div id="using-apsimx" class="section level1">
+<h1>Using ‘apsimx’</h1>
+<div id="running-a-built-in-example-with-apsimx_example" class="section level2">
+<h2>Running a built-in example with ‘apsimx_example’</h2>
 <p>To get started you can run one of the examples distributed with APSIM-X. This function does the following: it detects where the APSIM examples are located, it runs the example indicated and it returns the ‘report’ as a data.frame. After that you can do the usual manipulations, including visualization.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">maize &lt;-<span class="st"> </span><span class="kw">apsimx_example</span>(<span class="st">&quot;Maize&quot;</span>)</code></pre></div>
 <p>After we run this example we can treat it as a standard data frame in R.</p>
@@ -185,18 +195,19 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <span class="st">  </span><span class="kw">geom_point</span>()</code></pre></div>
 <p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAYAAAAUg66AAAAEGWlDQ1BrQ0dDb2xvclNwYWNlR2VuZXJpY1JHQgAAOI2NVV1oHFUUPrtzZyMkzlNsNIV0qD8NJQ2TVjShtLp/3d02bpZJNtoi6GT27s6Yyc44M7v9oU9FUHwx6psUxL+3gCAo9Q/bPrQvlQol2tQgKD60+INQ6Ium65k7M5lpurHeZe58853vnnvuuWfvBei5qliWkRQBFpquLRcy4nOHj4g9K5CEh6AXBqFXUR0rXalMAjZPC3e1W99Dwntf2dXd/p+tt0YdFSBxH2Kz5qgLiI8B8KdVy3YBevqRHz/qWh72Yui3MUDEL3q44WPXw3M+fo1pZuQs4tOIBVVTaoiXEI/MxfhGDPsxsNZfoE1q66ro5aJim3XdoLFw72H+n23BaIXzbcOnz5mfPoTvYVz7KzUl5+FRxEuqkp9G/Ajia219thzg25abkRE/BpDc3pqvphHvRFys2weqvp+krbWKIX7nhDbzLOItiM8358pTwdirqpPFnMF2xLc1WvLyOwTAibpbmvHHcvttU57y5+XqNZrLe3lE/Pq8eUj2fXKfOe3pfOjzhJYtB/yll5SDFcSDiH+hRkH25+L+sdxKEAMZahrlSX8ukqMOWy/jXW2m6M9LDBc31B9LFuv6gVKg/0Szi3KAr1kGq1GMjU/aLbnq6/lRxc4XfJ98hTargX++DbMJBSiYMIe9Ck1YAxFkKEAG3xbYaKmDDgYyFK0UGYpfoWYXG+fAPPI6tJnNwb7ClP7IyF+D+bjOtCpkhz6CFrIa/I6sFtNl8auFXGMTP34sNwI/JhkgEtmDz14ySfaRcTIBInmKPE32kxyyE2Tv+thKbEVePDfW/byMM1Kmm0XdObS7oGD/MypMXFPXrCwOtoYjyyn7BV29/MZfsVzpLDdRtuIZnbpXzvlf+ev8MvYr/Gqk4H/kV/G3csdazLuyTMPsbFhzd1UabQbjFvDRmcWJxR3zcfHkVw9GfpbJmeev9F08WW8uDkaslwX6avlWGU6NRKz0g/SHtCy9J30o/ca9zX3Kfc19zn3BXQKRO8ud477hLnAfc1/G9mrzGlrfexZ5GLdn6ZZrrEohI2wVHhZywjbhUWEy8icMCGNCUdiBlq3r+xafL549HQ5jH+an+1y+LlYBifuxAvRN/lVVVOlwlCkdVm9NOL5BE4wkQ2SMlDZU97hX86EilU/lUmkQUztTE6mx1EEPh7OmdqBtAvv8HdWpbrJS6tJj3n0CWdM6busNzRV3S9KTYhqvNiqWmuroiKgYhshMjmhTh9ptWhsF7970j/SbMrsPE1suR5z7DMC+P/Hs+y7ijrQAlhyAgccjbhjPygfeBTjzhNqy28EdkUh8C+DU9+z2v/oyeH791OncxHOs5y2AtTc7nb/f73TWPkD/qwBnjX8BoJ98VQNcC+8AADd+SURBVHgB7Z0HvBTV9cevMYmxoAhYEBUVFVQEJQJWBLtRwW4kdgEVo2gM2MECSglg72IXxIKAomJDEDsSDSpYEAVEkY4tJLr//d549z+7b3fe7L65+3bf/s7n897uTrlz5jszZ24559zVEkkxEhEQARGoBQK/qYVj6pAiIAIiYAnIAOlGEAERqDUCMkC1hl4HFgERkAHSPSACIlBrBGSAag29DiwCIiADpHtABESg1gj8ttaOXMQDr1y50uBt8N///jf2o/7ud78zq622mlm1alXsZf/mN7+xZf/888+xl/373//elulD79VXX93y/uWXX2LXe4011jDw8HEtf/vb39qyfXim/OEPf7A6+9Cbe/A///lP7KwpEL25Rwq9ltxn66yzTk7dKsIAcdF5KP7973/nBFHoCi4QNy5GLm6hbMSH3muttZYt24felI2R8GHc1l13Xcvj+++/t/rH+Y+HBdY+jET9+vUNOvu4lmuuuaYtO27DyYu1QYMGVmcfenPt1ASL8w5WWSIgAnkRkAHKC5c2FgERiJOADFCcNFWWCIhAXgRkgPLCpY1FQATiJFA0A7R06VLzwgsvmAULFlTRf9asWWbixIlm0aJFaev4/dxzzxnWZ0qufTK3028REIHSJVAUAzR27Fhz7rnnms8//9xceeWV5rrrrksRGT58uBkyZIiZPn26Of30082XX35p1/H71FNPNR9//LHp06ePGTNmTLX7pDbQFxEQgbIg4N0AMRz7wAMPmKuuusp0797dDBs2zNaEqBHNmTPHTJkyxdxxxx3mwgsvNMcff7x56KGHLDiMVP/+/c0555xj148YMcIO64btUxbEpWRsBD799FNzwAEHmObNm5tWrVqlXl6xHUAFeSfg3Q8I/5v77rvPrL322vZkfvrpJ/Pdd99ZP5HZs2fbGweHO6RNmzbm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QASqJVCtAfrggw/Ms88+a5tfU6ZMMXjQdurUyRx11FHmjjvuMM2aNav2INpABERABLIRCDVAe++9t3VA3Hnnnc2BBx5o+vbta3bbbTcbi5OtsHJeNmvWLPPtt99ap8qNNtqonE9FuotA2RAINUArV660U7oysyLezjgmutinsjnDCIpedtll5pFHHrHBgkuXLjV33nmnOeSQQyLsqU1EQARqQiC0E/qNN96wHc6bbrqpGTZsmOGzVatWpnfv3ubFF1+0HtI1OXgp7EsM24gRIwz9WxgfpHv37mbmzJmloJ50EIE6TSDUABGNvc8++5jBgweb999/38ydO9ecd955Zs6cOeaYY44xDRo0sDUFglTLVR577LEqqnPeGFiJCIhAVQI8M4MGDTIPPPBA1ZV5LgltgmWW1aRJE3PaaaeZLl262JEwag54SJNq4IgjjsjcvCx+ZwstIbp9zTXXLAv9paQIFJMAfcGffvqp+fHHH21c6NChQ827775rM0IUokdoDcgV+MknnxjSbtA02W677cwGG2xgzjnnHOsh/dBDD5mbb77ZbVp2nzQngzlLSNtBzpbjjz++7M5FCouATwL0k/7rX/+yxofjkA1j+fLl5vbbby/4sKE1oLPPPttQ3Vq4cKFtbtEc69Wrl9lvv/1sh3TBRy2hHfFhIsoftwKMT8uWLc1tt92mGlAJXSOpUhoEPvzwwyqKkAiN7plCJdQAEfNFOg4MDkPxNE3qomCEPv7447p4aiVzTrzInnrqKTuqesUVV9jPklFOikQiwCAUXRM0v5zQeiAlT6GyWjKLWqLQnctlP0a3yMzGSFfcst5669km3OLFi+Mu2iZ/o1YWvOBxHWT99de3RbmRv7jKpRyXNnXVqlW22J49e5rx48fbKjsvMV5shPUUcuPS/OetS4aGuKVevXqWtY+shfiWcf999913cattjTlNobgfZe69jTfe2I4O0y0Bl+23394yovnFYA3XmMGpXJkPcVxmsCqX1LhKc8IJJ5iLLrooV/laXuEEpk+fblO6cMMiLpMCfYiS8iJAbQeHXVpFhx56qO0T/uyzz3IanyhnF9oEi1IA1TJ5DkchVZnbfP311/YNTRBzUL766qvgT30vEwLUis4///zYtK2xASJKXiICuQgQK+iaYm4bquuNGzd2P/VZwQRCDdCiRYsiZfEnUX39+vUrGKNO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+hQBERCBSAQi9QFREk6HRx55pJ3XKFLJ2kgEREAEqiEQ2QBRzr333mv69u1r03H48GeoRletFgERqGME8jJAHTt2NK+++qoZN26c9YReuXKl7ZCuY0x0OiIgAkUikJcBwkOUKUXojP7qq6/sdMNLliwpkqo6jAiIQF0jkJcBciffpEkTOxrGyNiAAQPcYn2KgAiIQF4EIo+CDR48OG1e63r16tkZUi+++GLToEGDvA6qjUVABEQAApENUI8ePaoQI0RjyJAhVZZrgQiIgAhEIRBqgJgbikjWHXbYwbzyyis5I5AJSm3ZsmWU42kbERABEUgRCDVATNmLpzMxX126dLG5f1J7Br4weaEcEQNA9FUERCASgVADNH369NQw+8KFC3MWqGj4nGi0QgREIIRAqAFySavYn9gvUrIuXrw41RTDGXH58uVm0aJFNlo+5DhaJQIiIAJVCIQaoODWDz74oDnzzDOz5gTq3r27DFAQlr6LgAhEIhDZD6h3797m6KOPtnPCMwSPMyKTEjZu3Nhce+21kQ6mjURABEQgSCBSDYhm1tdff2369+9vmAeMtJj169c355xzjiHd6TXXXGOGDh0aLFffRUAERKBaApFqQGuttZZN6k6OYqRFixZm6tSp9nv79u0Nw/USERABEciXQCQDRGd069atTb9+/QwBqCQie/TRR21GxAkTJpgtt9wy3+NqexEQARGI7gl9yy232Ah4IuLpdP7jH/9onRQZCSM6XiICIiAC+RKI1AdEoW3btjVffvmlnSMI72h8hCZOnGj2339/O19YvgfW9iIgAiIQaoBwPsw24Rmd0kw+x0ypCCk5FJCqm0kERCBfAqEGaJ999jHM+1Wd1CQUg1oVuYWcNGzY0GyzzTb2Jw6O06ZNM1tssYVp3ry528R+zpo1y3zxxRemTZs2plGjRmnr9EMERKA8CIQaIIbbEUa6jj/+eLPLLrtkPauaGIC77rrLfPPNN6lUH8SeYYBo4pH+lfnI6H865ZRT7LRAKEAifAwj2918883mxhtvNJtvvnlW3bRQBESgdAmEGqCXX37ZOhyOGjXKDBo0yKy99trWEDEX2Pbbbx/LWX3yySe27EwDct1111m/I0bfjj32WNOtWzdzyCGH2NoSUwMxNz0xaOj20EMPGfISSURABMqLQLXD8LvuuqvBGMybN8/ceeedhn6hvffe2w7LDxw40MyZM6fgM2Z2VfqPvv32W0OoB8dAmMed79SGENJ94Is0f/58M3v2bLvcBcDSBPvwww/tdvonAiJQXgRCa0DBU+GB75gcgufvpptusiEZ1Dy23nprOzPqsGHDgptH+v7ZZ59ZT2qme15zzTXtvGOnnnqq2XnnnW1ta7XVVkuVs95661ljtWDBAsN3J+uuu64NkHW/+Rw5cqQhg6MTDKdzG3DL4vp0OmIk4xZXNucYt7iyfepNDvG4Bb15GXG/xC2UTS3fl96UzV/cgt5rrLFG3MWmyuN5Cz5zqRURvvz000+hW0U2QK6UVatWmeeff97m/3nqqafs6NcWyU7iQmS77bYzY8aMMeuvv77dHWM2YsQI29eUOe0PtSI8sRl9C65jeebNSOJ8AmedMEJHyAi6xy1Op++//z7uoq33OYVmG4ms6cF4iHnQyHAQt5A5gWsUvE5xHQMXEHhwPeMWHmLK/uWXX+Iu2hA/yf3n4x7k/udBj9twYtjQm7J5znxIJAPkjA7ez2PHjrU5gpikkCRkzBFPatZCZNmyZWbFihUpA0Q/EB3SGCQeaG4yZ9lpqpEEn5i0999/P3U4lhMQGxSyMwYzNC5dutReeB9Gwp27j7IxbtwEvowEzHzozYPADevjYcNwUrYPvanlw9rHw+YMpw+9iVSgXF8GiOewuppM8PkLfnfPb3BZ8HtoH9CLL75oaBJRTe/atas9QZpdGAlGr3BCdA9gsNCo3/EnOv/88+1FBx41KvqXeIMy8uY8rCdPnmyNEoYJh8gZM2aYuXPn2htl/Pjxpl27dlEPqe1EQARKiEBo1aVXr15m5syZtt/noIMOsrUR+m34CwrD4azPV5o1a2aneybhPW8d+jquvvpqW0zPnj1Nnz59bBONNxND8gjbsD2jYjStmjZtao2jXal/IiACZUVgtWTNI2dPYYcOHQwOf9VJ586d7QhZddvlWk+b+7vvvrPGJXMbmmmk/sgU1w9A1bY6oQlG35GP6i+dc9QCyRQZt/hsgrl+N9jELa6Z5KMJhm8aTQKa7nEL/R2+mmC0Irj/uM/jFp4PWhMhj3JBh6T5v/HGGxvukZo0wcKiJEJrQDR9iiHUcHKN9GQzPuhEuzeYMrYYeuoYIiAC8RII7QOK91AqTQREQATSCcgApfPQLxEQgSISkAEqImwdSgREIJ2ADFA6D/0SAREoIgEZoCLC1qFEQATSCcgApfPQLxEQgSISkAEqImwdSgREIJ2ADFA6D/0SAREoIgEZoCLC1qFEQATSCcgApfPQLxEQgSISkAEqImwdSgREIJ2ADFA6D/0SAREoIgEZoCLC1qFEQATSCcgApfPQLxEQgSISkAEqImwdSgREIJ2ADFA6D/0SAREoIgEZoCLC1qFEQATSCcgApfPQLxEQgSISkAEqImwdSgREIJ2ADFA6D/0SAREoIgEZoCLC1qFEQATSCcgApfPQLxEQgSISkAEqImwdSgREIJ1A6Lxg6ZuW7y8mJWS657gnboMIkxIyrxmT8cUtlM3kcPzFLTBBfOgNa3TnL26BBeX60Jt55rhHmCgzbkFvyvehN9dyzTXXjFvl1H3H/O7c4z4k/jvEh5YxlMlN9fPPP8dQUnoRzqj5KJuLzo3ro2yfesPaF2/oo7sPJj71dobNh96+eLgXX02uZXWGqyIMkLvoTOkbt7jpk32UzQ3An4+y3ZvYR9m8kf/73/8aH1Mzu4fNh97U3NAZ3X0I96EPvan9oDds4hRngNw06IWUTe0pTPzUq8KOqHUiIAIi8CsBGaAyuRVWrFhhTjzxRLP11lubrbbaykyZMqVMNJeaIpCbgAxQbjYls4aqe4sWLcykSZPMDz/8YH766SdzwgknmMmTJ5eMjlJEBAohIANUCLUi7/P000/b0RPXl8XhaZf379+/yJrocCIQLwEZoHh5eimNGo8bNg8eYOXKlcGf+i4CZUdABqgMLlmHDh1ssyuoKqMLhxxySHCRvotA2RGQASqDS7bxxhubRx991Gpav359U69ePXPwwQebyy67rAy0l4oikJtARfgB5T798lnTrl0788EHH9g/jFDLli3LR3lpKgI5CMgA5QBTiovXX399s+eee5aiatJJBAoioCZYQdi0kwiIQBwEZIDioKgyREAECiIgA1QQNu0kAiIQBwEZoDgoqgwREIGCCMgAFYRNO4mACMRBQAYoDooqQwREoCACqyVziMSbRKQgNcp3pz59+pgvvvjCPPLII2V1Ej169LDhHbfeemtZ6X3QQQeZvffe21x88cVlpTd+XKeddpo588wzy0bvpUuXmt13390MGzbMOr76UFx+QDWk6hJk1bCYou9OlrtyFAJyy1H3ctSbe9tlifR1r6gJ5ousyhUBEaiWgGpA1SIK36B169aGWK1yk1122SWVdLycdCcwd7vttisnla2u++23n00mV06Kk6KWJm/jxo29qa0+IG9oVbAIiEB1BNQEq46Q1ouACHgjIAMUgnbmzJlmzpw5aVuQm/mFF14wCxYsSFvOj9mzZ9s0qaRNDQqjCbn2CW4X1/fnn3++yswOufSmc/S1114zM2bMyNm5+/LLL5tiJD/LpncupmF6f/PNN+a5554zn3zySVxIQ8uJS293rj5mzgieQNj9OGvWLDNx4kSzaNGi4C72N0xZnym59sncLtvv1a9ISrYVlb7s888/N+edd55NAL/NNttYHOPGjTMDBgyw+XjuuecemyaVJPHIRRddZF566SX74N9yyy1mr732Muuss44ZO3asGTp0qFlvvfXMyJEjzaeffmp23XVXu4+Pf48//rgZNGiQTWDvJgbMpfe8efPMGWecYaeKmTZtmtV/n332SesbIu/05ZdfbodhSQPiS7LpnYtpmN7Tp083l1xyiWnUqJEZM2aMfWB22203X2qbuPS+9tprDYYew/qPf/zD3j/kfYpbwu7H4cOHmyeffNJO8XPzzTebPfbYw963MOVZ4PrffvvthqmoXD9crn0i640fkCSdQPIiJLp06ZI4/vjjExMmTEit5PeHH35ofyffEIl99903kUyXmki+aRNHH310arvkTZlIJgtLJOeXShx11FGJ5JvNrvv+++8TySyGiSVLlqS2jetLMkd0Iukbk0j69ySSKTusXq7sXHrfcccdieSN5jZLnH322YmkEU39/vbbbxMnn3xy4tBDD00ka4Kp5XF+yaV3LqYcO0xvzv/111+3KnJtksYzkaxRxKmyLStOvZM1ksSBBx6YumbJhzyR9M+KXeew+zH5wk0cccQRiaQBtMdNviwT11xzjf1+0kknJf75z3/a719//bW9H2Aatk9U5dUEy2Kqmejt7rvvNtR83ORsVFsXLlxott12W7tHw4YNbU1o/vz55v333zetWrVKlcQ2VKfJ43zfffeZLbfc0q4jt/N3333nZVZP3pzUrHhzBSVfvT/77DO7e/IGMgMHDjR//etf7RsvWGac33PpnYspx862Dr2TBt7WMJs3b26bEV999ZW56qqr7LTccepMWXHqTU2ZaZvfeecds3z5ctsc3nDDDeNWOfR+5H7lHnYzmbZp08YkX7a2Rk+N093fG220ka35c9/n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" /><!-- --></p>
 </div>
-<div id="inspect_apsimx-inspecting-a-file" class="section level3">
-<h3>‘inspect_apsimx’: Inspecting a file</h3>
-<p>A function to inspect an .apsimx file is included. This is meant to be used simply to avoid the need to use the GUI when a quick inspection of a given component is needed. In addition, it can make it easier to supply the path for editing later (see example below). For example, if you edit a file and want to make sure that the intended component was edited correctly just inspect it. For complex inspections and manipulations of an .apsimx file the GUI is recommended.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
-<span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">node =</span> <span class="st">&quot;Weather&quot;</span>)</code></pre></div>
-<pre><code>## Met file: %root%\Examples\WeatherFiles\Dalby.met</code></pre>
+<div id="inspecting-a-file-with-inspect_apsimx-why" class="section level2">
+<h2>Inspecting a file with ‘inspect_apsimx’: Why?</h2>
+<p>Being able to inspect a file from within R is a functionality which was not considered in previous R packages. My first motivation for doing this was to be able to verify from within R that if I edited an APSIM(X) file the editing worked as expected. The second use of ‘inspect’ is to be able to understand the structure of ‘apsim’ files better. A third useful aspect of ‘inspect’ is that it can be used to supply the path for a parameter that will be later edited. In addition, having this functionality within R allows to make these tasks repeatable. For complex inspections and manipulations of an .apsim(x) file the GUI is recommended. However, this package is designed to work with relatively simple .apsim(x) files.</p>
 </div>
-<div id="edit_apsimx-editing-a-file" class="section level3">
-<h3>‘edit_apsimx’: Editing a file</h3>
+<div id="inspecting-and-editing-the-maize-example" class="section level2">
+<h2>Inspecting and Editing the ‘Maize’ example</h2>
+<p>Here I’m using the ‘Maize’ example distributed with APSIM-X but stored in the package and the specific task is that we want to make sure that the intended component was edited as expected. Let’s look at the weather file used.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
+<span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node =</span> <span class="st">&quot;Weather&quot;</span>)</code></pre></div>
+<pre><code>## Met file: %root%\Examples\WeatherFiles\Dalby.met</code></pre>
 <p>Editing a file has the side effect of creating a new file with ‘-edited’ added to the name to avoid conflict or unintended consequences, but it is also possible to overwrite it. This follows the same style as in the ‘apsimr’ package. One difference is that it is possible to supply a different ‘edit.tag’. This code does not run an APSIM simulation, it only edits the file.</p>
 <p>Let’s say we want to modify the values of ‘Organic Carbon’ in the soil in the ‘Maize.apsimx’ example. First we should inspect the current values.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir, <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
                <span class="dt">soil.child =</span> <span class="st">&quot;Organic&quot;</span>)</code></pre></div>
 <pre><code>## Soil Type:  Clay 
 ## Latitude:  -27.58184 
@@ -221,7 +232,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ## 150-180   300         0.12     12            0.01    1        22.1912165985086</code></pre>
 <p>The function ‘inspect_apsimx’, in this example, displays various information about the organic matter in the soil. (See the help page for more options). In the next step we ‘edit’ or change the values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ocs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">1.5</span>,<span class="fl">1.4</span>,<span class="fl">1.3</span>,<span class="fl">1.2</span>,<span class="fl">1.1</span>,<span class="fl">1.0</span>,<span class="fl">0.9</span>)
-<span class="kw">edit_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> ex.dir,
+<span class="kw">edit_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
              <span class="dt">wrt.dir =</span> <span class="st">&quot;.&quot;</span>,
              <span class="dt">node =</span> <span class="st">&quot;Soil&quot;</span>,
              <span class="dt">soil.child =</span> <span class="st">&quot;Organic&quot;</span>, 
@@ -258,22 +269,28 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ## 150-180   300         0.9      12            0.01    1        22.1912165985086</code></pre>
 </div>
 </div>
-<div id="running-a-simulation" class="section level2">
-<h2>Running a simulation</h2>
-<p>The proposed workflow is to start by creating an .apsimx file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The funcitons included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. This is the proposed workflow:</p>
+<div id="proposed-workflow" class="section level1">
+<h1>Proposed workflow</h1>
+<p>It is recommended that you start by creating an .apsim(x) file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The funcitons included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. This is the proposed workflow:</p>
 <ol style="list-style-type: decimal">
 <li>Create a simualtion using the APSIM GUI</li>
 <li>Identify variables/parameters that you want to modify (they need to be exposed in the .apsimx (JSON) or .apsim (XML) file)</li>
 <li>Edit the file using ‘edit_apsim(x)’</li>
 <li>Run the simulation using ‘apsim(x)’</li>
 <li>Repeat steps 3 and 4 as needed</li>
-<li>Read in the results, possibly using ‘read_apsim(x)’</li>
-<li>Perform visual and statistical analysis on the results</li>
+<li>Read in and/or manipulate the results, possibly using ‘read_apsim(x)’</li>
+<li>Perform visual and statistical analysis</li>
 </ol>
-<p>Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. Additional tools for implementing this type of work will be added in future development.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## One example ('Wheat') is included with the package for the vignette
-extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
-sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>)</code></pre></div>
+<p>Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. This is considered for future development, but not a priority since this kind of task is very specific to a given project and they are unlikely to generalize well across a range of applications.</p>
+<div id="wheat-example-apsim-x" class="section level2">
+<h2>Wheat Example (APSIM-X)</h2>
+<p>The ‘Wheat’ example is distributed with the ‘apsimx’ package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>)</code></pre></div>
+<p>If you have APSIM-X installed you can also run it in this way.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
+## Copy 'Wheat' file to your current directory
+<span class="kw">file.copy</span>(<span class="kw">paste0</span>(ex.dir,<span class="st">&quot;/&quot;</span>,<span class="st">&quot;Wheat.apsimx&quot;</span>),<span class="st">&quot;.&quot;</span>)
+sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Calcualte summary statistics on all variables
 <span class="kw">summary</span>(sim)</code></pre></div>
 <pre><code>##   CheckpointID  SimulationID     Zone           Clock.Today       
@@ -359,9 +376,86 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## RowSpacing     250    
 ## Population     120</code></pre>
 </div>
-<div id="advanced-example-inspecting-a-replacement-component" class="section level2">
-<h2>Advanced example: Inspecting a ‘Replacement’ component</h2>
-<p>Many additional options in an APSIM-X simulation can be realized through the use of ‘Replacements’. For this, there is a function that allows inspection. For this, it is important to know the structure of the ‘replacement’. It is possible to explore the available components. For example, if we want to display the xy pair for the thermal time in the phenology component of the ‘Maize’ replacement we might go through the following steps:</p>
+<div id="millet-example-apsim-classic" class="section level2">
+<h2>Millet example (APSIM ‘Classic’)</h2>
+<p>One of the difficulties with working with APSIM(X) in scripting efforts is that the names of the parameters that we might want to edit can be buried deep in the .apsim(x) file and that there might be multiple instances of those parameters. To overcome this (to some extent) the ‘inspect’ functions can provide the path to the parameter to edit. For example,</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>)</code></pre></div>
+<pre><code>## Crop Type:  millet 
+## Management Scripts:
+## Sow on a fixed date
+## Harvesting rule
+## Tiller Aggregation</code></pre>
+<p>We can see that we have ‘Sow on a fixed date’ as one of the options. Let’s say that we want to edit the planting density</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>,
+              <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;Sow on a fixed date&quot;</span>,<span class="ot">NA</span>))</code></pre></div>
+<pre><code>## Crop Type:  millet 
+## Management Scripts:
+## Sow on a fixed date
+## Harvesting rule
+## Tiller Aggregation
+## 
+## 
+## Selected manager:  Sow on a fixed date 
+## 
+## 
+## parm                                  value   
+## ------------------------------------  --------
+## Sowing criteria                               
+## Enter sowing date (dd-mmm) :          1-dec   
+## Sowing parameters                             
+## Enter name of crop to sow :           millet  
+## Enter sowing density  (plants/m2) :   7.5     
+## Enter sowing depth  (mm) :            30      
+## Enter cultivar :                      wrajpop</code></pre>
+<p>Planting density is the fifth element in that table. We can obtain the full path by using the ‘print.path’ option. It makes sense to use this option once you have found the parameter you are looking for.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>,
+              <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;Sow on a fixed date&quot;</span>,<span class="dv">5</span>), <span class="dt">print.path =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Crop Type:  millet 
+## Management Scripts:
+## Sow on a fixed date
+## Harvesting rule
+## Tiller Aggregation
+## 
+## 
+## Selected manager:  Sow on a fixed date 
+## 
+## 
+##      parm                                  value 
+## ---  ------------------------------------  ------
+## 5    Enter sowing density  (plants/m2) :   7.5   
+## Parm path: /folder/simulation/area/folder/manager[1]/ui/density</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Or store it in an object for later editing
+pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>,
+              <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;Sow on a fixed date&quot;</span>,<span class="dv">5</span>), <span class="dt">print.path =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Crop Type:  millet 
+## Management Scripts:
+## Sow on a fixed date
+## Harvesting rule
+## Tiller Aggregation
+## 
+## 
+## Selected manager:  Sow on a fixed date 
+## 
+## 
+##      parm                                  value 
+## ---  ------------------------------------  ------
+## 5    Enter sowing density  (plants/m2) :   7.5   
+## Parm path: /folder/simulation/area/folder/manager[1]/ui/density</code></pre>
+<p>Once we have identified the parameter we want to edit, we can do so by using the ‘edit_apsim’ function. When using the ‘parm.path’ argument, node should be “Other”.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">edit_apsim</span>(<span class="st">&quot;Millet&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">wrt.dir =</span> <span class="st">&quot;.&quot;</span>,
+           <span class="dt">node =</span> <span class="st">&quot;Other&quot;</span>, <span class="dt">parm.path =</span> pp, <span class="dt">value =</span> <span class="dv">8</span>, 
+           <span class="dt">edit.tag =</span> <span class="st">&quot;-pp&quot;</span>)</code></pre></div>
+<pre><code>## Edited /folder/simulation/area/folder/manager[1]/ui/density 
+## Edited parameter 
+## New values  8 
+## Created  ./Millet-pp.apsim</code></pre>
+</div>
+</div>
+<div id="advanced-examples" class="section level1">
+<h1>Advanced Examples</h1>
+<div id="inspecting-a-replacement-component" class="section level2">
+<h2>Inspecting a ‘Replacement’ component</h2>
+<p>Many additional options in an APSIM-X simulation can be realized through the use of ‘Replacements’. For this, there is a function that allows inspection. For this, it is important to know the structure of the ‘replacement’ and explore the available components. For example, if we want to display the xy pair for the thermal time in the phenology component of the ‘Maize’ replacement we might go through the following steps:</p>
 <p>State the node (“Maize”) and display available components:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
@@ -440,9 +534,9 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## no node sub-children available</code></pre>
 <p>The function <strong>inspect_apsimx_replacement</strong> can also be used to inspect more complex file structures such as the ‘Factorial’ example distributed with APSIM-X. See ‘?inspect_apsimx_replacement’.</p>
 </div>
-<div id="advanced-example-editing-a-replacement" class="section level2">
-<h2>Advanced example: Editing a ‘Replacement’</h2>
-<p>After using the ‘inspect’ version of the file editing should be much more straight forward.</p>
+<div id="editing-a-replacement" class="section level2">
+<h2>Editing a ‘Replacement’</h2>
+<p>After using the ‘inspect’ version of the file, editing should be much more straight forward.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">edit_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                         <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
                         <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, 
@@ -473,8 +567,8 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## X : 0 18 26 34 44 
 ## Y : 0 12 20 28 0</code></pre>
 </div>
-<div id="advanced-example-factorial" class="section level2">
-<h2>Advanced example: Factorial</h2>
+<div id="inspecting-a-factorial" class="section level2">
+<h2>Inspecting a Factorial</h2>
 <p>The complexity of APSIM-X files can be mind-boggling and it makes it difficult to write robust functions across all tasks that APSIM is able to accomplish. I wrote the ‘inspect_apsimx_replacement’ and ‘edit_apsimx_replacement’ specifically to edit replacements but these functions have much more flexibility than ‘inspect_apsimx’ and ‘edit_apsimx’. The function ‘apsimx_example’ is limited in the number of examples that it is allowed to run, but this does not mean that you cannot run the other examples which are distributed with APSIM-X. Let’s take the ‘Factorial’ example:</p>
 <p>If we want to inspect and edit this file, we need the ‘inspect_apsimx_replacement’ function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## There are multiple 'Experiments' so we need to pick one
@@ -510,121 +604,53 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## Enabled : TRUE 
 ## ReadOnly : FALSE 
 ## no node sub-children available</code></pre>
-<p>Here we stopped at this level but it is possible to dig deeper using ‘node.subchild’ and ‘node.subsubchild’. It is not possible at this point to dig deeper in the hierarchy level.</p>
-<div id="running-the-factorial-example" class="section level3">
-<h3>Running the ‘Factorial’ example</h3>
-<p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge.</p>
-</div>
+<p>Here we stop at this level but it is possible to dig deeper using ‘node.subchild’ and ‘node.subsubchild’. It is not possible at this point to dig deeper than ‘node.subsubchild’ in the hierarchy level.</p>
+<p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge source.</p>
 </div>
 </div>
 <div id="file-type-or-file-format-details" class="section level1">
 <h1>File Type (or File Format) Details</h1>
-<p>APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files is less verbose and it is associated with better performance. All distributed APSIM-X examples are ‘JSON’ now.</p>
-<p>The apsimx package supports inspection and editing of both file types, but XML is for ‘Classic’ only and JSON is for APSIM-X. In most instances the parameters that are likely to need inspection and editing are supported but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON (note: this is fragile and might not even be needed in the future).</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
-<span class="kw">apsimx_filetype</span>(<span class="st">&quot;Barley&quot;</span>, <span class="dt">src.dir =</span> ex.dir)</code></pre></div>
+<p>APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x, ‘Classic’. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files are less verbose and they are gaining widespread adoption. All distributed APSIM-X examples are ‘JSON’ now.</p>
+<p>The apsimx package supports inspection and editing of both file types, but XML is for ‘Classic’ only and JSON is for APSIM-X. In most instances the parameters that are likely to need inspection and editing are supported, but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON (note: this is fragile and might not even be needed in the future).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">apsimx_filetype</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir)</code></pre></div>
 <pre><code>## [1] &quot;json&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
-## This is an older XML 'Maize' file which is no longer distributed
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## This is an older XML 'Maize' file which is no longer distributed
 <span class="kw">apsimx_filetype</span>(<span class="st">&quot;Maize_old&quot;</span>, <span class="dt">src.dir =</span> extd.dir)</code></pre></div>
 <pre><code>## [1] &quot;xml&quot;</code></pre>
-<p>It is possible that the function above will soon be obsolete as all .apsimx files are JSON and all .apsim files are XML.</p>
-</div>
-<div id="why-inspect" class="section level1">
-<h1>Why inspect?</h1>
-<p>One of the difficulties with working with APSIM(X) in scripting efforts is that the names of the parameters that we might want to edit can be buried deep in the .apsim(x) file and that there might be multiple instances of those parameters. To overcome this (to some extent) the ‘inspect’ functions can provide the path to the parameter to edit. For example,</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
-<span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>)</code></pre></div>
-<pre><code>## Crop Type:  millet 
-## Management Scripts:
-## Sow on a fixed date
-## Harvesting rule
-## Tiller Aggregation</code></pre>
-<p>We can see that we have ‘Sow on a fixed date’ as one of the options. Let’s say that we want to edit the planting density</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>,
-              <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;Sow on a fixed date&quot;</span>,<span class="ot">NA</span>))</code></pre></div>
-<pre><code>## Crop Type:  millet 
-## Management Scripts:
-## Sow on a fixed date
-## Harvesting rule
-## Tiller Aggregation
-## 
-## 
-## Selected manager:  Sow on a fixed date 
-## 
-## 
-## parm                                  value   
-## ------------------------------------  --------
-## Sowing criteria                               
-## Enter sowing date (dd-mmm) :          1-dec   
-## Sowing parameters                             
-## Enter name of crop to sow :           millet  
-## Enter sowing density  (plants/m2) :   7.5     
-## Enter sowing depth  (mm) :            30      
-## Enter cultivar :                      wrajpop</code></pre>
-<p>Planting density is the fifth element in that table. We can obtain the full path by using the ‘print.path’ option. It makes sense to use this option once you have found the parameter you are looking for.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>,
-              <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;Sow on a fixed date&quot;</span>,<span class="dv">5</span>), <span class="dt">print.path =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Crop Type:  millet 
-## Management Scripts:
-## Sow on a fixed date
-## Harvesting rule
-## Tiller Aggregation
-## 
-## 
-## Selected manager:  Sow on a fixed date 
-## 
-## 
-##      parm                                  value 
-## ---  ------------------------------------  ------
-## 5    Enter sowing density  (plants/m2) :   7.5   
-## Parm path: /folder/simulation/area/folder/manager[1]/ui/density</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Or store it in an object for later editing
-pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet.apsim&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node  =</span> <span class="st">&quot;Manager&quot;</span>,
-              <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;Sow on a fixed date&quot;</span>,<span class="dv">5</span>), <span class="dt">print.path =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## Crop Type:  millet 
-## Management Scripts:
-## Sow on a fixed date
-## Harvesting rule
-## Tiller Aggregation
-## 
-## 
-## Selected manager:  Sow on a fixed date 
-## 
-## 
-##      parm                                  value 
-## ---  ------------------------------------  ------
-## 5    Enter sowing density  (plants/m2) :   7.5   
-## Parm path: /folder/simulation/area/folder/manager[1]/ui/density</code></pre>
-<p>Once we have identified the parameter we want to edit, we can do so using the ‘edit_apsim’ function. When using the ‘parm.path’ argument, node should be “Other”.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">edit_apsim</span>(<span class="st">&quot;Millet&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">wrt.dir =</span> <span class="st">&quot;.&quot;</span>,
-           <span class="dt">node =</span> <span class="st">&quot;Other&quot;</span>, <span class="dt">parm.path =</span> pp, <span class="dt">value =</span> <span class="dv">8</span>, 
-           <span class="dt">edit.tag =</span> <span class="st">&quot;-pp&quot;</span>)</code></pre></div>
-<pre><code>## Edited /folder/simulation/area/folder/manager[1]/ui/density 
-## Edited parameter 
-## New values  8 
-## Created  ./Millet-pp.apsim</code></pre>
-<pre><code>## Warning in file.remove(&quot;Millet-pp.apsimx&quot;): cannot remove file 'Millet-
-## pp.apsimx', reason 'No such file or directory'</code></pre>
-<pre><code>## [1] FALSE</code></pre>
-<p>This provides a template for creating complex simulations out of simple ones.</p>
 </div>
 <div id="additional-functions" class="section level1">
 <h1>Additional functions</h1>
-<p><strong>apsim_version</strong> displays which version(s) of APSIM(X) are available</p>
-</div>
-<div id="to-do" class="section level1">
-<h1>To-Do</h1>
-<ul>
-<li><p><strong>inspect_apsimx_replacement</strong> challenge this function with more complex examples</p></li>
-<li><p>Add more tests using the ‘CoverCrop example’ (APSIM ‘Classic’). This would be the motivation for writing a function for ‘factorials’. ‘edit_apsimx_factorial’.</p></li>
-<li><p>Include parameter estimation example for maize</p></li>
-</ul>
+<p><strong>apsim_version</strong> displays which version(s) of APSIM(X) are available. For example,</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ava &lt;-<span class="st"> </span><span class="kw">apsim_version</span>()</code></pre></div>
+<pre><code>## OS: Darwin 
+## 
+## 
+## APSIM             Version.1                  Version.2                  Version.3                
+## ----------------  -------------------------  -------------------------  -------------------------
+## Classic           NA                         NA                         NA                       
+## Next Generation   APSIM2019.07.25.4035.app   APSIM2019.09.24.4200.app   APSIM2019.10.04.4236.app</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aiu &lt;-<span class="st"> </span><span class="kw">apsim_version</span>(<span class="dt">which =</span> <span class="st">&quot;inuse&quot;</span>)</code></pre></div>
+<pre><code>## OS: Darwin 
+## 
+## 
+## |x                        |
+## |:------------------------|
+## |APSIM2019.10.04.4236.app |</code></pre>
 </div>
 <div id="in-beta" class="section level1">
 <h1>In Beta</h1>
 <ul>
 <li>edit_apsimx_batch (never tested)</li>
+</ul>
+</div>
+<div id="to-do" class="section level1">
+<h1>To-Do</h1>
+<ul>
+<li><p>Still a bit more work to do to make ‘inspect_apsim’ and ‘inspect_apsimx’ more consistent.</p></li>
+<li><p><strong>inspect_apsimx_replacement</strong> challenge this function with more complex examples</p></li>
+<li><p>Add more tests using the ‘CoverCrop example’ (APSIM ‘Classic’). This would be the motivation for writing a function for ‘factorials’. ‘edit_apsimx_factorial’.</p></li>
+<li><p>Create and reaplce an APSIM soil profile out of SSURGO data</p></li>
+<li><p>Include parameter estimation example for maize</p></li>
 </ul>
 </div>
 <div id="future-features" class="section level1">
