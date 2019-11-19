@@ -63,6 +63,8 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     stop("There are no .apsim files in the specified directory to edit.")
   }
   
+  if(!missing(manager.child)) stop("not implemented yet")
+  
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)
   

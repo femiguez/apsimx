@@ -83,7 +83,7 @@ apsim_version <- function(which = c("all","inuse"),
     if(length(find.apsim) > 0){
       apsim.versions <- laf[find.apsim]
       apsim.versions <- apsim.versions[order(sapply(apsim.versions, fevc), decreasing = TRUE)]
-      tmp.matc <- matrix(NA, nrow = 1, ncol = length(find.apsim))
+      tmp.matc <- matrix(NA, nrow = 1, ncol = ncols)
       tmp.matc[1,seq_along(find.apsim)] <- apsim.versions
     }else{
       tmp.matc <- matrix(NA, nrow = 1, ncol = ncols) 

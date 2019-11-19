@@ -46,7 +46,7 @@ After this, the name of the file that you want to run needs to be included. For 
 
 **C:/PROGRA~1/APSIM2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx**.
 
-Notice the "./", without this, I have not been able to get it to work under Windows. However, the previous string cannot be passed directly to a Windows shell. It needs to be translated, because the 'PROGRA~1' needs to be expanded and the forward slashes ("/") need to be converted to backslashes ("\\").
+Notice the "./", without this, it will likely not work under Windows. However, the previous string cannot be passed directly to a Windows shell. It needs to be translated with the forward slashes ("/") converted to backslashes ("\\").
 
 So to run the previous command in Windows from within R this is one way:
 
@@ -55,7 +55,7 @@ run.strng <- "C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx"
 shell(cmd = run.strng, translate = TRUE, intern = TRUE)
 ```
 
-Note: it seems that, in Windows, it is only possible to run files in the current directory. So, for example, if the file 'Wheat.apsimx' was in subdirectory './myApsimXsimulations' and you want to replace the './Wheat.apsimx' above with './myApsimXsimulations/Wheat.apsimx' this does not work. I do not know if there is a possible workaround. 
+Note: it seems that, in Windows, it is only possible to run files in the current directory. So, for example, if the file 'Wheat.apsimx' was in subdirectory './myApsimXsimulations' and you want to replace the './Wheat.apsimx' above with './myApsimXsimulations/Wheat.apsimx' this does not work. I do not know yet if there is a possible workaround. 
 
 ## Unix (Mac) or Linux (Debian)
 
@@ -145,6 +145,27 @@ Which will return the path to the executable and the directory where the example
 If multiple versions of APSIM-X are installed apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the 'apsimx_options'. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the 'apsimx_options' function. This information applies to APSIM 'Classic' (use apsim_options instead).
 
 In addition, when loaded, the apsimx package will try to detect the presence of APSIM-X and, if not found, it will issue a warning with instructions to set the path manually using 'apsimx_options'. If you have a previous version of APSIM installed (7.x) or multiple versions of both the 'old' and 'new' this might be potentially problematic, but it is hard for me now to consider these endless possibilities.
+
+### Unix and Windows paths
+
+[Windows paths](https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats)
+
+To look at paths in Windows:
+
+**path**
+**set**
+**set path**
+**echo %path%**
+**echo %path:;=&echo.%**
+
+[Editing PATH in Windows Example](https://docs.telerik.com/teststudio/features/test-runners/add-path-environment-variables)
+
+[Editing PATH in Windows 2](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/)
+
+Unix/Linux paths
+
+[Unix paths](https://coolestguidesontheplanet.com/add-shell-path-osx/)
+
 
 ### Session information
 
