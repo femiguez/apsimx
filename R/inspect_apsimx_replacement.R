@@ -52,6 +52,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   apsimx_json <- read_json(paste0(src.dir,"/",file))
   
   parm.path.0 <- paste0(".",apsimx_json$Name)
+  ans <- parm.path.0
   ## Select Replacements node
   frn <- grep(root[[1]], apsimx_json$Children, fixed = TRUE)
   
@@ -73,11 +74,15 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   replacements.node.names <- sapply(replacements.node$Children, function(x) x$Name)
   cat("Replacements: ", replacements.node.names, "\n")
   
+  ## This handles a missing node 'gracefully'
   if(missing(node)){
     parm.path <- parm.path.0.1
-    if(print.path) print(parm.path); invisible(parm.path)
-    return(cat("Please provide a node\n"))
+    if(print.path) cat("Parm path:",parm.path,"\n") 
+    cat("Please provide a node \n")
+    return(invisible(parm.path))
   } 
+  
+  cat("node:",node,"\n")
   
   ## wrn <- grep(node, replacements.node$Children) old version
   wrn <- grep(node, replacements.node.names)
@@ -91,14 +96,21 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   
   ## Available node children
   rep.node.children.names <- sapply(rep.node$Children, function(x) x$Name)
-  if(display.available) cat("Available node children: ",rep.node.children.names,"\n")
+  if(display.available){
+    cat("Level: node \n")
+    str_list(rep.node)
+  } 
   
-  ## Select a specific node.child
+  ## Select a specific node.child, this assumes there is no parameter at this level
   if(missing(node.child)){
     parm.path <- parm.path.0.1.1
-    if(print.path) print(parm.path); invisible(parm.path)
-    return(cat("missing node.child\n"))
+    if(print.path) cat("Parm path:",parm.path,"\n") 
+    cat("missing node.child \n")
+    return(invisible(parm.path))
   } 
+  
+  cat("node child:", node.child,"\n")
+  
   wrnc <- grep(node.child, rep.node.children.names)
   if(length(wrnc) == 0) stop("node.child not found")
   rep.node.child <- rep.node$Children[[wrnc]]
@@ -106,24 +118,29 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   parm.path.0.1.1.1 <- paste0(parm.path.0.1.1,".",rep.node.child$Name)
   
   ## If children are missing display data at this level
-  if(length(rep.node.child$Children) == 0){
+  ## Conditions for stopping here:
+  ## 1. There are no children OR parm is not null AND
+  ## 2. node.subchild is missing
+  if((length(rep.node.child$Children) == 0 || !is.null(parm)) && missing(node.subchild)){
     unpack_node(rep.node.child, parm = parm, display.available = display.available)
     parm.path <- parm.path.0.1.1.1
-    if(print.path) print(parm.path); invisible(parm.path)
-    return(cat("no node sub-children available \n"))
+    if(print.path) cat("Parm path:",format_parm_path(parm.path, parm),"\n")
+    cat("no node sub-children available or parm not equal to null \n")
+    return(invisible(format_parm_path(parm.path,parm)))
   }else{
-    rep.node.subchildren.names <- sapply(rep.node.child$Children, function(x) x$Name)
-    if(display.available){ 
-      cat("Available node sub-children: ",rep.node.subchildren.names,"\n")
-    }
+    if(display.available) str_list(rep.node.child)
   }
   
-  ## Select a specific node.subchild
+  cat("node subchild:",node.subchild,"\n")
+  ## This is intended to be used to handle a missing node.subchild gracefully
   if(missing(node.subchild)){
     parm.path <- parm.path.0.1.1.1
-    if(print.path) print(parm.path); invisible(parm.path)
-    return(cat("missing node.subchild\n"))
+    if(print.path) cat("Parm path:",parm.path,"\n") 
+    cat("missing node.subchild \n")
+    return(invisible(parm.path))
   } 
+  
+  rep.node.subchildren.names <- sapply(rep.node.child$Children, function(x) x$Name)
   wrnsc <- grep(node.subchild, rep.node.subchildren.names)
   rep.node.subchild <- rep.node.child$Children[[wrnsc]]
   
@@ -131,61 +148,83 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   ## Let's just print this information somehow
   cat("Subchild Name: ", rep.node.subchild$Name,"\n")
   
-  if(is.atomic(rep.node.subchild$Children) || length(rep.node.subchild) == 0){
+  if((length(rep.node.subchild$Children) == 0 || !is.null(parm)) && missing(node.subsubchild)){
     unpack_node(rep.node.subchild, parm = parm, display.available = display.available)
     parm.path <- parm.path.0.1.1.1.1
-    if(print.path) print(parm.path); invisible(parm.path)
-    return(cat("no node sub-sub-children available \n"))
+    if(print.path) cat("Parm path:",parm.path,"\n")
+    cat("no node sub-sub-children available or parm is not null \n")
+    return(invisible(format_parm_path(parm.path)))
   }else{
+    ## The problem here is that rep.node.subchild can either be
+    ## named or nameless
+    if(display.available) str_list(rep.node.subchild)
+  }
+  
+  ## This is intended to be used to handle a missing node.subsubchild gracefully
+  if(missing(node.subsubchild)){
+    parm.path <- parm.path.0.1.1.1.1
+    if(print.path) cat("Parm path:",parm.path,"\n") 
+    cat("missing node.subsubchild \n")
+    return(invisible(parm.path))
+  }
+  
+  ## The thing here is that I need to be able to handle an object with either
+  ## named Children or
+  ## unnamed Children
+  rep.node.subsubchildren.names <- sapply(rep.node.subchild$Children, function(x) x$Name)
+  wrnssc <- grep(node.subsubchild, rep.node.subsubchildren.names)
+  rep.node.subsubchild <- rep.node.subchild$Children[[wrnssc]]
+  
+  cat("Name sub-sub-child: ", rep.node.subsubchild$Name,"\n")
+  parm.path.0.1.1.1.1.1 <- paste0(parm.path.0.1.1.1.1,".",rep.node.subsubchild$Name)
+  
+##  if(FALSE){
+##    if(length(names(rep.node.subchild$Children)) == 0){
+##        ## For some reason at this level the Children are not named
+##        rep.node.subsubchild <- rep.node.subchild$Children[[1]]
+##      }else{
+##        rep.node.subsubchild <- rep.node.subchild$Children
+##      }
+##  }
 
-    if(length(names(rep.node.subchild$Children)) == 0){
-      ## For some reason at this level the Children are not named
-      rep.node.subsubchild <- rep.node.subchild$Children[[1]]
-    }else{
-      rep.node.subsubchild <- rep.node.subchild$Children
-    }
-    cat("Name sub-sub-child: ", rep.node.subsubchild$Name,"\n")
-    
-    parm.path.0.1.1.1.1.1 <- paste0(parm.path.0.1.1.1.1,".",rep.node.subsubchild$Name)
-    
-    rep.node.subsubchild.names <- names(rep.node.subsubchild)
-    if(display.available){ 
-      cat("Available node sub-sub-child names: ",rep.node.subsubchild.names,"\n")
-    }
-    
-    if(is.atomic(rep.node.subsubchild$Children)){
+  rep.node.subsubchild.names <- names(rep.node.subsubchild)
+
+  if(length(rep.node.subsubchild$Children) == 0 || !is.null(parm)){
       unpack_node(rep.node.subsubchild, parm = parm, display.available = display.available)
       parm.path <- parm.path.0.1.1.1.1.1
-      if(print.path) print(parm.path); invisible(parm.path)
-      return(cat("no node sub-sub-sub-children available \n"))
-    }
+      if(print.path) cat("Parm path:",format_parm_path(parm.path,parm),"\n") 
+      cat("no node sub-sub-sub-children available or parm is not null \n")
+      return(invisible(format_parm_path(parm.path,parm)))
+  }
     
-    if(missing(node.subsubchild)){ 
-      if(length(rep.node.subsubchild.names) == 0){
+  if(is.null(parm)){ 
+    if(length(rep.node.subsubchild.names) == 0){
         rep.node.sub3child <- rep.node.subsubchild$Children[[1]]
-      }else{
-        rep.node.sub3child <- rep.node.subsubchild$Children
-      }
     }else{
-      wrnssc <- which(rep.node.subsubchild.names == node.subsubchild)
-      rep.node.sub3child <- rep.node.subsubchild$Children[[wrnssc]]
+        rep.node.sub3child <- rep.node.subsubchild$Children
     }
-    unpack_node(rep.node.sub3child, parm = parm, display.available = display.available)
+    unpack_node(rep.node.sub3child, parm = NULL, display.available = display.available)
   }
   
+  if(!is.null(parm)){
+      wrnsspc <- grep(parm, rep.node.subsubchild.names)
+      rep.node.sub3child <- rep.node.subsubchild[wrnsspc]
+      cat_parm(rep.node.sub3child)
+  }
+
   if(print.path){
     cat("Parm path:", parm.path,"\n")
-    if(missing(parm)){
-      invisible(parm.path)
+    if(is.null(parm)){
+      ans <- parm.path
     }else{
       if(length(parm) == 1){
-        invisible(paste0(parm.path,".",parm))
+        ans <- paste0(parm.path,".",parm)
       }else{
-        invisible(paste0(parm.path,".",parm[[1]]))
+        ans <- paste0(parm.path,".",parm[[1]])
       }
     }
   }
-  
+  invisible(ans)
 }
 
 
@@ -204,7 +243,7 @@ unpack_node <- function(x, parm=NULL, display.available = FALSE){
   ## Let's try to handle the different elements that x can be
   ## If it is a list of length one and just one element, just cat
   ## the key, value pair
-  if(is.list(x) & length(x) == 1 & length(x[[1]]) == 1){
+  if(is.list(x) & lnode == 1 & length(x[[1]]) == 1){
     return(cat("Key: ",names(x),"; Value: ",x[[1]],"\n"))
   }
   
@@ -221,25 +260,31 @@ unpack_node <- function(x, parm=NULL, display.available = FALSE){
     node.child <- x[i]
     ## If x is a list node.child will be a list
     ## If it has just one element, then 
-    if(is.list(node.child) & length(node.child) == 1 & length(node.child[[1]]) == 1){
+    if(is.list(node.child) & 
+       length(node.child$Children) == 0 &
+       length(node.child) == 1 & 
+       length(node.child[[1]]) == 1){
       cat_parm(node.child, parm = parm)
     }else{
       ## Let's assume this is a list with multiple elements
       ## Shouldn't 'cat_parm' be able to handle this?
       if(length(node.child) == 1 & length(x[[i]]) > 1){
         ## This is an element such as 'Command'
-        cat(names(node.child),"\n")
-        cat_parm(x[[i]], parm = parm)
+        tcp <- try(cat_parm(x[[i]], parm = parm), silent = TRUE)
+        if(class(tcp) != "try-error"){
+          cat(names(node.child),"\n")
+          tcp
+        }
       }
       ## Let's handle 'Children' now
-      if(length(node.child$Children) !=0){
-        for(j in seq_len(node.child$Children)){
-          if(names(node.child) == 0){
+      if(length(node.child$Children) != 0){
+        for(j in seq_along(node.child$Children)){
+          if(names(node.child) == 0 || !is.null(node.child$Children[[1]])){
             node.subchild <- node.child$Children[[1]]
           }else{
             node.subchild <- node.child$Children
           }
-          cat_parm(node.subchild, parm = parm)
+          try(cat_parm(node.subchild, parm = parm), silent = TRUE)
         }
       }
     }
@@ -265,3 +310,40 @@ cat_parm <- function(x, parm = NULL){
   }
 }
 
+## list structure
+str_list <- function(x){
+  ## List name
+  cat("list Name:",x$Name,"\n")
+  ## Number of elements
+  ln <- length(x)
+  cat("list length:",ln,"\n")
+  ## What are the names of the elements
+  lnms <- names(x)
+  cat("list names:",lnms,"\n")
+  ## Are Children present?
+  if(!is.null(x$Children)){
+    cat("Children: Yes \n")
+    cln <- length(x$Children)
+    cat("Children length:",cln,"\n")
+    cnms <- names(x$Children)
+    if(length(cnms) != 0) cat("Children names:",cnms,"\n")
+    if(length(cnms) == 0 && cln > 0){
+      cNms <- sapply(x$Children, function(x) x$Name)
+      cat("Children Names:",cNms,"\n")
+    }
+  }
+  invisible(list(ln=ln,lnms=lnms,cln=cln,cnms=cnms,cNms=cNms))
+}
+
+format_parm_path <- function(x, parm = NULL){
+  if(is.null(parm)){
+    ans <- x
+  }else{
+    if(length(parm) == 1){
+      ans <- paste0(x,".",parm)
+    }else{
+      ans <- paste0(x,".",parm[[1]])
+    }    
+  }
+ ans
+}

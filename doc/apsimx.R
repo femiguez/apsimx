@@ -110,10 +110,23 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.subchild = "ThermalTime",
                            display.available = TRUE)
 
-## ----inspect-replacement-node-subchild-parm------------------------------
+## ----inspect-replacement-node-subchild-thermal---------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                             node = "Maize", node.child = "Phenology",
-                            node.subchild = "ThermalTime", parm = c("X","Y")) 
+                            node.subchild = "ThermalTime", display.available = TRUE) 
+
+## ----inspect-replacement-node-subchild-subsubchild-----------------------
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                           node = "Maize", node.child = "Phenology",
+                           node.subchild = "ThermalTime", 
+                           node.subsubchild = "BaseThermalTime") 
+
+## ----inspect-replacement-node-subchild-subsubchild-parm------------------
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                           node = "Maize", node.child = "Phenology",
+                           node.subchild = "ThermalTime", 
+                           node.subsubchild = "BaseThermalTime",
+                           parm = c("X","Y")) 
 
 ## ----inspect-replacement-soybean-cultivar-node---------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
@@ -134,8 +147,11 @@ edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 
 ## ----inspect-edit-replacement--------------------------------------------
 inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
-                            node = "Maize", node.child = "Phenology",
-                            node.subchild = "ThermalTime", parm = c("X","Y")) 
+                           node = "Maize", 
+                           node.child = "Phenology",
+                           node.subchild = "ThermalTime", 
+                           node.subsubchild = "BaseThermalTime",
+                           parm = c("X","Y")) 
 
 ## ----inspect-factorial-0, eval = FALSE-----------------------------------
 #  ## There are multiple 'Experiments' so we need to pick one

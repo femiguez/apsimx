@@ -13,7 +13,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-11-16" />
+<meta name="date" content="2019-11-23" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -96,7 +96,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2019-11-16</h4>
+<h4 class="date">2019-11-23</h4>
 
 
 
@@ -110,9 +110,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1>Introduction</h1>
 <p>Are you a user of APSIM-X (“Next Generation”)? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the <strong>apsimx</strong> package, which allows you to inspect, edit, run and read files created by APSIM-X (.apsimx) files. New .apsimx files are based on the JSON (JavaScript Object Notation <a href="https://www.json.org/" class="uri">https://www.json.org/</a>) format and it is used to communicate information to the APSIM-X engine. By using the ‘jsonlite’ R package <strong>apsimx</strong> can read and write (‘inspect’ and ‘edit’) files in this format. APSIM ‘Classic’ used an XML format and this type is now fully supported (‘inspect’, ‘edit’, ‘run’ and ‘read’). For ‘inspect’ and ‘edit’ in the APSIM ‘Classic’ version I use the ‘xml2’ package. To run simulations the <em>apsimx</em> function (<em>apsim</em> for ‘Classic’) is available and results from the simulation can be imported as an R object with a dedicated function (<em>read_apsimx</em> ‘NG’ and <em>read_apsim</em> for ‘Classic’). If you need to write scripts (regardless of whether you use the <strong>apsimx</strong> package or not) the vignette ‘writing scripts’ might be useful. The package is currently being developed and available at: <a href="https://github.com/femiguez/apsimx" class="uri">https://github.com/femiguez/apsimx</a>. If you have any questions write to: femiguez <em>at</em> iastate.edu.</p>
 <p>In part this package is inspired by previous work done by Bryan Stanfill on the ‘apsimr’ package (available from CRAN and github: <a href="https://github.com/stanfill/apsimr" class="uri">https://github.com/stanfill/apsimr</a>). That pacakge made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using ‘GAMS’. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package is ‘APSIM’, but as with ‘apsimr’ it has not been updated and it has somewhat of a different functionality. The ‘APSIM’ package is especially useful for creating weahter (‘.met’) files for APSIM ‘Classic’ or ‘Next Generation’.</p>
-<div id="additional-information" class="section level2">
-<h2>Additional information</h2>
-<p>To install this vignette, you need to have APSIM ‘Next Generation’ installed. However, if you have not used APSIM it is recommended that you become familiar with it before hand.</p>
+<div id="background-information" class="section level2">
+<h2>Background information</h2>
+<p>To run the code in this vignette, you need to have APSIM ‘Next Generation’ installed. However, if you have not used APSIM it is recommended that you become familiar with it before hand.</p>
 <p>See the following for details</p>
 <p><a href="https://www.apsim.info">APSIM</a></p>
 <p><a href="https://apsimnextgeneration.netlify.com/">APSIM-X</a></p>
@@ -124,10 +124,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="installing-apsim-x" class="section level2">
 <h2>Installing APSIM-X</h2>
-<p>For most functions in this pacakge you need to have a version of APSIM-X installed (or APSIM ‘Classic’). For Mac and Linux, first you need to install mono (<a href="https://www.mono-project.com/download/stable/" class="uri">https://www.mono-project.com/download/stable/</a>) and then download and install APSIM-X (<a href="https://www.apsim.info/Products/Downloads.aspx" class="uri">https://www.apsim.info/Products/Downloads.aspx</a>). The  package will try to detect the install of both mono and APSIM-X.</p>
+<p>For most functions in this pacakge you need to have a version of APSIM-X installed (or APSIM ‘Classic’). For Mac and Linux, first you need to install mono (<a href="https://www.mono-project.com/download/stable/" class="uri">https://www.mono-project.com/download/stable/</a>) and then download and install APSIM-X (<a href="https://www.apsim.info/Products/Downloads.aspx" class="uri">https://www.apsim.info/Products/Downloads.aspx</a>). The <strong>apsimx</strong> package will try to detect both mono and APSIM-X.</p>
 <p><strong>Mac</strong>: For Mac it is also assumed that APSIM-X has been moved to ‘Applications’.</p>
 <p><strong>Windows</strong>: In Windows the default install location is in ‘Program Files’.</p>
 <p><strong>Linux (Debian)</strong>: It assumed that APSIM-X is in ‘/usr/local/lib/apsim/’.</p>
+<p>If you have your own flavor of APSIM, then you need to set the path manually using the function ‘apsim_options’ for Classic and ‘apsimx_options’ for Next Generation.</p>
 </div>
 <div id="r-functions-for-apsim-x" class="section level2">
 <h2>R functions for APSIM-X</h2>
@@ -139,18 +140,19 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><strong>read_apsimx</strong> read files created by an .apsimx simulation run (.db files)</li>
 <li><strong>read_apsimx_all</strong> read all files created by one or more .apsimx simulation runs in a directory (.db files)</li>
 <li><strong>inspect_apsimx_replacement</strong> inspect a replacement component of an .apsimx file.</li>
+<li><strong>apsimx_options</strong> set global options: path for executable, examples and warnings.</li>
 </ul>
 </div>
 <div id="r-functions-for-apsim-classic-7.x---only-for-windows" class="section level2">
 <h2>R functions for APSIM ‘Classic’ (7.x) - Only for Windows</h2>
 <p>The main functions relevant for ‘Classic’ are:</p>
 <ul>
-<li><strong>apsim</strong> runs an .apsim file.</li>
-<li><strong>read_apsim</strong> reads files (.out and .sim) generated by apsim into a data frame.</li>
 <li><strong>inspect_apsim</strong> allows for inspection of .apsim file.</li>
 <li><strong>edit_apsim</strong> edit an .apsim file.</li>
+<li><strong>apsim</strong> runs an .apsim file.</li>
+<li><strong>read_apsim</strong> reads files (.out and .sim) generated by apsim into a data frame.</li>
 <li><strong>apsim_example</strong> runs (only a few) of the built-in examples.</li>
-<li><strong>apsim_options</strong> sets path for executable, examples and warnings.</li>
+<li><strong>apsim_options</strong> set global options: path for executable, examples and warnings.</li>
 </ul>
 </div>
 </div>
@@ -197,11 +199,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </div>
 <div id="inspecting-a-file-with-inspect_apsimx-why" class="section level2">
 <h2>Inspecting a file with ‘inspect_apsimx’: Why?</h2>
-<p>Being able to inspect a file from within R is a functionality which was not considered in previous R packages. My first motivation for doing this was to be able to verify from within R that if I edited an APSIM(X) file the editing worked as expected. The second use of ‘inspect’ is to be able to understand the structure of ‘apsim’ files better. A third useful aspect of ‘inspect’ is that it can be used to supply the path for a parameter that will be later edited. In addition, having this functionality within R allows to make these tasks repeatable. For complex inspections and manipulations of an .apsim(x) file the GUI is recommended. However, this package is designed to work with relatively simple .apsim(x) files.</p>
+<p>Being able to inspect a file from within R is a functionality which was not considered in previous R packages. My first motivation for doing this was to be able to verify from within R that if I edited an APSIM(X) file, the editing worked as expected. The second use of ‘inspect’ is to be able to understand the structure of ‘apsim’ files better. A third useful aspect of ‘inspect’ is that it can be used to supply the path for a parameter that will be later edited. In addition, having this functionality within R allows to make these tasks repeatable. For complex inspections and manipulations of an .apsim(x) file the GUI is recommended. However, this package is designed to work with relatively simple .apsim(x) files.</p>
 </div>
 <div id="inspecting-and-editing-the-maize-example" class="section level2">
 <h2>Inspecting and Editing the ‘Maize’ example</h2>
-<p>Here I’m using the ‘Maize’ example distributed with APSIM-X but stored in the package and the specific task is that we want to make sure that the intended component was edited as expected. Let’s look at the weather file used.</p>
+<p>Here I’m using the ‘Maize’ example distributed with APSIM-X but stored in the package and the specific task is: we want to make sure that the intended component was edited as expected. Let’s look at the weather file used.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">extd.dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;apsimx&quot;</span>)
 <span class="kw">inspect_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">node =</span> <span class="st">&quot;Weather&quot;</span>)</code></pre></div>
 <pre><code>## Met file: %root%\Examples\WeatherFiles\Dalby.met</code></pre>
@@ -230,7 +232,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ## 90-120    300         0.18     12            0.01    1        60.3219808311247 
 ## 120-150   300         0.12     12            0.01    1        36.5871308286749 
 ## 150-180   300         0.12     12            0.01    1        22.1912165985086</code></pre>
-<p>The function ‘inspect_apsimx’, in this example, displays various information about the organic matter in the soil. (See the help page for more options). In the next step we ‘edit’ or change the values.</p>
+<p>The function ‘inspect_apsimx’, in this example, displays various information about the organic matter in the soil. (See the help page - ?inspect_apsimx - for more options). In the next step, we ‘edit’ the values.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ocs &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="fl">1.5</span>,<span class="fl">1.4</span>,<span class="fl">1.3</span>,<span class="fl">1.2</span>,<span class="fl">1.1</span>,<span class="fl">1.0</span>,<span class="fl">0.9</span>)
 <span class="kw">edit_apsimx</span>(<span class="st">&quot;Maize.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
              <span class="dt">wrt.dir =</span> <span class="st">&quot;.&quot;</span>,
@@ -460,17 +462,38 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Replacements:  Soybean Maize 
+## node: Maize 
 ## CropType Maize 
-## Available node children:  Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
+## Level: node 
+## list Name: Maize 
+## list length: 10 
+## list names: $type CropType IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 20 
+## Children Names: Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
 ## missing node.child</code></pre>
 <p>Choose ‘Phenology’ as a ‘child’ of ‘Maize’:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
                            <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Replacements:  Soybean Maize 
+## node: Maize 
 ## CropType Maize 
-## Available node children:  Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
-## Available node sub-children:  ThermalTime Germinating Emerging Juvenile Photosensitive LeafAppearance FlagLeafToFlowering FloweringToGrainFilling GrainFilling Maturing MaturityToHarvestRipe ReadyForHarvesting Photoperiod FloweringDAS MaturityDAS BBCH 
+## Level: node 
+## list Name: Maize 
+## list length: 10 
+## list names: $type CropType IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 20 
+## Children Names: Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
+## node child: Phenology 
+## list Name: Phenology 
+## list length: 6 
+## list names: $type Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 16 
+## Children Names: ThermalTime Germinating Emerging Juvenile Photosensitive LeafAppearance FlagLeafToFlowering FloweringToGrainFilling GrainFilling Maturing MaturityToHarvestRipe ReadyForHarvesting Photoperiod FloweringDAS MaturityDAS BBCH 
+## node subchild: 
 ## missing node.subchild</code></pre>
 <p>Choose ‘ThermalTime’ as a ‘sub.child’ of ‘Phenology’:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
@@ -478,14 +501,73 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
                            <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>,
                            <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Replacements:  Soybean Maize 
+## node: Maize 
 ## CropType Maize 
-## Available node children:  Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
-## Available node sub-children:  ThermalTime Germinating Emerging Juvenile Photosensitive LeafAppearance FlagLeafToFlowering FloweringToGrainFilling GrainFilling Maturing MaturityToHarvestRipe ReadyForHarvesting Photoperiod FloweringDAS MaturityDAS BBCH 
+## Level: node 
+## list Name: Maize 
+## list length: 10 
+## list names: $type CropType IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 20 
+## Children Names: Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
+## node child: Phenology 
+## list Name: Phenology 
+## list length: 6 
+## list names: $type Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 16 
+## Children Names: ThermalTime Germinating Emerging Juvenile Photosensitive LeafAppearance FlagLeafToFlowering FloweringToGrainFilling GrainFilling Maturing MaturityToHarvestRipe ReadyForHarvesting Photoperiod FloweringDAS MaturityDAS BBCH 
+## node subchild: ThermalTime 
+## Subchild Name:  ThermalTime 
+## list Name: ThermalTime 
+## list length: 6 
+## list names: $type Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 1 
+## Children Names: BaseThermalTime 
+## missing node.subsubchild</code></pre>
+<p>Now we need to pick from within ‘ThermalTime’</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
+                            <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
+                            <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, <span class="dt">display.available =</span> <span class="ot">TRUE</span>) </code></pre></div>
+<pre><code>## Replacements:  Soybean Maize 
+## node: Maize 
+## CropType Maize 
+## Level: node 
+## list Name: Maize 
+## list length: 10 
+## list names: $type CropType IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 20 
+## Children Names: Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
+## node child: Phenology 
+## list Name: Phenology 
+## list length: 6 
+## list names: $type Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 16 
+## Children Names: ThermalTime Germinating Emerging Juvenile Photosensitive LeafAppearance FlagLeafToFlowering FloweringToGrainFilling GrainFilling Maturing MaturityToHarvestRipe ReadyForHarvesting Photoperiod FloweringDAS MaturityDAS BBCH 
+## node subchild: ThermalTime 
+## Subchild Name:  ThermalTime 
+## list Name: ThermalTime 
+## list length: 6 
+## list names: $type Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 1 
+## Children Names: BaseThermalTime 
+## missing node.subsubchild</code></pre>
+<p>There is a component names “BaseThermalTime”.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
+                           <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
+                           <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, 
+                           <span class="dt">node.subsubchild =</span> <span class="st">&quot;BaseThermalTime&quot;</span>) </code></pre></div>
+<pre><code>## Replacements:  Soybean Maize 
+## node: Maize 
+## CropType Maize 
+## node child: Phenology 
+## node subchild: ThermalTime 
 ## Subchild Name:  ThermalTime 
 ## Name sub-sub-child:  BaseThermalTime 
-## Available node sub-sub-child names:  $type Name Children IncludeInDocumentation Enabled ReadOnly 
-## Available node children (unpack_node):  
-##  
 ## $type : Models.Functions.XYPairs, Models 
 ## X : 0 18 26 34 44 
 ## Y : 0 10 18 26 0 
@@ -493,25 +575,38 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 ## Children : 
 ## IncludeInDocumentation : TRUE 
 ## Enabled : TRUE 
-## ReadOnly : FALSE</code></pre>
-<p>Choose the ‘X’ and ‘Y’ parameters in the ‘ThermalTime’ sub.child.</p>
+## ReadOnly : FALSE 
+## </code></pre>
+<p>Choose the ‘X’ and ‘Y’ parameters within ‘BaseThermalTime’.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
-                            <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
-                            <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, <span class="dt">parm =</span> <span class="kw">c</span>(<span class="st">&quot;X&quot;</span>,<span class="st">&quot;Y&quot;</span>)) </code></pre></div>
+                           <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
+                           <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, 
+                           <span class="dt">node.subsubchild =</span> <span class="st">&quot;BaseThermalTime&quot;</span>,
+                           <span class="dt">parm =</span> <span class="kw">c</span>(<span class="st">&quot;X&quot;</span>,<span class="st">&quot;Y&quot;</span>)) </code></pre></div>
 <pre><code>## Replacements:  Soybean Maize 
+## node: Maize 
 ## CropType Maize 
+## node child: Phenology 
+## node subchild: ThermalTime 
 ## Subchild Name:  ThermalTime 
 ## Name sub-sub-child:  BaseThermalTime 
-##  
 ## X : 0 18 26 34 44 
-## Y : 0 10 18 26 0</code></pre>
+## Y : 0 10 18 26 0 
+## no node sub-sub-sub-children available or parm is not null</code></pre>
 <p>The function shows the available replacements (“Maize” and “Soybean”), the ‘CropType’ if available, the subchild name and the xy pair in this example. If parm is not specified all elements will be displayed.</p>
 <p>Let’s say we want to inspect details of soybean cultivars in the same file:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
                             <span class="dt">node =</span> <span class="st">&quot;Soybean&quot;</span>, <span class="dt">display.available =</span> <span class="ot">TRUE</span>) </code></pre></div>
 <pre><code>## Replacements:  Soybean Maize 
+## node: Soybean 
 ## CropType Soybean 
-## Available node children:  Arbitrator Phenology Structure Grain Root Nodule Shell Leaf Stem AboveGround BelowGround Total TotalLive TotalDead Pod Memo PioneerP932T16R_MG32 PioneerP22T69R_MG22 Trial_MG00 Lambert_MG0 IA1006_MG10 IA2008_MG20 Macon_MG30 Pioneer94B01_MG40 Hutcheson_MG50 NK622_MG60 Becks367NRR_MG37 AsgrowAG4403_MG40 HornbeckHBK4891_MG40 AsgrowAG5701_MG50 PioneerP9504_MG50 Pioneer92MGI_MG26 Becks321NRR_MG32 Hooper_MG40 Stephens_MG40 Davis PioneerP92Y75_MG27 PioneerP22T61_MG22 Buchanan Djakal PioneerP93M11_MG31 
+## Level: node 
+## list Name: Soybean 
+## list length: 10 
+## list names: $type CropType IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 41 
+## Children Names: Arbitrator Phenology Structure Grain Root Nodule Shell Leaf Stem AboveGround BelowGround Total TotalLive TotalDead Pod Memo PioneerP932T16R_MG32 PioneerP22T69R_MG22 Trial_MG00 Lambert_MG0 IA1006_MG10 IA2008_MG20 Macon_MG30 Pioneer94B01_MG40 Hutcheson_MG50 NK622_MG60 Becks367NRR_MG37 AsgrowAG4403_MG40 HornbeckHBK4891_MG40 AsgrowAG5701_MG50 PioneerP9504_MG50 Pioneer92MGI_MG26 Becks321NRR_MG32 Hooper_MG40 Stephens_MG40 Davis PioneerP92Y75_MG27 PioneerP22T61_MG22 Buchanan Djakal PioneerP93M11_MG31 
 ## missing node.child</code></pre>
 <p>In this case the cultivars are at the sub-node level.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
@@ -519,19 +614,21 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
                            <span class="dt">node.child =</span> <span class="st">&quot;PioneerP22T61_MG22&quot;</span>,
                            <span class="dt">display.available =</span> <span class="ot">FALSE</span>) </code></pre></div>
 <pre><code>## Replacements:  Soybean Maize 
+## node: Soybean 
 ## CropType Soybean 
+## node child: PioneerP22T61_MG22 
 ## $type : Models.PMF.Cultivar, Models 
-## Command 
 ##  : [Phenology].Vegetative.Target.FixedValue = 328 
 ##  : [Phenology].EarlyFlowering.Target.FixedValue = 106 
 ##  : [Phenology].EarlyGrainFilling.Target.FractionofGrainfilling.FixedValue = 0.3 
 ##  : [Phenology].LateGrainFilling.Target.EntireGrainfillPeriod.FixedValue = 499 
 ##  : [Phenology].PhotoperiodModifier.XYPairs.X = 13.59, 17.6 
+## Command 
 ## Name : PioneerP22T61_MG22 
 ## IncludeInDocumentation : TRUE 
 ## Enabled : TRUE 
 ## ReadOnly : FALSE 
-## no node sub-children available</code></pre>
+## no node sub-children available or parm not equal to null</code></pre>
 <p>The function <strong>inspect_apsimx_replacement</strong> can also be used to inspect more complex file structures such as the ‘Factorial’ example distributed with APSIM-X. See ‘?inspect_apsimx_replacement’.</p>
 </div>
 <div id="editing-a-replacement" class="section level2">
@@ -557,15 +654,21 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 ## Created:  ./MaizeSoybean-edited.apsimx</code></pre>
 <p>Let’s inspect the edited file</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean-edited.apsimx&quot;</span>, <span class="dt">src.dir =</span> <span class="st">&quot;.&quot;</span>,
-                            <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
-                            <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, <span class="dt">parm =</span> <span class="kw">c</span>(<span class="st">&quot;X&quot;</span>,<span class="st">&quot;Y&quot;</span>)) </code></pre></div>
+                           <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, 
+                           <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,
+                           <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, 
+                           <span class="dt">node.subsubchild =</span> <span class="st">&quot;BaseThermalTime&quot;</span>,
+                           <span class="dt">parm =</span> <span class="kw">c</span>(<span class="st">&quot;X&quot;</span>,<span class="st">&quot;Y&quot;</span>)) </code></pre></div>
 <pre><code>## Replacements:  Soybean Maize 
+## node: Maize 
 ## CropType Maize 
+## node child: Phenology 
+## node subchild: ThermalTime 
 ## Subchild Name:  ThermalTime 
 ## Name sub-sub-child:  BaseThermalTime 
-##  
 ## X : 0 18 26 34 44 
-## Y : 0 12 20 28 0</code></pre>
+## Y : 0 12 20 28 0 
+## no node sub-sub-sub-children available or parm is not null</code></pre>
 </div>
 <div id="inspecting-a-factorial" class="section level2">
 <h2>Inspecting a Factorial</h2>
@@ -586,7 +689,14 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
                            <span class="dt">root =</span> <span class="kw">list</span>(<span class="st">&quot;Experiment&quot;</span>,<span class="dv">1</span>), 
                            <span class="dt">node =</span> <span class="st">&quot;Base&quot;</span>, <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Replacements:  Factors Base 
-## Available node children:  Weather Clock Summary Field 
+## node: Base 
+## Level: node 
+## list Name: Base 
+## list length: 7 
+## list names: $type Descriptors Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 4 
+## Children Names: Weather Clock Summary Field 
 ## missing node.child</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## We need to provide a node child
 <span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;Factorial&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
@@ -594,7 +704,15 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
                            <span class="dt">node =</span> <span class="st">&quot;Base&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Clock&quot;</span>,
                            <span class="dt">display.available =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Replacements:  Factors Base 
-## Available node children:  Weather Clock Summary Field 
+## node: Base 
+## Level: node 
+## list Name: Base 
+## list length: 7 
+## list names: $type Descriptors Name Children IncludeInDocumentation Enabled ReadOnly 
+## Children: Yes 
+## Children length: 4 
+## Children Names: Weather Clock Summary Field 
+## node child: Clock 
 ## Available node children (unpack_node):  $type StartDate EndDate Name Children IncludeInDocumentation Enabled ReadOnly 
 ## $type : Models.Clock, Models 
 ## StartDate : 2003-10-20T00:00:00 
@@ -603,7 +721,7 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 ## IncludeInDocumentation : TRUE 
 ## Enabled : TRUE 
 ## ReadOnly : FALSE 
-## no node sub-children available</code></pre>
+## no node sub-children available or parm not equal to null</code></pre>
 <p>Here we stop at this level but it is possible to dig deeper using ‘node.subchild’ and ‘node.subsubchild’. It is not possible at this point to dig deeper than ‘node.subsubchild’ in the hierarchy level.</p>
 <p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge source.</p>
 </div>
@@ -648,7 +766,7 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 <ul>
 <li><p>Still a bit more work to do to make ‘inspect_apsim’ and ‘inspect_apsimx’ more consistent.</p></li>
 <li><p><strong>inspect_apsimx_replacement</strong> challenge this function with more complex examples</p></li>
-<li><p>Add more tests using the ‘CoverCrop example’ (APSIM ‘Classic’). This would be the motivation for writing a function for ‘factorials’. ‘edit_apsimx_factorial’.</p></li>
+<li><p>Add more tests using the ‘CoverCrop example’ (APSIM ‘Classic’). This would be the motivation for writing a function for ‘factorials’. ‘edit_apsim_factorial’.</p></li>
 <li><p>Create and reaplce an APSIM soil profile out of SSURGO data</p></li>
 <li><p>Include parameter estimation example for maize</p></li>
 </ul>

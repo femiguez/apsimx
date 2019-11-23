@@ -13,7 +13,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-11-16" />
+<meta name="date" content="2019-11-23" />
 
 <title>apsimx: writing scripts</title>
 
@@ -96,7 +96,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: writing scripts</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2019-11-16</h4>
+<h4 class="date">2019-11-23</h4>
 
 
 
@@ -109,7 +109,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Let’s see what is needed to run APSIM-X at the command line.</p>
 <div id="windows" class="section level2">
 <h2>Windows</h2>
-<p>In Windows if you use the current (2019-11-16) version of the installer the program will be, most likely, in:</p>
+<p>In Windows if you use the current (2019-11-23) version of the installer the program will be, most likely, in:</p>
 <p><strong>C:\Program Files\APSIM2019.10.04.4236\Bin\Models.exe</strong></p>
 <p>Notice that for each new build of APSIM-X the path will change. After ‘APSIM’ is the year, month, date and version separated by a period. In this case ‘2019.10.04.4236’. In the folder ‘Bin’(for ‘binary’) there are many libraries (‘.dll files’) and some executables. The ‘Models.exe’ is the one that can run .apsimx files.</p>
 <p>When trying to invoke that line at the command line, the space after ‘Program’ is a problem. There are some possible solutions. One is to add quotations (for example see ‘shQuote’ function in R). Another option is to use Windows short name paths, which in this case, for ‘Program Files’ is ‘PROGRA~1’ (but this can change). If running the program from R, for example, the separator needs to be either a double backslash ‘\\’ or a forward slash ‘/’. So one example would be:</p>
@@ -118,11 +118,11 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The backslash (“\”) is an escape character in R, so you can’t use it within strings.</p>
 <p>After this, the name of the file that you want to run needs to be included. For example,</p>
 <p><strong>C:/PROGRA~1/APSIM2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx</strong>.</p>
-<p>Notice the “./”, without this, I have not been able to get it to work under Windows. However, the previous string cannot be passed directly to a Windows shell. It needs to be translated, because the ‘PROGRA~1’ needs to be expanded and the forward slashes (“/”) need to be converted to backslashes (“\”).</p>
+<p>Notice the “./”, without this, it will likely not work under Windows. However, the previous string cannot be passed directly to a Windows shell. It needs to be translated with the forward slashes (“/”) converted to backslashes (“\”).</p>
 <p>So to run the previous command in Windows from within R this is one way:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">run.strng &lt;-<span class="st"> &quot;C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx&quot;</span>
 <span class="kw">shell</span>(<span class="dt">cmd =</span> run.strng, <span class="dt">translate =</span> <span class="ot">TRUE</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<p>Note: it seems that, in Windows, it is only possible to run files in the current directory. So, for example, if the file ‘Wheat.apsimx’ was in subdirectory ‘./myApsimXsimulations’ and you want to replace the ‘./Wheat.apsimx’ above with ‘./myApsimXsimulations/Wheat.apsimx’ this does not work. I do not know if there is a possible workaround.</p>
+<p>Note: it seems that, in Windows, it is only possible to run files in the current directory. So, for example, if the file ‘Wheat.apsimx’ was in subdirectory ‘./myApsimXsimulations’ and you want to replace the ‘./Wheat.apsimx’ above with ‘./myApsimXsimulations/Wheat.apsimx’ this does not work. I do not know yet if there is a possible workaround.</p>
 </div>
 <div id="unix-mac-or-linux-debian" class="section level2">
 <h2>Unix (Mac) or Linux (Debian)</h2>
@@ -173,6 +173,16 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.10
 <p>Which will return the path to the executable and the directory where the examples are located. These functions are supposed to work whether you are using Windows, Mac or Linux. The function ‘auto_detect_apsimx’ is not exported, so in order to expose it, you need ‘apsimx:::auto_detect_apsimx()’. This function is meant to work with the current binary distributions (as opposed to source code). (I’m guessing that if you are building APSIM-X from source code, you do not need this information.)</p>
 <p>If multiple versions of APSIM-X are installed apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the ‘apsimx_options’. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the ‘apsimx_options’ function. This information applies to APSIM ‘Classic’ (use apsim_options instead).</p>
 <p>In addition, when loaded, the apsimx package will try to detect the presence of APSIM-X and, if not found, it will issue a warning with instructions to set the path manually using ‘apsimx_options’. If you have a previous version of APSIM installed (7.x) or multiple versions of both the ‘old’ and ‘new’ this might be potentially problematic, but it is hard for me now to consider these endless possibilities.</p>
+<div id="unix-and-windows-paths" class="section level3">
+<h3>Unix and Windows paths</h3>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats">Windows paths</a></p>
+<p>To look at paths in Windows:</p>
+<p><strong>path</strong> <strong>set</strong> <strong>set path</strong> <strong>echo %path%</strong> <strong>echo %path:;=&amp;echo.%</strong></p>
+<p><a href="https://docs.telerik.com/teststudio/features/test-runners/add-path-environment-variables">Editing PATH in Windows Example</a></p>
+<p><a href="https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/">Editing PATH in Windows 2</a></p>
+<p>Unix/Linux paths</p>
+<p><a href="https://coolestguidesontheplanet.com/add-shell-path-osx/">Unix paths</a></p>
+</div>
 <div id="session-information" class="section level3">
 <h3>Session information</h3>
 <p>Displaying below specific information related to when the vignette was built.</p>
@@ -192,7 +202,7 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.10
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] apsimx_1.49
+## [1] apsimx_1.53
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_1.0.2        pillar_1.4.2      compiler_3.6.1   

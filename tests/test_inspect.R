@@ -143,8 +143,97 @@ if(inspect.replacement.test){
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
                              root = list("Experiment", 2),
                              node = "Base2", node.child = "Field",
-                             node.subchild = "Soil")
+                             node.subchild = "Soil",
+                             node.subsubchild = "Water",
+                             display.available = TRUE)
   
 }
 
+inspect.replacement.test2 <- TRUE
+
+extd.dir <- system.file("extdata", package = "apsimx")
+
+if(inspect.replacement.test2){
+  
+  ## Looking at values within Leaf
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                             src.dir = extd.dir, 
+                             node = "Soybean",
+                             display.available = TRUE)
+  
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                             src.dir = extd.dir, 
+                             node = "Soybean",
+                             node.child = "Leaf",
+                             display.available = TRUE)
+  
+  ## We can look at parameters at this level
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                             src.dir = extd.dir, 
+                             node = "Soybean",
+                             node.child = "Leaf",
+                             parm = "Albedo")
+                             
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                             src.dir = extd.dir, 
+                             node = "Soybean",
+                             node.child = "Leaf",
+                             parm = "Gsmax350")
+                             
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                             src.dir = extd.dir, 
+                             node = "Soybean",
+                             node.child = "Leaf",
+                             parm = "R50")
+  
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                             src.dir = extd.dir, 
+                             node = "Soybean",
+                             node.child = "Leaf",
+                             node.subchild = "Photosynthesis",
+                             node.subsubchild = "RUE")
+  
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                             src.dir = extd.dir, 
+                             node = "Soybean",
+                             node.child = "Leaf",
+                             node.subchild = "Photosynthesis",
+                             node.subsubchild = "RUE",
+                             parm = "FixedValue")
+}
  
+
+inspect.replacement.test.parm.path <- TRUE
+
+if(inspect.replacement.test.parm.path){
+  
+  pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                                   src.dir = extd.dir, 
+                                   print.path = TRUE)
+  
+  pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                                   src.dir = extd.dir, 
+                                   node = "Soybean",
+                                   print.path = TRUE)
+  
+  pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                                   src.dir = extd.dir, 
+                                   node = "Soybean",
+                                   node.child = "Leaf",
+                                   print.path = TRUE)
+  
+  pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                                   src.dir = extd.dir, 
+                                   node = "Soybean",
+                                   node.child = "Leaf",
+                                   parm = "Albedo",
+                                   print.path = TRUE)
+  
+  pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                                   src.dir = extd.dir, 
+                                   node = "Soybean",
+                                   node.child = "Leaf",
+                                   parm = "Gxmax350",
+                                   print.path = TRUE)
+  
+}

@@ -6,10 +6,11 @@
 \usage{
 apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
   BD = NULL, AirDry = NULL, LL15 = NULL, DUL = NULL, SAT = NULL,
-  KS = NULL, crops = c("Maize", "Wheat"), OC = NULL, OC.CN = NULL,
-  FOM = NULL, FOM.CN = NULL, F.mbio = NULL, F.hum = NULL,
-  soil.bottom = 150, water.table = 200, soil.type = 0,
-  dist.parms = list(a = 0, b = 0.5))
+  KS = NULL, crop.LL = NULL, crop.KL = NULL, crop.XF = NULL,
+  OC = NULL, OC.CN = NULL, FOM = NULL, FOM.CN = NULL,
+  FBiom = NULL, FInert = NULL, soil.bottom = 150,
+  water.table = 200, soil.type = 0, crops = c("Maize", "Soybean",
+  "Wheat"), dist.parms = list(a = 0, b = 0.5))
 }
 \description{
 Real soils have discontinuities, but for APSIM it might be beneficial to be able to create a soil profile with an arbitrary number of layers and have flexibility in the distribution of soil physical and chemical properties. What are the steps needed to create these soil profiles?
@@ -30,7 +31,20 @@ Real soils have discontinuities, but for APSIM it might be beneficial to be able
  @param DUL drainage upper limit (0.33 bar) for each soil layer (mm/mm)
  @param SAT saturation (0 bar) for each soil layer (mm/mm)
  @param KS saturated hydraulic conductivity (mm/day)
+ @param crop.LL lower limit for a specific crop
+ @param crop.KL root ability to extract water for a specific crop
+ @param crop.XF soil root exploration for a specific crop
+ @param OC organic carbon (%)
+ @param OC.CN organci carbon C:N ratio
+ @param FOM fresh organic matter (kg/ha)
+ @param FOM.CN fresh organic matter C:N ratio
+ @param FBiom Fraction of microbial biomass
+ @param FInert Fraction of inert carbon
+ @param soil.bottom bottom of the soil profile
+ @param water.table water table level
+ @param soil.type might use it in the future for auto filling missing information
  @param crops name of crops being grown
+ @param dist.parms parameter values for creating a profile
  @export
  @examples 
  \dontrun{

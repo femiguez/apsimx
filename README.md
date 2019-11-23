@@ -20,7 +20,7 @@ The new APSIM uses the mono framework to run on Mac and Linux
 https://www.mono-project.com/download/stable/
 
 **APSIMX download**:
-https://www.apsim.info/Products/Downloads.aspx
+https://www.apsim.info/download-apsim/
 
 If you need other R packages to interact with the previous version(s) of
 APSIM (7.x) try 'APSIM' and 'apsimr'. This package does not fully
