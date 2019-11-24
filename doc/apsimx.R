@@ -91,29 +91,34 @@ edit_apsim("Millet", src.dir = extd.dir, wrt.dir = ".",
            node = "Other", parm.path = pp, value = 8, 
            edit.tag = "-pp")
 
+## ----Millet-edit-inspect-------------------------------------------------
+inspect_apsim("Millet-pp.apsim", src.dir = ".",
+              node = "Manager",
+              parm = list("Sow on a fixed date",NA))
+
 ## ----removing-Millet-pp, echo = FALSE, eval = FALSE----------------------
 #  ## Apparently this is not needed
-#  file.remove("Millet-pp.apsimx")
+#  file.remove("Millet-pp.apsim")
 
 ## ----inspect-replacement-node--------------------------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                            node = "Maize", display.available = TRUE)
+                           node = "Maize", display.available = TRUE)
 
 ## ----inspect-replacement-node-child--------------------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                            node = "Maize", node.child = "Phenology",
+                           node = "Maize", node.child = "Phenology",
                            display.available = TRUE)
 
 ## ----inspect-replacement-node-subchild-----------------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                            node = "Maize", node.child = "Phenology",
+                           node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime",
                            display.available = TRUE)
 
 ## ----inspect-replacement-node-subchild-thermal---------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                            node = "Maize", node.child = "Phenology",
-                            node.subchild = "ThermalTime", display.available = TRUE) 
+                           node = "Maize", node.child = "Phenology",
+                           node.subchild = "ThermalTime", display.available = TRUE) 
 
 ## ----inspect-replacement-node-subchild-subsubchild-----------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
@@ -130,7 +135,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 
 ## ----inspect-replacement-soybean-cultivar-node---------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                            node = "Soybean", display.available = TRUE) 
+                           node = "Soybean", display.available = TRUE) 
 
 ## ----inspect-replacement-soybean-cultivar-node-child---------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,

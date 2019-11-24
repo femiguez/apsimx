@@ -1,4 +1,3 @@
-
 #' 
 #' @title Edit a replacement component in an .apsimx (JSON) file
 #' @name edit_apsimx_replacement
@@ -39,15 +38,15 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                     parm = NULL, value = NULL, overwrite = FALSE,
                                     edit.tag = "-edited", verbose = TRUE){
   
-  fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
-  if(length(fileNames)==0){
+  if(length(file.names)==0){
     stop("There are no .apsimx files in the specified directory to edit.")
   }
   
   ## This matches the specified file from a list of files
   ## Notice that the .apsimx extension will be added here
-  file <- match.arg(file, fileNames, several.ok=FALSE)
+  file <- match.arg(file, file.names, several.ok=FALSE)
   
   if(missing(parm) | missing(value)) stop("'parm' and/or 'value' are missing")
   
@@ -107,7 +106,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   
   rep.node.subchildren.names <- sapply(rep.node.child$Children, function(x) x$Name)
   ## Select a specific node.subchild
-  if(missing(node.subchild)) cat("missing node.subchild\n")
+  if(missing(node.subchild) && verbose && missing(parm)) cat("missing node.subchild\n")
   
   if(!missing(node.subchild)){
     wrnsc <- grep(node.subchild, rep.node.subchildren.names)
@@ -130,30 +129,30 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     }
   }
   
-  if(missing(node.subsubchild)) cat("missing node.subsubchild\n")
+  if(missing(node.subsubchild) && verbose && missing(parm)) cat("missing node.subsubchild\n")
   
   if(!missing(node.subsubchild)){
     rep.node.subsubchildren.names <- sapply(rep.node.subchild$Children, function(x) x$Name)
     ## Select a specific node.subchild
-    wrnssc <- grepl(node.subsubchild, rep.node.subsubchildren.names)
+    wrnssc <- grep(node.subsubchild, rep.node.subsubchildren.names)
     rep.node.subsubchild <- rep.node.subchild$Children[[wrnssc]]
   
     if(verbose) cat("Subsubchild Name: ", rep.node.subsubchild$Name,"\n")
   
-    if(length(names(rep.node.subsubchild$Children)) == 0){
-      rep.node.sub3child <- rep.node.subsubchild$Children[[1]] 
-    }else{
-      rep.node.sub3child <- rep.node.subsubchild$Children
-    }
+    # if(length(names(rep.node.subsubchild$Children)) == 0){
+    #   rep.node.sub3child <- rep.node.subsubchild$Children[[1]] 
+    # }else{
+    #   rep.node.sub3child <- rep.node.subsubchild$Children
+    # }
   
-    if(parm %in% names(rep.node.sub3child)){
-      rep.node.sub3child <- edit_node(rep.node.sub3child, parm = parm, value = value)
+    if(parm %in% names(rep.node.subsubchild)){
+      rep.node.subsubchild <- edit_node(rep.node.subsubchild, parm = parm, value = value)
       lvl <- 4
-      if(length(names(rep.node.subsubchild$Children)) == 0){
-        rep.node.subsubchild$Children[[1]] <- rep.node.sub3child
-      }else{
-        rep.node.subsubchild$Children <- rep.node.sub3child 
-      }
+      # if(length(names(rep.node.subsubchild$Children)) == 0){
+      #   rep.node.subsubchild$Children[[1]] <- rep.node.sub3child
+      # }else{
+      #   rep.node.subsubchild$Children <- rep.node.sub3child 
+      # }
       rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
       rep.node.child$Children[[wrnsc]] <- rep.node.subchild
       rep.node$Children[[wrnc]] <- rep.node.child

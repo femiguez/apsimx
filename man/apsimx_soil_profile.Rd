@@ -2,7 +2,7 @@
 % Please edit documentation in R/apsimx_soil_profile.R
 \name{apsimx_soil_profile}
 \alias{apsimx_soil_profile}
-\title{Soil Profiles}
+\title{Create APSIM-X Soil Profiles}
 \usage{
 apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
   BD = NULL, AirDry = NULL, LL15 = NULL, DUL = NULL, SAT = NULL,
@@ -12,42 +12,71 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
   water.table = 200, soil.type = 0, crops = c("Maize", "Soybean",
   "Wheat"), dist.parms = list(a = 0, b = 0.5))
 }
+\arguments{
+\item{nlayers}{Number of soil layers (default = 10)}
+
+\item{Depth}{specific depths for each soil layer (cm)}
+
+\item{Thickness}{thickness for each soil layer (mm)}
+
+\item{BD}{bulk density for each soil layer (g/cc) -- 'cc' is cubic cm}
+
+\item{AirDry}{air dry for each soil layer (mm/mm)}
+
+\item{LL15}{lower limit (15 bar) for each soil layer (mm/mm)}
+
+\item{DUL}{drainage upper limit (0.33 bar) for each soil layer (mm/mm)}
+
+\item{SAT}{saturation (0 bar) for each soil layer (mm/mm)}
+
+\item{KS}{saturated hydraulic conductivity (mm/day)}
+
+\item{crop.LL}{lower limit for a specific crop}
+
+\item{crop.KL}{root ability to extract water for a specific crop}
+
+\item{crop.XF}{soil root exploration for a specific crop}
+
+\item{OC}{organic carbon (percent)}
+
+\item{OC.CN}{organci carbon C:N ratio}
+
+\item{FOM}{fresh organic matter (kg/ha)}
+
+\item{FOM.CN}{fresh organic matter C:N ratio}
+
+\item{FBiom}{Fraction of microbial biomass}
+
+\item{FInert}{Fraction of inert carbon}
+
+\item{soil.bottom}{bottom of the soil profile}
+
+\item{water.table}{water table level}
+
+\item{soil.type}{might use it in the future for auto filling missing information}
+
+\item{crops}{name of crops being grown}
+
+\item{dist.parms}{parameter values for creating a profile}
+}
 \description{
-Real soils have discontinuities, but for APSIM it might be beneficial to be able to create a soil profile with an arbitrary number of layers and have flexibility in the distribution of soil physical and chemical properties. What are the steps needed to create these soil profiles?
+Generates a soil profile that can then replace the existing one in an .apsimx simulation file
+}
+\details{
+Soil Profiles
+
+Real soils have discontinuities, but for APSIM it might be beneficial to be able to create 
+a soil profile with an arbitrary number of layers and have flexibility in the 
+distribution of soil physical and chemical properties. What are the steps needed 
+to create these soil profiles?
  
- 1. A function which can create a soil matrix with many layers (max 50)
- 2. This function should contain the Physical/Water, Chemical, InitialWater, Analysis, InitialN, Organic/SoilOrganicMatter 
- 3. Create Physical/Water with columns: Depth, Thickness, BD, AirDry, LL15, DUL, SAT, KS
- 
- @title Create APSIM-X Soil Profiles
- @name apsimx_soil_profile
- @description Generates a soil profile that can then replace the existing one in an .apsimx simulation file
- @param nlayers Number of soil layers (default = 10)
- @param Depth specific depths for each soil layer (cm)
- @param Thickness thickness for each soil layer (mm)
- @param BD bulk density for each soil layer (g/cc) -- 'cc' is cubic cm
- @param AirDry air dry for each soil layer (mm/mm)
- @param LL15 lower limit (15 bar) for each soil layer (mm/mm)
- @param DUL drainage upper limit (0.33 bar) for each soil layer (mm/mm)
- @param SAT saturation (0 bar) for each soil layer (mm/mm)
- @param KS saturated hydraulic conductivity (mm/day)
- @param crop.LL lower limit for a specific crop
- @param crop.KL root ability to extract water for a specific crop
- @param crop.XF soil root exploration for a specific crop
- @param OC organic carbon (%)
- @param OC.CN organci carbon C:N ratio
- @param FOM fresh organic matter (kg/ha)
- @param FOM.CN fresh organic matter C:N ratio
- @param FBiom Fraction of microbial biomass
- @param FInert Fraction of inert carbon
- @param soil.bottom bottom of the soil profile
- @param water.table water table level
- @param soil.type might use it in the future for auto filling missing information
- @param crops name of crops being grown
- @param dist.parms parameter values for creating a profile
- @export
- @examples 
- \dontrun{
+ 1. A function which can create a soil matrix with many layers
+ 2. This function should contain the Physical or Water, Chemical, InitialWater, Analysis, InitialN, Organic or SoilOrganicMatter 
+ 3. Create Physical or Water with columns: Depth, Thickness, BD, AirDry, LL15, DUL, SAT, KS
+}
+\examples{
+\dontrun{
  sp <- apsimx_soil_profile()
  }
+
 }

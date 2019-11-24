@@ -29,10 +29,10 @@ setwd(tmp.dir)
 
 # Introduction
 
-Are you a user of APSIM-X ("Next Generation")? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the **apsimx** package, which allows you to inspect, edit, run and read files created by APSIM-X (.apsimx) files. New .apsimx files are based on the JSON (JavaScript Object Notation https://www.json.org/) format and it is used to communicate information to the APSIM-X engine. By using the 'jsonlite' R package **apsimx** can read and write ('inspect' and 'edit') files in this format. APSIM 'Classic' used an XML format and this type is now fully supported ('inspect', 'edit', 'run' and 'read').  For 'inspect' and 'edit' in the APSIM 'Classic' version I use the 'xml2' package. To run simulations the *apsimx* function (*apsim* for 'Classic') is available and results from the simulation can be imported as an R object with a dedicated function (*read_apsimx* 'NG' and *read_apsim* for 'Classic'). If you need to write scripts (regardless of whether you use the **apsimx** package or not) the vignette 'writing scripts' might be useful. The package is currently being developed and available at: https://github.com/femiguez/apsimx. 
+Are you a user of APSIM-X ("Next Generation")? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the **apsimx** package, which allows you to inspect, edit, run and read files created by APSIM-X -- .apsim(x) files. New .apsimx files are based on the JSON (JavaScript Object Notation https://www.json.org/) format and it is used to communicate information to the APSIM-X engine. By using the 'jsonlite' R package **apsimx** can read and write ('inspect' and 'edit') files in this format. APSIM 'Classic' used an XML format and this type is now fully supported ('inspect', 'edit', 'run' and 'read').  For 'inspect' and 'edit' in the APSIM 'Classic' version I use the 'xml2' package. To run simulations the *apsimx* function (*apsim* for 'Classic') is available and results from the simulation can be imported as an R object with a dedicated function (*read_apsimx* 'NG' and *read_apsim* for 'Classic'). If you need to write scripts (regardless of whether you use the **apsimx** package or not) the vignette 'writing scripts' might be useful. The package is currently being developed and available at: https://github.com/femiguez/apsimx. 
 If you have any questions write to: femiguez *at* iastate.edu. 
 
-In part this package is inspired by previous work done by Bryan Stanfill on the 'apsimr' package (available from CRAN and github: https://github.com/stanfill/apsimr). That pacakge made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using 'GAMS'. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package is 'APSIM', but as with 'apsimr' it has not been updated and it has somewhat of a different functionality. The 'APSIM' package is especially useful for creating weahter ('.met') files for APSIM 'Classic' or 'Next Generation'. 
+In part this package is inspired by previous work by Bryan Stanfill on the 'apsimr' package (available from CRAN and github: https://github.com/stanfill/apsimr). That package made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using 'GAMS'. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package is 'APSIM', but as with 'apsimr' it has not been updated and it has somewhat of a different functionality. The 'APSIM' package is especially useful for creating weather ('.met') files for APSIM 'Classic' or 'Next Generation'. 
 
 ## Background information
 
@@ -156,9 +156,9 @@ inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
 
 # Proposed workflow
 
-It is recommended that you start by creating an .apsim(x) file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The funcitons included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. This is the proposed workflow:
+It is recommended that you start by creating an .apsim(x) file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The functions included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. This is the proposed workflow:
 
-1. Create a simualtion using the APSIM GUI
+1. Create a simulation using the APSIM GUI
 2. Identify variables/parameters that you want to modify (they need to be exposed in the .apsimx (JSON) or .apsim (XML) file)
 3. Edit the file using 'edit_apsim(x)'
 4. Run the simulation using 'apsim(x)'
@@ -235,9 +235,17 @@ edit_apsim("Millet", src.dir = extd.dir, wrt.dir = ".",
            edit.tag = "-pp")
 ```
 
+Verify that it was edited correctly.
+
+```{r Millet-edit-inspect}
+inspect_apsim("Millet-pp.apsim", src.dir = ".",
+              node = "Manager",
+              parm = list("Sow on a fixed date",NA))
+```
+
 ```{r removing-Millet-pp, echo = FALSE, eval = FALSE}
 ## Apparently this is not needed
-file.remove("Millet-pp.apsimx")
+file.remove("Millet-pp.apsim")
 ```
 
 # Advanced Examples
@@ -250,14 +258,14 @@ State the node ("Maize") and display available components:
 
 ```{r inspect-replacement-node}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                            node = "Maize", display.available = TRUE)
+                           node = "Maize", display.available = TRUE)
 ```
 
 Choose 'Phenology' as a 'child' of 'Maize':
 
 ```{r inspect-replacement-node-child}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                            node = "Maize", node.child = "Phenology",
+                           node = "Maize", node.child = "Phenology",
                            display.available = TRUE)
 ```
 
@@ -265,7 +273,7 @@ Choose 'ThermalTime' as a 'sub.child' of 'Phenology':
 
 ```{r inspect-replacement-node-subchild}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                            node = "Maize", node.child = "Phenology",
+                           node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime",
                            display.available = TRUE)
 ```
@@ -273,11 +281,11 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 Now we need to pick from within 'ThermalTime'
 ```{r inspect-replacement-node-subchild-thermal}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                            node = "Maize", node.child = "Phenology",
-                            node.subchild = "ThermalTime", display.available = TRUE) 
+                           node = "Maize", node.child = "Phenology",
+                           node.subchild = "ThermalTime", display.available = TRUE) 
 ```
 
-There is a component names "BaseThermalTime".
+There is a component named "BaseThermalTime".
 
 
 ```{r inspect-replacement-node-subchild-subsubchild}
@@ -303,7 +311,7 @@ Let's say we want to inspect details of soybean cultivars in the same file:
 
 ```{r inspect-replacement-soybean-cultivar-node}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                            node = "Soybean", display.available = TRUE) 
+                           node = "Soybean", display.available = TRUE) 
 ```
 
 In this case the cultivars are at the sub-node level.

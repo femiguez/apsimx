@@ -1,6 +1,6 @@
 {
   "$type": "Models.Core.Simulations, Models",
-  "ExplorerWidth": 296,
+  "ExplorerWidth": 300,
   "Version": 67,
   "Name": "Simulations",
   "Children": [
@@ -13510,7 +13510,10 @@
                 "[Soybean].Total.Wt",
                 "[Soybean].AboveGround.Wt",
                 "[Soybean].Grain.Total",
-                "[Soybean].Leaf.LAI"
+                "[Soybean].Leaf.LAI",
+                "[Soybean].Grain.Wt",
+                "[Soybean].Grain.Nconc",
+                "[Soybean].Grain.Number"
               ],
               "EventNames": [
                 "[Clock].EndOfDay"

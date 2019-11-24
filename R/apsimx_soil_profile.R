@@ -1,44 +1,46 @@
 #' Soil Profiles
 #'
-#' Real soils have discontinuities, but for APSIM it might be beneficial to be able to create a soil profile with an arbitrary number of layers and have flexibility in the distribution of soil physical and chemical properties. What are the steps needed to create these soil profiles?
+#' Real soils have discontinuities, but for APSIM it might be beneficial to be able to create 
+#' a soil profile with an arbitrary number of layers and have flexibility in the 
+#' distribution of soil physical and chemical properties. What are the steps needed 
+#' to create these soil profiles?
 #'  
-#'  1. A function which can create a soil matrix with many layers (max 50)
-#'  2. This function should contain the Physical/Water, Chemical, InitialWater, Analysis, InitialN, Organic/SoilOrganicMatter 
-#'  3. Create Physical/Water with columns: Depth, Thickness, BD, AirDry, LL15, DUL, SAT, KS
+#'  1. A function which can create a soil matrix with many layers
+#'  2. This function should contain the Physical or Water, Chemical, InitialWater, Analysis, InitialN, Organic or SoilOrganicMatter 
+#'  3. Create Physical or Water with columns: Depth, Thickness, BD, AirDry, LL15, DUL, SAT, KS
 #'  
-#'  @title Create APSIM-X Soil Profiles
-#'  @name apsimx_soil_profile
-#'  @description Generates a soil profile that can then replace the existing one in an .apsimx simulation file
-#'  @param nlayers Number of soil layers (default = 10)
-#'  @param Depth specific depths for each soil layer (cm)
-#'  @param Thickness thickness for each soil layer (mm)
-#'  @param BD bulk density for each soil layer (g/cc) -- 'cc' is cubic cm
-#'  @param AirDry air dry for each soil layer (mm/mm)
-#'  @param LL15 lower limit (15 bar) for each soil layer (mm/mm)
-#'  @param DUL drainage upper limit (0.33 bar) for each soil layer (mm/mm)
-#'  @param SAT saturation (0 bar) for each soil layer (mm/mm)
-#'  @param KS saturated hydraulic conductivity (mm/day)
-#'  @param crop.LL lower limit for a specific crop
-#'  @param crop.KL root ability to extract water for a specific crop
-#'  @param crop.XF soil root exploration for a specific crop
-#'  @param OC organic carbon (%)
-#'  @param OC.CN organci carbon C:N ratio
-#'  @param FOM fresh organic matter (kg/ha)
-#'  @param FOM.CN fresh organic matter C:N ratio
-#'  @param FBiom Fraction of microbial biomass
-#'  @param FInert Fraction of inert carbon
-#'  @param soil.bottom bottom of the soil profile
-#'  @param water.table water table level
-#'  @param soil.type might use it in the future for auto filling missing information
-#'  @param crops name of crops being grown
-#'  @param dist.parms parameter values for creating a profile
-#'  @export
-#'  @examples 
-#'  \dontrun{
+#' @title Create APSIM-X Soil Profiles
+#' @name apsimx_soil_profile
+#' @description Generates a soil profile that can then replace the existing one in an .apsimx simulation file
+#' @param nlayers Number of soil layers (default = 10)
+#' @param Depth specific depths for each soil layer (cm)
+#' @param Thickness thickness for each soil layer (mm)
+#' @param BD bulk density for each soil layer (g/cc) -- 'cc' is cubic cm
+#' @param AirDry air dry for each soil layer (mm/mm)
+#' @param LL15 lower limit (15 bar) for each soil layer (mm/mm)
+#' @param DUL drainage upper limit (0.33 bar) for each soil layer (mm/mm)
+#' @param SAT saturation (0 bar) for each soil layer (mm/mm)
+#' @param KS saturated hydraulic conductivity (mm/day)
+#' @param crop.LL lower limit for a specific crop
+#' @param crop.KL root ability to extract water for a specific crop
+#' @param crop.XF soil root exploration for a specific crop
+#' @param OC organic carbon (percent)
+#' @param OC.CN organci carbon C:N ratio
+#' @param FOM fresh organic matter (kg/ha)
+#' @param FOM.CN fresh organic matter C:N ratio
+#' @param FBiom Fraction of microbial biomass
+#' @param FInert Fraction of inert carbon
+#' @param soil.bottom bottom of the soil profile
+#' @param water.table water table level
+#' @param soil.type might use it in the future for auto filling missing information
+#' @param crops name of crops being grown
+#' @param dist.parms parameter values for creating a profile
+#' @export
+#' @examples 
+#' \dontrun{
 #'  sp <- apsimx_soil_profile()
 #'  }
-#'  
-#'  
+#'
 
 apsimx_soil_profile <-  function(nlayers = 10, 
                                  Depth = NULL, 
@@ -318,16 +320,23 @@ plot.apsimx_soil_profile <- function(x, property = c("all", "water",
                                               "OC", "OC.CN", 
                                               "FOM","FOM.CN",
                                               "FBiom","FInert")){
-  
+  ## Test for existence of ggplot2
+  if(!requireNamespace("ggplot2",quietly = TRUE)){
+    warning("ggplot2 is required for this plotting function")
+    return(NULL)
+  }
+  ## Really dumb... but for now...
+  dist <- NA; soil.depths <- NA; soil.depth.bottom <- NA; SAT <- NA
+  LL15 <- NA; DUL <- NA
   ## Add soil bottom depth
   x$soil.depth.bottom <- sapply(as.character(x$Depth), FUN = function(x) as.numeric(strsplit(x,"-")[[1]][2]))
   property <- match.arg(property)
   if(property != "all" & property != "water"){
     
     tmp <- as.data.frame(unclass(x))[,c(property,"Depth","soil.depth.bottom")]
-    qp <- qplot(x = tmp[,1], y = -tmp[,3], 
-                xlab = property, ylab = "Soil Depth (cm)", 
-                geom = "line")
+    qp <- ggplot2::qplot(x = tmp[,1], y = -tmp[,3], 
+                         xlab = property, ylab = "Soil Depth (cm)", 
+                         geom = "line")
     print(qp)
   }
   
@@ -353,22 +362,22 @@ plot.apsimx_soil_profile <- function(x, property = c("all", "water",
     dat0 <- rbind(bd,ad,ll,dul,sat,ks,oc,oc.cn,fom,fom.cn,fbiom,finert)
     dat <- data.frame(dat0, soil.depths = soil.depth.bottoms)
     
-    gp <- ggplot(data = dat, aes(x = dist, y = -soil.depths)) +
-      ylab("Soil Depth (cm)") + xlab("") + 
-      facet_wrap(~var, scales = "free") +
-      geom_path()
+    gp <- ggplot2::ggplot(data = dat, ggplot2::aes(x = dist, y = -soil.depths)) +
+      ggplot2::ylab("Soil Depth (cm)") + ggplot2::xlab("") + 
+      ggplot2::facet_wrap(~var, scales = "free") +
+      ggplot2::geom_path()
     print(gp)
   }
   
   if(property == "water"){
     
     tmp <- as.data.frame(unclass(x))
-    gp <- ggplot(data = tmp, aes(x = -soil.depth.bottom, y = SAT)) +
-      xlab("Soil Depth (cm)") + ylab("proportion") + 
-      geom_line() + ggtitle("Soil water") +
-      geom_ribbon(aes(ymin = LL15, ymax = DUL), color = "blue",
-                  fill = "deepskyblue1") + 
-      coord_flip() ##+ ylim(c(0,0.75)) 
+    gp <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = -soil.depth.bottom, y = SAT)) +
+              ggplot2::xlab("Soil Depth (cm)") + ggplot2::ylab("proportion") + 
+              ggplot2::geom_line() + ggplot2::ggtitle("Soil water") +
+              ggplot2::geom_ribbon(ggplot2::aes(ymin = LL15, ymax = DUL), color = "blue",
+                      fill = "deepskyblue1") + 
+              ggplot2::coord_flip() ##+ ylim(c(0,0.75)) 
     print(gp)
   }
 }
