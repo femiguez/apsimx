@@ -24,21 +24,27 @@
 #' @param crop.LL lower limit for a specific crop
 #' @param crop.KL root ability to extract water for a specific crop
 #' @param crop.XF soil root exploration for a specific crop
-#' @param OC organic carbon (percent)
-#' @param OC.CN organci carbon C:N ratio
+#' @param Carbon organic carbon (percent)
+#' @param SoilCNRatio organci carbon C:N ratio
 #' @param FOM fresh organic matter (kg/ha)
 #' @param FOM.CN fresh organic matter C:N ratio
 #' @param FBiom Fraction of microbial biomass
 #' @param FInert Fraction of inert carbon
+#' @param NO3N nitrate nitrogen (Chemical)
+#' @param NH4N ammonium nitrogen (Chemical)
+#' @param PH soil pH
 #' @param soil.bottom bottom of the soil profile
 #' @param water.table water table level
 #' @param soil.type might use it in the future for auto filling missing information
 #' @param crops name of crops being grown
 #' @param dist.parms parameter values for creating a profile
+#' @return a soil profile with class 'soil_profile' with elements 'soil' and 'crops' (for now)
 #' @export
 #' @examples 
 #' \dontrun{
 #'  sp <- apsimx_soil_profile()
+#'  require(ggplot2)
+#'  plot(sp)
 #'  }
 #'
 
@@ -54,14 +60,20 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                  crop.LL = NULL,
                                  crop.KL = NULL,
                                  crop.XF = NULL,
-                                 OC = NULL,  OC.CN = NULL,
-                                 FOM = NULL,  FOM.CN=NULL,
-                                 FBiom = NULL, FInert = NULL,  
+                                 Carbon = NULL,  
+                                 SoilCNRatio = NULL,
+                                 FOM = NULL,  
+                                 FOM.CN=NULL,
+                                 FBiom = NULL, 
+                                 FInert = NULL,  
+                                 NO3N = NULL,
+                                 NH4N = NULL,
+                                 PH = NULL,
                                  soil.bottom = 150,
                                  water.table = 200, 
                                  soil.type = 0,
                                  crops = c("Maize","Soybean","Wheat"),
-                                 dist.parms = list(a = 0, b = 0.5)){
+                                 dist.parms = list(a = 0, b = 0.2)){
   
   ## 1. and 2. Depth and Thickness
   if(missing(Depth) & missing(Thickness)){
@@ -72,7 +84,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
       
     for(i in 1:nlayers){
       Depth[i] <- paste0(depth.0[i],"-",depth.0[i+1])  
-      Thickness[i] <- depth.0[i + 1] - depth.0[i]
+      Thickness[i] <- (depth.0[i + 1] - depth.0[i]) * 10
     }
   }else{
     if(!missing(Depth) & !missing(Thickness)){
@@ -84,7 +96,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
   ## 1.1 is a default value of Bulk Density
   if(missing(BD)) BD <- 1.1 * soil_variable_profile(nlayers, 
                                                     a = dist.parms$a,
-                                                    b = dist.parms$b)
+                                                    b = -0.05)
   if(is.list(BD)){
     if(length(BD) != 3) stop("BD list should be of length 3")
     ## First element will be the max value of BD 
@@ -188,7 +200,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
   ## 10. crop.XF with default value 1
   if(missing(crop.XF)) crop.XF <- 1 * soil_variable_profile(nlayers, 
                                                                a = dist.parms$a,
-                                                               b = dist.parms$b)
+                                                               b = 0)
   if(is.list(crop.XF)){
     if(length(crop.XF) != 3) stop("crop.XF list should be of length 3")
     ## First element will be the top value of crop.XF
@@ -199,33 +211,33 @@ apsimx_soil_profile <-  function(nlayers = 10,
   }
   
   ## 11. Organic Carbon
-  if(missing(OC)) OC <- soil_variable_profile(nlayers, 
+  if(missing(Carbon)) Carbon <- 1.2 * soil_variable_profile(nlayers, 
                                                 a = dist.parms$a,
                                                 b = dist.parms$b)
-  if(is.list(OC)){
-    if(length(OC) != 3) stop("OC list should be of length 3")
+  if(is.list(Carbon)){
+    if(length(Carbon) != 3) stop("Carbon list should be of length 3")
     ## First element will be the top value of OC
-    OC.max <- OC[[1]]
+    Carbon.max <- Carbon[[1]]
     ## second element will be the a parameter 
     ## third element will be the b parameter 
-    OC <- OC.max * soil_variable_profile(nlayers, a = OC[[2]], b = OC[[3]])
+    Carbon <- Carbon.max * soil_variable_profile(nlayers, a = Carbon[[2]], b = Carbon[[3]])
   }
     
   ## 12. Organic Carbon C:N ratio
-  if(missing(OC.CN)) OC.CN <- soil_variable_profile(nlayers, 
+  if(missing(SoilCNRatio)) SoilCNRatio <- 12 * soil_variable_profile(nlayers, 
                                                       a = dist.parms$a,
-                                                      b = dist.parms$b)
-  if(is.list(OC.CN)){ 
-    if(length(OC.CN) != 3) stop("OC.CN  list should be of length 3")
-    ## First element will be the top value of OC.CN 
-    OC.CN.max <- OC.CN[[1]]
+                                                      b = 0)
+  if(is.list(SoilCNRatio)){ 
+    if(length(SoilCNRatio) != 3) stop("SoilCNRatio  list should be of length 3")
+    ## First element will be the top value of SoilCNRatio 
+    SoilCNRatio.max <- SoilCNRatio[[1]]
     ## second element will be the a parameter 
     ## third element will be the b parameter 
-    OC.CN <- OC.CN.max * soil_variable_profile(nlayers, a = OC.CN[[2]], b = OC.CN[[3]])
+    SoilCNRatio <- SoilCNRatio.max * soil_variable_profile(nlayers, a = SoilCNRatio[[2]], b = SoilCNRatio[[3]])
   }
     
   ## 13. Fresh Organic Matter (kg/ha)
-  if(missing(FOM)) FOM <- soil_variable_profile(nlayers, 
+  if(missing(FOM)) FOM <- 150 * soil_variable_profile(nlayers, 
                                                   a = dist.parms$a,
                                                   b = dist.parms$b)
   if(is.list(FOM)){ 
@@ -251,7 +263,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
   }
     
   ## 15. Fraction of microbial biomass with default 0.04
-  if(missing(FBiom)) FBimo <- 0.04 * soil_variable_profile(nlayers, 
+  if(missing(FBiom)) FBiom <- 0.04 * soil_variable_profile(nlayers, 
                                                         a = dist.parms$a,
                                                         b = dist.parms$b)
   if(is.list(FBiom)){ 
@@ -264,9 +276,9 @@ apsimx_soil_profile <-  function(nlayers = 10,
   }
     
   ## 16. Fraction of inert soil organic carbon
-  if(missing(FInert)) FInert <- soil_variable_profile(nlayers, 
+  if(missing(FInert)) FInert <- 0.8 * soil_variable_profile(nlayers, 
                                                       a = dist.parms$a,
-                                                      b = dist.parms$b)
+                                                      b = -0.01)
   if(is.list(FInert)){ 
     if(length(FInert) != 3) stop("FInert list should be of length 3")
     ## First element will be the top value of FInert
@@ -275,19 +287,61 @@ apsimx_soil_profile <-  function(nlayers = 10,
     ## third element will be the b parameter 
     FInert <- FInert.max * soil_variable_profile(nlayers, a = FInert[[2]], b = FInert[[3]])
   }
-    
+  
+  ## 17. Chemical soil nitrate-N
+  if(missing(NO3N)) NO3N <- 0.5 * soil_variable_profile(nlayers, 
+                                                            a = dist.parms$a,
+                                                            b = 0.01)
+  if(is.list(NO3N)){ 
+    if(length(NO3N) != 3) stop("NO3N list should be of length 3")
+    ## First element will be the top value of NO3N
+    NO3N.max <- NO3N[[1]]
+    ## second element will be the a parameter 
+    ## third element will be the b parameter 
+    NO3N <- NO3N.max * soil_variable_profile(nlayers, a = NO3N[[2]], b = NO3N[[3]])
+  }
+  
+  ## 18. Chemical soil ammonium-N
+  if(missing(NH4N)) NH4N <- 0.05 * soil_variable_profile(nlayers, 
+                                                        a = dist.parms$a,
+                                                        b = 0.01)
+  if(is.list(NH4N)){ 
+    if(length(NH4N) != 3) stop("NH4N list should be of length 3")
+    ## First element will be the top value of NH4N
+    NH4N.max <- NH4N[[1]]
+    ## second element will be the a parameter 
+    ## third element will be the b parameter 
+    NH4N <- NH4N.max * soil_variable_profile(nlayers, a = NH4N[[2]], b = NH4N[[3]])
+  }
+   
+  ## 19. Chemical soil PH
+  if(missing(PH)) PH <- 6.5 * soil_variable_profile(nlayers, 
+                                                         a = dist.parms$a,
+                                                         b = 0)
+  if(is.list(PH)){ 
+    if(length(PH) != 3) stop("PH list should be of length 3")
+    ## First element will be the top value of PH
+    PH.max <- PH[[1]]
+    ## second element will be the a parameter 
+    ## third element will be the b parameter 
+    PH <- PH.max * soil_variable_profile(nlayers, a = PH[[2]], b = PH[[3]])
+  }
+  
   soil <- data.frame(Depth=Depth, Thickness=Thickness, BD=BD, 
                      AirDry=AirDry, LL15=LL15, DUL=DUL, SAT=SAT, 
-                     KS=KS, 
-                     OC=OC, OC.CN=OC.CN, FOM=FOM, FOM.CN=FOM.CN, 
-                      FBiom=FBiom, FInert=FInert)
+                     KS=KS, crop.XF=crop.XF, crop.KL = crop.KL,
+                     crop.LL = crop.LL, Carbon=Carbon, 
+                     SoilCNRatio=SoilCNRatio, FOM=FOM, 
+                     FOM.CN=FOM.CN, FBiom=FBiom, FInert=FInert,
+                     NO3N=NO3N, NH4N=NH4N, PH=PH)
   
     names(soil) <- c("Depth","Thickness", "BD", "AirDry","LL15",
-                        "DUL","SAT","KS","OC","OC.CN",
-                        "FOM","FOM.CN","FBiom","FInert")
-    class(soil) <- c("apsimx_soil_profile","data.frame")
-    #rownames(soil) <- paste0("layer_",1:nlayers)
-    return(soil)
+                     "DUL","SAT","KS","crop.XF","crop.KL","crop.LL",
+                     "Carbon","SoilCNRatio", "FOM","FOM.CN","FBiom","FInert",
+                     "NO3N","NH4N","PH")
+    ans <- list(soil=soil, crops = crops)
+    class(ans) <- "soil_profile"
+    return(ans)
   }
 
 
@@ -315,11 +369,12 @@ soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
   ans
 }
 
-plot.apsimx_soil_profile <- function(x, property = c("all", "water",
-                                              "LL15","DUL","SAT","KS",
-                                              "OC", "OC.CN", 
-                                              "FOM","FOM.CN",
-                                              "FBiom","FInert")){
+plot.soil_profile <- function(x, property = c("all", "water","BD",
+                                              "AirDry","LL15","DUL","SAT",
+                                              "KS","crop.XF","crop.KL",
+                                              "crop.LL", "Carbon", "SoilCNRatio", 
+                                              "FOM","FOM.CN","FBiom",
+                                              "FInert","NO3N","NH4N","PH")){
   ## Test for existence of ggplot2
   if(!requireNamespace("ggplot2",quietly = TRUE)){
     warning("ggplot2 is required for this plotting function")
@@ -328,12 +383,13 @@ plot.apsimx_soil_profile <- function(x, property = c("all", "water",
   ## Really dumb... but for now...
   dist <- NA; soil.depths <- NA; soil.depth.bottom <- NA; SAT <- NA
   LL15 <- NA; DUL <- NA
+  xsoil <- x$soil
   ## Add soil bottom depth
-  x$soil.depth.bottom <- sapply(as.character(x$Depth), FUN = function(x) as.numeric(strsplit(x,"-")[[1]][2]))
+  xsoil$soil.depth.bottom <- sapply(as.character(xsoil$Depth), FUN = function(x) as.numeric(strsplit(x,"-")[[1]][2]))
   property <- match.arg(property)
   if(property != "all" & property != "water"){
     
-    tmp <- as.data.frame(unclass(x))[,c(property,"Depth","soil.depth.bottom")]
+    tmp <- xsoil[,c(property,"Depth","soil.depth.bottom")]
     qp <- ggplot2::qplot(x = tmp[,1], y = -tmp[,3], 
                          xlab = property, ylab = "Soil Depth (cm)", 
                          geom = "line")
@@ -342,24 +398,32 @@ plot.apsimx_soil_profile <- function(x, property = c("all", "water",
   
   if(property == "all"){
     
-    tmp <- as.data.frame(unclass(x))
+    tmp <- xsoil
     ## This looks dumb, but I'd rather not need a new package for such a simple task
-    bd <- data.frame(var = "BD", dist = tmp[,"BD"])
-    ad <- data.frame(var = "AirDry", dist = tmp[,"AirDry"])
-    ll <- data.frame(var = "LL15", dist = tmp[,"LL15"])
-    dul <- data.frame(var = "DUL", dist = tmp[,"DUL"])
-    sat <- data.frame(var = "SAT", dist = tmp[,"SAT"])
-    ks <- data.frame(var = "KS", dist = tmp[,"KS"])
-    oc <- data.frame(var = "OC", dist = tmp[,"OC"])
-    oc.cn <- data.frame(var = "OC.CN", dist = tmp[,"OC.CN"])
-    fom <- data.frame(var = "FOM", dist = tmp[,"FOM"])
-    fom.cn <- data.frame(var = "FOM.CN", dist = tmp[,"FOM.CN"])
-    fbiom <- data.frame(var = "FBiom", dist = tmp[,"FBiom"])
-    finert <- data.frame(var = "FInert", dist = tmp[,"FInert"])
+    bd <- data.frame(var = "BD", dist = tmp[,"BD"]) # 1
+    ad <- data.frame(var = "AirDry", dist = tmp[,"AirDry"]) # 2
+    ll <- data.frame(var = "LL15", dist = tmp[,"LL15"]) # 3
+    dul <- data.frame(var = "DUL", dist = tmp[,"DUL"]) # 4
+    sat <- data.frame(var = "SAT", dist = tmp[,"SAT"]) # 5
+    ks <- data.frame(var = "KS", dist = tmp[,"KS"]) # 6
+    c.xf <- data.frame(var = "crop.XF", dist = tmp[,"crop.XF"]) # 7
+    c.kl <- data.frame(var = "crop.KL", dist = tmp[,"crop.KL"]) # 8
+    c.ll <- data.frame(var = "crop.LL", dist = tmp[,"crop.LL"]) # 9
+    carbon <- data.frame(var = "Carbon", dist = tmp[,"Carbon"]) # 10
+    soilcn <- data.frame(var = "SoilCNRatio", dist = tmp[,"SoilCNRatio"]) # 11
+    fom <- data.frame(var = "FOM", dist = tmp[,"FOM"]) # 12
+    fom.cn <- data.frame(var = "FOM.CN", dist = tmp[,"FOM.CN"]) # 13
+    fbiom <- data.frame(var = "FBiom", dist = tmp[,"FBiom"]) # 14
+    finert <- data.frame(var = "FInert", dist = tmp[,"FInert"]) # 15
+    no3n <- data.frame(var = "NO3N", dist = tmp[,"NO3N"]) # 16
+    nh4n <- data.frame(var = "NH4N", dist = tmp[,"NH4N"]) # 17
+    ph <- data.frame(var = "PH", dist = tmp[,"PH"]) # 18
     
-    soil.depth.bottoms <- rep(x$soil.depth.bottom, 12)
+    soil.depth.bottoms <- rep(xsoil$soil.depth.bottom, 18)
     
-    dat0 <- rbind(bd,ad,ll,dul,sat,ks,oc,oc.cn,fom,fom.cn,fbiom,finert)
+    dat0 <- rbind(bd,ad,ll,dul,sat,ks,c.xf,c.kl,c.ll,carbon,
+                  soilcn,fom,fom.cn,fbiom,finert,no3n,nh4n,ph)
+    
     dat <- data.frame(dat0, soil.depths = soil.depth.bottoms)
     
     gp <- ggplot2::ggplot(data = dat, ggplot2::aes(x = dist, y = -soil.depths)) +
@@ -371,7 +435,7 @@ plot.apsimx_soil_profile <- function(x, property = c("all", "water",
   
   if(property == "water"){
     
-    tmp <- as.data.frame(unclass(x))
+    tmp <- xsoil
     gp <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = -soil.depth.bottom, y = SAT)) +
               ggplot2::xlab("Soil Depth (cm)") + ggplot2::ylab("proportion") + 
               ggplot2::geom_line() + ggplot2::ggtitle("Soil water") +

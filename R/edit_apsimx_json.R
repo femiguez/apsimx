@@ -67,13 +67,15 @@
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         node = c("Clock","Weather","Soil","SurfaceOrganicMatter","MicroClimate","Crop","Manager"),
-                        soil.child = c("Water","Organic","Physical","Analysis","InitialWater","Sample"),
+                        soil.child = c("Water","Organic","Physical","Analysis","Chemical","InitialWater","Sample"),
                         manager.child = NULL,
                         parm=NULL, value=NULL, 
                         overwrite = FALSE,
                         edit.tag = "-edited",
                         parm.path = NULL,
                         verbose = TRUE){
+  
+  check_apsim_name(file)
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
@@ -156,20 +158,20 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     
     soil.node0 <- soil.node[[1]]$Children
   
-    if(soil.child == "Water"){
-      edited.child <- "Water"
+    if(soil.child == "Water" || soil.child == "Physical"){
+      edited.child <- soil.child
       soil.water.node <- soil.node[[1]]$Children[[1]]
       ## I select this one based on position, so problems
       ## can arise
       
-      if(soil.water.node$Name != "Water"){
+      if(soil.water.node$Name != "Water" || soil.water.node$Name != "Physical"){
         stop("Wrong node (Soil Water)")
       }
       
       crop.parms <- c("XF", "KL", "LL")
       
       if(parm %in% crop.parms ){
-        for(i in 1:length(soil.water.node[[parm]])){
+        for(i in 1:length(soil.water.node$Children[[1]][[parm]])){
           soil.water.node$Children[[1]][[parm]][[i]] <- value[i]
         }
       }else{
@@ -207,12 +209,13 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.node[[1]]$Children[wsomn][[1]] <- soil.om.node
     }
     
-    if(soil.child == "Analysis"){
-      edited.child <- "Analysis"
-      wan <- grepl("Analysis", soil.node0)
+    if(soil.child == "Analysis" || soil.child == "Chemical"){
+      edited.child <- soil.child
+      wan <- grepl(soil.child, soil.node0)
       soil.analysis.node <- soil.node0[wan][[1]]
       
       ## Only PH can be edited
+      if(parm != "PH") stop("only PH can be edited, use 'edit_apsimx_replace_soil_profile instead")
       if(parm == "PH"){
         for(i in 1:length(soil.analysis.node[[parm]])){
           soil.analysis.node[[parm]][[i]] <- value[i]

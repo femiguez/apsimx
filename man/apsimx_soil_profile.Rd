@@ -7,10 +7,11 @@
 apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
   BD = NULL, AirDry = NULL, LL15 = NULL, DUL = NULL, SAT = NULL,
   KS = NULL, crop.LL = NULL, crop.KL = NULL, crop.XF = NULL,
-  OC = NULL, OC.CN = NULL, FOM = NULL, FOM.CN = NULL,
-  FBiom = NULL, FInert = NULL, soil.bottom = 150,
-  water.table = 200, soil.type = 0, crops = c("Maize", "Soybean",
-  "Wheat"), dist.parms = list(a = 0, b = 0.5))
+  Carbon = NULL, SoilCNRatio = NULL, FOM = NULL, FOM.CN = NULL,
+  FBiom = NULL, FInert = NULL, NO3N = NULL, NH4N = NULL,
+  PH = NULL, soil.bottom = 150, water.table = 200, soil.type = 0,
+  crops = c("Maize", "Soybean", "Wheat"), dist.parms = list(a = 0, b =
+  0.2))
 }
 \arguments{
 \item{nlayers}{Number of soil layers (default = 10)}
@@ -37,9 +38,9 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
 
 \item{crop.XF}{soil root exploration for a specific crop}
 
-\item{OC}{organic carbon (percent)}
+\item{Carbon}{organic carbon (percent)}
 
-\item{OC.CN}{organci carbon C:N ratio}
+\item{SoilCNRatio}{organci carbon C:N ratio}
 
 \item{FOM}{fresh organic matter (kg/ha)}
 
@@ -48,6 +49,12 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
 \item{FBiom}{Fraction of microbial biomass}
 
 \item{FInert}{Fraction of inert carbon}
+
+\item{NO3N}{nitrate nitrogen (Chemical)}
+
+\item{NH4N}{ammonium nitrogen (Chemical)}
+
+\item{PH}{soil pH}
 
 \item{soil.bottom}{bottom of the soil profile}
 
@@ -58,6 +65,9 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
 \item{crops}{name of crops being grown}
 
 \item{dist.parms}{parameter values for creating a profile}
+}
+\value{
+a soil profile with class 'soil_profile' with elements 'soil' and 'crops' (for now)
 }
 \description{
 Generates a soil profile that can then replace the existing one in an .apsimx simulation file
@@ -77,6 +87,8 @@ to create these soil profiles?
 \examples{
 \dontrun{
  sp <- apsimx_soil_profile()
+ require(ggplot2)
+ plot(sp)
  }
 
 }
