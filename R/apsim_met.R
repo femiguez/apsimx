@@ -9,7 +9,7 @@
 #' @description Read into R a met file, check validity and return an object of class 'met'
 #' @param file path to met file
 #' @param src.dir optional source directory
-#' @param quiet whether to suppress all messages and warnings
+#' @param verbose whether to suppress all messages and warnings
 #' @return an object of class 'met' with attributes
 #' @export
 #' @examples 
@@ -20,7 +20,7 @@
 #' }
 #' 
 
-read_apsim_met <- function(file, src.dir = NULL, verbose = FALSE){
+read_apsim_met <- function(file, src.dir = NULL, verbose = TRUE){
 
   if(!grepl("met$",file)) stop("file should have a .met extension")
   
@@ -65,14 +65,13 @@ read_apsim_met <- function(file, src.dir = NULL, verbose = FALSE){
     constants <- NA
   }
 
-  if(!verbose){
+  if(verbose){
     cat("Found ",hdrl," header lines \n")
     cat("Found ",comment.lines," comment lines \n")
     cat("Found ",skip.lines," skip lines \n")
+    cat("Found ",constant.count,"constants \n")
   }
   
-  if(!verbose && length(constant.count) > 0) cat(paste("Found ",constant.count,"constants\n"))
-
   ## I only check the first 6 column names but there might be more
   clnms <- sub("^\\s+","",clnms)
   clnms.s <- strsplit(clnms,"\\s+")[[1]]
@@ -149,23 +148,23 @@ write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL){
   }
   ## Open connection
   con <- file(description = file.path, open = "w")
-  ## Write comments
-  if(!is.na(attr(met,"comments")) || length(attr(met,"site")) == 0) 
+  ## Write comments if they exist
+  if(!is.na(attr(met,"comments")) && length(attr(met,"site")) > 0) 
     writeLines(attr(met,"comments"), con = con)
   ## Start header
   writeLines("[weather.met.weather]", con = con)
-  ## Write site
-  if(!is.na(attr(met,"site")) || length(attr(met,"site")) == 0){
+  ## Write site if it exists
+  if(!is.na(attr(met,"site")) && length(attr(met,"site")) > 0){
     writeLines(attr(met,"site"), con = con)
   } 
   writeLines(attr(met,"latitude"), con = con)
-  if(!is.na(attr(met,"longitude")) || length(attr(met,"longitude")) == 0){
+  if(!is.na(attr(met,"longitude")) && length(attr(met,"longitude")) > 0){
     writeLines(attr(met,"longitude"), con = con)
   }
   writeLines(attr(met,"tav"), con = con)
   writeLines(attr(met,"amp"), con = con)
   ## Write constants
-  if(!is.na(attr(met,"constants")) || length(attr(met,"constants")) == 0){
+  if(!is.na(attr(met,"constants")) && length(attr(met,"constants")) > 0){
     for(i in seq_along(attr(met,"constants"))){
       writeLines(attr(met,"constants")[i], con = con)
     }
