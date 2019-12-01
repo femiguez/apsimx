@@ -16,6 +16,7 @@
 #' \dontrun{
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' ames.met <- read_apsim_met("Ames.met", src.dir = extd.dir)
+#' ames.met
 #' }
 #' 
 
@@ -131,18 +132,14 @@ read_apsim_met <- function(file, src.dir = NULL, verbose = FALSE){
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' ames.met <- read_apsim_met("Ames.met", src.dir = extd.dir)
 #' ames.met
-#' write_apsim_met(ames.met, wrt.dir = ".")
+#' write_apsim_met(ames.met, wrt.dir = ".", filename = "Ames.met")
 #' }
 #' 
-write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL, 
-                            overwrite = FALSE){
+write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL){
   
-  if(missing(wrt.dir) & missing(filename) & overwrite){
+  if(missing(wrt.dir) & missing(filename)){
     ## This assumes that the full path is in filename
     file.path <- attr(met,"filename")
-  }
-  if(missing(wrt.dir) & missing(filename) & !overwrite){
-    stop("Cannot overwrite file unless overwrite = TRUE")
   }
   if(!missing(wrt.dir) & missing(filename)){
     stop("Need to supply filename if 'wrt.dir' is not NULL")
