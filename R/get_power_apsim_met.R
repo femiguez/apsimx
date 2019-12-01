@@ -19,6 +19,11 @@
 
 get_power_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
   
+  if(!requireNamespace("nasapower",quietly = TRUE)){
+    warning("nasapower is required for this function")
+    return(NULL)
+  }
+  
   if(missing(filename)) filename <- "noname.met"
    
   if(!grepl(".met", filename, fixed=TRUE)) stop("filename should end in .met")

@@ -18,6 +18,7 @@ Imports:
         RSQLite,
 	xml2
 Suggests:
-	ggplot2
+	ggplot2,
+	nasapower
 LazyData: true
 RoxygenNote: 6.1.1
