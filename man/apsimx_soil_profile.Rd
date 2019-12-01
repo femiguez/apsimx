@@ -2,6 +2,7 @@
 % Please edit documentation in R/apsimx_soil_profile.R
 \name{apsimx_soil_profile}
 \alias{apsimx_soil_profile}
+\alias{plot.soil_profile}
 \title{Create APSIM-X Soil Profiles}
 \usage{
 apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
@@ -12,6 +13,11 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
   PH = NULL, soil.bottom = 150, water.table = 200, soil.type = 0,
   crops = c("Maize", "Soybean", "Wheat"), dist.parms = list(a = 0, b =
   0.2))
+
+\method{plot}{soil_profile}(x, property = c("all", "water", "BD",
+  "AirDry", "LL15", "DUL", "SAT", "KS", "crop.XF", "crop.KL", "crop.LL",
+  "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
+  "NH4N", "PH"))
 }
 \arguments{
 \item{nlayers}{Number of soil layers (default = 10)}
@@ -58,31 +64,38 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
 
 \item{soil.bottom}{bottom of the soil profile}
 
-\item{water.table}{water table level}
+\item{water.table}{water table level (not used at the moment)}
 
 \item{soil.type}{might use it in the future for auto filling missing information}
 
 \item{crops}{name of crops being grown}
 
 \item{dist.parms}{parameter values for creating a profile}
+
+\item{x}{object of class 'soil_profile'}
+
+\item{property}{"all" for plotting all soil properties, "water" for just SAT, DUL and LL15}
 }
 \value{
 a soil profile with class 'soil_profile' with elements 'soil' and 'crops' (for now)
 }
 \description{
 Generates a soil profile that can then replace the existing one in an .apsimx simulation file
+
+plotting function for a soil profile, it requires 'ggplot2'
 }
 \details{
 Soil Profiles
 
-Real soils have discontinuities, but for APSIM it might be beneficial to be able to create 
+Real soils might have discontinuities, but for APSIM it might be beneficial to be able to create 
 a soil profile with an arbitrary number of layers and have flexibility in the 
-distribution of soil physical and chemical properties. What are the steps needed 
-to create these soil profiles?
+distribution of soil physical and chemical properties. Steps:
  
- 1. A function which can create a soil matrix with many layers
- 2. This function should contain the Physical or Water, Chemical, InitialWater, Analysis, InitialN, Organic or SoilOrganicMatter 
- 3. Create Physical or Water with columns: Depth, Thickness, BD, AirDry, LL15, DUL, SAT, KS
+ 1. 'apsimx_soil_profile' is a function which can create a soil matrix with many layers \cr
+ 2. It allows for creating a smooth distribution for Physical (or Water), Chemical, InitialWater, Analysis, InitialN, Organic or SoilOrganicMatter \cr
+ 3. The distribution can be specified with the 'a' and 'c' parameter of an exponential decay function, using a list. E.g. DUL = list(0.35, 0, -0.1).
+ This means that the top value for DUL will be 0.35 and it will decay with a rate of -0.1. \cr
+ 4. If an increase and then a decay is needed the Ricker function can be used. See 'SSricker' in the 'nlraa' package. \cr
 }
 \examples{
 \dontrun{

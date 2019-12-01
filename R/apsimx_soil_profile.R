@@ -1,16 +1,19 @@
 #' Soil Profiles
 #'
-#' Real soils have discontinuities, but for APSIM it might be beneficial to be able to create 
+#' Real soils might have discontinuities, but for APSIM it might be beneficial to be able to create 
 #' a soil profile with an arbitrary number of layers and have flexibility in the 
-#' distribution of soil physical and chemical properties. What are the steps needed 
-#' to create these soil profiles?
+#' distribution of soil physical and chemical properties. Steps:
 #'  
-#'  1. A function which can create a soil matrix with many layers
-#'  2. This function should contain the Physical or Water, Chemical, InitialWater, Analysis, InitialN, Organic or SoilOrganicMatter 
-#'  3. Create Physical or Water with columns: Depth, Thickness, BD, AirDry, LL15, DUL, SAT, KS
+#'  1. 'apsimx_soil_profile' is a function which can create a soil matrix with many layers \cr
+#'  2. It allows for creating a smooth distribution for Physical (or Water), Chemical, InitialWater, Analysis, InitialN, Organic or SoilOrganicMatter \cr
+#'  3. The distribution can be specified with the 'a' and 'c' parameter of an exponential decay function, using a list. E.g. DUL = list(0.35, 0, -0.1).
+#'  This means that the top value for DUL will be 0.35 and it will decay with a rate of -0.1. \cr
+#'  4. If an increase and then a decay is needed the Ricker function can be used. See 'SSricker' in the 'nlraa' package. \cr
+#'  
 #'  
 #' @title Create APSIM-X Soil Profiles
 #' @name apsimx_soil_profile
+#' @rdname apsimx_soil_profile
 #' @description Generates a soil profile that can then replace the existing one in an .apsimx simulation file
 #' @param nlayers Number of soil layers (default = 10)
 #' @param Depth specific depths for each soil layer (cm)
@@ -34,7 +37,7 @@
 #' @param NH4N ammonium nitrogen (Chemical)
 #' @param PH soil pH
 #' @param soil.bottom bottom of the soil profile
-#' @param water.table water table level
+#' @param water.table water table level (not used at the moment)
 #' @param soil.type might use it in the future for auto filling missing information
 #' @param crops name of crops being grown
 #' @param dist.parms parameter values for creating a profile
@@ -74,9 +77,13 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                  soil.type = 0,
                                  crops = c("Maize","Soybean","Wheat"),
                                  dist.parms = list(a = 0, b = 0.2)){
+
+  if(!is.null(Depth) & !is.null(Thickness)){
+    stop("Only specify Depth OR Thickness")
+  }
   
   ## 1. and 2. Depth and Thickness
-  if(missing(Depth) & missing(Thickness)){
+  if(missing(Depth) && missing(Thickness)){
     depth.0 <- round(seq(from = 0, to = soil.bottom, length.out = nlayers + 1))
       
     Depth <- character(nlayers)
@@ -86,12 +93,25 @@ apsimx_soil_profile <-  function(nlayers = 10,
       Depth[i] <- paste0(depth.0[i],"-",depth.0[i+1])  
       Thickness[i] <- (depth.0[i + 1] - depth.0[i]) * 10
     }
-  }else{
-    if(!missing(Depth) & !missing(Thickness)){
-      stop("Only specify Depth OR Thickness")
+  }
+  ## If only Thickness is missing
+  if(missing(Thickness) && !missing(Depth)){
+    Thickness <- numeric(nlayers)
+    for(i in 1:length(Depth)){
+      tmp <- strsplit(Depth[i],"-")[[1]]
+      Thickness[i] <- (tmp[2] - tmp[1]) * 10
     }
   }
-
+  
+  ## If only Depth is missing
+  if(!missing(Thickness) && missing(Depth)){
+    Depth <- numeric(nlayers)
+    thcks <- cumsum(c(0,Thickness))/10
+    for(i in 1:length(Thickness)){
+      Depth[i] <- paste0(thcks[i],"-",thcks[i + 1])
+    }
+  }
+  
   ## 3. Bulk density
   ## 1.1 is a default value of Bulk Density
   if(missing(BD)) BD <- 1.1 * soil_variable_profile(nlayers, 
@@ -369,6 +389,11 @@ soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
   ans
 }
 
+#' @rdname apsimx_soil_profile
+#' @description plotting function for a soil profile, it requires 'ggplot2'
+#' @param x object of class 'soil_profile'
+#' @param property "all" for plotting all soil properties, "water" for just SAT, DUL and LL15
+#' @export
 plot.soil_profile <- function(x, property = c("all", "water","BD",
                                               "AirDry","LL15","DUL","SAT",
                                               "KS","crop.XF","crop.KL",
@@ -441,7 +466,7 @@ plot.soil_profile <- function(x, property = c("all", "water","BD",
               ggplot2::geom_line() + ggplot2::ggtitle("Soil water") +
               ggplot2::geom_ribbon(ggplot2::aes(ymin = LL15, ymax = DUL), color = "blue",
                       fill = "deepskyblue1") + 
-              ggplot2::coord_flip() ##+ ylim(c(0,0.75)) 
+              ggplot2::coord_flip()  
     print(gp)
   }
 }

@@ -181,7 +181,7 @@ If you have APSIM-X installed you can also run it in this way.
 ex.dir <- auto_detect_apsimx_examples()
 ## Copy 'Wheat' file to your current directory
 file.copy(paste0(ex.dir,"/","Wheat.apsimx"),".")
-sim <- apsimx("Wheat.apsimx")
+sim <- apsimx("Wheat.apsimx", value = "report")
 ```
 
 ```{r apsimx-wheat-read, echo = FALSE}
@@ -200,6 +200,17 @@ inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
 ## Looking more in-depth into 'SowingRule1'
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
                node = "Manager", parm = list("SowingRule1",NA))
+```
+
+If you only want to display the Wheat cultivar choose the sixth element in that table.
+
+```{r apsimx-wheat-cultivar-only}
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
+               node = "Manager", parm = list("SowingRule1",6))
+## We can print and store the path to this parameter
+pp <- inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
+               node = "Manager", parm = list("SowingRule1",6),
+               print.path = TRUE)
 ```
 
 ## Millet example (APSIM 'Classic')
@@ -243,7 +254,7 @@ inspect_apsim("Millet-pp.apsim", src.dir = ".",
               parm = list("Sow on a fixed date",NA))
 ```
 
-```{r removing-Millet-pp, echo = FALSE, eval = FALSE}
+```{r removing-Millet-pp, echo = FALSE, eval = TRUE}
 ## Apparently this is not needed
 file.remove("Millet-pp.apsim")
 ```
@@ -279,6 +290,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 ```
 
 Now we need to pick from within 'ThermalTime'
+
 ```{r inspect-replacement-node-subchild-thermal}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
@@ -286,7 +298,6 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 ```
 
 There is a component named "BaseThermalTime".
-
 
 ```{r inspect-replacement-node-subchild-subsubchild}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
@@ -381,6 +392,12 @@ Here we stop at this level but it is possible to dig deeper using 'node.subchild
 
 I won't be running the 'Factorial' example here, but if you are interested this is done in the folder 'tests' in the pacakge source. 
 
+# APSIM-X Inputs: Weather and Soil
+
+One of the easiest ways of generating weather data (".met"" files) is by using the 'nasapower' R package (https://github.com/ropensci/nasapower). See function 'create_met'. 
+
+In the USA, soil data can be obtained through the 'FedData' R package (https://github.com/ropensci/FedData) by using the function 'get_ssurgo'. I have developed helper functions 'ssurgo2sp' for conversion from 'SSURGO' files to a soil profile and 'apsimx_soil_profile' for generating a soil profile that can be used in APSIM-X. Finally, the function 'edit_apsimx_replace_soil_profile' will batch replace the soil profile created by 'apsimx_soil_profile' in a designated '.apsimx' file. I will be working on a more concrete tutorial soon.
+
 # File Type (or File Format) Details
 
 APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x, 'Classic'. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files are less verbose and they are gaining widespread adoption. All distributed APSIM-X examples are 'JSON' now.
@@ -401,7 +418,6 @@ apsimx_filetype("Maize_old", src.dir = extd.dir)
 ava <- apsim_version()
 aiu <- apsim_version(which = "inuse")
 ```
-
 
 # In Beta
 
