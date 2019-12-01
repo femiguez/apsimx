@@ -10,7 +10,7 @@
 #' @param nsoil number of soil components (within a mapunit) to consider
 #' @param xout vector for interpolation and extrapolation
 #' @param soil.bottom bottom of the soil profile
-#' @param method method used for interpolation (see 'approx' function)
+#' @param method method used for interpolation (see 'approx' and 'spline' functions)
 #' @param nlayers number of soil layers to generate
 #' @return a list with soil profile matrices with length equal to nsoil
 #' @export

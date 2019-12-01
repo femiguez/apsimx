@@ -15,7 +15,7 @@
 #' @examples 
 #' \dontrun{
 #' extd.dir <- system.file("extdata", package = "apsimx")
-#' ames.met <- read_apsim_met(paste0(extd.dir,"/Ames.met"))
+#' ames.met <- read_apsim_met("Ames.met", src.dir = extd.dir)
 #' }
 #' 
 
@@ -129,7 +129,9 @@ read_apsim_met <- function(file, src.dir = NULL, verbose = FALSE){
 #' @examples 
 #' \dontrun{
 #' extd.dir <- system.file("extdata", package = "apsimx")
-#' ames.met <- read_apsim_met(paste0(extd.dir,"/Ames.met"))
+#' ames.met <- read_apsim_met("Ames.met", src.dir = extd.dir)
+#' ames.met
+#' write_apsim_met(ames.met, wrt.dir = ".")
 #' }
 #' 
 write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL, 
@@ -185,32 +187,34 @@ write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL,
 #' @description Print a met file in a friendly way
 #' @param x an R object of class 'met'
 #' @export
+#' 
 print.met <- function(x){
   
   ## print the header and just head
   cat(attr(x, "filename"),"\n")
-  cat(attr(x, "site"),"\n")
+  if(!is.na(attr(x,"site"))) cat(attr(x, "site"),"\n")
   cat(attr(x, "latitude"),"\n")
-  cat(attr(x, "longitude"),"\n")
+  if(!is.na(attr(x,"longitude"))) cat(attr(x, "longitude"),"\n")
   cat(attr(x, "tav"),"\n")
   cat(attr(x, "amp"),"\n")
   cat(attr(x, "colnames"),"\n")
   cat(attr(x, "units"),"\n")
-  cat(attr(x, "constants"), "\n")
+  if(!is.na(attr(x,"constants"))) cat(attr(x, "constants"), "\n")
   
   print(head(as.data.frame(x)))
 }
 
 #' @title Perform imputation for missing data in a met file
-#' @name imput_apsim_met
+#' @name impute_apsim_met
 #' @description Takes in an object of class 'met' and imputes values
 #' @param met object of class 'met'
 #' @param method method for imputation, 'approx', 'splines' or 'mean'
 #' @param verbose whether to print missing data to the console, default = FALSE
 #' @return an object of class 'met' with attributes
 #' @export
-#' Perform inputation for missing data for a met file
-imput_apsim_met <- function(met, method = c("approx","splines","mean"), verbose = FALSE){
+#' 
+
+impute_apsim_met <- function(met, method = c("approx","splines","mean"), verbose = FALSE){
   
   if(class(met)[1] != "met") stop("met should be of class 'met'")
   

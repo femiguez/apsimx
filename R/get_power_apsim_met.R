@@ -1,5 +1,6 @@
 #'
 #' @title Get POWER data for an APSIM met file
+#' @description Uses 'get_power' from the 'nasapower' package to download data to create an APSIM met file.
 #' @name get_power_apsim_met
 #' @param lonlat Longitude and latitude vector
 #' @param dates date ranges
