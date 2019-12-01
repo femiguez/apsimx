@@ -1,16 +1,15 @@
-#' Take in SSURGO data and produce a soil profile
 #' 
-#' @title Take in SSURGO csv files and produce a soil profile
+#' @title Take in \acronym{SSURGO} csv files and create a soil profile
 #' @name ssurgo2sp
-#' @description Utility function to convert SSURGO data to soil profile
-#' @param mapunit mapunit SSURGO file
-#' @param component component SSURGO file
-#' @param chorizon chorizon SSURGO file
+#' @description Utility function to convert \acronym{SSURGO} data to soil profile
+#' @param mapunit mapunit \acronym{SSURGO} file
+#' @param component component \acronym{SSURGO} file
+#' @param chorizon chorizon \acronym{SSURGO} file
 #' @param nmapunit number of mapunits to select
 #' @param nsoil number of soil components (within a mapunit) to consider
 #' @param xout vector for interpolation and extrapolation
 #' @param soil.bottom bottom of the soil profile
-#' @param method method used for interpolation (see 'approx' and 'spline' functions)
+#' @param method method used for interpolation (see \code{\link{approx}})
 #' @param nlayers number of soil layers to generate
 #' @return a list with soil profile matrices with length equal to nsoil
 #' @export
@@ -160,7 +159,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
   return(soil.list)
 }
 
-## Approximate a soil variable
+## Interpolate a soil variable using 'approx' and return a data.frame
 approx_soil_variable <- function(x, xout = NULL, soil.bottom = 200, 
                                  method = c("constant","linear"),
                                  nlayers = 10){

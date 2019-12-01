@@ -1,4 +1,6 @@
 #'
+#' This function requires the \sQuote{nasapower} pacakge.
+#'
 #' @title Get POWER data for an APSIM met file
 #' @description Uses 'get_power' from the 'nasapower' package to download data to create an APSIM met file.
 #' @name get_power_apsim_met
@@ -6,7 +8,9 @@
 #' @param dates date ranges
 #' @param wrt.dir write directory
 #' @param filename file name for writing out to disk
-#' @details This requires the nasapower package
+#' @details If the filename is not provided it will not write the file to disk, but it will return \cr
+#' an object of class 'met'. This is useful in case manipulation is required before writing \cr
+#' to disk.
 #' @export
 #' @examples 
 #' \dontrun{
@@ -29,16 +33,16 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
    
   if(!grepl(".met", filename, fixed=TRUE)) stop("filename should end in .met")
   
-  pwr <- get_power(community = "AG",
-                    pars = c("T2M_MAX",
-                             "T2M_MIN",
-                             "ALLSKY_SFC_SW_DWN",
-                             "PRECTOT",
-                             "RH2M",
-                             "WS2M"),
-                    dates = dates,
-                    lonlat = lonlat,
-                    temporal_average = "DAILY")
+  pwr <- nasapower::get_power(community = "AG",
+                              pars = c("T2M_MAX",
+                              "T2M_MIN",
+                              "ALLSKY_SFC_SW_DWN",
+                              "PRECTOT",
+                              "RH2M",
+                              "WS2M"),
+                              dates = dates,
+                              lonlat = lonlat,
+                              temporal_average = "DAILY")
   
   pwr <- subset(as.data.frame(pwr), select = c("YEAR","DOY","T2M_MAX","T2M_MIN",
                                                 "ALLSKY_SFC_SW_DWN","PRECTOT",

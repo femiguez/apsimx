@@ -10,11 +10,10 @@
 #'  This means that the top value for DUL will be 0.35 and it will decay with a rate of -0.1. \cr
 #'  4. If an increase and then a decay is needed the Ricker function can be used. See 'SSricker' in the 'nlraa' package. \cr
 #'  
-#'  
 #' @title Create APSIM-X Soil Profiles
 #' @name apsimx_soil_profile
 #' @rdname apsimx_soil_profile
-#' @description Generates a soil profile that can then replace the existing one in an .apsimx simulation file
+#' @description Generates a soil profile that can then replace the existing one in an \sQuote{.apsimx} simulation file
 #' @param nlayers Number of soil layers (default = 10)
 #' @param Depth specific depths for each soil layer (cm)
 #' @param Thickness thickness for each soil layer (mm)
@@ -28,19 +27,21 @@
 #' @param crop.KL root ability to extract water for a specific crop
 #' @param crop.XF soil root exploration for a specific crop
 #' @param Carbon organic carbon (percent)
-#' @param SoilCNRatio organci carbon C:N ratio
+#' @param SoilCNRatio organic carbon C:N ratio
 #' @param FOM fresh organic matter (kg/ha)
 #' @param FOM.CN fresh organic matter C:N ratio
-#' @param FBiom Fraction of microbial biomass
-#' @param FInert Fraction of inert carbon
-#' @param NO3N nitrate nitrogen (Chemical)
-#' @param NH4N ammonium nitrogen (Chemical)
+#' @param FBiom Fraction of microbial biomass (0-1)
+#' @param FInert Fraction of inert carbon (0-1)
+#' @param NO3N nitrate nitrogen (Chemical) (ppm)
+#' @param NH4N ammonium nitrogen (Chemical) (ppm)
 #' @param PH soil pH
-#' @param soil.bottom bottom of the soil profile
-#' @param water.table water table level (not used at the moment)
+#' @param soil.bottom bottom of the soil profile (cm)
+#' @param water.table water table level (not used at the moment) (cm)
 #' @param soil.type might use it in the future for auto filling missing information
 #' @param crops name of crops being grown
-#' @param dist.parms parameter values for creating a profile
+#' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
+#' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
+#' If a != 0 and b != 0 then the equation is \code{a * soil.layer * exp(-b * soil.layer)}.  
 #' @return a soil profile with class 'soil_profile' with elements 'soil' and 'crops' (for now)
 #' @export
 #' @examples 

@@ -1,7 +1,7 @@
 #' Read a met file into R
 #' 
 #' This function uses S3 classes and stores the additional information as attributes \cr
-#' I use a more strict format than APSIM and reading and writing will not \cr
+#' I use a more strict format than \acronym{APSIM} and reading and writing will not \cr
 #' preserve all the details. For example, at this moment comments are lost through \cr
 #' the process of read and write unless they are added back in manually. \cr
 #' Also, empty lines are ignored so these will be lost as well in the read and write process.
@@ -118,12 +118,12 @@ read_apsim_met <- function(file, src.dir = ".", verbose = TRUE){
   return(met)
 }
 
-#' Write a met file to disk. It takes an object of class 'met'
+#' Write a met file to disk. It takes an object of class \sQuote{met}
 #' 
 #' @title Write an APSIM met file
 #' @name write_apsim_met
-#' @description Write an object of class 'met' to disk
-#' @param met object of class met
+#' @description Write an object of class \sQuote{met} to disk
+#' @param met object of class \sQuote{met}
 #' @param wrt.dir directory where the file will be written
 #' @return does not create an R object, it only writes to disk
 #' @details at the moment the read-write cycle will strip comments
@@ -183,7 +183,7 @@ write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL){
 #' @title Printer-friendly version of a metfile
 #' @name print.met
 #' @description Print a met file in a friendly way
-#' @param x an R object of class 'met'
+#' @param x an R object of class \sQuote{met}
 #' @export
 #' 
 print.met <- function(x){
@@ -204,11 +204,11 @@ print.met <- function(x){
 
 #' @title Perform imputation for missing data in a met file
 #' @name impute_apsim_met
-#' @description Takes in an object of class 'met' and imputes values
-#' @param met object of class 'met'
-#' @param method method for imputation, 'approx', 'splines' or 'mean'
+#' @description Takes in an object of class \sQuote{met} and imputes values
+#' @param met object of class \sQuote{met}
+#' @param method method for imputation, \code{\link{approx}}, \code{\link{splines}} or \code{\link{mean}}
 #' @param verbose whether to print missing data to the console, default = FALSE
-#' @return an object of class 'met' with attributes
+#' @return an object of class \sQuote{met} with attributes
 #' @export
 #' 
 
