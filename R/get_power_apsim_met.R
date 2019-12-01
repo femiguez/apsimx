@@ -16,7 +16,8 @@
 #' \dontrun{
 #' require(nasapower)
 #' ## This will not write a file to disk
-#' pwr <- get_power_apsim_met(lonlat = c(-93,42), dates = c("2017-01-01","2017-12-31"))
+#' pwr <- get_power_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"))
+#' ## Note that missing data is coded as -99
 #' }
 #' 
 #'

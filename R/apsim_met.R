@@ -197,7 +197,7 @@ print.met <- function(x){
   cat(attr(x, "amp"),"\n")
   cat(attr(x, "colnames"),"\n")
   cat(attr(x, "units"),"\n")
-  if(!is.na(attr(x,"constants"))) cat(attr(x, "constants"), "\n")
+  if(!is.na(attr(x,"constants")) && !is.null(attr(x,"constants"))) cat(attr(x, "constants"), "\n")
   
   print(head(as.data.frame(x)))
 }
