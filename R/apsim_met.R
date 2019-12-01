@@ -1,12 +1,14 @@
 #' Read a met file into R
 #' 
-#' I will use S3 classes and store the additional information as attributes \cr
-#' I use a more strict format than APSIM and reasing and writing will lose \cr
-#' arbitrary constants
+#' This function uses S3 classes and stores the additional information as attributes \cr
+#' I use a more strict format than APSIM and reading and writing will not \cr
+#' preserve all the details. For example, at this moment comments are lost through \cr
+#' the process of read and write unless they are added back in manually. \cr
+#' Also, empty lines are ignored so these will be lost as well in the read and write process.
 #' 
-#' @title Read in and check met file
+#' @title Read in an APSIM met file
 #' @name read_apsim_met
-#' @description Read into R a met file, check validity and return an object of class 'met'
+#' @description Read into R a met file and return an object of class 'met'
 #' @param file path to met file
 #' @param src.dir optional source directory
 #' @param verbose whether to suppress all messages and warnings
@@ -20,11 +22,11 @@
 #' }
 #' 
 
-read_apsim_met <- function(file, src.dir = NULL, verbose = TRUE){
+read_apsim_met <- function(file, src.dir = ".", verbose = TRUE){
 
   if(!grepl("met$",file)) stop("file should have a .met extension")
   
-  if(!missing(src.dir)) file.path <- paste0(src.dir,"/",file)
+  file.path <- paste0(src.dir,"/",file)
 
   ## Read the header
   header <- scan(file = file.path, 
@@ -118,13 +120,13 @@ read_apsim_met <- function(file, src.dir = NULL, verbose = TRUE){
 
 #' Write a met file to disk. It takes an object of class 'met'
 #' 
-#' @title Write a met file
+#' @title Write an APSIM met file
 #' @name write_apsim_met
 #' @description Write an object of class 'met' to disk
 #' @param met object of class met
-#' @param path path where the file will be written
-#' @return a file ending in .met
-#' @details at the moment the read, write cycle will strip comments
+#' @param wrt.dir directory where the file will be written
+#' @return does not create an R object, it only writes to disk
+#' @details at the moment the read-write cycle will strip comments
 #' @export
 #' @examples 
 #' \dontrun{
