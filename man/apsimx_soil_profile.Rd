@@ -46,31 +46,33 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
 
 \item{Carbon}{organic carbon (percent)}
 
-\item{SoilCNRatio}{organci carbon C:N ratio}
+\item{SoilCNRatio}{organic carbon C:N ratio}
 
 \item{FOM}{fresh organic matter (kg/ha)}
 
 \item{FOM.CN}{fresh organic matter C:N ratio}
 
-\item{FBiom}{Fraction of microbial biomass}
+\item{FBiom}{Fraction of microbial biomass (0-1)}
 
-\item{FInert}{Fraction of inert carbon}
+\item{FInert}{Fraction of inert carbon (0-1)}
 
-\item{NO3N}{nitrate nitrogen (Chemical)}
+\item{NO3N}{nitrate nitrogen (Chemical) (ppm)}
 
-\item{NH4N}{ammonium nitrogen (Chemical)}
+\item{NH4N}{ammonium nitrogen (Chemical) (ppm)}
 
 \item{PH}{soil pH}
 
-\item{soil.bottom}{bottom of the soil profile}
+\item{soil.bottom}{bottom of the soil profile (cm)}
 
-\item{water.table}{water table level (not used at the moment)}
+\item{water.table}{water table level (not used at the moment) (cm)}
 
 \item{soil.type}{might use it in the future for auto filling missing information}
 
 \item{crops}{name of crops being grown}
 
-\item{dist.parms}{parameter values for creating a profile}
+\item{dist.parms}{parameter values for creating a profile. If a == 0 and b == 0 then \cr
+a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
+If a != 0 and b != 0 then the equation is \code{a * soil.layer * exp(-b * soil.layer)}.}
 
 \item{x}{object of class 'soil_profile'}
 
@@ -80,7 +82,7 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
 a soil profile with class 'soil_profile' with elements 'soil' and 'crops' (for now)
 }
 \description{
-Generates a soil profile that can then replace the existing one in an .apsimx simulation file
+Generates a soil profile that can then replace the existing one in an \sQuote{.apsimx} simulation file
 
 plotting function for a soil profile, it requires 'ggplot2'
 }

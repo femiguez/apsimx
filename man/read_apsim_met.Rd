@@ -2,29 +2,31 @@
 % Please edit documentation in R/apsim_met.R
 \name{read_apsim_met}
 \alias{read_apsim_met}
-\title{Read in and check met file}
+\title{Read in an APSIM met file}
 \usage{
-read_apsim_met(file, src.dir = NULL, verbose = FALSE)
+read_apsim_met(file, src.dir = ".", verbose = TRUE)
 }
 \arguments{
 \item{file}{path to met file}
 
 \item{src.dir}{optional source directory}
 
-\item{quiet}{whether to suppress all messages and warnings}
+\item{verbose}{whether to suppress all messages and warnings}
 }
 \value{
 an object of class 'met' with attributes
 }
 \description{
-Read into R a met file, check validity and return an object of class 'met'
+Read into R a met file and return an object of class 'met'
 }
 \details{
 Read a met file into R
 
-I will use S3 classes and store the additional information as attributes \cr
-I use a more strict format than APSIM and reasing and writing will lose \cr
-arbitrary constants
+This function uses S3 classes and stores the additional information as attributes \cr
+I use a more strict format than \acronym{APSIM} and reading and writing will not \cr
+preserve all the details. For example, at this moment comments are lost through \cr
+the process of read and write unless they are added back in manually. \cr
+Also, empty lines are ignored so these will be lost as well in the read and write process.
 }
 \examples{
 \dontrun{

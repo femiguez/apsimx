@@ -31,7 +31,7 @@ apsimx <- function(file = "", src.dir=".",
   
   if(file == "") stop("need to specify file name")
   
-  check_apsim_name(file)
+  .check_apsim_name(file)
   
   ## The might offer suggestions in case there is a typo in 'file'
   file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
@@ -323,9 +323,9 @@ read_apsimx <- function(file = "", src.dir = ".",
   
   if(file == "") stop("need to specify file name")
   
-  fileNames <- dir(path = src.dir, pattern=".db$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".db$",ignore.case=TRUE)
   
-  if(length(fileNames)==0){
+  if(length(file.names)==0){
     stop("There are no .db files in the specified directory to read.")
   }
   
@@ -377,14 +377,14 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
   
   value <- match.arg(value)
   
-  fileNames <- dir(path = src.dir, pattern=".db$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".db$",ignore.case=TRUE)
   
   ans <- NULL
   
-  for(i in fileNames){
+  for(i in file.names){
     
-    tmp <- read_apsimx(fileNames[i], value = value)
-    tmp.d <- data.frame(file.name = fileNames[i], tmp)
+    tmp <- read_apsimx(file.names[i], value = value)
+    tmp.d <- data.frame(file.name = file.names[i], tmp)
     ans <- rbind(ans, tmp)
     
   }
@@ -441,5 +441,6 @@ assign('warn.versions', TRUE, apsimx.options)
 #' Import packages needed for apsimx to work correctly
 #' @import DBI jsonlite knitr RSQLite xml2 
 #' @importFrom utils read.table
+#' @importFrom utils write.table
 NULL
 

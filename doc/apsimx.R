@@ -54,7 +54,7 @@ inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
 #  ex.dir <- auto_detect_apsimx_examples()
 #  ## Copy 'Wheat' file to your current directory
 #  file.copy(paste0(ex.dir,"/","Wheat.apsimx"),".")
-#  sim <- apsimx("Wheat.apsimx")
+#  sim <- apsimx("Wheat.apsimx", value = "report")
 
 ## ----apsimx-wheat-read, echo = FALSE-------------------------------------
 sim <- read_apsimx("Wheat.db", src.dir = extd.dir)
@@ -71,6 +71,14 @@ inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
 ## Looking more in-depth into 'SowingRule1'
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
                node = "Manager", parm = list("SowingRule1",NA))
+
+## ----apsimx-wheat-cultivar-only------------------------------------------
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
+               node = "Manager", parm = list("SowingRule1",6))
+## We can print and store the path to this parameter
+pp <- inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
+               node = "Manager", parm = list("SowingRule1",6),
+               print.path = TRUE)
 
 ## ----Millet--------------------------------------------------------------
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager")
@@ -96,9 +104,9 @@ inspect_apsim("Millet-pp.apsim", src.dir = ".",
               node = "Manager",
               parm = list("Sow on a fixed date",NA))
 
-## ----removing-Millet-pp, echo = FALSE, eval = FALSE----------------------
-#  ## Apparently this is not needed
-#  file.remove("Millet-pp.apsim")
+## ----removing-Millet-pp, echo = FALSE, eval = TRUE-----------------------
+## Apparently this is not needed
+file.remove("Millet-pp.apsim")
 
 ## ----inspect-replacement-node--------------------------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,

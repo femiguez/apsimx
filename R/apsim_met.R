@@ -87,23 +87,14 @@ read_apsim_met <- function(file, src.dir = ".", verbose = TRUE){
   ## Sounds like there is no point in checking units
   ## As they are a complete mess
     
-  met <- read.table(file = file.path, 
-                    header = FALSE, 
-                    as.is = TRUE,
-                    na.strings = c(NA,-99),
-                    comment.char = "!", 
-                    col.names = clnms.s,
-                    skip = skip.lines)
+  met <- utils::read.table(file = file.path, 
+                           header = FALSE, 
+                           as.is = TRUE,
+                           na.strings = c(NA,-99),
+                           comment.char = "!", 
+                           col.names = clnms.s,
+                           skip = skip.lines)
   
-  ## Detect possible errors with years
-  if(any(min(met[["year"]]) < 1500) == TRUE || any(max(met[["year"]]) > 3000) == TRUE){
-    if(!quiet) warning("year is either less than 1500 or greater than 3000")
-  }
-  ## Detect possible errors with day
-  if(any(min(met[["day"]]) < 1) == TRUE || any(max(met[["day"]])> 366) == TRUE){
-    if(!quiet) warning("day is either less than 1 or greater than 366")
-  }
-
   attr(met, "filename") <- file
   attr(met, "site") <- ifelse(is.null(site),NA,site)
   attr(met, "latitude") <- latitude
@@ -175,8 +166,9 @@ write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL){
   writeLines(paste(attr(met,"units"), collapse = " "), con = con)
   
   names(met) <- NULL
-  write.table(met, file = con, append = TRUE, quote = FALSE,
-              row.names = FALSE, col.names = FALSE)
+  utils::write.table(met, file = con, 
+                     append = TRUE, quote = FALSE,
+                     row.names = FALSE, col.names = FALSE)
   close(con)
 }
 
@@ -197,7 +189,7 @@ print.met <- function(x){
   cat(attr(x, "amp"),"\n")
   cat(attr(x, "colnames"),"\n")
   cat(attr(x, "units"),"\n")
-  if(!is.na(attr(x,"constants")) && !is.null(attr(x,"constants"))) cat(attr(x, "constants"), "\n")
+  if(!any(is.na(attr(x,"constants"))) && !is.null(attr(x,"constants"))) cat(attr(x, "constants"), "\n")
   
   print(head(as.data.frame(x)))
 }
@@ -257,4 +249,103 @@ impute_apsim_met <- function(met, method = c("approx","splines","mean"), verbose
     met[missing.rows[[i]],i] <- imputed.values
   }
   return(met)
+}
+
+#' @title Check a met file for possible errors
+#' @name check_apsim_met
+#' @description Takes in an object of class \sQuote{met} and checks for missing/valid/reasonable values
+#' @param met object of class \sQuote{met}
+#' @details It will only check for missing values and reasonable (within range) values for:
+#'  \sQuote{year}: range (1500 to 3000); \cr
+#'  \sQuote{day}: range (1 to 366); \cr 
+#'  \sQuote{maxt}: range (-60 to 60) -- units (C); \cr
+#'  \sQuote{mint}: range (-60 to 40) -- units (C); \cr
+#'  \sQuote{radn}: range (0 to 40) -- units (MJ/m2/day);  \cr
+#'  \sQuote{rain}: range (0 to 100) -- units (mm/day)
+#' @return does not return anything unless possible errors are found
+#' @export
+#' 
+check_apsim_met <- function(met){
+  
+  if(class(met)[1] == "met"){
+    col.names <- c("year","day","mint","maxt","radn","rain")
+    ## check for column names
+    if(sum(names(met) %in% col.names) < 6) warning("column names might be wrong")
+    ## Detect possible errors with years
+    if(any(is.na(met[["year"]]))){
+      print(met[is.na(met$year),])
+      warning("Missing values found for year")
+    }
+    if(any(min(met[["year"]]) < 1500, na.rm = TRUE)){
+      print(met[met$year < 1500,])
+      warning("year is less than 1500")
+    }
+    if(any(max(met[["year"]]) > 3000, na.rm = TRUE)){
+      print(met[met$year > 3000,])
+      warning("year is greater than 3000")
+    }
+    ## Detect possible errors with day
+    if(any(is.na(met[["day"]]))){
+      print(met[is.na(met$day),])
+      warning("Missing values found for day")
+    }
+    if(any(min(met[["day"]]) < 1, na.rm = TRUE)){
+      print(met[met$day < 1,])
+      warning("day is less than 1")
+    }
+    if(any(max(met[["day"]])> 366, na.rm = TRUE)){
+      print(met[met$day > 366,])
+      warning("day is greater than 366")
+    }
+    ## Detect possible errors with minimum temperature
+    if(any(is.na(met[["mint"]]))){
+      print(met[is.na(met$mint),])
+      warning("Missing values found for minimum temperature")
+    }
+    if(any(min(met[["mint"]]) < -60, na.rm = TRUE)){
+      print(met[met$mint < -60,])
+      warning("Minimum temperature is less than -60")
+    }
+    if(any(max(met[["mint"]]) > 40, na.rm = TRUE)){
+      print(met[met$mint > 40,])
+      warning("Minimum temperature is greater than 40")
+    }
+    ## Detect possible errors with maximum temperature
+    if(any(is.na(met[["maxt"]]))){
+      print(met[is.na(met$maxt),])
+      warning("Missing values found for maximum temperature")
+    }
+    if(any(min(met[["maxt"]]) < -60)){
+      print(met[met$maxt < -60,])
+      warning("Maximum temperature less -60")
+    }
+    if(any(max(met[["maxt"]])> 60)){
+      print(met[met$maxt > 60,])
+      warning("Maximum temperature is greater than 60")
+    }
+    ## Detect possible errors with radiation
+    if(any(is.na(met[["radn"]]))){
+      print(met[is.na(met$radn),])
+      warning("Missing values found for solar radiation")
+    }
+    if(any(min(met[["radn"]]) < 0, na.rm=TRUE)){
+      print(met[met$radn < 0,])
+      warning("Radiation is negative")
+    }
+    if(any(max(met[["radn"]])> 40, na.rm = TRUE)){
+      print(met[met$radn > 40,])
+      warning("Radiation is greater than 40 (MJ/m2/day)")
+    }
+    ## Detect possible errors with rain
+    if(any(is.na(met[["rain"]]))){
+      print(met[is.na(met$rain),])
+      warning("Missing values found for precipitation")
+    }
+    if(any(min(met[["rain"]]) < 0, na.rm = TRUE)){
+      warning("Rain is negative")
+    }
+    if(any(max(met[["rain"]])> 100, na.rm = TRUE)){
+      warning("Rain is possibly too high")
+    }
+  }
 }

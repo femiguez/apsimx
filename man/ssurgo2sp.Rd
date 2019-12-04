@@ -2,18 +2,18 @@
 % Please edit documentation in R/ssurgo2sp.R
 \name{ssurgo2sp}
 \alias{ssurgo2sp}
-\title{Take in SSURGO csv files and produce a soil profile}
+\title{Take in \acronym{SSURGO} csv files and create a soil profile}
 \usage{
 ssurgo2sp(mapunit = NULL, component = NULL, chorizon = NULL,
   nmapunit = 1, nsoil = 1, xout = NULL, soil.bottom = 200,
   method = c("constant", "linear"), nlayers = 10)
 }
 \arguments{
-\item{mapunit}{mapunit SSURGO file}
+\item{mapunit}{mapunit \acronym{SSURGO} file}
 
-\item{component}{component SSURGO file}
+\item{component}{component \acronym{SSURGO} file}
 
-\item{chorizon}{chorizon SSURGO file}
+\item{chorizon}{chorizon \acronym{SSURGO} file}
 
 \item{nmapunit}{number of mapunits to select}
 
@@ -23,7 +23,7 @@ ssurgo2sp(mapunit = NULL, component = NULL, chorizon = NULL,
 
 \item{soil.bottom}{bottom of the soil profile}
 
-\item{method}{method used for interpolation (see 'approx' and 'spline' functions)}
+\item{method}{method used for interpolation (see \code{\link{approx}})}
 
 \item{nlayers}{number of soil layers to generate}
 }
@@ -31,10 +31,12 @@ ssurgo2sp(mapunit = NULL, component = NULL, chorizon = NULL,
 a list with soil profile matrices with length equal to nsoil
 }
 \description{
-Utility function to convert SSURGO data to soil profile
+Utility function to convert \acronym{SSURGO} data to soil profile
 }
 \details{
-Take in SSURGO data and produce a soil profile
+Download the data from \acronym{SSURGO} using the \sQuote{FedData} package \cr
+This will generate csv files \sQuote{chorizon}, \sQuote{component} and \sQuote{mapunit}, \cr
+but also many other files which are not needed for creating a soil profile.
 }
 \examples{
 \dontrun{

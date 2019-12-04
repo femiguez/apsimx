@@ -37,7 +37,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
                                        parm = NULL, display.available = FALSE,
                                        digits = 3, print.path = FALSE){
   
-  check_apsim_name(file)
+  .check_apsim_name(file)
   
   file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
@@ -49,7 +49,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   ## Notice that the .apsimx extension will be added here
   file <- match.arg(file, file.names)
   
-  apsimx_json <- read_json(paste0(src.dir,"/",file))
+  apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
   
   parm.path.0 <- paste0(".",apsimx_json$Name)
   ans <- parm.path.0
@@ -189,7 +189,14 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
 
   rep.node.subsubchild.names <- names(rep.node.subsubchild)
 
-  if(length(rep.node.subsubchild$Children) == 0 || !is.null(parm)){
+  ## I also need to check that parameter is not in 'Command'
+  if(length(rep.node.subsubchild$Command) > 0 && !is.null(parm)){
+    ispic <- any(grepl(parm, unlist(rep.node.subsubchild$Command)))
+  }else{
+    ispic <- FALSE
+  }
+  
+  if((length(rep.node.subsubchild$Children) == 0 || !is.null(parm)) && !ispic){
       unpack_node(rep.node.subsubchild, parm = parm, display.available = display.available)
       parm.path <- parm.path.0.1.1.1.1.1
       if(print.path) cat("Parm path:",format_parm_path(parm.path,parm),"\n") 
@@ -206,10 +213,17 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
     unpack_node(rep.node.sub3child, parm = NULL, display.available = display.available)
   }
   
-  if(!is.null(parm)){
+  if(!is.null(parm) && any(grepl(parm, rep.node.subsubchild.names))){
       wrnsspc <- grep(parm, rep.node.subsubchild.names)
       rep.node.sub3child <- rep.node.subsubchild[wrnsspc]
       cat_parm(rep.node.sub3child)
+  }else{
+    if(!is.null(parm) && any(grepl(parm, unlist(rep.node.subsubchild$Command)))){
+      wcp <- grep(parm, unlist(rep.node.subsubchild$Command))
+      cat(unlist(rep.node.subsubchild$Command)[wcp])
+    }else{
+      if(!is.null(parm)) stop("Parameter not found")
+    }
   }
 
   if(print.path){
@@ -303,7 +317,7 @@ cat_parm <- function(x, parm = NULL){
     if(is.null(parm)){
       cat(x.nms[i], ":",unlist(x[i]),"\n")
     }else{
-      if(x.nms[i] %in% parm){
+      if(x.nms[i] %in% parm || grepl(parm, unlist(x[i]))){
         cat(x.nms[i], ":",unlist(x[i]),"\n")
       }
     }

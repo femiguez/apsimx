@@ -8,9 +8,9 @@
 #' @param dates date ranges
 #' @param wrt.dir write directory
 #' @param filename file name for writing out to disk
-#' @details If the filename is not provided it will not write the file to disk, but it will return \cr
-#' an object of class 'met'. This is useful in case manipulation is required before writing \cr
-#' to disk.
+#' @details If the filename is not provided it will not write the file to disk, 
+#' but it will return an object of class 'met'. This is useful in case manipulation
+#' is required before writing to disk.
 #' @export
 #' @examples 
 #' \dontrun{
@@ -18,6 +18,14 @@
 #' ## This will not write a file to disk
 #' pwr <- get_power_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"))
 #' ## Note that missing data is coded as -99
+#' summary(pwr)
+#' ## Check for reasonable ranges 
+#' check_apsim_met(pwr)
+#' ## replace -99 with NA
+#' pwr$radn <- ifelse(pwr$radn == -99, NA, pwr$radn)
+#' ## Impute using linear interpolation
+#' pwr.imptd <- impute_apsim_met(pwr, verbose = TRUE)
+#' summary(pwr.imptd)
 #' }
 #' 
 #'
@@ -67,7 +75,7 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
   class(pwr) <- c("met","data.frame")
   
   if(filename != "noname.met"){
-    write_apsim_met(pwr, wrt.dir = wrt.dir, filename = filename, overwrite = TRUE)
+    write_apsim_met(pwr, wrt.dir = wrt.dir, filename = filename)
   }
   return(invisible(pwr))
 }

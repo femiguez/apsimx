@@ -19,13 +19,26 @@ get_power_apsim_met(lonlat, dates, wrt.dir = ".", filename = NULL)
 Uses 'get_power' from the 'nasapower' package to download data to create an APSIM met file.
 }
 \details{
-This requires the nasapower package
+This function requires the \sQuote{nasapower} pacakge.
+
+If the filename is not provided it will not write the file to disk, 
+but it will return an object of class 'met'. This is useful in case manipulation
+is required before writing to disk.
 }
 \examples{
 \dontrun{
 require(nasapower)
 ## This will not write a file to disk
-pwr <- get_power_apsim_met(lonlat = c(-93,42), dates = c("2017-01-01","2017-12-31"))
+pwr <- get_power_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"))
+## Note that missing data is coded as -99
+summary(pwr)
+## Check for reasonable ranges 
+check_apsim_met(pwr)
+## replace -99 with NA
+pwr$radn <- ifelse(pwr$radn == -99, NA, pwr$radn)
+## Impute using linear interpolation
+pwr.imptd <- impute_apsim_met(pwr, verbose = TRUE)
+summary(pwr.imptd)
 }
 
 

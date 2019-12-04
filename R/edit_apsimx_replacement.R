@@ -50,7 +50,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   
   if(missing(parm) | missing(value)) stop("'parm' and/or 'value' are missing")
   
-  apsimx_json <- read_json(paste0(src.dir,"/",file))
+  apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
   
   ## Select Replacements node
   frn <- grep(root[[1]], apsimx_json$Children, fixed = TRUE)
@@ -164,6 +164,27 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
       }
       ## apsimx_json is ready to be written back to file
     }
+    
+    ## Cultivar parameters can be in 'Command'
+    if(length(rep.node.subsubchild$Command) > 0){
+      if(any(grepl(parm, unlist(rep.node.subsubchild$Command)))){
+        lvl <- 5
+        wrnsscc <- grep(parm, unlist(rep.node.subsubchild$Command))
+        ## Break it up and reassemble
+        cmdstrng <- strsplit(rep.node.subsubchild$Command[[wrnsscc]],"=")[[1]][1]
+        rep.node.subsubchild$Command[[wrnsscc]] <- paste(cmdstrng,"=",value)
+        ## Now write back to list
+        rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
+        rep.node.child$Children[[wrnsc]] <- rep.node.subchild
+        rep.node$Children[[wrnc]] <- rep.node.child
+        replacements.node$Children[[wrn]] <- rep.node
+        if(length(frn) == 1){
+          apsimx_json$Children[[frn]] <- replacements.node
+        }else{
+          apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+        }
+      }
+    }
   }
 
   ## Write back to a file
@@ -175,9 +196,9 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     wr.path <- paste0(wrt.dir,"/",file)
   }
   
-  write_json(apsimx_json, path = wr.path, 
-             pretty = TRUE, digits = NA, 
-             auto_unbox = TRUE, null = "null")
+  jsonlite::write_json(apsimx_json, path = wr.path, 
+                       pretty = TRUE, digits = NA, 
+                       auto_unbox = TRUE, null = "null")
   
   if(verbose){
     if(!missing(node)) cat("Edited (node): ",node, "\n")
@@ -201,8 +222,9 @@ edit_node <- function(x, parm = NULL, value = NULL){
   
   if(length(parm) == 1){
     x.nms <- names(x)
-    wne <- which(x.nms == parm)
-    ## x should be a list
+    print(x.nms)
+    ## wne <- which(x.nms == parm)
+    wne <- grep(parm, x.nms)
 ##    if(length(x[[wne]]) != 1) stop("value should be of length = 1")
     x[[wne]] <- value
   }

@@ -2,25 +2,25 @@
 % Please edit documentation in R/apsim_met.R
 \name{write_apsim_met}
 \alias{write_apsim_met}
-\title{Write a met file}
+\title{Write an APSIM met file}
 \usage{
 write_apsim_met(met, wrt.dir = NULL, filename = NULL)
 }
 \arguments{
-\item{met}{object of class met}
+\item{met}{object of class \sQuote{met}}
 
-\item{path}{path where the file will be written}
+\item{wrt.dir}{directory where the file will be written}
 }
 \value{
-a file ending in .met
+does not create an R object, it only writes to disk
 }
 \description{
-Write an object of class 'met' to disk
+Write an object of class \sQuote{met} to disk
 }
 \details{
-Write a met file to disk. It takes an object of class 'met'
+Write a met file to disk. It takes an object of class \sQuote{met}
 
-at the moment the read, write cycle will strip comments
+at the moment the read-write cycle will strip comments
 }
 \examples{
 \dontrun{

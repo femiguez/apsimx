@@ -8,15 +8,15 @@ impute_apsim_met(met, method = c("approx", "splines", "mean"),
   verbose = FALSE)
 }
 \arguments{
-\item{met}{object of class 'met'}
+\item{met}{object of class \sQuote{met}}
 
-\item{method}{method for imputation, 'approx', 'splines' or 'mean'}
+\item{method}{method for imputation, \code{\link{approx}}, \code{\link{splines}} or \code{\link{mean}}}
 
 \item{verbose}{whether to print missing data to the console, default = FALSE}
 }
 \value{
-an object of class 'met' with attributes
+an object of class \sQuote{met} with attributes
 }
 \description{
-Takes in an object of class 'met' and imputes values
+Takes in an object of class \sQuote{met} and imputes values
 }

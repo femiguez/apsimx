@@ -12,6 +12,9 @@
 #' @param method method used for interpolation (see \code{\link{approx}})
 #' @param nlayers number of soil layers to generate
 #' @return a list with soil profile matrices with length equal to nsoil
+#' @details Download the data from \acronym{SSURGO} using the \sQuote{FedData} package \cr
+#' This will generate csv files \sQuote{chorizon}, \sQuote{component} and \sQuote{mapunit}, \cr
+#' but also many other files which are not needed for creating a soil profile.
 #' @export
 #' @examples 
 #' \dontrun{

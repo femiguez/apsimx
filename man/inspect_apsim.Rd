@@ -7,7 +7,7 @@
 inspect_apsim(file = "", src.dir = ".", node = c("Clock", "Weather",
   "Soil", "SurfaceOrganicMatter", "Crop", "Manager", "Other"),
   soil.child = c("Water", "OrganicMatter", "Nitrogen", "Analysis",
-  "InitialWater", "Sample"), parm = NULL, digits = 3,
+  "InitialWater", "Sample", "SWIM"), parm = NULL, digits = 3,
   print.path = FALSE)
 }
 \arguments{

@@ -13,7 +13,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-11-25" />
+<meta name="date" content="2019-12-04" />
 
 <title>apsimx: An R package for APSIM Next Generation</title>
 
@@ -96,7 +96,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2019-11-25</h4>
+<h4 class="date">2019-12-04</h4>
 
 
 
@@ -292,7 +292,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ex.dir &lt;-<span class="st"> </span><span class="kw">auto_detect_apsimx_examples</span>()
 ## Copy 'Wheat' file to your current directory
 <span class="kw">file.copy</span>(<span class="kw">paste0</span>(ex.dir,<span class="st">&quot;/&quot;</span>,<span class="st">&quot;Wheat.apsimx&quot;</span>),<span class="st">&quot;.&quot;</span>)
-sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>)</code></pre></div>
+sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;report&quot;</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Calcualte summary statistics on all variables
 <span class="kw">summary</span>(sim)</code></pre></div>
 <pre><code>##   CheckpointID  SimulationID     Zone           Clock.Today       
@@ -377,6 +377,33 @@ sim &lt;-<span class="st"> </span><span class="kw">apsimx</span>(<span class="st
 ## SowingDepth    30     
 ## RowSpacing     250    
 ## Population     120</code></pre>
+<p>If you only want to display the Wheat cultivar choose the sixth element in that table.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, 
+               <span class="dt">node =</span> <span class="st">&quot;Manager&quot;</span>, <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;SowingRule1&quot;</span>,<span class="dv">6</span>))</code></pre></div>
+<pre><code>## Management Scripts:  SowingFertiliser Harvest SowingRule1 
+## 
+## Name:  SowingRule1 
+## Key: CultivarName 
+## 
+## 
+## parm           value  
+## -------------  -------
+## CultivarName   Hartog</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## We can print and store the path to this parameter
+pp &lt;-<span class="st"> </span><span class="kw">inspect_apsimx</span>(<span class="st">&quot;Wheat.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir, 
+               <span class="dt">node =</span> <span class="st">&quot;Manager&quot;</span>, <span class="dt">parm =</span> <span class="kw">list</span>(<span class="st">&quot;SowingRule1&quot;</span>,<span class="dv">6</span>),
+               <span class="dt">print.path =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<pre><code>## Management Scripts:  SowingFertiliser Harvest SowingRule1 
+## 
+## Name:  SowingRule1 
+## Key: CultivarName 
+## 
+## 
+## parm           value  
+## -------------  -------
+## CultivarName   Hartog 
+## 
+## Parm path: .Simulations.Simulation.Field.SowingRule1.CultivarName</code></pre>
 </div>
 <div id="millet-example-apsim-classic" class="section level2">
 <h2>Millet example (APSIM ‘Classic’)</h2>
@@ -474,6 +501,7 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 ## Enter sowing density  (plants/m2) :   8       
 ## Enter sowing depth  (mm) :            30      
 ## Enter cultivar :                      wrajpop</code></pre>
+<pre><code>## [1] TRUE</code></pre>
 </div>
 </div>
 <div id="advanced-examples" class="section level1">
@@ -612,10 +640,33 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 ## node child: Phenology 
 ## node subchild: ThermalTime 
 ## Subchild Name:  ThermalTime 
-## Name sub-sub-child:  BaseThermalTime 
+## Name sub-sub-child:  BaseThermalTime</code></pre>
+<pre><code>## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used
+
+## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used
+
+## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used</code></pre>
+<pre><code>## $type : Models.Functions.XYPairs, Models 
 ## X : 0 18 26 34 44 
-## Y : 0 10 18 26 0 
-## no node sub-sub-sub-children available or parm is not null</code></pre>
+## Y : 0 10 18 26 0</code></pre>
+<pre><code>## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used</code></pre>
+<pre><code>## Name : XYPairs</code></pre>
+<pre><code>## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used
+
+## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used
+
+## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used
+
+## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used</code></pre>
+<pre><code>## no node sub-sub-sub-children available or parm is not null</code></pre>
 <p>The function shows the available replacements (“Maize” and “Soybean”), the ‘CropType’ if available, the subchild name and the xy pair in this example. If parm is not specified all elements will be displayed.</p>
 <p>Let’s say we want to inspect details of soybean cultivars in the same file:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,
@@ -688,10 +739,33 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 ## node child: Phenology 
 ## node subchild: ThermalTime 
 ## Subchild Name:  ThermalTime 
-## Name sub-sub-child:  BaseThermalTime 
+## Name sub-sub-child:  BaseThermalTime</code></pre>
+<pre><code>## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used
+
+## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used
+
+## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used</code></pre>
+<pre><code>## $type : Models.Functions.XYPairs, Models 
 ## X : 0 18 26 34 44 
-## Y : 0 10 18 26 0 
-## no node sub-sub-sub-children available or parm is not null</code></pre>
+## Y : 0 10 18 26 0</code></pre>
+<pre><code>## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used</code></pre>
+<pre><code>## Name : XYPairs</code></pre>
+<pre><code>## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used
+
+## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used
+
+## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used
+
+## Warning in grepl(parm, unlist(x[i])): argument 'pattern' has length &gt; 1 and
+## only the first element will be used</code></pre>
+<pre><code>## no node sub-sub-sub-children available or parm is not null</code></pre>
 </div>
 <div id="inspecting-a-factorial" class="section level2">
 <h2>Inspecting a Factorial</h2>
@@ -749,6 +823,22 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 <p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge source.</p>
 </div>
 </div>
+<div id="apsim-x-inputs-weather-and-soil" class="section level1">
+<h1>APSIM-X Inputs: Weather and Soil</h1>
+<div id="obtaining-weather-data" class="section level2">
+<h2>Obtaining weather data</h2>
+<p>One of the easiest ways of generating weather data (“.met”&quot; files) is by using the ‘nasapower’ R package (<a href="https://github.com/ropensci/nasapower" class="uri">https://github.com/ropensci/nasapower</a>). See function ‘create_met’. In addition in this package the following utilities are provided:</p>
+<ul>
+<li><strong>read_apsim_met</strong>: read an APSIM met file into R with S3 class ‘met’.</li>
+<li><strong>write_apsim_met</strong>: write an APSIM met file from an object of class ‘met’.</li>
+<li><strong>check_apsim_met</strong>: check for reasonable values for met variables.</li>
+<li><strong>impute_apsim_met</strong>: impute missing values using linear interpolation, splines or the mean.</li>
+<li><strong>get_power_apsim_met</strong>: (requires the ‘nasapower’ package). Fetch data and create a ‘met’ R object and write a met file to disk.</li>
+</ul>
+<p>Note that similar utilities are available in the ‘APSIM’ package (loadMet, prepareMet, checkMet, writeMetFile) for reading, preparing, checking and writing a met file, but not for imputing.</p>
+<p>In the USA, soil data can be obtained through the ‘FedData’ R package (<a href="https://github.com/ropensci/FedData" class="uri">https://github.com/ropensci/FedData</a>) by using the function ‘get_ssurgo’. I have developed helper functions ‘ssurgo2sp’ for conversion from ‘SSURGO’ files to a soil profile and ‘apsimx_soil_profile’ for generating a soil profile that can be used in APSIM-X. Finally, the function ‘edit_apsimx_replace_soil_profile’ will batch replace the soil profile created by ‘apsimx_soil_profile’ in a designated ‘.apsimx’ file. I will be working on a more concrete tutorial soon.</p>
+</div>
+</div>
 <div id="file-type-or-file-format-details" class="section level1">
 <h1>File Type (or File Format) Details</h1>
 <p>APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x, ‘Classic’. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files are less verbose and they are gaining widespread adoption. All distributed APSIM-X examples are ‘JSON’ now.</p>
@@ -790,16 +880,9 @@ pp &lt;-<span class="st"> </span><span class="kw">inspect_apsim</span>(<span cla
 <li><p>Still a bit more work to do to make ‘inspect_apsim’ and ‘inspect_apsimx’ more consistent.</p></li>
 <li><p><strong>inspect_apsimx_replacement</strong> challenge this function with more complex examples</p></li>
 <li><p>Add more tests using the ‘CoverCrop example’ (APSIM ‘Classic’). This would be the motivation for writing a function for ‘factorials’. ‘edit_apsim_factorial’.</p></li>
-<li><p>Create and reaplce an APSIM soil profile out of SSURGO data</p></li>
+<li><p>Create and reaplce an APSIM soil profile out of SSURGO data for ‘Classic’</p></li>
+<li><p>Add the ability to edit the SWIM module for ‘Classic’</p></li>
 <li><p>Include parameter estimation example for maize</p></li>
-</ul>
-</div>
-<div id="future-features" class="section level1">
-<h1>Future features</h1>
-<ul>
-<li><p>Do we need a custom function for editing the depth of the soil profile? ‘edit_apsimx_depth’? The issue really is what kind of inconsistencies are possible if depth is not consistent across variables because it is possible to edit the depth now.</p></li>
-<li><p>Improve implementation of read_apsimx_all</p></li>
-<li><p>Add tools for optimization and sensitivity analysis.</p></li>
 </ul>
 </div>
 

@@ -75,7 +75,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         parm.path = NULL,
                         verbose = TRUE){
   
-  check_apsim_name(file)
+  .check_apsim_name(file)
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
@@ -96,7 +96,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     stop("This function only edits JSON files")
   
   ## Parse apsimx file (JSON)
-  apsimx_json <- read_json(paste0(src.dir,"/",file))
+  apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
   
   parent.node0 <- apsimx_json$Children
   ## Where is the 'Core' simulation?
@@ -322,9 +322,9 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     wr.path <- paste0(wrt.dir,"/",file)
   }
   
-  write_json(apsimx_json, path = wr.path, 
-             pretty = TRUE, digits = NA, 
-             auto_unbox = TRUE, null = "null")
+  jsonlite::write_json(apsimx_json, path = wr.path, 
+                       pretty = TRUE, digits = NA, 
+                       auto_unbox = TRUE, null = "null")
   
   if(verbose){
     cat("Edited (node): ",node, "\n")

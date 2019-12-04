@@ -7,7 +7,7 @@
 \method{print}{met}(x)
 }
 \arguments{
-\item{x}{an R object of class 'met'}
+\item{x}{an R object of class \sQuote{met}}
 }
 \description{
 Print a met file in a friendly way

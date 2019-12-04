@@ -271,9 +271,9 @@ apsimx_soil_profile <-  function(nlayers = 10,
   }
     
   ## 14. Fresh Organic Matter C:N ratio
-  if(missing(FOM.CN)) FOM.CN <- soil_variable_profile(nlayers, 
+  if(missing(FOM.CN)) FOM.CN <- 40 * soil_variable_profile(nlayers, 
                                                         a = dist.parms$a,
-                                                        b = dist.parms$b)
+                                                        b = 0)
   if(is.list(FOM.CN)){ 
     if(length(FOM.CN) != 3) stop("FOM.CN list should be of length 3")
     ## First element will be the top value of FOM.CN

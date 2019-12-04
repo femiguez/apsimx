@@ -45,9 +45,9 @@
 
 edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                        node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
-                                     "MicroClimate","Crop","Manager","Other"),
+                                "MicroClimate","Crop","Manager","Other"),
                        soil.child = c("Water","OrganicMatter", "Chemical",
-                                           "Analysis","InitialWater","Sample"),
+                                      "Analysis","InitialWater","Sample","SWIM"),
                        manager.child = NULL,
                        parm=NULL, value=NULL, 
                        overwrite = FALSE,
@@ -72,7 +72,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   file <- match.arg(file, file.names)
   
   ## Parse apsim file (XML)
-  apsim_xml <- read_xml(paste0(src.dir,"/",file))
+  apsim_xml <- xml2::read_xml(paste0(src.dir,"/",file))
   
   ## Edit the 'Clock'
   if(node == "Clock"){
@@ -81,9 +81,9 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     j <- 1
     for(i in parm){
       parm.path <- paste0(".//clock","/",i)
-      startend.node <- xml_find_first(apsim_xml, parm.path)
+      startend.node <- xml2::xml_find_first(apsim_xml, parm.path)
       ## apsim requires %Y-%m-%d
-      xml_set_text(startend.node, as.character(value[j]))
+      xml2::xml_set_text(startend.node, as.character(value[j]))
       j <- j + 1
     }
   }
@@ -92,10 +92,10 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   if(node == "Weather"){
     if(missing(parm)){
       parm.path <- paste0("//metfile/filename")
-      weather.filename.node <- xml_find_first(apsim_xml, parm.path)
+      weather.filename.node <- xml2::xml_find_first(apsim_xml, parm.path)
       if(length(grep(".met$",value)) == 0) 
         stop("value should be a .met file")
-      xml_set_text(weather.filename.node, value)
+      xml2::xml_set_text(weather.filename.node, value)
     }else{
       stop("parm not appropriate for node = Weather")
     }
@@ -121,20 +121,45 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       if(parm %in% soil.water.parms){
         parm.path <- paste0(".//Soil/Water","/",parm)
-        soil.water.node <- xml_find_first(apsim_xml, parm.path)
+        soil.water.node <- xml2::xml_find_first(apsim_xml, parm.path)
         ## Error checking
         if(length(value) != length(soil.water.node))
           stop("value vector of incorrect length")
       }else{
-        soil.water.node <- xml_find_first(apsim_xml, parm.path)
-        if(length(value) != length(xml_children(soil.water.node)))
+        soil.water.node <- xml2::xml_find_first(apsim_xml, parm.path)
+        if(length(value) != length(xml2::xml_children(soil.water.node)))
           stop("value vector of incorrect length")
       }
       ## With this code it is still possible to provide an incorrect parameter
       ## Not sure...
-      xml_set_text(xml_children(soil.water.node), as.character(value))
+      xml2::xml_set_text(xml2::xml_children(soil.water.node), as.character(value))
     }
-    
+
+    if(soil.child == "SWIM"){
+      
+      parm.path.0 <- ".//Soil/Swim"
+      ## This first set are single values
+      swim.parms1 <- c("Salb","CN2Bare","CNRed","CNCov","KDul",
+                       "PSIDul","VC","DTmin","DTmax","MaxWaterIncrement",
+                       "SpaceWeightingFactor","SoluteSpaceWeightingFactor",
+                       "Diagnostics")
+
+      swim.parms2 <- c("DrainDepth","DrainSpacing","DrainRadius",
+                       "Klat","ImpermDepth")
+      
+      if(parm %in% swim.parms1){
+        parm.path <- paste0(".//Soil/Swim","/",parm)
+      }
+      if(parm == "WaterTableDepth"){
+        parm.path <- ".//Soil/Swim/SwimWaterTable/WaterTableDepth"
+      }
+      if(parm %in% swim.parms2){
+        parm.path <- paste0(".//Soil/Swim/SwimSubsurfaceDrain","/",parm)
+      }
+      soil.swim.node <- xml2::xml_find_first(apsim_xml, parm.path)
+      xml2::xml_set_text(soil.swim.node, as.character(value))
+    }
+        
     if(soil.child == "Nitrogen"){
       stop("not implemented yet")
       parm.choices <- c("fom_type","fract_carb","fract_cell","fract_lign")
@@ -144,8 +169,8 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       if(length(value) != 6) stop("value should be of length=6")
       
       parm.path <- paste0(".//Soil/SoilNitrogen","/",parm)
-      soil.nitrogen.node <- xml_find_first(apsim_xml, parm.path)
-      xml_set_text(xml_children(soil.nitrogen.node), as.character(value))
+      soil.nitrogen.node <- xml2::xml_find_first(apsim_xml, parm.path)
+      xml2::xml_set_text(xml2::xml_children(soil.nitrogen.node), as.character(value))
     }
     
     if(soil.child == "OrganicMatter"){
@@ -158,17 +183,17 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       if(parm %in% parm.ch1){
         if(length(value) != 1) stop("value should be of length=1")
-        soil.OM.node <- xml_find_first(apsim_xml, parm.path)
-        xml_set_text(soil.OM.node, as.character(value))
+        soil.OM.node <- xml2::xml_find_first(apsim_xml, parm.path)
+        xml2::xml_set_text(soil.OM.node, as.character(value))
       }
       
       if(parm %in% parm.ch2){
-        soil.OM.node <- xml_find_first(apsim_xml, parm.path)
+        soil.OM.node <- xml2::xml_find_first(apsim_xml, parm.path)
         
-        if(length(value) != length(xml_children(soil.OM.node)))
+        if(length(value) != length(xml2::xml_children(soil.OM.node)))
           stop("value vector of incorrect length")
         
-        xml_set_text(xml_children(soil.OM.node), as.character(value))
+        xml2::xml_set_text(xml2::xml_children(soil.OM.node), as.character(value))
       }
     }
     
@@ -180,12 +205,12 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       parm.path <- paste0(".//Soil/Analysis","/",parm)
       
-      soil.Analysis.node <- xml_find_first(apsim_xml, parm.path)
+      soil.Analysis.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
-      if(length(value) != length(xml_children(soil.Analysis.node)))
+      if(length(value) != length(xml2::xml_children(soil.Analysis.node)))
         stop("value vector of incorrect length")
       
-      xml_set_text(xml_children(soil.Analysis.node), as.character(value))
+      xml2::xml_set_text(xml2::xml_children(soil.Analysis.node), as.character(value))
     }
     
     if(soil.child == "InitialWater"){
@@ -196,12 +221,12 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       parm.path <- paste0(".//Soil/InitialWater","/",parm)
       
-      soil.InitialWater.node <- xml_find_first(apsim_xml, parm.path)
+      soil.InitialWater.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
       if(length(value) != length(soil.InitialWater.node))
         stop("value vector of incorrect length")
       
-      xml_set_text(soil.InitialWater.node, as.character(value))
+      xml2::xml_set_text(soil.InitialWater.node, as.character(value))
     }
     
     if(soil.child == "Sample"){
@@ -212,12 +237,12 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       parm.path <- paste0(".//Soil/Sample","/",parm)
       
-      soil.Sample.node <- xml_find_first(apsim_xml, parm.path)
+      soil.Sample.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
       if(length(value) != length(soil.Sample.node))
         stop("value vector of incorrect length")
       
-      xml_set_text(soil.Sample.node, as.character(value))
+      xml2::xml_set_text(soil.Sample.node, as.character(value))
     }
     ## For now changing other components of the 'Soil' might make little sense
   }
@@ -232,12 +257,12 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       parm.path <- paste0(".//surfaceom/",parm)
       
-      soil.Pools.Pool.node <- xml_find_first(apsim_xml, parm.path)
+      soil.Pools.Pool.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
       if(length(value) != length(soil.Pools.Pool.node))
         stop("value vector of incorrect length")
       
-      xml_set_text(soil.Pools.Pool.node, as.character(value))
+      xml2::xml_set_text(soil.Pools.Pool.node, as.character(value))
   }
   
   if(node == "Crop" | node == "Manager"){
@@ -245,23 +270,22 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     ## Trying to figure this out
     ## xml_text(xml_find_all(apsim_xml, ".//manager[4]/ui/fert_date"))
     ## xml_path(xml_find_all(apsim_xml,".//fert_date"))
-    crop.node <- xml_find_all(apsim_xml, parm)
+    crop.node <- xml2::xml_find_all(apsim_xml, parm)
     
     if(length(crop.node) == 0) stop("parm not found")
     
     if(length(value) != length(crop.node))
         stop("value vector of incorrect length")
     
-    xml_set_text(crop.node, as.character(value))
-    
+    xml2::xml_set_text(crop.node, as.character(value))
   }
   
   if(node == "Other"){
-    other.node <- xml_find_first(apsim_xml, parm.path)
+    other.node <- xml2::xml_find_first(apsim_xml, parm.path)
     
     if(length(other.node) == 0) stop("other node parameter not found")
     
-    xml_set_text(other.node, as.character(value))
+    xml2::xml_set_text(other.node, as.character(value))
   }
   
   if(overwrite == FALSE){
@@ -271,7 +295,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   }else{
     wr.path <- paste0(wrt.dir,"/",file)
   }
-  write_xml(apsim_xml, file = wr.path)
+  xml2::write_xml(apsim_xml, file = wr.path)
   
   if(verbose){
     cat("Edited",parm.path, "\n")
