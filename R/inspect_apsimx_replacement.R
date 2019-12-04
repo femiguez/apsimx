@@ -317,7 +317,7 @@ cat_parm <- function(x, parm = NULL){
     if(is.null(parm)){
       cat(x.nms[i], ":",unlist(x[i]),"\n")
     }else{
-      if(x.nms[i] %in% parm || grepl(parm, unlist(x[i]))){
+      if(x.nms[i] %in% parm || any(sapply(parm, function(x) grepl(x, unlist(x[i]))))){
         cat(x.nms[i], ":",unlist(x[i]),"\n")
       }
     }

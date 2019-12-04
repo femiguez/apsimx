@@ -33,6 +33,12 @@ If you want to install this package from github try in R:
 > devtools::install_github("femiguez/apsimx") \
 > library(apsimx)
 
+or the lightweight 'remotes' package
+
+> library(remotes) \
+> remotes::install_github("femiguez/apsimx") \
+> library(apsimx)
+
 It is **not** necessary to build the vignettes as they are also at:
 https://femiguez.github.io/apsimx-docs/
 
