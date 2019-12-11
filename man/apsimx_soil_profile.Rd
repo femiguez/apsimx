@@ -14,10 +14,9 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
   crops = c("Maize", "Soybean", "Wheat"), dist.parms = list(a = 0, b =
   0.2))
 
-\method{plot}{soil_profile}(x, property = c("all", "water", "BD",
-  "AirDry", "LL15", "DUL", "SAT", "KS", "crop.XF", "crop.KL", "crop.LL",
-  "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
-  "NH4N", "PH"))
+plot.soil_profile(x, property = c("all", "water", "BD", "AirDry", "LL15",
+  "DUL", "SAT", "KS", "crop.XF", "crop.KL", "crop.LL", "Carbon",
+  "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH"))
 }
 \arguments{
 \item{nlayers}{Number of soil layers (default = 10)}

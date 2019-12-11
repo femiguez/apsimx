@@ -18,17 +18,18 @@
 #' @export
 #' @examples 
 #' \dontrun{
+#' require(ggplot2)
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' 
-#' chorizon <- read_csv(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_chorizon.csv"))
-#' component <- read_csv(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_component.csv"))
-#' mapunit <- read_csv(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_mapunit.csv"))
+#' chorizon <- read.csv(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_chorizon.csv"))
+#' component <- read.csv(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_component.csv"))
+#' mapunit <- read.csv(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_mapunit.csv"))
 #' 
 #' ## Using default 'constant' method
 #' sp.c <- ssurgo2sp(mapunit = mapunit, 
 #'                  component = component, 
 #'                  chorizon = chorizon)
-#' require(ggplot2)
+#' 
 #' ggplot(data = sp.c, aes(y = -Depth, x = Carbon)) + 
 #' geom_point() + 
 #'   geom_path() + 
@@ -76,6 +77,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
     component4 <- component3[order(component3$comppct.r, decreasing = TRUE),]
     ## This calculates the percent of the total acres in the area of interest
     component4$acres.proportion <- subset(mapunit3, mukey == i)$muacres.percent/100 * component4$comppct.r/100
+    component4$compname.mukey <- with(component4, as.factor(compname):as.factor(mukey))
     component5 <- rbind(component5, component4[1:nsoil,])
   }
   
@@ -103,10 +105,10 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
   chorizon3$PH <- chorizon3$ph1to1h2o.r
   
   ## From Saxton and Rawls
-  chorizon3$BD <- (1 - chorizon3$wsatiated.r/100) * chorizon3$partdensity
+  chorizon3$BD <- (1 - chorizon3$wsatiated.r/100) * ifelse(is.na(chorizon3$partdensity),2.65,chorizon3$partdensity)
   
   ## Convert to fraction
-  chorizon3$AirDry <- chorizon3$wfifteenbar.r * c(0.7,rep(1,nrow(chorizon3)-1)) * 1e-2
+  chorizon3$AirDry <- chorizon3$wfifteenbar.r * ifelse(chorizon3$hzdept.r == 0, 0.5, 1) * 1e-2
   
   ## Soil Carbon
   ## SOM contains approximately 58% C; therefore, a factor of
@@ -114,8 +116,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
   chorizon3$Carbon <- chorizon3$om.r * 0.58
   
   ## Soil names
-  soil.names <- component5$compname
-  
+  soil.names <- component5$compname.mukey
   soil.list <- vector(mode = "list", length = length(soil.names))
   names(soil.list) <- soil.names
   

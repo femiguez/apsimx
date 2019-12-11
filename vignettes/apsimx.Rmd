@@ -156,7 +156,7 @@ inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
 
 # Proposed workflow
 
-It is recommended that you start by creating an .apsim(x) file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The functions included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. This is the proposed workflow:
+It is recommended that you start by creating an .apsim(x) file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The functions included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM and R, but it is made possible with these tools. This is the proposed workflow:
 
 1. Create a simulation using the APSIM GUI
 2. Identify variables/parameters that you want to modify (they need to be exposed in the .apsimx (JSON) or .apsim (XML) file)
@@ -396,7 +396,7 @@ I won't be running the 'Factorial' example here, but if you are interested this 
 
 ## Obtaining weather data
 
-One of the easiest ways of generating weather data (".met"" files) is by using the 'nasapower' R package (https://github.com/ropensci/nasapower). See function 'create_met'. In addition in this package the following utilities are provided:
+One of the easiest ways of generating weather data (".met" files) is by using the 'nasapower' R package (https://github.com/ropensci/nasapower). See function 'create_met'. In addition in this package the following utilities are provided:
 
 * **read_apsim_met**: read an APSIM met file into R with S3 class 'met'.
 * **write_apsim_met**: write an APSIM met file from an object of class 'met'.

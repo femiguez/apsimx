@@ -38,7 +38,7 @@ apsim_version <- function(which = c("all","inuse"),
     }
     
     if(grepl("Linux", Sys.info()[["sysname"]])){
-      laf <- list.files("/usr/local/lib")
+      laf <- list.files("/usr/local/lib/apsim")
     }
     
     find.apsim <- grep("APSIM",laf, ignore.case = TRUE)

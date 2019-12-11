@@ -416,9 +416,11 @@ plot.soil_profile <- function(x, property = c("all", "water","BD",
   if(property != "all" & property != "water"){
     
     tmp <- xsoil[,c(property,"Depth","soil.depth.bottom")]
-    qp <- ggplot2::qplot(x = tmp[,1], y = -tmp[,3], 
-                         xlab = property, ylab = "Soil Depth (cm)", 
-                         geom = "line")
+    qp <- ggplot2::ggplot() + 
+                   ggplot2::geom_point(aes(x = tmp[,1], y = -tmp[,3])) + 
+                   ggplot2::geom_path(aes(x = tmp[,1], y = -tmp[,3])) +
+                   ggplot2::xlab(property) + 
+                   ggplot2::ylab("Soil Depth (cm)") 
     print(qp)
   }
   
@@ -463,10 +465,14 @@ plot.soil_profile <- function(x, property = c("all", "water","BD",
     
     tmp <- xsoil
     gp <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = -soil.depth.bottom, y = SAT)) +
-              ggplot2::xlab("Soil Depth (cm)") + ggplot2::ylab("proportion") + 
-              ggplot2::geom_line() + ggplot2::ggtitle("Soil water") +
-              ggplot2::geom_ribbon(ggplot2::aes(ymin = LL15, ymax = DUL), color = "blue",
-                      fill = "deepskyblue1") + 
+              ggplot2::xlab("Soil Depth (cm)") + 
+              ggplot2::ylab("proportion") + 
+              ggplot2::geom_line() +
+              ggplot2::geom_line(ggplot2::aes(x = -soil.depth.bottom, y = AirDry), color = "red") + 
+              ggplot2::ggtitle("Soil water (AirDry, LL15, DUL, SAT)") +
+              ggplot2::geom_ribbon(ggplot2::aes(ymin = LL15, ymax = DUL), 
+                                   color = "blue",
+                                   fill = "deepskyblue1") + 
               ggplot2::coord_flip()  
     print(gp)
   }

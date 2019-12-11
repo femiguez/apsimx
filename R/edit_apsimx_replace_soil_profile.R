@@ -30,7 +30,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
                                               overwrite = FALSE,
                                               verbose = TRUE){
   
-  check_apsim_name(file)
+  .check_apsim_name(file)
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
@@ -45,7 +45,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   if(missing(soil.profile)) stop("soil profile is missing")
   
   ## Parse apsimx file (JSON)
-  apsimx_json <- read_json(paste0(src.dir,"/",file))
+  apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
   
   parent.node0 <- apsimx_json$Children
   ## Where is the 'Core' simulation?
@@ -131,16 +131,11 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
     wr.path <- paste0(wrt.dir,"/",file)
   }
   
-  write_json(apsimx_json, path = wr.path, 
-             pretty = TRUE, digits = NA, 
-             auto_unbox = TRUE, null = "null")
+  jsonlite::write_json(apsimx_json, path = wr.path, 
+                       pretty = TRUE, digits = NA, 
+                       auto_unbox = TRUE, null = "null")
   
   if(verbose){
-    ##cat("Edited (node): ",node, "\n")
-    ##cat("Edited (child): ", edited.child,"\n")
-    ##cat("Edited parameter: ",parm, "\n")
-    ##cat("New values: ",value, "\n")
     cat("Created: ",wr.path,"\n")
   }
-  
 }

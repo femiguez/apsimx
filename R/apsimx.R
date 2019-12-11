@@ -83,10 +83,13 @@ apsimx <- function(file = "", src.dir=".",
 auto_detect_apsimx <- function(){
 
   ## Internal function to split APSIM name
-  fev <- function(x) as.numeric(strsplit(x, ".", fixed = TRUE)[[1]][4])
-  ## I need to deal with the fact that there might be multiple versions
-  ## of APSIM installed
-  
+  fev <- function(x){
+    x1 <- gsub("APSIM","\\1",x)
+    x2 <- strsplit(x1, ".", fixed = TRUE)[[1]]
+    x3 <- as.Date(paste(x2[1:3], collapse="-"), format = "%Y-%m-%d")
+    x3
+  }
+
   if(.Platform$OS.type == "unix"){
 
     if(grepl("Darwin", Sys.info()[["sysname"]])){
@@ -94,13 +97,20 @@ auto_detect_apsimx <- function(){
       find.apsim <- grep("APSIM",laf)
       if(length(find.apsim) == 0) stop("APSIM-X not found")
       if(length(find.apsim) > 1){
-        apsimx.versions <- sapply(laf[find.apsim],fev)
-        newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
+        ## Originally I was sorting by #issue number but this
+        ## does not give you the latest version
+        len.fa <- length(find.apsim)
+        fa.dt <- as.numeric(sapply(laf[find.apsim],fev))
+        if(len.fa != which.max(fa.dt)) stop("This method might not work...?")
+        newest.version <- laf[find.apsim][len.fa]
+        ## apsimx.versions <- sapply(laf[find.apsim],fev)
+        ## newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
         if(apsimx::apsimx.options$warn.versions){
            warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:",newest.version))
         }
-        apsimx.name <- grep(newest.version, laf[find.apsim], value = TRUE)
+        ## apsimx.name <- grep(newest.version, laf[find.apsim], value = TRUE)
+        apsimx.name <- newest.version
       }else{
         apsimx.name <- laf[find.apsim]
       }
@@ -141,13 +151,12 @@ auto_detect_apsimx <- function(){
     if(length(find.apsim) == 0) stop("APSIM-X not found")
     apsimx.versions <- laf[find.apsim]
     if(length(find.apsim) > 1){
-      versions <- sapply(apsimx.versions, fev)
-      newest.version <- sort(versions, decreasing = TRUE)[1]
+      newest.version <- laf[find.apsim][length(find.apsim)]
       if(apsimx::apsimx.options$warn.versions){
         warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:",newest.version))
       }
-      apsimx.name <- grep(newest.version, apsimx.versions, value = TRUE)
+      apsimx.name <- newest.version
     }else{
       apsimx.name <- laf[find.apsim]
     }
@@ -180,9 +189,6 @@ auto_detect_apsimx <- function(){
 
 auto_detect_apsimx_examples <- function(){
   
-  ## Internal function to split APSIM name
-  fev <- function(x) as.numeric(strsplit(x, ".", fixed = TRUE)[[1]][4])
-  
   if(.Platform$OS.type == "unix"){
     apsim.name <- NULL
     if(grepl("Darwin", Sys.info()[["sysname"]])){
@@ -191,13 +197,12 @@ auto_detect_apsimx_examples <- function(){
       laf <- list.files("/Applications/")
       find.apsim <- grep("APSIM",laf)
       if(length(find.apsim) > 1){
-        apsimx.versions <- sapply(laf[find.apsim],fev)
-        newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
+        newest.version <- laf[find.apsim][length(find.apsim)]
         if(apsimx::apsimx.options$warn.versions){
           warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:",newest.version))
         }
-        apsimx.name <- grep(newest.version, laf[find.apsim], value = TRUE)
+        apsimx.name <- newest.version
       }else{
         apsimx.name <- laf[find.apsim]
       }
@@ -231,13 +236,12 @@ auto_detect_apsimx_examples <- function(){
       find.apsim <- grep("APSIM",laf)
       apsimx.versions <- laf[find.apsim]
       if(length(apsimx.versions) > 1){
-        versions <- sapply(apsimx.versions, fev)
-        newest.version <- sort(versions, decreasing = TRUE)[1]
+        newest.version <- laf[find.apsim][length(find.apsim)]
         if(apsimx.options$warn.versions){
           warning(paste("Multiple versions of APSIM-X installed. \n
                         Choosing the newest one:",newest.version))
         }
-        apsimx.name <- grep(newest.version, apsimx.versions, value = TRUE)
+        apsimx.name <- newest.version
       }else{
         apsimx.name <- apsimx.versions
       }
