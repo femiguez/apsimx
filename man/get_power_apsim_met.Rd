@@ -41,6 +41,4 @@ pwr.imptd <- impute_apsim_met(pwr, verbose = TRUE)
 summary(pwr.imptd)
 }
 
-
-
 }

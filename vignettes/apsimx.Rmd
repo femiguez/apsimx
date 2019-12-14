@@ -412,13 +412,7 @@ In the USA, soil data can be obtained through the 'FedData' R package (https://g
 
 APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x, 'Classic'. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files are less verbose and they are gaining widespread adoption. All distributed APSIM-X examples are 'JSON' now.
 
-The apsimx package supports inspection and editing of both file types, but XML is for 'Classic' only and JSON is for APSIM-X. In most instances the parameters that are likely to need inspection and editing are supported, but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON (note: this is fragile and might not even be needed in the future).
-
-```{r filetypes}
-apsimx_filetype("Wheat.apsimx", src.dir = extd.dir)
-## This is an older XML 'Maize' file which is no longer distributed
-apsimx_filetype("Maize_old", src.dir = extd.dir)
-```
+The apsimx package supports inspection and editing of both file types, but XML is for 'Classic' only and JSON is for APSIM-X. In most instances the parameters that are likely to need inspection and editing are supported, but more features will be added in the future as needed. 
 
 # Additional functions
 
@@ -435,7 +429,9 @@ aiu <- apsim_version(which = "inuse")
 
 # To-Do
 
-* Still a bit more work to do to make 'inspect_apsim' and 'inspect_apsimx' more consistent.
+* Still a bit more work to do to make 'inspect_apsim' and 'inspect_apsimx' more consistent. Need to add functionality for 'manager.child'
+
+* Add 'metadata' as a soil.child option and then make it possible to fully edit the soil information based on a 'soil_profile' object, which would require to create a function to validate 'soil_profile' objects. Possibly turning this into an S4 class, although most likely I will stay with S3.
 
 * **inspect_apsimx_replacement** challenge this function with more complex
 examples
@@ -447,5 +443,32 @@ examples
 * Add the ability to edit the SWIM module for 'Classic'
 
 * Include parameter estimation example for maize
+
+# Appendix
+
+Files in 'inst/extdata' and how they are used (ordered alphabetically):
+
+* **ames-10-19.met** (not sure if it is used, if it is not, I'll delete it)
+* **Ames.met** (used to run the Soybean.apsimx)
+* **Factorial.apsimx** (This file IS needed for the vignette.)
+* ISUAG (SSURGO files to test the ssurgo2sp function)
+* Maize_old.apsimx (Old-style 'xml' file used by APSIM-X)
+* maize-factorial.apsim (file that I might use to test the ability to inspect and edit factorial .apsim files). TODO: low priority
+* maize-manager-folder.apsimx (file I will use to test whether I need to modify inspect and edit functions when the management is inside a folder)
+* maize-soybean-rotation.apsim (example file with a maize and soybean rotation used in testing and in the 'inspect_apsim' file).
+* **maize-swim.apsim**: example file with the SWIM module for testing (test_apsim_swim.R).
+* **Maize.apsimx**: This file is needed for the vignette.
+* **Maize.db**: This file is needed for the vignette.
+* **Maize.out**: This file is needed for the 'read_apsim' example.
+* **MaizeSoybean.apsimx**: This file is needed for the vignette and for testing in 'test_replacements.R'
+* **mets** (folder): Contains some of the met files distributed with APSIM-X (Plus 'Ames.met'), but it is also used for testing function 'read_apsim_met' (test_read_apims_met.R).
+* **Millet.apsim**: Millet example from APSIM 'Classic' for testing 'inspect_apsim' and used in the vignette.
+* **Millet.sim**: result from the Millet simulation. Not sure if it is needed.
+* **nasamets** (folder): files created using the 'nasapower' package for testing imputation 'impute_apsim_met'.
+* **Soybean.apsimx**: Soybean example for APSIM-X. Used in 'test_replacements.R'.
+* **Wheat.apsimx**: This file is used in the vignette.
+* **Wheat.db**: This file is used in the vignette.
+* **WheatRye.apsimx**: This file is used in 'test_replacements.R'.
+
 
 

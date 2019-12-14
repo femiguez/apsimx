@@ -54,3 +54,17 @@
   }
   return(x)
 }
+
+#' This function extracts the APSIM-X Date version
+#' Find Apsim Version Date
+#' @name .favd
+#' @description Extract the date from an APSIM binary name being used
+#' @param x an APISM binary name such as 'APSIM2019.12.10.3010.app'
+#' @noRd
+#' 
+.favd <- function(x){
+  x1 <- gsub("APSIM","\\1",x) ## Remove 'APSIM'
+  x2 <- strsplit(x1, ".", fixed = TRUE)[[1]] ## Split by '.'
+  x3 <- as.Date(paste(x2[1:3], collapse="-"), format = "%Y-%m-%d") ## Convert to 'Date'
+  return(x3)
+}

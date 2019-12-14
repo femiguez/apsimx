@@ -10,6 +10,8 @@ write_apsim_met(met, wrt.dir = NULL, filename = NULL)
 \item{met}{object of class \sQuote{met}}
 
 \item{wrt.dir}{directory where the file will be written}
+
+\item{filename}{optional alternative filename}
 }
 \value{
 does not create an R object, it only writes to disk

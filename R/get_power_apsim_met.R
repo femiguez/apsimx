@@ -28,13 +28,11 @@
 #' summary(pwr.imptd)
 #' }
 #' 
-#'
-#'
 
 get_power_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
   
   if(!requireNamespace("nasapower",quietly = TRUE)){
-    warning("nasapower is required for this function")
+    warning("The nasapower is required for this function")
     return(NULL)
   }
   

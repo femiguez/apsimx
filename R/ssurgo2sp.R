@@ -73,16 +73,16 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
                                   "mukey", "cokey"))
   component5 <- NULL
   for(i in mapunit3$mukey){
-    component3 <- subset(component2, mukey == i)
+    component3 <- component2["mukey" == i,]
     component4 <- component3[order(component3$comppct.r, decreasing = TRUE),]
     ## This calculates the percent of the total acres in the area of interest
-    component4$acres.proportion <- subset(mapunit3, mukey == i)$muacres.percent/100 * component4$comppct.r/100
-    component4$compname.mukey <- with(component4, as.factor(compname):as.factor(mukey))
+    component4$acres.proportion <- mapunit3["mukey" == i,]$muacres.percent/100 * component4$comppct.r/100
+    component4$compname.mukey <- as.factor(component4$compname):as.factor(component4$mukey)
     component5 <- rbind(component5, component4[1:nsoil,])
   }
   
   ## Process chorizon
-  chorizon2 <- subset(chorizon, cokey %in% component5$cokey)
+  chorizon2 <- chorizon["cokey" %in% component5$cokey,]
   chorizon3 <- subset(chorizon2, 
                       select = c("hzname", "hzdept.r", "hzdepb.r", 
                                  "hzthk.r", "sandtotal.r", "silttotal.r",
@@ -124,7 +124,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
   
   for(sz in 1:length(soil.names)){
     
-    one.soil <- subset(chorizon3, cokey == component5$cokey[sz])
+    one.soil <- chorizon3["cokey" == component5$cokey[sz],]
   
     soil.mat <- matrix(nrow = nlayers, ncol = length(vars))
   
@@ -163,7 +163,16 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
   return(soil.list)
 }
 
-## Interpolate a soil variable using 'approx' and return a data.frame
+#' Interpolate a soil variable using 'approx' and return a data.frame
+#' @name approx_soil_variable
+#' @description interpolate a soil variable over a range of values
+#' @param x input vector
+#' @param xout output vector (see stats::approx)
+#' @param soil.bottom bottom of the soil layer in cm
+#' @param method either 'constant' or 'linear' as used in 'stats::approx'
+#' @param nlayers number of soil layers
+#' @noRd
+#' 
 approx_soil_variable <- function(x, xout = NULL, soil.bottom = 200, 
                                  method = c("constant","linear"),
                                  nlayers = 10){
@@ -172,7 +181,7 @@ approx_soil_variable <- function(x, xout = NULL, soil.bottom = 200,
   method <- match.arg(method)
   if(is.null(xout)) xout <- seq(0,soil.bottom, length.out = nlayers)
   
-  ans <- approx(x = xd[[1]], y = xd[[2]], method = method, xout = xout, rule = 2)
+  ans <- stats::approx(x = xd[[1]], y = xd[[2]], method = method, xout = xout, rule = 2)
   
   ansd <- data.frame(x = ans$x, y = ans$y)
   return(ansd)

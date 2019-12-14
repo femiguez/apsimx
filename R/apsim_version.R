@@ -16,7 +16,6 @@ apsim_version <- function(which = c("all","inuse"),
                           verbose = TRUE){
   
   ## Internal function
-  fev <- function(x) as.numeric(strsplit(x, ".", fixed = TRUE)[[1]][4])
   fevc <- function(x) as.numeric(sub("r","",strsplit(x, "-", fixed = TRUE)[[1]][2]))
   
   which <- match.arg(which)
@@ -48,7 +47,7 @@ apsim_version <- function(which = c("all","inuse"),
     if(length(find.apsim) > 0){ 
       apsimx.versions <- laf[find.apsim]
       tmp.mat <- matrix(NA, nrow = 2, ncol = length(find.apsim))
-      tmp.mat[2,seq_along(find.apsim)] <- apsimx.versions
+      tmp.mat[2,seq_along(find.apsim)] <- rev(apsimx.versions)
       ans <- data.frame(tmp.dat, as.data.frame(tmp.mat))
       names(ans) <- c("APSIM",paste0("Version.",seq_along(find.apsim)))
     }
@@ -73,13 +72,16 @@ apsim_version <- function(which = c("all","inuse"),
     
     if(length(find.apsimx) > 0){
       apsimx.versions <- lafx[find.apsimx]
-      apsimx.versions <- apsimx.versions[order(sapply(apsimx.versions, fev), decreasing = TRUE)]
+      ## I want to order apsimx.version from newest to oldest
+      ## The line below is not necessary now
+      ## apsimx.versions <- apsimx.versions[order(sapply(apsimx.versions, fev), decreasing = TRUE)]
       tmp.matx <- matrix(NA, nrow = 1, ncol = ncols)
-      tmp.matx[1,seq_along(find.apsimx)] <- apsimx.versions
+      tmp.matx[1,seq_along(find.apsimx)] <- rev(apsimx.versions)
     }else{
       tmp.matx <- matrix(NA, nrow = 1, ncol = ncols) 
     }
 
+    ## This is for APSIM 'Classic' and it should work
     if(length(find.apsim) > 0){
       apsim.versions <- laf[find.apsim]
       apsim.versions <- apsim.versions[order(sapply(apsim.versions, fevc), decreasing = TRUE)]
@@ -94,7 +96,7 @@ apsim_version <- function(which = c("all","inuse"),
   
   if(which == "all"){
     if(verbose)
-      print(kable(ans))
+      print(knitr::kable(ans))
   }
   
   if(which == "inuse"){
@@ -106,13 +108,16 @@ apsim_version <- function(which = c("all","inuse"),
       }
       ## If there are multiple APSIMs present
       if(length(find.apsim) > 1){
-        apsimx.versions <- sapply(laf[find.apsim],fev)
-        newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
-        ans <- names(newest.version)
+        len.fa <- length(find.apsim)
+        fa.dt <- sapply(laf[find.apsim],.favd, simplify = FALSE)[[len.fa]]
+        if(verbose) cat("APSIM-X version date:",as.character(fa.dt))
+        ## This next line picks the last one
+        newest.version <- laf[find.apsim][len.fa]
+        ans <- newest.version
       }
       ## If the one in use is not any of the above such as a Custom build
       if(!is.na(apsimx::apsimx.options$exe.path)){
-        ans <- fev(apsimx::apsimx.options$exe.path)
+        ans <- apsimx::apsimx.options$exe.path
       }
     }
     ## For Windows
@@ -120,7 +125,7 @@ apsim_version <- function(which = c("all","inuse"),
       ## If everything fails NAs will be returned
       ansc <- NA
       ansx <- NA
-      ## If there is only one APSIM
+      ## If there is only one APSIM 'Classic'
       if(length(find.apsim) == 1){
         ansc <- laf[find.apsim]
       }
@@ -128,29 +133,30 @@ apsim_version <- function(which = c("all","inuse"),
       if(length(find.apsim) > 1){
         apsim.versions <- sapply(laf[find.apsim],fevc)
         newest.version <- sort(apsim.versions, decreasing = TRUE)[1]
-        ansc <- as.vector(newest.version)
+        ansc <- names(newest.version)
       }
       ## It is possible that the one in use is not the latest one
       if(!is.na(apsimx::apsim.options$exe.path)){
-        ansc <- fevc(apsimx::apsim.options$exe.path)
+        ansc <- apsimx::apsim.options$exe.path
       }
       ## For APSIM-X
       if(length(find.apsimx) == 1){
         ansx <- lafx[find.apsimx]
       }
       if(length(find.apsimx) > 1){
-        apsimx.versions <- sapply(lafx[find.apsimx],fev)
-        newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
-        ansx <- as.vector(newest.version)
+        apsimx.versions <- lafx[find.apsimx]
+        len.fa <- length(find.apsimx)
+        newest.version <- lafx[find.apsimx][len.fa]
+        ansx <- newest.version
       }
       ## It is possible that the one in use is not the latest one
       if(!is.na(apsimx::apsimx.options$exe.path)){
-        ansx <- fev(apsimx::apsimx.options$exe.path)
+        ansx <- apsimx::apsimx.options$exe.path
       }
       
       ans <- data.frame(Classic = ansc, NextGeneration = ansx)
     }
-    if(verbose) print(kable(ans))
+    if(verbose) print(knitr::kable(ans))
   }
   invisible(ans)
 }

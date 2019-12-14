@@ -1,5 +1,5 @@
 #'
-#' @title Create APSIM-X Replace the Soil Profile in a simulation
+#' @title Edit APSIM-X file with a replaced soil profile
 #' @name edit_apsimx_replace_soil_profile
 #' @description Edits an APSIM-X simulation by replacing the soil profile
 #' @param file name of the .apsimx file to be edited
@@ -8,8 +8,9 @@
 #' @param soil.profile a soil profile object with class 'soil_profile'
 #' @param edit.tag default edit tag '-edited'
 #' @param overwrite default FALSE
+#' @param verbose default TRUE and it will print messages to console
 #' @return writes a file to disk with the supplied soil profile
-#' @details This function is designed to batch replace the whole soil in an APSIM simulation. 
+#' @details This function is designed to batch replace the whole soil in an APSIM simulation file. 
 #' @note There is no such thing as a default soil, carefully build the profile for each simulation.
 #' @export
 #' @examples 

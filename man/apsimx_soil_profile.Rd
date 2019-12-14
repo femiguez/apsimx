@@ -11,10 +11,10 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
   Carbon = NULL, SoilCNRatio = NULL, FOM = NULL, FOM.CN = NULL,
   FBiom = NULL, FInert = NULL, NO3N = NULL, NH4N = NULL,
   PH = NULL, soil.bottom = 150, water.table = 200, soil.type = 0,
-  crops = c("Maize", "Soybean", "Wheat"), dist.parms = list(a = 0, b =
-  0.2))
+  crops = c("Maize", "Soybean", "Wheat"), lonlat = c(NA, NA),
+  dist.parms = list(a = 0, b = 0.2))
 
-\method{plot}{soil_profile}(x, property = c("all", "water", "BD",
+\method{plot}{soil_profile}(x, ..., property = c("all", "water", "BD",
   "AirDry", "LL15", "DUL", "SAT", "KS", "crop.XF", "crop.KL", "crop.LL",
   "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
   "NH4N", "PH"))
@@ -70,11 +70,15 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
 
 \item{crops}{name of crops being grown}
 
+\item{lonlat}{longitude and latitude for the soil profile}
+
 \item{dist.parms}{parameter values for creating a profile. If a == 0 and b == 0 then \cr
 a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
 If a != 0 and b != 0 then the equation is \code{a * soil.layer * exp(-b * soil.layer)}.}
 
-\item{x}{object of class 'soil_profile'}
+\item{x}{object of class 'soil_profile'.}
+
+\item{...}{additional plotting arguments (none use at the moment).}
 
 \item{property}{"all" for plotting all soil properties, "water" for just SAT, DUL and LL15}
 }

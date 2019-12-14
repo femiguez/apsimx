@@ -39,6 +39,7 @@
 #' @param water.table water table level (not used at the moment) (cm)
 #' @param soil.type might use it in the future for auto filling missing information
 #' @param crops name of crops being grown
+#' @param lonlat longitude and latitude for the soil profile
 #' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
 #' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
 #' If a != 0 and b != 0 then the equation is \code{a * soil.layer * exp(-b * soil.layer)}.  
@@ -77,6 +78,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                  water.table = 200, 
                                  soil.type = 0,
                                  crops = c("Maize","Soybean","Wheat"),
+                                 lonlat = c(NA,NA),
                                  dist.parms = list(a = 0, b = 0.2)){
 
   if(!is.null(Depth) & !is.null(Thickness)){
@@ -360,12 +362,23 @@ apsimx_soil_profile <-  function(nlayers = 10,
                      "DUL","SAT","KS","crop.XF","crop.KL","crop.LL",
                      "Carbon","SoilCNRatio", "FOM","FOM.CN","FBiom","FInert",
                      "NO3N","NH4N","PH")
-    ans <- list(soil=soil, crops = crops)
+    ans <- list(soil=soil, crops = crops, lonlat = lonlat)
     class(ans) <- "soil_profile"
     return(ans)
   }
 
-
+#' This function creates a profile for a given soil variable
+#' with flexibility about the given shape:
+#' 1. constant
+#' 2. exponential decay
+#' 3. ricker
+#' @name soil_variable_profile
+#' @description create a profile given a number of layers
+#' @param nlayers number of soil layers
+#' @param a parameter in a function
+#' @param b parameter in a function
+#' @noRd
+#' 
 soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
   
   ## The shape will be based on the
@@ -392,10 +405,11 @@ soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
 
 #' @rdname apsimx_soil_profile
 #' @description plotting function for a soil profile, it requires 'ggplot2'
-#' @param x object of class 'soil_profile'
+#' @param x object of class 'soil_profile'.
+#' @param ... additional plotting arguments (none use at the moment).
 #' @param property "all" for plotting all soil properties, "water" for just SAT, DUL and LL15
 #' @export
-plot.soil_profile <- function(x, property = c("all", "water","BD",
+plot.soil_profile <- function(x,..., property = c("all", "water","BD",
                                               "AirDry","LL15","DUL","SAT",
                                               "KS","crop.XF","crop.KL",
                                               "crop.LL", "Carbon", "SoilCNRatio", 
@@ -408,7 +422,7 @@ plot.soil_profile <- function(x, property = c("all", "water","BD",
   }
   ## Really dumb... but for now...
   dist <- NA; soil.depths <- NA; soil.depth.bottom <- NA; SAT <- NA
-  LL15 <- NA; DUL <- NA
+  LL15 <- NA; DUL <- NA; AirDry <- NA
   xsoil <- x$soil
   ## Add soil bottom depth
   xsoil$soil.depth.bottom <- sapply(as.character(xsoil$Depth), FUN = function(x) as.numeric(strsplit(x,"-")[[1]][2]))
@@ -417,8 +431,8 @@ plot.soil_profile <- function(x, property = c("all", "water","BD",
     
     tmp <- xsoil[,c(property,"Depth","soil.depth.bottom")]
     qp <- ggplot2::ggplot() + 
-                   ggplot2::geom_point(aes(x = tmp[,1], y = -tmp[,3])) + 
-                   ggplot2::geom_path(aes(x = tmp[,1], y = -tmp[,3])) +
+                   ggplot2::geom_point(ggplot2::aes(x = tmp[,1], y = -tmp[,3])) + 
+                   ggplot2::geom_path(ggplot2::aes(x = tmp[,1], y = -tmp[,3])) +
                    ggplot2::xlab(property) + 
                    ggplot2::ylab("Soil Depth (cm)") 
     print(qp)

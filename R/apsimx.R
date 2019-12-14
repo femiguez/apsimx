@@ -82,14 +82,6 @@ apsimx <- function(file = "", src.dir=".",
 ## This is an internal function so I won't export/document it
 auto_detect_apsimx <- function(){
 
-  ## Internal function to split APSIM name
-  fev <- function(x){
-    x1 <- gsub("APSIM","\\1",x)
-    x2 <- strsplit(x1, ".", fixed = TRUE)[[1]]
-    x3 <- as.Date(paste(x2[1:3], collapse="-"), format = "%Y-%m-%d")
-    x3
-  }
-
   if(.Platform$OS.type == "unix"){
 
     if(grepl("Darwin", Sys.info()[["sysname"]])){
@@ -100,11 +92,10 @@ auto_detect_apsimx <- function(){
         ## Originally I was sorting by #issue number but this
         ## does not give you the latest version
         len.fa <- length(find.apsim)
-        fa.dt <- as.numeric(sapply(laf[find.apsim],fev))
-        if(len.fa != which.max(fa.dt)) stop("This method might not work...?")
+        ## This extracts the date from the APSIM name but I 
+        ## only need this for debugging in case there is a problem
+        fa.dt <- as.numeric(sapply(laf[find.apsim],.favd))
         newest.version <- laf[find.apsim][len.fa]
-        ## apsimx.versions <- sapply(laf[find.apsim],fev)
-        ## newest.version <- sort(apsimx.versions, decreasing = TRUE)[1]
         if(apsimx::apsimx.options$warn.versions){
            warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:",newest.version))
@@ -126,14 +117,16 @@ auto_detect_apsimx <- function(){
       if(length(find.apsim) == 0) stop("APSIM-X not found")
       
       apsimx.versions <- list.files("/usr/local/lib/apsim")
+      ## Note: Apparently Debian does not tolerate multiple 
+      ## versions of APSIM-X installed, date 2019-12-12
       if(length(apsimx.versions) > 1){
-        versions <- sapply(apsimx.versions, fev)
-        newest.version <- sort(versions, decreasing = TRUE)[1]
+        len.fa <- length(find.apsim)
+        newest.version <- apsimx.versions[find.apsim]
         if(apsimx::apsimx.options$warn.versions){
           warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:",newest.version))
         }
-        apsimx.name <- grep(newest.version, apsimx.versions, value = TRUE)
+        apsimx.name <- newest.version
       }else{
         apsimx.name <- apsimx.versions
       }
@@ -216,13 +209,13 @@ auto_detect_apsimx_examples <- function(){
       st1 <- "/usr/local/lib/apsim/"
       apsimx.versions <- list.files(st1) 
       if(length(apsimx.versions) > 1){
-        versions <- sapply(apsimx.versions, fev)
-        newest.version <- sort(versions, decreasing = TRUE)[1]
+        len.fa <- length(find.apsim)
+        newest.version <- apsimx.versions[find.apsim]
         if(apsimx.options$warn.versions){
           warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:",newest.version))
         }
-        apsimx.name <- grep(newest.version, apsimx.versions, value = TRUE)
+        apsimx.name <- newest.version
       }else{
         apsimx.name <- apsimx.versions
       }

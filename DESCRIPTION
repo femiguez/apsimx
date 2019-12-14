@@ -1,6 +1,6 @@
 Package: apsimx
 Title: Inspect, Read, Edit and Run APSIM-X "Next Generation" and APSIM "Classic"
-Version: 1.71
+Version: 1.74
 Authors@R: person("Fernando", "Miguez", email = "femiguezt@iastate.edu", role = c("aut", "cre"))
 Description: The functions in this package inspect, read, edit and run .apsimx (JSON) and .apsim (XML)
              files and run them from within R through the command line. The .apsim files correspond to

@@ -116,6 +116,7 @@ read_apsim_met <- function(file, src.dir = ".", verbose = TRUE){
 #' @description Write an object of class \sQuote{met} to disk
 #' @param met object of class \sQuote{met}
 #' @param wrt.dir directory where the file will be written
+#' @param filename optional alternative filename
 #' @return does not create an R object, it only writes to disk
 #' @details at the moment the read-write cycle will strip comments
 #' @export
@@ -176,9 +177,10 @@ write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL){
 #' @name print.met
 #' @description Print a met file in a friendly way
 #' @param x an R object of class \sQuote{met}
+#' @param ... additional printing arguments
 #' @export
 #' 
-print.met <- function(x){
+print.met <- function(x,...){
   
   ## print the header and just head
   cat(attr(x, "filename"),"\n")
@@ -191,7 +193,7 @@ print.met <- function(x){
   cat(attr(x, "units"),"\n")
   if(!any(is.na(attr(x,"constants"))) && !is.null(attr(x,"constants"))) cat(attr(x, "constants"), "\n")
   
-  print(head(as.data.frame(x)))
+  print(utils::head(as.data.frame(x),...))
 }
 
 #' @title Perform imputation for missing data in a met file
@@ -234,14 +236,14 @@ impute_apsim_met <- function(met, method = c("approx","splines","mean"), verbose
 
   for(i in which.col.missing.values){
     if(method == "approx"){
-      imputed.values <- approx(x=seq_len(nrow(met)),
-                              y=met[[i]],
-                              xout=missing.rows[[i]])$y
+      imputed.values <- stats::approx(x=seq_len(nrow(met)),
+                                      y=met[[i]],
+                                      xout=missing.rows[[i]])$y
     }
     if(method == "splines"){
-      imputed.values <- spline(x=seq_len(nrow(met)),
-                               y=met[[i]],
-                               xout=missing.rows[[i]])$y
+      imputed.values <- stats::spline(x=seq_len(nrow(met)),
+                                      y=met[[i]],
+                                      xout=missing.rows[[i]])$y
     }
     if(method == "mean"){
       imputed.values <- mean(met[[i]], na.rm = TRUE)

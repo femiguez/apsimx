@@ -4,10 +4,12 @@
 \alias{print.met}
 \title{Printer-friendly version of a metfile}
 \usage{
-\method{print}{met}(x)
+\method{print}{met}(x, ...)
 }
 \arguments{
 \item{x}{an R object of class \sQuote{met}}
+
+\item{...}{additional printing arguments}
 }
 \description{
 Print a met file in a friendly way
