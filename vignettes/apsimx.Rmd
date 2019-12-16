@@ -416,31 +416,25 @@ The apsimx package supports inspection and editing of both file types, but XML i
 
 # Additional functions
 
-**apsim_version** displays which version(s) of APSIM(X) are available. For example,
+**apsim_version**: displays which version(s) of APSIM(X) are available. For example,
 
 ```{r apsim-verions-tail}
 ava <- apsim_version()
 aiu <- apsim_version(which = "inuse")
 ```
 
-# In Beta
-
-* edit_apsimx_batch (never tested)
+**edit_apsimx_batch**: Uses APSIM-X built-in functionality to edit parameters. In testing, it is slower than the other 'edit_apsimx*' functions.
 
 # To-Do
 
 * Still a bit more work to do to make 'inspect_apsim' and 'inspect_apsimx' more consistent. Need to add functionality for 'manager.child'
 
-* Add 'metadata' as a soil.child option and then make it possible to fully edit the soil information based on a 'soil_profile' object, which would require to create a function to validate 'soil_profile' objects. Possibly turning this into an S4 class, although most likely I will stay with S3.
+* Create the function 'edit_apsim_replace_soil_profile' for APSIM 'Classic'. Create and reaplce an APSIM soil profile out of SSURGO data for 'Classic'.
 
 * **inspect_apsimx_replacement** challenge this function with more complex
 examples
 
 * Add more tests using the 'CoverCrop example' (APSIM 'Classic'). This would be the motivation for writing a function for 'factorials'. 'edit_apsim_factorial'.
-
-* Create and reaplce an APSIM soil profile out of SSURGO data for 'Classic'
-
-* Add the ability to edit the SWIM module for 'Classic'
 
 * Include parameter estimation example for maize
 
@@ -448,20 +442,19 @@ examples
 
 Files in 'inst/extdata' and how they are used (ordered alphabetically):
 
-* **ames-10-19.met** (not sure if it is used, if it is not, I'll delete it)
-* **Ames.met** (used to run the Soybean.apsimx)
-* **Factorial.apsimx** (This file IS needed for the vignette.)
-* ISUAG (SSURGO files to test the ssurgo2sp function)
-* Maize_old.apsimx (Old-style 'xml' file used by APSIM-X)
-* maize-factorial.apsim (file that I might use to test the ability to inspect and edit factorial .apsim files). TODO: low priority
-* maize-manager-folder.apsimx (file I will use to test whether I need to modify inspect and edit functions when the management is inside a folder)
-* maize-soybean-rotation.apsim (example file with a maize and soybean rotation used in testing and in the 'inspect_apsim' file).
+* **ames-10-19.met**: not sure if it is used, if it is not, I'll delete it.
+* **Ames.met**: used to run the Soybean.apsimx.
+* **Factorial.apsimx**: This file IS needed for the vignette.
+* **ISUAG** (folder): SSURGO files to test the ssurgo2sp function.
+* **Maize_old.apsimx**: Old-style 'xml' file used by APSIM-X.
+* **maize-factorial.apsim** (file that I might use to test the ability to inspect and edit factorial .apsim files). TODO: low priority
+* **maize-manager-folder.apsimx**: file I will use to test whether I need to modify inspect and edit functions when the management is inside a folder.
+* **maize-soybean-rotation.apsim**: example file with a maize and soybean rotation used in testing and in the 'inspect_apsim' file.
 * **maize-swim.apsim**: example file with the SWIM module for testing (test_apsim_swim.R).
 * **Maize.apsimx**: This file is needed for the vignette.
 * **Maize.db**: This file is needed for the vignette.
 * **Maize.out**: This file is needed for the 'read_apsim' example.
 * **MaizeSoybean.apsimx**: This file is needed for the vignette and for testing in 'test_replacements.R'
-* **mets** (folder): Contains some of the met files distributed with APSIM-X (Plus 'Ames.met'), but it is also used for testing function 'read_apsim_met' (test_read_apims_met.R).
 * **Millet.apsim**: Millet example from APSIM 'Classic' for testing 'inspect_apsim' and used in the vignette.
 * **Millet.sim**: result from the Millet simulation. Not sure if it is needed.
 * **nasamets** (folder): files created using the 'nasapower' package for testing imputation 'impute_apsim_met'.

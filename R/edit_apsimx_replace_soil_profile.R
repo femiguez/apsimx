@@ -118,11 +118,30 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   soil.node0[wschn][[1]] <- soil.chemical.node
   soil.node[[1]]$Children <- soil.node0
   
+  ## Edit metadata
+  if(!is.null(soil.profile$metadata)){
+    soil.node.names <- names(soil.node[[1]])
+    skp.nms <- c("$type","Name","Children","IncludeInDocumentation","Enabled","ReadOnly")
+    for(i in soil.node.names){
+      if(i %in% skp.nms) next
+      if(i %in% names(soil.profile$metadata)){
+        soil.node[[1]][[i]] <- soil.profile$metadata[[i]]
+      }else{
+        if(i %in% c("RecordNumber","ApsoilNumber")){
+          soil.node[[1]][[i]] <- 0 
+        }else{
+          soil.node[[1]][[i]] <- NA  
+        }
+      }
+    }
+  }
   ## Replace the soil
+  ## 1. soil.node to core.zone.node
   core.zone.node[wsn] <- soil.node
-  
+  ## 2. core.one.node to parent.node
   parent.node[wcz][[1]]$Children <- core.zone.node
-  apsimx_json$Children[[1]]$Children <- parent.node
+  ## parent.node to core
+  apsimx_json$Children[[wcore]]$Children <- parent.node
   
   if(overwrite == FALSE){
     wr.path <- paste0(wrt.dir,"/",
@@ -134,7 +153,8 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   
   jsonlite::write_json(apsimx_json, path = wr.path, 
                        pretty = TRUE, digits = NA, 
-                       auto_unbox = TRUE, null = "null")
+                       auto_unbox = TRUE, null = "null",
+                       na = "null")
   
   if(verbose){
     cat("Created: ",wr.path,"\n")

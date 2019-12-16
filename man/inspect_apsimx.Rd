@@ -6,10 +6,10 @@
 \usage{
 inspect_apsimx(file = "", src.dir = ".", node = c("Clock", "Weather",
   "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager",
-  "Other"), soil.child = c("Water", "InitialWater", "Chemical",
-  "Physical", "Analysis", "SoilWater", "InitialN", "CERESSoilTemperature",
-  "Sample", "Nutrient", "Organic"), parm = NULL, digits = 3,
-  print.path = FALSE)
+  "Other"), soil.child = c("Metadata", "Water", "InitialWater",
+  "Chemical", "Physical", "Analysis", "SoilWater", "InitialN",
+  "CERESSoilTemperature", "Sample", "Nutrient", "Organic"), parm = NULL,
+  digits = 3, print.path = FALSE)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected (JSON)}

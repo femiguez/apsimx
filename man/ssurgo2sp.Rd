@@ -5,8 +5,8 @@
 \title{Take in \acronym{SSURGO} csv files and create a soil profile}
 \usage{
 ssurgo2sp(mapunit = NULL, component = NULL, chorizon = NULL,
-  nmapunit = 1, nsoil = 1, xout = NULL, soil.bottom = 200,
-  method = c("constant", "linear"), nlayers = 10)
+  mapunit.shp = NULL, nmapunit = 1, nsoil = 1, xout = NULL,
+  soil.bottom = 200, method = c("constant", "linear"), nlayers = 10)
 }
 \arguments{
 \item{mapunit}{mapunit \acronym{SSURGO} file}
@@ -14,6 +14,8 @@ ssurgo2sp(mapunit = NULL, component = NULL, chorizon = NULL,
 \item{component}{component \acronym{SSURGO} file}
 
 \item{chorizon}{chorizon \acronym{SSURGO} file}
+
+\item{mapunit.shp}{mapunit shapefile for creating metadata}
 
 \item{nmapunit}{number of mapunits to select}
 

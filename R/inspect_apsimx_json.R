@@ -18,6 +18,7 @@
 #' ex.dir <- auto_detect_apsimx_examples()
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Clock") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Weather")
+#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Metadata") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilWater") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Organic")
@@ -34,7 +35,7 @@
 inspect_apsimx <- function(file = "", src.dir = ".", 
                            node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                    "MicroClimate","Crop","Manager","Other"),
-                           soil.child = c("Water","InitialWater",
+                           soil.child = c("Metadata","Water","InitialWater",
                                           "Chemical","Physical","Analysis","SoilWater",
                                           "InitialN", "CERESSoilTemperature","Sample",
                                           "Nutrient","Organic"),
@@ -59,7 +60,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## Notice that the .apsimx extension will be added here
   file <- match.arg(file, file.names)
   
-  apsimx_json <- read_json(paste0(src.dir,"/",file))
+  apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
   
   parm.path.0 <- paste0(".",apsimx_json$Name) ## Root
   ## I think that everything I might want to look at 
@@ -123,15 +124,28 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     
     cat("Soil children:", soil.children.names,"\n")
     
-    ## Pick which soil component we want to look at
-    wsc <- grep(soil.child, soil.children.names)
-    if(length(wsc) == 0) stop("soil.child likely not present")
+    if(soil.child == "Metadata"){
+      parm.path <- parm.path.2.1
+      metadata <- NULL
+      for(i in names(soil.node[[1]])){
+        if(i %in% c("Name","Children","IncludeInDocumentation","Enabled","ReadOnly")) next
+        val <- as.character(ifelse(is.null(soil.node[[1]][[i]]),NA,soil.node[[1]][[i]]))
+        if(!is.na(val) && nchar(val) > options()$width-30) val <- paste(strtrim(val, options()$width-30),"...")
+        metadata <- rbind(metadata, data.frame(parm = i, value = val))
+      }
+      print(knitr::kable(metadata, longtable = FALSE))
+    }else{
+      ## Pick which soil component we want to look at
+      ## Which is not 'Metadata"
+      wsc <- grep(soil.child, soil.children.names)
+      if(length(wsc) == 0) stop("soil.child likely not present")
     
-    selected.soil.node.child <- soil.node[[1]]$Children[wsc]
+      selected.soil.node.child <- soil.node[[1]]$Children[wsc]
+    }
     
-    ## For some variables now it is the time to print
-    ## The code below is not strictly needed but it is here
-    ## in case I need a second level of soil in the future
+      ## For some variables now it is the time to print
+      ## The code below is not strictly needed but it is here
+      ## in case I need a second level of soil in the future
     first.level.soil <- c("Water","Physical",
                           "Chemical","Analysis","InitialWater",
                           "InitialN","SoilWater","Analysis",
@@ -217,7 +231,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       j <- j + 1
     }
     
-    print(kable(as.data.frame(mat), digits = digits))
+    print(knitr::kable(as.data.frame(mat), digits = digits))
   }
   
   if(node == "Manager"){
@@ -249,7 +263,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           }
         }
         cat("Name: ", selected.manager.node,"\n")
-        print(kable(as.data.frame(mat), digits = digits))
+        print(knitr::kable(as.data.frame(mat), digits = digits))
         cat("\n") 
       }
       

@@ -39,10 +39,10 @@
 #' @param water.table water table level (not used at the moment) (cm)
 #' @param soil.type might use it in the future for auto filling missing information
 #' @param crops name of crops being grown
-#' @param lonlat longitude and latitude for the soil profile
+#' @param metadata list with soil metadata. For possible parameters and values see an example of 'inspect_apsimx' with soil.child = "Metadata".
 #' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
 #' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
-#' If a != 0 and b != 0 then the equation is \code{a * soil.layer * exp(-b * soil.layer)}.  
+#' If a != 0 and b != 0 then the equation is \code{a*soil.layer*exp(-b*soil.layer)}.  
 #' @return a soil profile with class 'soil_profile' with elements 'soil' and 'crops' (for now)
 #' @export
 #' @examples 
@@ -78,7 +78,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                  water.table = 200, 
                                  soil.type = 0,
                                  crops = c("Maize","Soybean","Wheat"),
-                                 lonlat = c(NA,NA),
+                                 metadata = NULL,
                                  dist.parms = list(a = 0, b = 0.2)){
 
   if(!is.null(Depth) & !is.null(Thickness)){
@@ -362,7 +362,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
                      "DUL","SAT","KS","crop.XF","crop.KL","crop.LL",
                      "Carbon","SoilCNRatio", "FOM","FOM.CN","FBiom","FInert",
                      "NO3N","NH4N","PH")
-    ans <- list(soil=soil, crops = crops, lonlat = lonlat)
+    ans <- list(soil=soil, crops = crops, metadata = metadata)
     class(ans) <- "soil_profile"
     return(ans)
   }
@@ -491,3 +491,5 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
     print(gp)
   }
 }
+
+

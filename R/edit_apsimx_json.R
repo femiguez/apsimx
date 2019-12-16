@@ -67,7 +67,7 @@
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         node = c("Clock","Weather","Soil","SurfaceOrganicMatter","MicroClimate","Crop","Manager"),
-                        soil.child = c("Water","Organic","Physical","Analysis","Chemical","InitialWater","Sample"),
+                        soil.child = c("Metadata","Water","Organic","Physical","Analysis","Chemical","InitialWater","Sample"),
                         manager.child = NULL,
                         parm=NULL, value=NULL, 
                         overwrite = FALSE,
@@ -157,6 +157,20 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     soil.node <- core.zone.node[wsn]
     
     soil.node0 <- soil.node[[1]]$Children
+    
+    if(soil.child == "Metadata"){
+      edited.child <- soil.child
+      ## Perhaps too many possible metadata parms to list here?
+      metadata.parms <- c("RecordNumber", "ASCOrder", "ASCSubOrder", "SoilType",
+                          "LocalName", "Site", "NearestTown", "Region", 
+                          "State", "Country", "NaturalVegetation", "ApsoilNumber",
+                          "Latitude", "Longitude", "LocationAccuracy", "DataSource",
+                          "Comments")
+      if(!all(parm %in% metadata.parms)) stop("parm name(s) might be wrong")
+      for(i in parm){
+        soil.node[[1]][[parm[i]]] <- value[i]
+      }
+    }
   
     if(soil.child == "Water" || soil.child == "Physical"){
       edited.child <- soil.child
@@ -329,7 +343,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   if(verbose){
     cat("Edited (node): ",node, "\n")
     cat("Edited (child): ", edited.child,"\n")
-    cat("Edited parameter: ",parm, "\n")
+    cat("Edited parameters: ",parm, "\n")
     cat("New values: ",value, "\n")
     cat("Created: ",wr.path,"\n")
   }

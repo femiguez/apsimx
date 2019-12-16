@@ -93,7 +93,7 @@ if(run.inspect.print.path.tests){
   if(pp != ".Simulations.Simulation.Weather") 
     stop("Error in inspect_apsimx, Barley, Weather, print.path")
   pp <- inspect_apsimx(i, node = "Soil", src.dir = ex.dir, print.path = TRUE)
-  if(pp != ".Simulations.Simulation.Field.Soil.Water") 
+  if(pp != ".Simulations.Simulation.Field.Soil") 
     stop("Error in inspect_apsimx, Barley, Soil, Water, print.path")
   pp <- inspect_apsimx(i, node = "Soil", soil.child = "Water",
                        parm = "DUL", src.dir = ex.dir, print.path = TRUE)

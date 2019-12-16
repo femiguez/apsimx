@@ -46,7 +46,7 @@
 edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                        node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                 "MicroClimate","Crop","Manager","Other"),
-                       soil.child = c("Water","OrganicMatter", "Chemical",
+                       soil.child = c("Metadata","Water","OrganicMatter", "Chemical",
                                       "Analysis","InitialWater","Sample","SWIM"),
                        manager.child = NULL,
                        parm=NULL, value=NULL, 
@@ -103,6 +103,14 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   
   ## Editing the 'Soil' component
   if(node == "Soil"){
+    
+    if(soil.child == "Metadata"){
+      ## Not sure if there is minimum set of required parameters
+      parm.path <- paste0(".//Soil/",parm)
+      soil.metadata.node <- xml2::xml_find_first(apsim_xml, parm.path)
+      xml2::xml_set_text(soil.metadata.node, as.character(value))
+    }
+    
     if(soil.child == "Water"){
       ## First set of parameters are crop specific
       if(parm %in% c("LL","KL","XF")){

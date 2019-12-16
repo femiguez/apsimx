@@ -20,6 +20,7 @@
 #' ## Testing using 'Millet'
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Clock")
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Weather") 
+#' inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Metadata")
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Water")
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "OrganicMatter")
 #' inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Analysis")
@@ -33,7 +34,8 @@
 #' ## Testing with maize-soybean-rotation.apsim
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Clock")
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Weather")
-#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil")
+#' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil",
+#'               soil.child = "Metadata")
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", 
 #'                soil.child = "OrganicMatter")
 #' inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", 
@@ -73,7 +75,7 @@
 inspect_apsim <- function(file = "", src.dir = ".", 
                           node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
                                         "Crop","Manager","Other"),
-                          soil.child = c("Water","OrganicMatter", "Nitrogen",
+                          soil.child = c("Metadata","Water","OrganicMatter", "Nitrogen",
                                          "Analysis","InitialWater","Sample",
                                          "SWIM"),
                           parm = NULL,
@@ -108,8 +110,8 @@ inspect_apsim <- function(file = "", src.dir = ".",
     parm.path.0 <- ".//clock"
     parms <- c("start_date", "end_date")
     for(i in parms){
-      clock.node <- xml_find_first(apsim_xml, paste0(parm.path.0,"/",i))
-      cat(i,":",xml_text(clock.node),"\n")
+      clock.node <- xml2::xml_find_first(apsim_xml, paste0(parm.path.0,"/",i))
+      cat(i,":",xml2::xml_text(clock.node),"\n")
     }
     if(!missing(parm)){
       parm.path.1 <- paste0(parm.path.0,"/",parm)
@@ -118,11 +120,12 @@ inspect_apsim <- function(file = "", src.dir = ".",
   
   if(node == "Weather"){
     parm.path.0 <- ".//metfile/filename"
-    weather.filename.node <- xml_find_first(apsim_xml, parm.path.0)
-    cat("Met file:",(xml_text(weather.filename.node)),"\n")
+    weather.filename.node <- xml2::xml_find_first(apsim_xml, parm.path.0)
+    cat("Met file:",(xml2::xml_text(weather.filename.node)),"\n")
   }
   
   ## Extracting soil Depths
+  ## May be I should move this function to 'apsim_internals.R'
   ## t2d is "thickness" to "depth"
   t2d <- function(x){
     x2 <- c(0,x)/10 ## Divide by 10 to go from mm to cm
@@ -148,6 +151,25 @@ inspect_apsim <- function(file = "", src.dir = ".",
     cat("Soil Type: ",xml2::xml_text(xml2::xml_find_first(apsim_xml, ".//Soil/SoilType")),"\n")
     cat("Latitude: ",xml2::xml_text(xml2::xml_find_first(apsim_xml, ".//Soil/Latitude")),"\n")
     cat("Longitude: ",xml2::xml_text(xml2::xml_find_first(apsim_xml, ".//Soil/Longitude")),"\n")
+    
+    if(soil.child == "Metadata"){
+      metadata.parms <- c("SoilType","LocalName","Site","NearestTown","Region","State",
+                          "Country","ApsoilNumber","Latitude","Longitude","YearOfSampling",
+                          "DataSource","Comments","NaturalVegetation")
+      met.dat <- data.frame(parm = metadata.parms, value = NA)
+      j <- 1
+      for(i in metadata.parms){
+        parm.path.0 <- ".//Soil"
+        parm.path.1 <- paste0(parm.path.0,"/",i)
+        soil.metadata.node <- xml2::xml_find_first(apsim_xml, parm.path.1)
+        if(length(soil.metadata.node) > 0){
+          met.dat[j,1] <- i
+          met.dat[j,2] <- strtrim(xml2::xml_text(soil.metadata.node), options()$width - 35)
+          j <- j + 1
+        }
+      }
+      print(knitr::kable(stats::na.omit(met.dat)))
+    }
     
     if(soil.child == "Water"){
       ## Crop specific
@@ -474,7 +496,6 @@ inspect_apsim <- function(file = "", src.dir = ".",
     parm.path <- xml2::xml_path(xml2::xml_find_first(apsim_xml,paste0(parm.path.0,"/",parm)))
   }
     
-  
   if(print.path){
     if(is.null(parm.path.0)) stop("root parm path not found")
     parm.path <- parm.path.0

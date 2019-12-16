@@ -6,9 +6,9 @@
 \usage{
 inspect_apsim(file = "", src.dir = ".", node = c("Clock", "Weather",
   "Soil", "SurfaceOrganicMatter", "Crop", "Manager", "Other"),
-  soil.child = c("Water", "OrganicMatter", "Nitrogen", "Analysis",
-  "InitialWater", "Sample", "SWIM"), parm = NULL, digits = 3,
-  print.path = FALSE)
+  soil.child = c("Metadata", "Water", "OrganicMatter", "Nitrogen",
+  "Analysis", "InitialWater", "Sample", "SWIM"), parm = NULL,
+  digits = 3, print.path = FALSE)
 }
 \arguments{
 \item{file}{file ending in .apsim (Classic) to be inspected (XML)}

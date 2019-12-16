@@ -58,11 +58,6 @@ element in the array should have index 1 in the config file.
 The file will be upgraded to the latest file version as part of this
 process.
 }
-\note{
-The components that can be edited are restricted becuase this is better in preventing
-errors of editing unintended parts of the file. The disadvantage is that there is less flexibility
-compared to the similar function in the 'apsimr' package.
-}
 \examples{
 \dontrun{
 ## This example will read one of the examples distributed with APSIM-X

@@ -5,6 +5,7 @@
 #' @param mapunit mapunit \acronym{SSURGO} file
 #' @param component component \acronym{SSURGO} file
 #' @param chorizon chorizon \acronym{SSURGO} file
+#' @param mapunit.shp mapunit shapefile for creating metadata
 #' @param nmapunit number of mapunits to select
 #' @param nsoil number of soil components (within a mapunit) to consider
 #' @param xout vector for interpolation and extrapolation
@@ -49,11 +50,17 @@
 #'   
 #' }
 
-ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
+ssurgo2sp <- function(mapunit = NULL, component = NULL, 
+                      chorizon = NULL, mapunit.shp = NULL,
                       nmapunit = 1, nsoil = 1,
                       xout = NULL, soil.bottom = 200,
                       method = c("constant","linear"),
                       nlayers = 10){
+  
+  if(!requireNamespace("sf",quietly = TRUE)){
+    warning("sf is required for this function")
+    return(NULL)
+  }
   
   ## Select important variables from mapunit
   mapunit2 <- subset(mapunit, 
@@ -69,20 +76,28 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
   component2 <- subset(component, 
                        select = c("compname", "comppct.r",
                                   "slope.r", "drainagecl",
-                                  "elev.r", "taxsubgrp", "taxpartsize", 
+                                  "elev.r", "taxsubgrp", 
+                                  "taxpartsize", "taxclname",
+                                  "drainagecl","elev.r",
+                                  "slope.r","geomdesc",
                                   "mukey", "cokey"))
   component5 <- NULL
   for(i in mapunit3$mukey){
-    component3 <- component2["mukey" == i,]
+    component3 <- component2[component2$mukey == i,]
     component4 <- component3[order(component3$comppct.r, decreasing = TRUE),]
     ## This calculates the percent of the total acres in the area of interest
-    component4$acres.proportion <- mapunit3["mukey" == i,]$muacres.percent/100 * component4$comppct.r/100
+    component4$acres.proportion <- mapunit3[mapunit3$mukey == i,]$muacres.percent/100 * component4$comppct.r/100
     component4$compname.mukey <- as.factor(component4$compname):as.factor(component4$mukey)
+    lonlat <- colMeans(sf::st_coordinates(mapunit.shp["MUKEY" == i]))
+    mapunit.shp.d <- as.data.frame(mapunit.shp)
+    component4$state <- rep(unique(strtrim(as.character(mapunit.shp.d[mapunit.shp.d$MUKEY == i,"AREASYMBOL"]),2)),nrow(component4))
+    component4$longitude <- lonlat[1]
+    component4$latitude <- lonlat[2]
     component5 <- rbind(component5, component4[1:nsoil,])
   }
   
   ## Process chorizon
-  chorizon2 <- chorizon["cokey" %in% component5$cokey,]
+  chorizon2 <- chorizon[chorizon$cokey %in% component5$cokey,]
   chorizon3 <- subset(chorizon2, 
                       select = c("hzname", "hzdept.r", "hzdepb.r", 
                                  "hzthk.r", "sandtotal.r", "silttotal.r",
@@ -124,7 +139,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
   
   for(sz in 1:length(soil.names)){
     
-    one.soil <- chorizon3["cokey" == component5$cokey[sz],]
+    one.soil <- chorizon3[chorizon3$cokey == component5$cokey[sz],]
   
     soil.mat <- matrix(nrow = nlayers, ncol = length(vars))
   
@@ -152,14 +167,26 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL, chorizon = NULL,
     }
     soil.mat[,1] <- sva$x
     soil.d <- as.data.frame(soil.mat)
-    attr(soil.d, which = "cokey") <- component5$cokey[sz]
-    attr(soil.d, which = "acres.percent") <- component5$acres.proportion[sz] * 100
-    attr(soil.d, which = "component.percent") <- component5$comppct.r[sz]
+    ## Attributes will be modeled after APSIM metadata
+    attr(soil.d, which = "SoilType") <- as.character(soil.names[sz])
+    attr(soil.d, which = "State") <- component5$state[sz]
+    attr(soil.d, which = "Country") <- "USA"
+    attr(soil.d, which = "Longitude") <- component5$longitude[1]
+    attr(soil.d, which = "Latitude") <- component5$latitude[1]
+    attr(soil.d, which = "DataSource") <- paste("R package FedData, function get_ssurgo and R package apsimx function ssurgo2sp. Timestamp",Sys.time())
+    attr(soil.d, which = "Comments") <- paste("cokey =",component5$cokey[sz],
+                                              "- acres percent =",component5$acres.proportion[sz] * 100,
+                                              "- component percent =",component5$comppct.r[sz],
+                                              "- taxonomic classification name =",as.character(component5$taxclname)[sz],
+                                              "- drainage class =", as.character(component5$drainagecl)[sz],
+                                              "- elevation =", component5$elev.r[sz],
+                                              "- slope =", component5$slope.r[sz],
+                                              "- geomdesc =", as.character(component5$geomdesc)[sz])
     names(soil.d) <- vars
     ## Store in list
     soil.list[[sz]] <- soil.d
   }
-  
+
   return(soil.list)
 }
 
