@@ -41,6 +41,7 @@ This is simply a script that prints the relevant parameters which are likely to 
 ex.dir <- auto_detect_apsimx_examples()
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Clock") 
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Weather")
+inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Metadata") 
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilWater") 
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Organic")

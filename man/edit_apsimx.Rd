@@ -6,10 +6,11 @@
 \usage{
 edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
   "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-  "Manager"), soil.child = c("Water", "Organic", "Physical", "Analysis",
-  "Chemical", "InitialWater", "Sample"), manager.child = NULL,
-  parm = NULL, value = NULL, overwrite = FALSE,
-  edit.tag = "-edited", parm.path = NULL, verbose = TRUE)
+  "Manager"), soil.child = c("Metadata", "Water", "Organic", "Physical",
+  "Analysis", "Chemical", "InitialWater", "Sample"),
+  manager.child = NULL, parm = NULL, value = NULL,
+  overwrite = FALSE, edit.tag = "-edited", parm.path = NULL,
+  verbose = TRUE)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be edited (JSON)}

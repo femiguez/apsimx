@@ -6,9 +6,9 @@
 \usage{
 edit_apsim(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
   "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-  "Manager", "Other"), soil.child = c("Water", "OrganicMatter",
-  "Chemical", "Analysis", "InitialWater", "Sample", "SWIM"),
-  manager.child = NULL, parm = NULL, value = NULL,
+  "Manager", "Other"), soil.child = c("Metadata", "Water",
+  "OrganicMatter", "Chemical", "Analysis", "InitialWater", "Sample",
+  "SWIM"), manager.child = NULL, parm = NULL, value = NULL,
   overwrite = FALSE, edit.tag = "-edited", parm.path = NULL,
   verbose = TRUE)
 }

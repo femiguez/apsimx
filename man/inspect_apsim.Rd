@@ -42,6 +42,7 @@ extd.dir <- system.file("extdata", package = "apsimx")
 ## Testing using 'Millet'
 inspect_apsim("Millet", src.dir = extd.dir, node = "Clock")
 inspect_apsim("Millet", src.dir = extd.dir, node = "Weather") 
+inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Metadata")
 inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Water")
 inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "OrganicMatter")
 inspect_apsim("Millet", src.dir = extd.dir, node = "Soil", soil.child = "Analysis")
@@ -55,7 +56,8 @@ inspect_apsim("Millet", src.dir = extd.dir, node = "Crop", parm = list("sow",7))
 ## Testing with maize-soybean-rotation.apsim
 inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Clock")
 inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Weather")
-inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil")
+inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil",
+              soil.child = "Metadata")
 inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", 
                soil.child = "OrganicMatter")
 inspect_apsim("maize-soybean-rotation", src.dir = extd.dir, node = "Soil", 
