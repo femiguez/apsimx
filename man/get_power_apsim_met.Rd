@@ -16,13 +16,13 @@ get_power_apsim_met(lonlat, dates, wrt.dir = ".", filename = NULL)
 \item{filename}{file name for writing out to disk}
 }
 \description{
-Uses 'get_power' from the 'nasapower' package to download data to create an APSIM met file.
+Uses '\sQuote{get_power} from the \sQuote{nasapower} package to download data to create an APSIM met file.
 }
 \details{
 This function requires the \sQuote{nasapower} pacakge.
 
 If the filename is not provided it will not write the file to disk, 
-but it will return an object of class 'met'. This is useful in case manipulation
+but it will return an object of class \sQuote{met}. This is useful in case manipulation
 is required before writing to disk.
 }
 \examples{

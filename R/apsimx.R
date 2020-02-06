@@ -444,7 +444,7 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
 #' @param exe.path path to apsim executable. White spaces are not allowed.
 #' @param examples.path path to apsim examples
 #' @param warn.versions logical. warning if multiple versions of APSIM-X are detected.
-#' @param war.find.apsimx logical. By default a warning will be thrown if APSIM-X is not found. 
+#' @param warn.find.apsimx logical. By default a warning will be thrown if APSIM-X is not found. 
 #' If 'exe.path' is 'NA' an error will be thrown instead.
 #' @note It is possible that APSIM-X is installed in some alternative location other than the 
 #'       defaults ones. Guessing this can be difficult and then the auto_detect functions might
@@ -452,7 +452,7 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
 #'       one but it will issue a warning. Suppress the warning by setting warn.versions = FLASE.
 #' @export
 #' @examples 
-#'\donttest{
+#'\dontrun{
 #' names(apsimx.options)
 #' apsimx_options(exe.path = "some-new-path-to-executable")
 #' apsimx.options$exe.path
@@ -476,7 +476,7 @@ apsimx_options <- function(exe.path = NA, examples.path = NA,
 #'              which would have possible undesriable consequences. 
 #' @export
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' names(apsimx.options)
 #' apsimx_options(exe.path = "some-new-path-to-executable")
 #' apsimx.options$exe.path

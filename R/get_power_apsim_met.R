@@ -2,14 +2,14 @@
 #' This function requires the \sQuote{nasapower} pacakge.
 #'
 #' @title Get POWER data for an APSIM met file
-#' @description Uses 'get_power' from the 'nasapower' package to download data to create an APSIM met file.
+#' @description Uses '\sQuote{get_power} from the \sQuote{nasapower} package to download data to create an APSIM met file.
 #' @name get_power_apsim_met
 #' @param lonlat Longitude and latitude vector
 #' @param dates date ranges
 #' @param wrt.dir write directory
 #' @param filename file name for writing out to disk
 #' @details If the filename is not provided it will not write the file to disk, 
-#' but it will return an object of class 'met'. This is useful in case manipulation
+#' but it will return an object of class \sQuote{met}. This is useful in case manipulation
 #' is required before writing to disk.
 #' @export
 #' @examples 

@@ -408,7 +408,7 @@ soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
 #' @param x object of class 'soil_profile'.
 #' @param ... additional plotting arguments (none use at the moment).
 #' @param property "all" for plotting all soil properties, "water" for just SAT, DUL and LL15
-#' @export
+#' @export 
 plot.soil_profile <- function(x,..., property = c("all", "water","BD",
                                               "AirDry","LL15","DUL","SAT",
                                               "KS","crop.XF","crop.KL",

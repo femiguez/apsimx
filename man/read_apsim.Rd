@@ -23,7 +23,7 @@ read 'output' databases created by APSIM runs (.out and .sim). One file at a tim
 Read APSIM generated .out files
 }
 \examples{
-\donttest{
+\dontrun{
 extd.dir <- system.file("extdata", package = "apsimx")
 ans <- read_apsim("Maize", src.dir = extd.dir, value = "report")
 }

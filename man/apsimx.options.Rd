@@ -18,7 +18,7 @@ Environment which can store the path to the executable, warning settings and
 Environment which stores APSIM-X options
 }
 \examples{
-\donttest{
+\dontrun{
 names(apsimx.options)
 apsimx_options(exe.path = "some-new-path-to-executable")
 apsimx.options$exe.path

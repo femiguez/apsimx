@@ -23,7 +23,7 @@ This function creates a temporary copy of the example file distributed with APSI
 This function creates a new column 'Date' which is in the R 'Date' format which is convenient for graphics.
 }
 \examples{
-\donttest{
+\dontrun{
 ## Only run these if you have APSIM 'Classic' installed (Windows only)
 millet <- apsim_example("Millet")
 potato <- apsim_example("Potato")
