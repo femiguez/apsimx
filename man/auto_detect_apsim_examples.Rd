@@ -16,7 +16,7 @@ simple function to detect where APSIM "Classic" examples are located
 Auto detect where APSIM (7.x) "Classic" examples are located
 }
 \examples{
-\dontrun{
+\donttest{
 ex.dir <- auto_detect_apsim_examples()
 }
 

@@ -54,6 +54,7 @@ apsimx <- function(file = "", src.dir=".",
   }
   
   if(.Platform$OS.type == "windows"){
+    ## Should probably delete the line below
     if(src.dir != ".") stop("In Windows you can only run a file from the current directory.")
     run.strng <- paste0(ada," ",file.name.path)
     shell(cmd = run.strng, translate = TRUE, intern = TRUE)
@@ -87,7 +88,25 @@ auto_detect_apsimx <- function(){
     if(grepl("Darwin", Sys.info()[["sysname"]])){
       laf <- list.files("/Applications/")
       find.apsim <- grep("APSIM",laf)
-      if(length(find.apsim) == 0) stop("APSIM-X not found")
+      ## This deals with the fact that APSIM-X might not be present but perhaps a
+      ## custom version is available
+      if(length(find.apsim) == 0){
+        ## I only throw a warning because maybe the user has a custom version of APSIM-X only
+        if(!is.na(apsimx::apsim.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
+          warning("APSIM-X not found, but a custom one is present")
+        }else{
+          stop("APSIM-X not found and no 'exe.path' exists.")
+        }
+      }
+      ## If only one version of APSIM-X is present
+      ## APSIM executable
+      st1 <- "/Applications/"
+      st3 <- "/Contents/Resources/Bin/Models.exe" 
+      if(length(find.apsim) == 1){
+        apsimx.name <- laf[find.apsim]
+        apsimx_dir <- paste0(st1,apsimx.name,st3)
+      }
+      ## If there is more than one version of APSIM-X
       if(length(find.apsim) > 1){
         ## Originally I was sorting by #issue number but this
         ## does not give you the latest version
@@ -100,23 +119,32 @@ auto_detect_apsimx <- function(){
            warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:",newest.version))
         }
-        ## apsimx.name <- grep(newest.version, laf[find.apsim], value = TRUE)
         apsimx.name <- newest.version
-      }else{
-        apsimx.name <- laf[find.apsim]
+        apsimx_dir <- paste0(st1,apsimx.name,st3)
       }
-      ## APSIM executable
-      st1 <- "/Applications/"
-      st3 <- "/Contents/Resources/Bin/Models.exe" 
-      apsimx_dir <- paste0(st1,apsimx.name,st3)
     }
   
     if(grepl("Linux", Sys.info()[["sysname"]])){
       
       find.apsim <- grep("apsim", list.files("/usr/local/lib"))
-      if(length(find.apsim) == 0) stop("APSIM-X not found")
+      ## What if length equals zero?
+      if(length(find.apsim) == 0){
+        ## I only throw a warning because maybe the user has a custom version of APSIM-X only
+        if(!is.na(apsimx::apsim.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
+          warning("APSIM-X not found, but a custom one is present")
+        }else{
+          stop("APSIM-X not found and no 'exe.path' exists.")
+        }
+      }
+      ## APSIM executable
+      st1 <- "/usr/local/lib/apsim/"
+      st3 <- "/Bin/Models.exe" 
+      if(length(find.apsim) == 1){
+        apsimx.versions <- list.files("/usr/local/lib/apsim")
+        apsimx.name <- apsimx.versions
+        apsimx_dir <- paste0(st1,apsimx.name,st3)
+      }
       
-      apsimx.versions <- list.files("/usr/local/lib/apsim")
       ## Note: Apparently Debian does not tolerate multiple 
       ## versions of APSIM-X installed, date 2019-12-12
       if(length(apsimx.versions) > 1){
@@ -127,13 +155,8 @@ auto_detect_apsimx <- function(){
                     Choosing the newest one:",newest.version))
         }
         apsimx.name <- newest.version
-      }else{
-        apsimx.name <- apsimx.versions
+        apsimx_dir <- paste0(st1,apsimx.name,st3)
       }
-      ## APSIM executable
-      st1 <- "/usr/local/lib/apsim/"
-      st3 <- "/Bin/Models.exe" 
-      apsimx_dir <- paste0(st1,apsimx.name,st3)
     }
   }
   
@@ -141,28 +164,42 @@ auto_detect_apsimx <- function(){
     st1 <- "C:/PROGRA~1/"
     laf <- list.files(st1)
     find.apsim <- grep("APSIM",laf)
-    if(length(find.apsim) == 0) stop("APSIM-X not found")
-    apsimx.versions <- laf[find.apsim]
+    
+    ## What if length equals zero?
+    if(length(find.apsim) == 0){
+      ## I only throw a warning because maybe the user has a custom version of APSIM-X only
+      if(!is.na(apsimx::apsim.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
+        warning("APSIM-X not found, but a custom one is present")
+      }else{
+        stop("APSIM-X not found and no 'exe.path' exists.")
+      }
+    }
+    
+    st3 <- "/Bin/Models.exe" 
+    if(length(find.apsim) == 1){
+      apsimx.versions <- laf[find.apsim]
+      apsimx.name <- apsimx.versions
+      apsimx_dir <- paste0(st1,apsimx.name,st3)
+    }
+    
     if(length(find.apsim) > 1){
-      newest.version <- laf[find.apsim][length(find.apsim)]
+      apsimx.versions <- laf[find.apsim]
+      newest.version <- apsimx.versions[length(find.apsim)]
       if(apsimx::apsimx.options$warn.versions){
         warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:",newest.version))
       }
       apsimx.name <- newest.version
-    }else{
-      apsimx.name <- laf[find.apsim]
+      apsimx_dir <- paste0(st1,apsimx.name,st3)
     }
-    ## APSIM executable
-    st3 <- "/Bin/Models.exe" 
-    apsimx_dir <- paste0(st1,apsimx.name,st3)
   }
   
   if(!is.na(apsimx::apsimx.options$exe.path)){
-    ## Windows paths can contain white spaces which are
+    ## Windows paths might contain white spaces which are
     ## problematic when running them at the command line
-    ## shQuote might be useful for this purpose
-    apsimx_dir <- shQuote(apsimx::apsimx.options$exe.path)
+    if(grepl("\\s", apsimx::apsimx.options$exe.path))
+      stop("White spaces are not allowed in APSIM-X executable path")
+    apsimx_dir <- apsimx::apsimx.options$exe.path
   }
   return(apsimx_dir)
 }
@@ -183,12 +220,15 @@ auto_detect_apsimx <- function(){
 auto_detect_apsimx_examples <- function(){
   
   if(.Platform$OS.type == "unix"){
-    apsim.name <- NULL
+    apsim.name <- NULL # Why did I create this NULL variable?
     if(grepl("Darwin", Sys.info()[["sysname"]])){
       ## If APSIM-X is installed it will be in /Applications/
       ## look into Applications folder
       laf <- list.files("/Applications/")
       find.apsim <- grep("APSIM",laf)
+      
+      if(length(find.apsim) == 0) stop("APSIM-X examples not found")
+      
       if(length(find.apsim) > 1){
         newest.version <- laf[find.apsim][length(find.apsim)]
         if(apsimx::apsimx.options$warn.versions){
@@ -208,6 +248,8 @@ auto_detect_apsimx_examples <- function(){
     if(grepl("Linux", Sys.info()[["sysname"]])){
       st1 <- "/usr/local/lib/apsim/"
       apsimx.versions <- list.files(st1) 
+      ## In Ubuntu it looks like you can only have one version 
+      ## of APSIM-X installed
       if(length(apsimx.versions) > 1){
         len.fa <- length(find.apsim)
         newest.version <- apsimx.versions[find.apsim]
@@ -227,6 +269,9 @@ auto_detect_apsimx_examples <- function(){
       st1 <- "C:/PROGRA~1"
       laf <- list.files(st1)
       find.apsim <- grep("APSIM",laf)
+      
+      if(length(find.apsim) == 0) stop("APSIM-X not found")
+      
       apsimx.versions <- laf[find.apsim]
       if(length(apsimx.versions) > 1){
         newest.version <- laf[find.apsim][length(find.apsim)]
@@ -244,7 +289,10 @@ auto_detect_apsimx_examples <- function(){
   }
   
   if(!is.na(apsimx::apsimx.options$examples.path)){
-    ## Not sure if I need shQuote here
+    ## I dislike white spaces in paths!
+    ## I'm looking at you Windows!
+    if(grepl("\\s", apsimx::apsimx.options$examples.path))
+      stop("White spaces are not allowed in examples.path")
     apsimx_ex_dir <- apsimx::apsimx.options$examples.path
   }
   return(apsimx_ex_dir)
@@ -393,37 +441,42 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
 #' @title Setting some options for the package
 #' @name apsimx_options
 #' @description Set the path to the APSIM-X executable, examples and warning suppression. 
-#' @param exe.path path to apsim executable
+#' @param exe.path path to apsim executable. White spaces are not allowed.
 #' @param examples.path path to apsim examples
 #' @param warn.versions logical. warning if multiple versions of APSIM-X are detected.
+#' @param war.find.apsimx logical. By default a warning will be thrown if APSIM-X is not found. 
+#' If 'exe.path' is 'NA' an error will be thrown instead.
 #' @note It is possible that APSIM-X is installed in some alternative location other than the 
 #'       defaults ones. Guessing this can be difficult and then the auto_detect functions might
 #'       fail. Also, if multiple versions of APSIM-X are installed apsimx will choose the newest
 #'       one but it will issue a warning. Suppress the warning by setting warn.versions = FLASE.
 #' @export
 #' @examples 
-#'\dontrun{
+#'\donttest{
 #' names(apsimx.options)
 #' apsimx_options(exe.path = "some-new-path-to-executable")
 #' apsimx.options$exe.path
 #' }
 
-apsimx_options <- function(exe.path = NA, examples.path = NA, warn.versions = TRUE){
+apsimx_options <- function(exe.path = NA, examples.path = NA, 
+                           warn.versions = TRUE, warn.find.apsimx = TRUE){
   assign('exe.path', exe.path, apsimx.options)
   assign('examples.path', examples.path, apsimx.options)
   assign('warn.versions', warn.versions, apsimx.options)
+  assign('warn.find.apsimx', warn.find.apsimx, apsimx.options)
 }
 
 #' Environment which stores APSIM-X options
 #' 
 #' @title Environment which stores APSIM-X options
 #' @name apsimx.options
-#' @description Environment which can store the path to the executable and where examples are located.
+#' @description Environment which can store the path to the executable, warning settings and 
+#'              where examples are located.
 #'              Creating an environment avoids the use of global variables or other similar practices
 #'              which would have possible undesriable consequences. 
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' names(apsimx.options)
 #' apsimx_options(exe.path = "some-new-path-to-executable")
 #' apsimx.options$exe.path
@@ -434,6 +487,7 @@ apsimx.options <- new.env(parent = emptyenv())
 assign('exe.path', NA, apsimx.options)
 assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
+assign('warn.find.apsimx', TRUE, apsimx.options)
 
 #' Import packages needed for apsimx to work correctly
 #' @import DBI jsonlite knitr RSQLite xml2 

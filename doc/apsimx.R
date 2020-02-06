@@ -187,11 +187,6 @@ inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
                            node = "Base", node.child = "Clock",
                            display.available = TRUE)
 
-## ----filetypes-----------------------------------------------------------
-apsimx_filetype("Wheat.apsimx", src.dir = extd.dir)
-## This is an older XML 'Maize' file which is no longer distributed
-apsimx_filetype("Maize_old", src.dir = extd.dir)
-
 ## ----apsim-verions-tail--------------------------------------------------
 ava <- apsim_version()
 aiu <- apsim_version(which = "inuse")

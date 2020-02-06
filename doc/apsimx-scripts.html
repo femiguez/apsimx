@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -13,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2019-12-04" />
+<meta name="date" content="2020-01-29" />
 
 <title>apsimx: writing scripts</title>
 
@@ -21,41 +20,67 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 
 </style>
 <script>
@@ -82,7 +107,189 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -96,7 +303,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">apsimx: writing scripts</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2019-12-04</h4>
+<h4 class="date">2020-01-29</h4>
 
 
 
@@ -109,7 +316,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Let’s see what is needed to run APSIM-X at the command line.</p>
 <div id="windows" class="section level2">
 <h2>Windows</h2>
-<p>In Windows if you use the current (2019-12-04) version of the installer the program will be, most likely, in:</p>
+<p>In Windows if you use the current (2020-01-29) version of the installer the program will be, most likely, in:</p>
 <p><strong>C:\Program Files\APSIM2019.10.04.4236\Bin\Models.exe</strong></p>
 <p>Notice that for each new build of APSIM-X the path will change. After ‘APSIM’ is the year, month, date and version separated by a period. In this case ‘2019.10.04.4236’. In the folder ‘Bin’(for ‘binary’) there are many libraries (‘.dll files’) and some executables. The ‘Models.exe’ is the one that can run .apsimx files.</p>
 <p>When trying to invoke that line at the command line, the space after ‘Program’ is a problem. There are some possible solutions. One is to add quotations (for example see ‘shQuote’ function in R). Another option is to use Windows short name paths, which in this case, for ‘Program Files’ is ‘PROGRA~1’ (but this can change). If running the program from R, for example, the separator needs to be either a double backslash ‘\\’ or a forward slash ‘/’. So one example would be:</p>
@@ -120,8 +327,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><strong>C:/PROGRA~1/APSIM2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx</strong>.</p>
 <p>Notice the “./”, without this, it will likely not work under Windows. However, the previous string cannot be passed directly to a Windows shell. It needs to be translated with the forward slashes (“/”) converted to backslashes (“\”).</p>
 <p>So to run the previous command in Windows from within R this is one way:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">run.strng &lt;-<span class="st"> &quot;C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx&quot;</span>
-<span class="kw">shell</span>(<span class="dt">cmd =</span> run.strng, <span class="dt">translate =</span> <span class="ot">TRUE</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">run.strng &lt;-<span class="st"> &quot;C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx&quot;</span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">shell</span>(<span class="dt">cmd =</span> run.strng, <span class="dt">translate =</span> <span class="ot">TRUE</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>Note: it seems that, in Windows, it is only possible to run files in the current directory. So, for example, if the file ‘Wheat.apsimx’ was in subdirectory ‘./myApsimXsimulations’ and you want to replace the ‘./Wheat.apsimx’ above with ‘./myApsimXsimulations/Wheat.apsimx’ this does not work. I do not know yet if there is a possible workaround.</p>
 </div>
 <div id="unix-mac-or-linux-debian" class="section level2">
@@ -157,12 +364,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><strong>mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe Wheat.apsimx</strong></p>
 <p>but the line above which points to the current directory (“./”) did work.</p>
 <p>So to run this from within R, the following is one possibility</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Mac
-run.string.mac &lt;-<span class="st"> &quot;mono /Applications/APSIM2019.10.04.4236.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx&quot;</span>
-<span class="kw">system</span>(<span class="dt">command =</span> run.string.mac, <span class="dt">intern =</span> <span class="ot">TRUE</span>)
-## Debian
-run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx&quot;</span>
-<span class="kw">system</span>(<span class="dt">command =</span> run.string.debian, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co">## Mac</span></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">run.string.mac &lt;-<span class="st"> &quot;mono /Applications/APSIM2019.10.04.4236.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx&quot;</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">system</span>(<span class="dt">command =</span> run.string.mac, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co">## Debian</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx&quot;</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw">system</span>(<span class="dt">command =</span> run.string.debian, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <p>As mentioned before, if the simulation is successful, a database will be written to the current directory (where the file “Wheat.apsimx” is located in the previous example). In this case it will be a file with the name ‘Wheat.db’.</p>
 </div>
 <div id="functions-in-the-apsimx-package" class="section level2">
@@ -186,8 +393,8 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.10
 <div id="session-information" class="section level3">
 <h3>Session information</h3>
 <p>Displaying below specific information related to when the vignette was built.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sessionInfo</span>()</code></pre></div>
-<pre><code>## R version 3.6.1 (2019-07-05)
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
+<pre><code>## R version 3.6.2 (2019-12-12)
 ## Platform: x86_64-apple-darwin15.6.0 (64-bit)
 ## Running under: macOS High Sierra 10.13.6
 ## 
@@ -202,34 +409,33 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.10
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] apsimx_1.69
+## [1] apsimx_1.78
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.2        pillar_1.4.2      compiler_3.6.1   
-##  [4] prettyunits_1.0.2 remotes_2.1.0     tools_3.6.1      
-##  [7] zeallot_0.1.0     bit_1.1-14        testthat_2.2.1   
-## [10] digest_0.6.20     pkgbuild_1.0.3    pkgload_1.0.2    
-## [13] jsonlite_1.6      tibble_2.1.3      RSQLite_2.1.2    
-## [16] memoise_1.1.0     evaluate_0.14     pkgconfig_2.0.2  
+##  [1] Rcpp_1.0.2        pillar_1.4.2      compiler_3.6.2   
+##  [4] prettyunits_1.0.2 remotes_2.1.0     tools_3.6.2      
+##  [7] zeallot_0.1.0     testthat_2.2.1    digest_0.6.20    
+## [10] pkgbuild_1.0.3    pkgload_1.0.2     bit_1.1-14       
+## [13] jsonlite_1.6      tibble_2.1.3      memoise_1.1.0    
+## [16] evaluate_0.14     RSQLite_2.1.2     pkgconfig_2.0.2  
 ## [19] rlang_0.4.0       cli_1.1.0         DBI_1.0.0        
 ## [22] rstudioapi_0.10   yaml_2.2.0        xfun_0.8         
 ## [25] xml2_1.2.1        withr_2.1.2       stringr_1.4.0    
 ## [28] knitr_1.23        vctrs_0.2.0       desc_1.2.0       
-## [31] htmlwidgets_1.3   fs_1.3.1          devtools_2.2.0   
-## [34] bit64_0.9-7       rprojroot_1.3-2   DT_0.8           
-## [37] glue_1.3.1        R6_2.4.0          processx_3.4.1   
-## [40] rmarkdown_1.14    sessioninfo_1.1.1 blob_1.2.0       
-## [43] callr_3.3.1       magrittr_1.5      backports_1.1.4  
-## [46] ps_1.3.0          ellipsis_0.2.0.1  htmltools_0.3.6  
-## [49] usethis_1.5.1     assertthat_0.2.1  stringi_1.4.3    
-## [52] crayon_1.3.4</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.info</span>()[[<span class="st">&quot;sysname&quot;</span>]]</code></pre></div>
+## [31] fs_1.3.1          devtools_2.2.1    rprojroot_1.3-2  
+## [34] bit64_0.9-7       glue_1.3.1        R6_2.4.0         
+## [37] processx_3.4.1    rmarkdown_2.0     sessioninfo_1.1.1
+## [40] blob_1.2.0        callr_3.3.1       magrittr_1.5     
+## [43] backports_1.1.4   ps_1.3.0          ellipsis_0.3.0   
+## [46] htmltools_0.3.6   usethis_1.5.1     assertthat_0.2.1 
+## [49] stringi_1.4.3     crayon_1.3.4</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">Sys.info</span>()[[<span class="st">&quot;sysname&quot;</span>]]</a></code></pre></div>
 <pre><code>## [1] &quot;Darwin&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.info</span>()[[<span class="st">&quot;release&quot;</span>]]</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">Sys.info</span>()[[<span class="st">&quot;release&quot;</span>]]</a></code></pre></div>
 <pre><code>## [1] &quot;17.7.0&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Sys.info</span>()[[<span class="st">&quot;version&quot;</span>]]</code></pre></div>
-<pre><code>## [1] &quot;Darwin Kernel Version 17.7.0: Sun Jun  2 20:31:42 PDT 2019; root:xnu-4570.71.46~1/RELEASE_X86_64&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(.Platform<span class="op">$</span>OS.type <span class="op">==</span><span class="st"> &quot;unix&quot;</span>) <span class="kw">system</span>(<span class="dt">command =</span> <span class="st">&quot;mono --version&quot;</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">Sys.info</span>()[[<span class="st">&quot;version&quot;</span>]]</a></code></pre></div>
+<pre><code>## [1] &quot;Darwin Kernel Version 17.7.0: Sun Dec  1 19:19:56 PST 2019; root:xnu-4570.71.63~1/RELEASE_X86_64&quot;</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="cf">if</span>(.Platform<span class="op">$</span>OS.type <span class="op">==</span><span class="st"> &quot;unix&quot;</span>) <span class="kw">system</span>(<span class="dt">command =</span> <span class="st">&quot;mono --version&quot;</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>##  [1] &quot;Mono JIT compiler version 5.18.1.3 (2018-08/fdb26b0a445 Wed Mar 20 10:02:02 EDT 2019)&quot;  
 ##  [2] &quot;Copyright (C) 2002-2014 Novell, Inc, Xamarin Inc and Contributors. www.mono-project.com&quot;
 ##  [3] &quot;\tTLS:           &quot;                                                                      
@@ -242,7 +448,7 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.10
 ## [10] &quot;\tLLVM:          yes(600)&quot;                                                              
 ## [11] &quot;\tSuspend:       preemptive&quot;                                                            
 ## [12] &quot;\tGC:            sgen (concurrent by default)&quot;</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">R.version</code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">R.version</a></code></pre></div>
 <pre><code>##                _                           
 ## platform       x86_64-apple-darwin15.6.0   
 ## arch           x86_64                      
@@ -250,14 +456,14 @@ run.string.debian &lt;-<span class="st"> &quot;mono /usr/local/lib/apsim/2019.10
 ## system         x86_64, darwin15.6.0        
 ## status                                     
 ## major          3                           
-## minor          6.1                         
+## minor          6.2                         
 ## year           2019                        
-## month          07                          
-## day            05                          
-## svn rev        76782                       
+## month          12                          
+## day            12                          
+## svn rev        77560                       
 ## language       R                           
-## version.string R version 3.6.1 (2019-07-05)
-## nickname       Action of the Toes</code></pre>
+## version.string R version 3.6.2 (2019-12-12)
+## nickname       Dark and Stormy Night</code></pre>
 </div>
 <div id="links" class="section level3">
 <h3>Links</h3>

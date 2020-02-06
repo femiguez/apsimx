@@ -1,10 +1,10 @@
 ---
-title: "apsimx: An R package for APSIM Next Generation"
+title: "apsimx: An R package for APSIM Next Generation (and Classic)"
 author: "Fernando Miguez"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{apsimx: An R package for APSIM Next Generation}
+  %\VignetteIndexEntry{apsimx: An R package for APSIM Next Generation (and Classic)}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -48,7 +48,7 @@ See the following for details
 
 This package has been tested on:
 
-**Mac**: ApsimX version 4236
+**Mac**: ApsimX version (2020-01-29) 4007 (R 3.6.2)
 
 **Debian**: ApsimX version 4236
 

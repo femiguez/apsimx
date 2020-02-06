@@ -143,7 +143,7 @@ auto_detect_apsim <- function(){
 #' @return will create a directory pointing to APSIM "Classic" distributed examples
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' ex.dir <- auto_detect_apsim_examples()
 #' }
 #' 
@@ -196,7 +196,7 @@ auto_detect_apsim_examples <- function(){
 #'          the user has read/write permissions in that directory.
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' ## Only run these if you have APSIM 'Classic' installed (Windows only)
 #' millet <- apsim_example("Millet")
 #' potato <- apsim_example("Potato")
@@ -266,7 +266,7 @@ apsim_example <- function(example = "Millet", silent = FALSE){
 #' @param date.format format for adding 'Date' column 
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' ans <- read_apsim("Maize", src.dir = extd.dir, value = "report")
 #' }
@@ -316,7 +316,7 @@ read_apsim <- function(file = "", src.dir = ".",
   file.name.summary <- paste0(src.dir,"/",file,".sum")
   sum.file <- readLines(con = file.name.summary)
   
-  if(grepl("Date",hdr)){
+  if(any(grepl("Date",hdr))){
     out.file$Date <- try(as.Date(out.file$Date, format = date.format), silent=TRUE)
   }
   ## Return list

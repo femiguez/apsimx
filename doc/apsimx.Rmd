@@ -48,7 +48,7 @@ See the following for details
 
 This package has been tested on:
 
-**Mac**: ApsimX version 4236
+**Mac**: ApsimX version (2020-01-29) 4007
 
 **Debian**: ApsimX version 4236
 
@@ -156,7 +156,7 @@ inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
 
 # Proposed workflow
 
-It is recommended that you start by creating an .apsim(x) file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The functions included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM-X and R, but it is made possible with these tools. This is the proposed workflow:
+It is recommended that you start by creating an .apsim(x) file using the GUI. In following steps the goal could be, for example, to either perform sensitivity or uncertainty analysis using R. The functions included in this package are aimed at simplifying the process of running a simulation, changing the value of a variable/parameter and running the model again iteratively. Writing complex scripts requires a high level knowledge of both APSIM and R, but it is made possible with these tools. This is the proposed workflow:
 
 1. Create a simulation using the APSIM GUI
 2. Identify variables/parameters that you want to modify (they need to be exposed in the .apsimx (JSON) or .apsim (XML) file)
@@ -396,7 +396,7 @@ I won't be running the 'Factorial' example here, but if you are interested this 
 
 ## Obtaining weather data
 
-One of the easiest ways of generating weather data (".met"" files) is by using the 'nasapower' R package (https://github.com/ropensci/nasapower). See function 'create_met'. In addition in this package the following utilities are provided:
+One of the easiest ways of generating weather data (".met" files) is by using the 'nasapower' R package (https://github.com/ropensci/nasapower). See function 'create_met'. In addition in this package the following utilities are provided:
 
 * **read_apsim_met**: read an APSIM met file into R with S3 class 'met'.
 * **write_apsim_met**: write an APSIM met file from an object of class 'met'.
@@ -412,40 +412,56 @@ In the USA, soil data can be obtained through the 'FedData' R package (https://g
 
 APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x, 'Classic'. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files are less verbose and they are gaining widespread adoption. All distributed APSIM-X examples are 'JSON' now.
 
-The apsimx package supports inspection and editing of both file types, but XML is for 'Classic' only and JSON is for APSIM-X. In most instances the parameters that are likely to need inspection and editing are supported, but more features will be added in the future as needed. It is possible to test whether a file is XML or JSON (note: this is fragile and might not even be needed in the future).
-
-```{r filetypes}
-apsimx_filetype("Wheat.apsimx", src.dir = extd.dir)
-## This is an older XML 'Maize' file which is no longer distributed
-apsimx_filetype("Maize_old", src.dir = extd.dir)
-```
+The apsimx package supports inspection and editing of both file types, but XML is for 'Classic' only and JSON is for APSIM-X. In most instances the parameters that are likely to need inspection and editing are supported, but more features will be added in the future as needed. 
 
 # Additional functions
 
-**apsim_version** displays which version(s) of APSIM(X) are available. For example,
+**apsim_version**: displays which version(s) of APSIM(X) are available. For example,
 
 ```{r apsim-verions-tail}
 ava <- apsim_version()
 aiu <- apsim_version(which = "inuse")
 ```
 
-# In Beta
-
-* edit_apsimx_batch (never tested)
+**edit_apsimx_batch**: Uses APSIM-X built-in functionality to edit parameters. In testing, it is slower than the other 'edit_apsimx*' functions.
 
 # To-Do
 
-* Still a bit more work to do to make 'inspect_apsim' and 'inspect_apsimx' more consistent.
+* Still a bit more work to do to make 'inspect_apsim' and 'inspect_apsimx' more consistent. Need to add functionality for 'manager.child'
+
+* Create the function 'edit_apsim_replace_soil_profile' for APSIM 'Classic'. Create and reaplce an APSIM soil profile out of SSURGO data for 'Classic'.
 
 * **inspect_apsimx_replacement** challenge this function with more complex
 examples
 
 * Add more tests using the 'CoverCrop example' (APSIM 'Classic'). This would be the motivation for writing a function for 'factorials'. 'edit_apsim_factorial'.
 
-* Create and reaplce an APSIM soil profile out of SSURGO data for 'Classic'
-
-* Add the ability to edit the SWIM module for 'Classic'
-
 * Include parameter estimation example for maize
+
+# Appendix
+
+Files in 'inst/extdata' and how they are used (ordered alphabetically):
+
+* **ames-10-19.met**: not sure if it is used, if it is not, I'll delete it.
+* **Ames.met**: used to run the Soybean.apsimx.
+* **Factorial.apsimx**: This file IS needed for the vignette.
+* **ISUAG** (folder): SSURGO files to test the ssurgo2sp function.
+* **Maize_old.apsimx**: Old-style 'xml' file used by APSIM-X.
+* **maize-factorial.apsim** (file that I might use to test the ability to inspect and edit factorial .apsim files). TODO: low priority
+* **maize-manager-folder.apsimx**: file I will use to test whether I need to modify inspect and edit functions when the management is inside a folder.
+* **maize-soybean-rotation.apsim**: example file with a maize and soybean rotation used in testing and in the 'inspect_apsim' file.
+* **maize-swim.apsim**: example file with the SWIM module for testing (test_apsim_swim.R).
+* **Maize.apsimx**: This file is needed for the vignette.
+* **Maize.db**: This file is needed for the vignette.
+* **Maize.out**: This file is needed for the 'read_apsim' example.
+* **MaizeSoybean.apsimx**: This file is needed for the vignette and for testing in 'test_replacements.R'
+* **Millet.apsim**: Millet example from APSIM 'Classic' for testing 'inspect_apsim' and used in the vignette.
+* **Millet.sim**: result from the Millet simulation. Not sure if it is needed.
+* **nasamets** (folder): files created using the 'nasapower' package for testing imputation 'impute_apsim_met'.
+* **Soybean.apsimx**: Soybean example for APSIM-X. Used in 'test_replacements.R'.
+* **Wheat.apsimx**: This file is used in the vignette.
+* **Wheat.db**: This file is used in the vignette.
+* **WheatRye.apsimx**: This file is used in 'test_replacements.R'.
+
 
 

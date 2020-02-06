@@ -5,14 +5,17 @@
 \title{Setting some options for the package}
 \usage{
 apsimx_options(exe.path = NA, examples.path = NA,
-  warn.versions = TRUE)
+  warn.versions = TRUE, warn.find.apsimx = TRUE)
 }
 \arguments{
-\item{exe.path}{path to apsim executable}
+\item{exe.path}{path to apsim executable. White spaces are not allowed.}
 
 \item{examples.path}{path to apsim examples}
 
 \item{warn.versions}{logical. warning if multiple versions of APSIM-X are detected.}
+
+\item{war.find.apsimx}{logical. By default a warning will be thrown if APSIM-X is not found. 
+If 'exe.path' is 'NA' an error will be thrown instead.}
 }
 \description{
 Set the path to the APSIM-X executable, examples and warning suppression.
@@ -27,7 +30,7 @@ It is possible that APSIM-X is installed in some alternative location other than
       one but it will issue a warning. Suppress the warning by setting warn.versions = FLASE.
 }
 \examples{
-\dontrun{
+\donttest{
 names(apsimx.options)
 apsimx_options(exe.path = "some-new-path-to-executable")
 apsimx.options$exe.path
