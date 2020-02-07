@@ -37,7 +37,10 @@ get_daymet_apsim_met(lonlat, years, wrt.dir = ".", filename = NULL,
 
 \item{force.redo}{see FedData::get_daymet}
 
-\item{cleanup}{whether to delete download directories (default is FALSE)}
+\item{cleanup}{whether to delete download directories (default is FALSE). 
+If the intention is for cleanup to delete all the files, \sQuote{raw.dir} 
+and \sQuote{extraction.dir} should be supplied, supplying a sinlge name, 
+such as 'RAW' and 'EXTRACTION'.}
 }
 \description{
 Uses \sQuote{get_daymet} from the \sQuote{FedData} package to download data to create an APSIM met file.

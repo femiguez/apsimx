@@ -15,7 +15,10 @@
 #' @param raw.dir see FedData::get_daymet
 #' @param extraction.dir see FedData::get_daymet
 #' @param force.redo see FedData::get_daymet
-#' @param cleanup whether to delete download directories (default is FALSE)
+#' @param cleanup whether to delete download directories (default is FALSE). 
+#' If the intention is for cleanup to delete all the files, \sQuote{raw.dir} 
+#' and \sQuote{extraction.dir} should be supplied, supplying a sinlge name, 
+#' such as 'RAW' and 'EXTRACTION'.
 #' @details If the filename is not provided it will not write the file to disk, 
 #' but it will return an object of class 'met'. This is useful in case manipulation
 #' is required before writing to disk. The variable \sQuote{srad} as downloaded from
