@@ -12,9 +12,9 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2020-01-29" />
+<meta name="date" content="2020-02-07" />
 
-<title>apsimx: An R package for APSIM Next Generation</title>
+<title>apsimx: An R package for APSIM Next Generation (and Classic)</title>
 
 
 
@@ -301,11 +301,42 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 
 
-<h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation</h1>
+<h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation (and Classic)</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2020-01-29</h4>
+<h4 class="date">2020-02-07</h4>
 
 
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#background-information">Background information</a></li>
+<li><a href="#installing-apsim-x">Installing APSIM-X</a></li>
+<li><a href="#r-functions-for-apsim-x">R functions for APSIM-X</a></li>
+<li><a href="#r-functions-for-apsim-classic-7.x---only-for-windows">R functions for APSIM ‘Classic’ (7.x) - Only for Windows</a></li>
+</ul></li>
+<li><a href="#using-apsimx">Using ‘apsimx’</a><ul>
+<li><a href="#running-a-built-in-example-with-apsimx_example">Running a built-in example with ‘apsimx_example’</a></li>
+<li><a href="#inspecting-a-file-with-inspect_apsimx-why">Inspecting a file with ‘inspect_apsimx’: Why?</a></li>
+<li><a href="#inspecting-and-editing-the-maize-example">Inspecting and Editing the ‘Maize’ example</a></li>
+</ul></li>
+<li><a href="#proposed-workflow">Proposed workflow</a><ul>
+<li><a href="#wheat-example-apsim-x">Wheat Example (APSIM-X)</a></li>
+<li><a href="#millet-example-apsim-classic">Millet example (APSIM ‘Classic’)</a></li>
+</ul></li>
+<li><a href="#advanced-examples">Advanced Examples</a><ul>
+<li><a href="#inspecting-a-replacement-component">Inspecting a ‘Replacement’ component</a></li>
+<li><a href="#editing-a-replacement">Editing a ‘Replacement’</a></li>
+<li><a href="#inspecting-a-factorial">Inspecting a Factorial</a></li>
+</ul></li>
+<li><a href="#apsim-x-inputs-weather-and-soil">APSIM-X Inputs: Weather and Soil</a><ul>
+<li><a href="#obtaining-weather-data">Obtaining weather data</a></li>
+</ul></li>
+<li><a href="#file-type-or-file-format-details">File Type (or File Format) Details</a></li>
+<li><a href="#additional-functions">Additional functions</a></li>
+<li><a href="#to-do">To-Do</a></li>
+<li><a href="#appendix">Appendix</a></li>
+</ul>
+</div>
 
 <pre><code>## OS: Darwin 
 ## APSIM-X version date: 2020-01-29
@@ -325,7 +356,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p><a href="https://apsimnextgeneration.netlify.com/">APSIM-X</a></p>
 <p><a href="https://www.sciencedirect.com/science/article/pii/S1364815217311921">Holzworth et al. (2018)</a></p>
 <p>This package has been tested on:</p>
-<p><strong>Mac</strong>: ApsimX version (2020-01-29) 4007</p>
+<p><strong>Mac</strong>: ApsimX version (2020-01-29) 4007 (R 3.6.2)</p>
 <p><strong>Debian</strong>: ApsimX version 4236</p>
 <p><strong>Windows</strong>: ApsimX version 4236</p>
 </div>
@@ -1000,13 +1031,14 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h1>APSIM-X Inputs: Weather and Soil</h1>
 <div id="obtaining-weather-data" class="section level2">
 <h2>Obtaining weather data</h2>
-<p>One of the easiest ways of generating weather data (“.met” files) is by using the ‘nasapower’ R package (<a href="https://github.com/ropensci/nasapower" class="uri">https://github.com/ropensci/nasapower</a>). See function ‘create_met’. In addition in this package the following utilities are provided:</p>
+<p>One of the easiest ways of generating weather data (“.met” files) is by using the ‘nasapower’ (<a href="https://github.com/ropensci/nasapower" class="uri">https://github.com/ropensci/nasapower</a>) or ‘FedData’ (<a href="https://github.com/ropensci/FedData" class="uri">https://github.com/ropensci/FedData</a>) packages. See function ‘nasapower::create_met’. In addition in this package the following utilities are provided:</p>
 <ul>
 <li><strong>read_apsim_met</strong>: read an APSIM met file into R with S3 class ‘met’.</li>
 <li><strong>write_apsim_met</strong>: write an APSIM met file from an object of class ‘met’.</li>
 <li><strong>check_apsim_met</strong>: check for reasonable values for met variables.</li>
 <li><strong>impute_apsim_met</strong>: impute missing values using linear interpolation, splines or the mean.</li>
-<li><strong>get_power_apsim_met</strong>: (requires the ‘nasapower’ package). Fetch data and create a ‘met’ R object and write a met file to disk.</li>
+<li><strong>get_power_apsim_met</strong>: (requires the ‘nasapower’ package). Fetch data and create a ‘met’ R object and (optionally) write a met file to disk.</li>
+<li><strong>get_daymet_apsim_met</strong>: (requires the ‘FedData’ package). Fetch data and create a ‘met’ R object and (optionally) write a met file to disk.</li>
 </ul>
 <p>Note that similar utilities are available in the ‘APSIM’ package (loadMet, prepareMet, checkMet, writeMetFile) for reading, preparing, checking and writing a met file, but not for imputing.</p>
 <p>In the USA, soil data can be obtained through the ‘FedData’ R package (<a href="https://github.com/ropensci/FedData" class="uri">https://github.com/ropensci/FedData</a>) by using the function ‘get_ssurgo’. I have developed helper functions ‘ssurgo2sp’ for conversion from ‘SSURGO’ files to a soil profile and ‘apsimx_soil_profile’ for generating a soil profile that can be used in APSIM-X. Finally, the function ‘edit_apsimx_replace_soil_profile’ will batch replace the soil profile created by ‘apsimx_soil_profile’ in a designated ‘.apsimx’ file. I will be working on a more concrete tutorial soon.</p>

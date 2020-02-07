@@ -2,7 +2,9 @@
 title: "apsimx: An R package for APSIM Next Generation (and Classic)"
 author: "Fernando Miguez"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{apsimx: An R package for APSIM Next Generation (and Classic)}
   %\VignetteEngine{knitr::rmarkdown}

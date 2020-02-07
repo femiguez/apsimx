@@ -1,10 +1,12 @@
 ---
-title: "apsimx: An R package for APSIM Next Generation"
+title: "apsimx: An R package for APSIM Next Generation (and Classic)"
 author: "Fernando Miguez"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
-  %\VignetteIndexEntry{apsimx: An R package for APSIM Next Generation}
+  %\VignetteIndexEntry{apsimx: An R package for APSIM Next Generation (and Classic)}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -48,7 +50,7 @@ See the following for details
 
 This package has been tested on:
 
-**Mac**: ApsimX version (2020-01-29) 4007
+**Mac**: ApsimX version (2020-01-29) 4007 (R 3.6.2)
 
 **Debian**: ApsimX version 4236
 
@@ -396,13 +398,14 @@ I won't be running the 'Factorial' example here, but if you are interested this 
 
 ## Obtaining weather data
 
-One of the easiest ways of generating weather data (".met" files) is by using the 'nasapower' R package (https://github.com/ropensci/nasapower). See function 'create_met'. In addition in this package the following utilities are provided:
+One of the easiest ways of generating weather data (".met" files) is by using the 'nasapower' (https://github.com/ropensci/nasapower) or 'FedData' (https://github.com/ropensci/FedData) packages. See function 'nasapower::create_met'. In addition in this package the following utilities are provided:
 
 * **read_apsim_met**: read an APSIM met file into R with S3 class 'met'.
 * **write_apsim_met**: write an APSIM met file from an object of class 'met'.
 * **check_apsim_met**: check for reasonable values for met variables.
 * **impute_apsim_met**: impute missing values using linear interpolation, splines or the mean.
-* **get_power_apsim_met**: (requires the 'nasapower' package). Fetch data and create a 'met' R object and write a met file to disk.
+* **get_power_apsim_met**: (requires the 'nasapower' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
+* **get_daymet_apsim_met**: (requires the 'FedData' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
 
 Note that similar utilities are available in the 'APSIM' package (loadMet, prepareMet, checkMet, writeMetFile) for reading, preparing, checking and writing a met file, but not for imputing.
 
