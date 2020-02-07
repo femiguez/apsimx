@@ -9,7 +9,7 @@ source see: https://daymet.ornl.gov/
 }
 \usage{
 get_daymet_apsim_met(lonlat, years, wrt.dir = ".", filename = NULL,
-  width.height = c(0.01, 0.01), template, label = NULL,
+  width.height = c(0.001, 0.001), template, label = NULL,
   elements = NULL, raw.dir = "./RAW/DAYMET",
   extraction.dir = paste0("./EXTRACTIONS/", label, "/DAYMET"),
   force.redo = FALSE, cleanup = FALSE)
@@ -23,7 +23,7 @@ get_daymet_apsim_met(lonlat, years, wrt.dir = ".", filename = NULL,
 
 \item{filename}{file name for writing out to disk}
 
-\item{width.height}{width and height of the cropped area}
+\item{width.height}{width and height of the cropped area (default 0.001, 0.001)}
 
 \item{template}{A Raster or Spatial object to serve as a template for cropping (see FedData::get_daymet).}
 

@@ -8,7 +8,7 @@
 #' @param years a numeric vector of years to extract
 #' @param wrt.dir write directory
 #' @param filename file name for writing out to disk
-#' @param width.height width and height of the cropped area
+#' @param width.height width and height of the cropped area (default 0.001, 0.001)
 #' @param template A Raster or Spatial object to serve as a template for cropping (see FedData::get_daymet).
 #' @param label a character string naming the area (see FedData::get_daymet)
 #' @param elements see FedData::get_daymet
@@ -40,7 +40,7 @@
 
 get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".", 
                                  filename=NULL, 
-                                 width.height = c(1e-2, 1e-2), 
+                                 width.height = c(1e-3, 1e-3), 
                                  template, 
                                  label = NULL, 
                                  elements = NULL, 
@@ -91,6 +91,7 @@ get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".",
   
   ## Process year and dates
   dmet.dates <-  gsub(".","-",gsub("X","\\1",names(dmet0$dayl)), fixed = TRUE)
+  dmet.doy <- as.numeric(format(as.Date(dmet.dates), "%j"))
   dmet.year <- as.numeric(format(as.Date(dmet.dates), "%Y"))  
   ## Process max and min temperature
   dmet.maxt <- apply(raster::as.array(dmet0$tmax), 3, FUN = mean)
@@ -106,7 +107,7 @@ get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".",
   ## Process snow water equivalent
   dmet.swe <- apply(raster::as.array(dmet0$swe), 3, FUN = mean)
   
-  dmet <- data.frame(dmet.year, dmet.dates, dmet.maxt, dmet.tmin, dmet.srad.total, dmet.prcp, dmet.vp, dmet.swe)
+  dmet <- data.frame(dmet.year, dmet.doy, dmet.maxt, dmet.tmin, dmet.srad.total, dmet.prcp, dmet.vp, dmet.swe)
   
   names(dmet) <- c("year","day","maxt","mint","radn","rain","vp","swe")
   
@@ -115,7 +116,7 @@ get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".",
   comments <- paste("!data from DayMet obtained through FedDdata R pacakge. retrieved: ",Sys.time())
   
   attr(dmet, "filename") <- filename
-  attr(dmet, "site") <- sub(".met","", filename, fixed = TRUE)
+  attr(dmet, "site") <- paste("!site = ", sub(".met","", filename, fixed = TRUE))
   attr(dmet, "latitude") <- paste("latitude =",lonlat[2])
   attr(dmet, "longitude") <- paste("longitude =",lonlat[1])
   attr(dmet, "tav") <- paste("tav =",mean(colMeans(dmet[,c("maxt","mint")],na.rm=TRUE),na.rm=TRUE))

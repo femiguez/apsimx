@@ -61,7 +61,7 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
   comments <- paste("!data from nasapower R pacakge. retrieved: ",Sys.time())
     
   attr(pwr, "filename") <- filename
-  attr(pwr, "site") <- sub(".met","", filename, fixed = TRUE)
+  attr(pwr, "site") <- paste("!site = ", sub(".met","", filename, fixed = TRUE))
   attr(pwr, "latitude") <- paste("latitude =",lonlat[2])
   attr(pwr, "longitude") <- paste("longitude =",lonlat[1])
   attr(pwr, "tav") <- paste("tav =",mean(colMeans(pwr[,c("maxt","mint")],na.rm=TRUE),na.rm=TRUE))
