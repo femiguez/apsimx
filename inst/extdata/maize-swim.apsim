@@ -1,0 +1,1620 @@
+<folder version="37" creator="Apsim 7.9-r4044" name="simulations-canisteo-corn">
+  <factorial name="Factorials">
+    <settings />
+    <active>0</active>
+  </factorial>
+  <folder name="LongTerm-IA-corn">
+    <simulation name="IA-CC_Canisteo_Cover">
+      <metfile name="met">
+        <filename name="filename" input="yes">boone-10-19.met</filename>
+      </metfile>
+      <clock>
+        <start_date type="date" description="Enter the start date of the simulation">01/01/2010</start_date>
+        <end_date type="date" description="Enter the end date of the simulation">09/11/2019</end_date>
+      </clock>
+      <summaryfile />
+      <area name="paddock">
+        <Soil name="CL (Canisteo No209)">
+          <RecordNumber>0</RecordNumber>
+          <SoilType>Canisteo</SoilType>
+          <Region>Renville</Region>
+          <State>Minnesota</State>
+          <Country>US</Country>
+          <ApsoilNumber>209</ApsoilNumber>
+          <Latitude>44.7892</Latitude>
+          <Longitude>-95.2114</Longitude>
+          <YearOfSampling>2015</YearOfSampling>
+          <DataSource>Original data by http://websoilsurvey.sc.egov.usda.gov/App/HomePage.htm 
+Profile developed by Integrated Cropping Systems Lab, Department of Agronomy, ISU
+</DataSource>
+          <Comments>The Canisteo series consists of very deep, poorly and very poorly drained soils that formed in calcareous, loamy till or in a thin mantle of loamy or silty sediments and the underlying calcareous, loamy till. These soils are on rims of depressions, depressions and flats on moraines or till plains. Slope ranges from 0 to 2 percent. Mean air annual temperature is about 9 degrees C. Mean annual precipitation is about 785 millimeters. 
+
+TAXONOMIC CLASS: Fine-loamy, mixed, superactive, calcareous, mesic Typic Endoaquolls 
+
+TYPICAL PEDON: Canisteo clay loam, on a nearly level to slightly convex slope, on a ground moraine, in a cultivated field. (Colors are for moist soil unless otherwise noted.) 
+
+Ap--0 to 25 centimeters inches; black (N 2/0) clay loam, very dark gray (N 3/0) dry; weak medium subangular blocky structure; friable; about 2 percent gravel; strongly effervescent; slightly alkaline; abrupt smooth boundary. 
+
+A--25 to 46 centimeters; very dark gray (N 3/0) clay loam, dark gray (N 4/0) dry; moderate very fine subangular blocky structure; friable; about 2 percent gravel; strongly effervescent; slightly alkaline; clear smooth boundary. 
+
+Bkg1--46 to 61 centimeters; olive gray (5Y 5/2) loam; weak medium subangular blocky structure; friable; few light gray (2.5Y 7/2) calcium carbonates on faces of peds; few fine prominent olive (5Y 5/6) iron concentrations; about 3 percent gravel; strongly effervescent; moderately alkaline; clear smooth boundary. 
+
+Bkg2--61 to 99 centimeters; light olive gray (5Y 6/2) loam; weak medium subangular blocky structure; friable; few light gray (2.5Y 7/2) calcium carbonates on faces of peds; common fine prominent light olive brown (2.5Y 5/6) iron concentrations; about 3 percent gravel; slightly effervescent; slightly alkaline; clear smooth boundary. 
+
+Cg1--99 to 165 centimeters; gray (5Y 6/1) loam; massive; friable; common medium prominent light olive brown (2.5Y 5/4) iron concentrations; about 5 percent gravel; slightly effervescent; slightly alkaline; clear smooth boundary. 
+
+Cg2--165 to 203 centimeters; gray (5Y 6/1) loam; massive; friable; few dark yellowish brown (10YR 4/6) iron concretions in pores; many medium prominent dark yellowish brown (10YR 4/6) iron concentrations; about 5 percent gravel; slightly effervescent; slightly alkaline. 
+
+TYPE LOCATION: Major Land Resource Area (MLRA) 103-Central Iowa and Minnesota Till Prairies, Waseca County, Minnesota subset; about 4.5 miles south and 3 miles west of Waseca; located about 1,800 feet south and 200 feet west of the northeast corner of section 22, T. 108 N., R. 22 W.; USGS Morristown quadrangle; lat. 44 degrees 8 minutes 52 seconds N. and long. 93 degrees 26 minutes 50 seconds W., NAD 83. </Comments>
+          <Water>
+            <Thickness>
+              <double>250</double>
+              <double>250</double>
+              <double>40</double>
+              <double>40</double>
+              <double>190</double>
+              <double>190</double>
+              <double>280</double>
+              <double>280</double>
+              <double>60</double>
+            </Thickness>
+            <BD>
+              <double>1.4</double>
+              <double>1.4</double>
+              <double>1.425</double>
+              <double>1.425</double>
+              <double>1.4</double>
+              <double>1.4</double>
+              <double>1.525</double>
+              <double>1.525</double>
+              <double>1.525</double>
+            </BD>
+            <AirDry>
+              <double>0.2106</double>
+              <double>0.234</double>
+              <double>0.212</double>
+              <double>0.212</double>
+              <double>0.137</double>
+              <double>0.137</double>
+              <double>0.154</double>
+              <double>0.154</double>
+              <double>0.154</double>
+            </AirDry>
+            <LL15>
+              <double>0.234</double>
+              <double>0.234</double>
+              <double>0.212</double>
+              <double>0.212</double>
+              <double>0.137</double>
+              <double>0.137</double>
+              <double>0.154</double>
+              <double>0.154</double>
+              <double>0.154</double>
+            </LL15>
+            <DUL>
+              <double>0.345</double>
+              <double>0.345</double>
+              <double>0.33</double>
+              <double>0.33</double>
+              <double>0.272</double>
+              <double>0.272</double>
+              <double>0.29</double>
+              <double>0.29</double>
+              <double>0.29</double>
+            </DUL>
+            <SAT>
+              <double>0.421698113207547</double>
+              <double>0.421698113207547</double>
+              <double>0.412264150943396</double>
+              <double>0.412264150943396</double>
+              <double>0.421698113207547</double>
+              <double>0.421698113207547</double>
+              <double>0.31</double>
+              <double>0.32</double>
+              <double>0.31</double>
+            </SAT>
+            <KS>
+              <double>792.566983578219</double>
+              <double>792.566983578219</double>
+              <double>792.566983578219</double>
+              <double>792.566983578219</double>
+              <double>792.566983578219</double>
+              <double>792.566983578219</double>
+              <double>792.567</double>
+              <double>1</double>
+              <double>0.001</double>
+            </KS>
+            <BDMetadata>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string />
+            </BDMetadata>
+            <AirDryMetadata>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string />
+            </AirDryMetadata>
+            <LL15Metadata>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string />
+            </LL15Metadata>
+            <DULMetadata>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string />
+            </DULMetadata>
+            <SATMetadata>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string />
+            </SATMetadata>
+            <SoilCrop name="maize">
+              <Thickness>
+                <double>250</double>
+                <double>250</double>
+                <double>40</double>
+                <double>40</double>
+                <double>190</double>
+                <double>190</double>
+                <double>280</double>
+                <double>280</double>
+                <double>60</double>
+              </Thickness>
+              <LL>
+                <double>0.234</double>
+                <double>0.234</double>
+                <double>0.212</double>
+                <double>0.212</double>
+                <double>0.137</double>
+                <double>0.137</double>
+                <double>0.154</double>
+                <double>0.154</double>
+                <double>0.154</double>
+              </LL>
+              <KL>
+                <double>0.08</double>
+                <double>0.0689312427787588</double>
+                <double>0.0622323195124101</double>
+                <double>0.060594519803683</double>
+                <double>0.0559352299604039</double>
+                <double>0.0489522014539961</double>
+                <double>0.04</double>
+                <double>0.03</double>
+                <double>0</double>
+              </KL>
+              <XF>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>0</double>
+              </XF>
+              <LLMetadata>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string />
+              </LLMetadata>
+            </SoilCrop>
+            <SoilCrop name="soybean">
+              <Thickness>
+                <double>250</double>
+                <double>250</double>
+                <double>40</double>
+                <double>40</double>
+                <double>190</double>
+                <double>190</double>
+                <double>280</double>
+                <double>280</double>
+                <double>60</double>
+              </Thickness>
+              <LL>
+                <double>0.234</double>
+                <double>0.234</double>
+                <double>0.212</double>
+                <double>0.212</double>
+                <double>0.137</double>
+                <double>0.137</double>
+                <double>0.154</double>
+                <double>0.154</double>
+                <double>0.154</double>
+              </LL>
+              <KL>
+                <double>0.08</double>
+                <double>0.0689312427787588</double>
+                <double>0.0622323195124101</double>
+                <double>0.060594519803683</double>
+                <double>0.0559352299604039</double>
+                <double>0.0489522014539961</double>
+                <double>0.04</double>
+                <double>0.03</double>
+                <double>0.03</double>
+              </KL>
+              <XF>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </XF>
+              <LLMetadata>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string />
+              </LLMetadata>
+            </SoilCrop>
+            <SoilCrop name="wheat">
+              <Thickness>
+                <double>250</double>
+                <double>250</double>
+                <double>40</double>
+                <double>40</double>
+                <double>190</double>
+                <double>190</double>
+                <double>280</double>
+                <double>280</double>
+                <double>60</double>
+              </Thickness>
+              <LL>
+                <double>0.234</double>
+                <double>0.234</double>
+                <double>0.212</double>
+                <double>0.212</double>
+                <double>0.137</double>
+                <double>0.137</double>
+                <double>0.154</double>
+                <double>0.154</double>
+                <double>0.154</double>
+              </LL>
+              <KL>
+                <double>0.08</double>
+                <double>0.07</double>
+                <double>0.06</double>
+                <double>0.06</double>
+                <double>0.06</double>
+                <double>0.05</double>
+                <double>0.04</double>
+                <double>0.03</double>
+                <double>0.03</double>
+              </KL>
+              <XF>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </XF>
+            </SoilCrop>
+          </Water>
+          <SoilOrganicMatter>
+            <RootCN>45</RootCN>
+            <RootWt>1000</RootWt>
+            <SoilCN>13</SoilCN>
+            <EnrACoeff>7.4</EnrACoeff>
+            <EnrBCoeff>0.2</EnrBCoeff>
+            <Thickness>
+              <double>250</double>
+              <double>250</double>
+              <double>40</double>
+              <double>40</double>
+              <double>190</double>
+              <double>190</double>
+              <double>280</double>
+              <double>280</double>
+            </Thickness>
+            <OC>
+              <double>3.48837209302326</double>
+              <double>3.48837209302326</double>
+              <double>1.74418604651163</double>
+              <double>1.74418604651163</double>
+              <double>0.436046511627907</double>
+              <double>0.436046511627907</double>
+              <double>0.145348837209302</double>
+              <double>0.145348837209302</double>
+            </OC>
+            <OCMetadata>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+            </OCMetadata>
+            <FBiom>
+              <double>0.035949989713</double>
+              <double>0.0139799958852</double>
+              <double>0.01105899430786</double>
+              <double>0.01029699389638</double>
+              <double>0.01</double>
+              <double>0.01</double>
+              <double>0.01</double>
+              <double>0.01</double>
+            </FBiom>
+            <FInert>
+              <double>0.421600054864</double>
+              <double>0.624800164592</double>
+              <double>0.7416402276856</double>
+              <double>0.7721202441448</double>
+              <double>0.8</double>
+              <double>0.8</double>
+              <double>0.8</double>
+              <double>0.86297623920704</double>
+            </FInert>
+            <OCUnits>Total</OCUnits>
+          </SoilOrganicMatter>
+          <Analysis>
+            <Thickness>
+              <double>250</double>
+              <double>250</double>
+              <double>40</double>
+              <double>40</double>
+              <double>190</double>
+              <double>190</double>
+              <double>280</double>
+              <double>280</double>
+            </Thickness>
+            <Texture>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+            </Texture>
+            <MunsellColour>
+              <string />
+              <string />
+              <string />
+              <string />
+              <string />
+              <string />
+              <string />
+              <string />
+            </MunsellColour>
+            <PH>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+            </PH>
+            <PHMetadata>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+            </PHMetadata>
+            <CEC>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+            </CEC>
+            <CECMetadata>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+            </CECMetadata>
+            <ParticleSizeSand>
+              <double>35.4</double>
+              <double>35.4</double>
+              <double>33.5</double>
+              <double>33.5</double>
+              <double>35.9</double>
+              <double>35.9</double>
+              <double>38</double>
+              <double>38</double>
+            </ParticleSizeSand>
+            <ParticleSizeSandMetadata>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+            </ParticleSizeSandMetadata>
+            <ParticleSizeSilt>
+              <double>33.6</double>
+              <double>33.6</double>
+              <double>36.5</double>
+              <double>36.5</double>
+              <double>39.1</double>
+              <double>39.1</double>
+              <double>36</double>
+              <double>36</double>
+            </ParticleSizeSilt>
+            <ParticleSizeSiltMetadata>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+            </ParticleSizeSiltMetadata>
+            <ParticleSizeClay>
+              <double>31</double>
+              <double>31</double>
+              <double>30</double>
+              <double>30</double>
+              <double>25</double>
+              <double>25</double>
+              <double>26</double>
+              <double>26</double>
+            </ParticleSizeClay>
+            <ParticleSizeClayMetadata>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+            </ParticleSizeClayMetadata>
+            <PHUnits>Water</PHUnits>
+            <BoronUnits>HotWater</BoronUnits>
+          </Analysis>
+          <InitialWater>
+            <FractionFull>1</FractionFull>
+            <DepthWetSoil>NaN</DepthWetSoil>
+            <PercentMethod>FilledFromTop</PercentMethod>
+          </InitialWater>
+          <Sample name="InitialNitrogen">
+            <Thickness>
+              <double>250</double>
+              <double>250</double>
+              <double>40</double>
+              <double>40</double>
+              <double>190</double>
+              <double>190</double>
+              <double>280</double>
+              <double>280</double>
+            </Thickness>
+            <NO3>
+              <double>0</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+            </NO3>
+            <NH4>
+              <double>0</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+            </NH4>
+            <NO3Units>ppm</NO3Units>
+            <NH4Units>ppm</NH4Units>
+            <SWUnits>Volumetric</SWUnits>
+            <OCUnits>Total</OCUnits>
+            <PHUnits>Water</PHUnits>
+          </Sample>
+          <Swim>
+            <Salb>0.13</Salb>
+            <CN2Bare>75</CN2Bare>
+            <CNRed>20</CNRed>
+            <CNCov>0.8</CNCov>
+            <KDul>0.1</KDul>
+            <PSIDul>-100</PSIDul>
+            <VC>true</VC>
+            <DTmin>0</DTmin>
+            <DTmax>1440</DTmax>
+            <MaxWaterIncrement>10</MaxWaterIncrement>
+            <SpaceWeightingFactor>0</SpaceWeightingFactor>
+            <SoluteSpaceWeightingFactor>0</SoluteSpaceWeightingFactor>
+            <Diagnostics>false</Diagnostics>
+            <SwimSoluteParameters>
+              <Dis>15</Dis>
+              <Disp>1</Disp>
+              <A>1</A>
+              <DTHC>0</DTHC>
+              <DTHP>1</DTHP>
+              <WaterTableCl>0</WaterTableCl>
+              <WaterTableNO3>0</WaterTableNO3>
+              <WaterTableNH4>0</WaterTableNH4>
+              <WaterTableUrea>0</WaterTableUrea>
+              <WaterTableTracer>0</WaterTableTracer>
+              <WaterTableMineralisationInhibitor>0</WaterTableMineralisationInhibitor>
+              <WaterTableUreaseInhibitor>0</WaterTableUreaseInhibitor>
+              <WaterTableNitrificationInhibitor>0</WaterTableNitrificationInhibitor>
+              <WaterTableDenitrificationInhibitor>0</WaterTableDenitrificationInhibitor>
+              <Thickness>
+                <double>1000</double>
+                <double>500</double>
+                <double>20</double>
+              </Thickness>
+              <NO3Exco>
+                <double>0</double>
+                <double>0</double>
+                <double>0</double>
+              </NO3Exco>
+              <NO3FIP>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </NO3FIP>
+              <NH4Exco>
+                <double>100</double>
+                <double>100</double>
+                <double>100</double>
+              </NH4Exco>
+              <NH4FIP>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </NH4FIP>
+              <UreaExco>
+                <double>0</double>
+                <double>0</double>
+                <double>0</double>
+              </UreaExco>
+              <UreaFIP>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </UreaFIP>
+              <ClExco>
+                <double>0</double>
+                <double>0</double>
+                <double>0</double>
+              </ClExco>
+              <ClFIP>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </ClFIP>
+            </SwimSoluteParameters>
+            <SwimWaterTable>
+              <WaterTableDepth>2000</WaterTableDepth>
+            </SwimWaterTable>
+            <SwimSubsurfaceDrain>
+              <DrainDepth>1200</DrainDepth>
+              <DrainSpacing>6100</DrainSpacing>
+              <DrainRadius>38</DrainRadius>
+              <Klat>1000</Klat>
+              <ImpermDepth>3000</ImpermDepth>
+            </SwimSubsurfaceDrain>
+          </Swim>
+        </Soil>
+        <surfaceom name="SurfaceOrganicMatter">
+          <PoolName type="text" description="Organic Matter pool name">wheat</PoolName>
+          <type type="list" listvalues="bambatsi,barley,base_type,broccoli,camaldulensis,canola,centro,chickpea,chikenmanure_base,cm,cmA,cmB,constants,cotton,cowpea,danthonia,fababean,fieldpea,fym,gbean,globulus,goatmanure,grandis,grass,horsegram,inert,lablab,lentil,lucerne,lupin,maize,manB,manure,medic,millet,mucuna,nativepasture,navybean,oats,orobanche,peanut,pigeonpea,potato,rice,sorghum,soybean,stylo,sugar,sunflower,sweetcorn,sweetsorghum,tillage,tithonia,vetch,weed,wheat" description="Organic Matter type">wheat</type>
+          <mass type="text" description="Initial surface residue (kg/ha)">1000</mass>
+          <cnr type="text" description="C:N ratio of initial residue">80</cnr>
+          <standing_fraction type="text" description="Fraction of residue standing">0.20</standing_fraction>
+        </surfaceom>
+        <fertiliser />
+        <maize />
+        <wheat />
+        <manager name="Sow on a fixed date-maize-cc">
+          <ui>
+            <category type="category" description="Sowing criteria" />
+            <date type="text" description="Enter sowing date (dd-mmm) : ">1-may</date>
+            <category type="category" description="Sowing parameters" />
+            <crop type="crop" description="Enter name of crop to sow : ">maize</crop>
+            <density type="text" description="Enter sowing density  (plants/m2) : ">9</density>
+            <depth type="text" description="Enter sowing depth  (mm) : ">50</depth>
+            <cultivar type="cultivars" description="Enter cultivar : ">A_110</cultivar>
+            <class type="classes" description="Enter crop growth class : ">maize</class>
+            <row_spacing type="text" description="Enter row spacing (mm) : ">762</row_spacing>
+          </ui>
+          <script>
+            <text>
+        if (today = date('[date]') then
+              [crop] sow plants =[density], sowing_depth = [depth], cultivar = [cultivar], row_spacing = [row_spacing], crop_class = [class]
+         endif
+               </text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+        <manager name="End crop on a fixed date-maize-cc">
+          <ui>
+            <category type="category" description="Harvesting criteria" />
+            <crop type="crop" description="Enter name of crop to harvest when ripe : ">maize</crop>
+            <date type="text" description="Enter ending date (dd-mmm) : ">30-sep</date>
+          </ui>
+          <script>
+            <text>
+
+        if (today = date('[date]') then
+              [crop]  end_crop
+        endif
+
+            </text>
+            <event>end_of_day</event>
+          </script>
+        </manager>
+        <manager name="Sow on a fixed date -rye">
+          <ui>
+            <category type="category" description="Sowing criteria" />
+            <date type="text" description="Enter sowing date (dd-mmm) : ">1-oct</date>
+            <category type="category" description="Sowing parameters" />
+            <crop type="crop" description="Enter name of crop to sow : ">wheat</crop>
+            <density type="text" description="Enter sowing density  (plants/m2) : ">200</density>
+            <depth type="text" description="Enter sowing depth  (mm) : ">40</depth>
+            <cultivar type="cultivars" description="Enter cultivar : ">yecora</cultivar>
+            <class type="classes" description="Enter crop growth class : ">plant</class>
+            <row_spacing type="text" description="Enter row spacing (mm) : ">150</row_spacing>
+          </ui>
+          <script>
+            <text>
+        if (today = date('[date]') then
+              [crop] sow plants =[density], sowing_depth = [depth], cultivar = [cultivar], row_spacing = [row_spacing], crop_class = [class]
+         endif
+               </text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+        <manager name="End crop on a fixed date -rye">
+          <ui>
+            <category type="category" description="Harvesting criteria" />
+            <crop type="crop" description="Enter name of crop to harvest when ripe : ">wheat</crop>
+            <date type="text" description="Enter ending date (dd-mmm) : ">25-apr</date>
+          </ui>
+          <script>
+            <text>
+
+        if (today = date('[date]') then
+              [crop]  end_crop
+        endif
+
+            </text>
+            <event>end_of_day</event>
+          </script>
+        </manager>
+        <manager name="Fertilise at sowing">
+          <ui>
+            <category type="category" description="When should fertiliser be applied" />
+            <modulename type="modulename" description="On which module should the event come from : ">maize</modulename>
+            <eventname type="text" description="On which event should fertiliser be applied : ">sowing</eventname>
+            <category type="category" description="Fertiliser application details" />
+            <fertmodule type="modulename" description="Module used to apply the fertiliser : ">fertiliser</fertmodule>
+            <fert_amount_sow type="text" description="Amount of starter fertiliser at sowing (kg/ha) : ">150</fert_amount_sow>
+            <fert_type_sow type="list" listvalues="NO3_N, NH4_N, NH4NO3, urea_N, urea_no3, urea, nh4so4_n, rock_p, banded_p, broadcast_p" description="Sowing fertiliser type : ">urea_N</fert_type_sow>
+          </ui>
+          <script>
+            <text>
+        [fertmodule] apply amount = [fert_amount_sow] (kg/ha), depth = 50 (mm), type = [fert_type_sow]
+            </text>
+            <event>[modulename].[eventname]</event>
+          </script>
+        </manager>
+        <erosion name="Erosion">
+          <model type="text" description="Model Name">freebairn</model>
+          <slope type="text" description="Slope of plot in percent (%)">2</slope>
+          <slope_length type="text" description="Length of plot (m)">60.0</slope_length>
+          <k_factor type="text" description="Soil erodibility factor (t/ha/EI 30 )">0.29</k_factor>
+          <p_factor type="text" description="Supporting practise factor (unitless)">0.9</p_factor>
+          <bed_depth type="text" description="Depth to bedrock (mm)">1900</bed_depth>
+          <profile_reduction type="list" listvalues="off,on" description="Profile Reduction">off</profile_reduction>
+          <profile_layer_merge type="text" description="Fraction of original size in which the lowest layer is merged into the layer above (0-1)">0.05</profile_layer_merge>
+          <minimum_depth type="text" description="If the profile erodes to this depth, the simulation is stopped (mm)">100.0</minimum_depth>
+        </erosion>
+        <outputfile>
+          <filename output="yes">IA-CC_Canisteo_Cover.out</filename>
+          <title>IA-CC_Canisteo_Cover</title>
+          <variables name="Variables">
+            <variable>dd/mm/yyyy as Date</variable>
+            <variable>biomass</variable>
+            <variable>yield</variable>
+            <variable>day</variable>
+            <variable>year</variable>
+            <variable>rain</variable>
+            <variable>sw</variable>
+            <variable>runoff</variable>
+            <variable>subsurface_drain</variable>
+            <variable>esw</variable>
+            <variable>cep</variable>
+            <variable>ep</variable>
+            <variable>transpiration</variable>
+            <variable>transp_eff</variable>
+            <variable>transpiration_tot</variable>
+            <variable>subsurface_drain_no3</variable>
+          </variables>
+          <events name="Reporting Frequency">
+            <event>Daily</event>
+          </events>
+          <Graph name="Maize yield and biomass">
+            <Legend>
+              <CheckedTitles> paddock.wheat.biomass</CheckedTitles>
+            </Legend>
+            <Plot>
+              <SeriesType>Solid line</SeriesType>
+              <PointType>Circle</PointType>
+              <colour>
+              </colour>
+              <X>Date</X>
+              <Y>paddock.maize.biomass</Y>
+              <Y>paddock.maize.yield</Y>
+              <Y>paddock.wheat.biomass</Y>
+              <GDApsimFileReader name="ApsimFileReader" />
+            </Plot>
+          </Graph>
+          <Graph name="Subsurface_drainage">
+            <Legend>
+              <CheckedTitles> subsurface_drain</CheckedTitles>
+              <CheckedTitles> runoff</CheckedTitles>
+              <CheckedTitles> subsurface_drain_no3</CheckedTitles>
+            </Legend>
+            <Plot>
+              <SeriesType>Solid line</SeriesType>
+              <PointType>Circle</PointType>
+              <colour>
+              </colour>
+              <X>Date</X>
+              <Y>subsurface_drain</Y>
+              <Y>runoff</Y>
+              <Y>subsurface_drain_no3</Y>
+              <GDApsimFileReader name="ApsimFileReader" />
+            </Plot>
+          </Graph>
+        </outputfile>
+      </area>
+    </simulation>
+    <simulation name="IA-CC_Canisteo_No-Cover">
+      <metfile name="met">
+        <filename name="filename" input="yes">boone-10-19.met</filename>
+      </metfile>
+      <clock>
+        <start_date type="date" description="Enter the start date of the simulation">01/01/2010</start_date>
+        <end_date type="date" description="Enter the end date of the simulation">09/11/2019</end_date>
+      </clock>
+      <summaryfile />
+      <area name="paddock">
+        <Soil name="CL (Canisteo No209)">
+          <RecordNumber>0</RecordNumber>
+          <SoilType>Canisteo</SoilType>
+          <Region>Renville</Region>
+          <State>Minnesota</State>
+          <Country>US</Country>
+          <ApsoilNumber>209</ApsoilNumber>
+          <Latitude>44.7892</Latitude>
+          <Longitude>-95.2114</Longitude>
+          <YearOfSampling>2015</YearOfSampling>
+          <DataSource>Original data by http://websoilsurvey.sc.egov.usda.gov/App/HomePage.htm 
+Profile developed by Integrated Cropping Systems Lab, Department of Agronomy, ISU
+</DataSource>
+          <Comments>The Canisteo series consists of very deep, poorly and very poorly drained soils that formed in calcareous, loamy till or in a thin mantle of loamy or silty sediments and the underlying calcareous, loamy till. These soils are on rims of depressions, depressions and flats on moraines or till plains. Slope ranges from 0 to 2 percent. Mean air annual temperature is about 9 degrees C. Mean annual precipitation is about 785 millimeters. 
+
+TAXONOMIC CLASS: Fine-loamy, mixed, superactive, calcareous, mesic Typic Endoaquolls 
+
+TYPICAL PEDON: Canisteo clay loam, on a nearly level to slightly convex slope, on a ground moraine, in a cultivated field. (Colors are for moist soil unless otherwise noted.) 
+
+Ap--0 to 25 centimeters inches; black (N 2/0) clay loam, very dark gray (N 3/0) dry; weak medium subangular blocky structure; friable; about 2 percent gravel; strongly effervescent; slightly alkaline; abrupt smooth boundary. 
+
+A--25 to 46 centimeters; very dark gray (N 3/0) clay loam, dark gray (N 4/0) dry; moderate very fine subangular blocky structure; friable; about 2 percent gravel; strongly effervescent; slightly alkaline; clear smooth boundary. 
+
+Bkg1--46 to 61 centimeters; olive gray (5Y 5/2) loam; weak medium subangular blocky structure; friable; few light gray (2.5Y 7/2) calcium carbonates on faces of peds; few fine prominent olive (5Y 5/6) iron concentrations; about 3 percent gravel; strongly effervescent; moderately alkaline; clear smooth boundary. 
+
+Bkg2--61 to 99 centimeters; light olive gray (5Y 6/2) loam; weak medium subangular blocky structure; friable; few light gray (2.5Y 7/2) calcium carbonates on faces of peds; common fine prominent light olive brown (2.5Y 5/6) iron concentrations; about 3 percent gravel; slightly effervescent; slightly alkaline; clear smooth boundary. 
+
+Cg1--99 to 165 centimeters; gray (5Y 6/1) loam; massive; friable; common medium prominent light olive brown (2.5Y 5/4) iron concentrations; about 5 percent gravel; slightly effervescent; slightly alkaline; clear smooth boundary. 
+
+Cg2--165 to 203 centimeters; gray (5Y 6/1) loam; massive; friable; few dark yellowish brown (10YR 4/6) iron concretions in pores; many medium prominent dark yellowish brown (10YR 4/6) iron concentrations; about 5 percent gravel; slightly effervescent; slightly alkaline. 
+
+TYPE LOCATION: Major Land Resource Area (MLRA) 103-Central Iowa and Minnesota Till Prairies, Waseca County, Minnesota subset; about 4.5 miles south and 3 miles west of Waseca; located about 1,800 feet south and 200 feet west of the northeast corner of section 22, T. 108 N., R. 22 W.; USGS Morristown quadrangle; lat. 44 degrees 8 minutes 52 seconds N. and long. 93 degrees 26 minutes 50 seconds W., NAD 83. </Comments>
+          <Water>
+            <Thickness>
+              <double>250</double>
+              <double>250</double>
+              <double>40</double>
+              <double>40</double>
+              <double>190</double>
+              <double>190</double>
+              <double>280</double>
+              <double>280</double>
+              <double>60</double>
+            </Thickness>
+            <BD>
+              <double>1.4</double>
+              <double>1.4</double>
+              <double>1.425</double>
+              <double>1.425</double>
+              <double>1.4</double>
+              <double>1.4</double>
+              <double>1.525</double>
+              <double>1.525</double>
+              <double>1.525</double>
+            </BD>
+            <AirDry>
+              <double>0.2106</double>
+              <double>0.234</double>
+              <double>0.212</double>
+              <double>0.212</double>
+              <double>0.137</double>
+              <double>0.137</double>
+              <double>0.154</double>
+              <double>0.154</double>
+              <double>0.154</double>
+            </AirDry>
+            <LL15>
+              <double>0.234</double>
+              <double>0.234</double>
+              <double>0.212</double>
+              <double>0.212</double>
+              <double>0.137</double>
+              <double>0.137</double>
+              <double>0.154</double>
+              <double>0.154</double>
+              <double>0.154</double>
+            </LL15>
+            <DUL>
+              <double>0.345</double>
+              <double>0.345</double>
+              <double>0.33</double>
+              <double>0.33</double>
+              <double>0.272</double>
+              <double>0.272</double>
+              <double>0.29</double>
+              <double>0.29</double>
+              <double>0.29</double>
+            </DUL>
+            <SAT>
+              <double>0.421698113207547</double>
+              <double>0.421698113207547</double>
+              <double>0.412264150943396</double>
+              <double>0.412264150943396</double>
+              <double>0.421698113207547</double>
+              <double>0.421698113207547</double>
+              <double>0.31</double>
+              <double>0.32</double>
+              <double>0.31</double>
+            </SAT>
+            <KS>
+              <double>792.566983578219</double>
+              <double>792.566983578219</double>
+              <double>792.566983578219</double>
+              <double>792.566983578219</double>
+              <double>792.566983578219</double>
+              <double>792.566983578219</double>
+              <double>792.567</double>
+              <double>1</double>
+              <double>0.001</double>
+            </KS>
+            <BDMetadata>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string />
+            </BDMetadata>
+            <AirDryMetadata>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string />
+            </AirDryMetadata>
+            <LL15Metadata>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string />
+            </LL15Metadata>
+            <DULMetadata>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string>Field measured and checked for sensibility</string>
+              <string />
+            </DULMetadata>
+            <SATMetadata>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string>Calculated from measured, estimated or calculated BD</string>
+              <string />
+            </SATMetadata>
+            <SoilCrop name="maize">
+              <Thickness>
+                <double>250</double>
+                <double>250</double>
+                <double>40</double>
+                <double>40</double>
+                <double>190</double>
+                <double>190</double>
+                <double>280</double>
+                <double>280</double>
+                <double>60</double>
+              </Thickness>
+              <LL>
+                <double>0.234</double>
+                <double>0.234</double>
+                <double>0.212</double>
+                <double>0.212</double>
+                <double>0.137</double>
+                <double>0.137</double>
+                <double>0.154</double>
+                <double>0.154</double>
+                <double>0.154</double>
+              </LL>
+              <KL>
+                <double>0.08</double>
+                <double>0.0689312427787588</double>
+                <double>0.0622323195124101</double>
+                <double>0.060594519803683</double>
+                <double>0.0559352299604039</double>
+                <double>0.0489522014539961</double>
+                <double>0.04</double>
+                <double>0.03</double>
+                <double>0</double>
+              </KL>
+              <XF>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>0</double>
+              </XF>
+              <LLMetadata>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string />
+              </LLMetadata>
+            </SoilCrop>
+            <SoilCrop name="soybean">
+              <Thickness>
+                <double>250</double>
+                <double>250</double>
+                <double>40</double>
+                <double>40</double>
+                <double>190</double>
+                <double>190</double>
+                <double>280</double>
+                <double>280</double>
+                <double>60</double>
+              </Thickness>
+              <LL>
+                <double>0.234</double>
+                <double>0.234</double>
+                <double>0.212</double>
+                <double>0.212</double>
+                <double>0.137</double>
+                <double>0.137</double>
+                <double>0.154</double>
+                <double>0.154</double>
+                <double>0.154</double>
+              </LL>
+              <KL>
+                <double>0.08</double>
+                <double>0.0689312427787588</double>
+                <double>0.0622323195124101</double>
+                <double>0.060594519803683</double>
+                <double>0.0559352299604039</double>
+                <double>0.0489522014539961</double>
+                <double>0.04</double>
+                <double>0.03</double>
+                <double>0.03</double>
+              </KL>
+              <XF>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </XF>
+              <LLMetadata>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string>Estimated based on local knowledge</string>
+                <string />
+              </LLMetadata>
+            </SoilCrop>
+            <SoilCrop name="wheat">
+              <Thickness>
+                <double>250</double>
+                <double>250</double>
+                <double>40</double>
+                <double>40</double>
+                <double>190</double>
+                <double>190</double>
+                <double>280</double>
+                <double>280</double>
+                <double>60</double>
+              </Thickness>
+              <LL>
+                <double>0.234</double>
+                <double>0.234</double>
+                <double>0.212</double>
+                <double>0.212</double>
+                <double>0.137</double>
+                <double>0.137</double>
+                <double>0.154</double>
+                <double>0.154</double>
+                <double>0.154</double>
+              </LL>
+              <KL>
+                <double>0.08</double>
+                <double>0.07</double>
+                <double>0.06</double>
+                <double>0.06</double>
+                <double>0.06</double>
+                <double>0.05</double>
+                <double>0.04</double>
+                <double>0.03</double>
+                <double>0.03</double>
+              </KL>
+              <XF>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </XF>
+            </SoilCrop>
+          </Water>
+          <SoilOrganicMatter>
+            <RootCN>45</RootCN>
+            <RootWt>1000</RootWt>
+            <SoilCN>13</SoilCN>
+            <EnrACoeff>7.4</EnrACoeff>
+            <EnrBCoeff>0.2</EnrBCoeff>
+            <Thickness>
+              <double>250</double>
+              <double>250</double>
+              <double>40</double>
+              <double>40</double>
+              <double>190</double>
+              <double>190</double>
+              <double>280</double>
+              <double>280</double>
+            </Thickness>
+            <OC>
+              <double>3.48837209302326</double>
+              <double>3.48837209302326</double>
+              <double>1.74418604651163</double>
+              <double>1.74418604651163</double>
+              <double>0.436046511627907</double>
+              <double>0.436046511627907</double>
+              <double>0.145348837209302</double>
+              <double>0.145348837209302</double>
+            </OC>
+            <OCMetadata>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+            </OCMetadata>
+            <FBiom>
+              <double>0.035949989713</double>
+              <double>0.0139799958852</double>
+              <double>0.01105899430786</double>
+              <double>0.01029699389638</double>
+              <double>0.01</double>
+              <double>0.01</double>
+              <double>0.01</double>
+              <double>0.01</double>
+            </FBiom>
+            <FInert>
+              <double>0.421600054864</double>
+              <double>0.624800164592</double>
+              <double>0.7416402276856</double>
+              <double>0.7721202441448</double>
+              <double>0.8</double>
+              <double>0.8</double>
+              <double>0.8</double>
+              <double>0.86297623920704</double>
+            </FInert>
+            <OCUnits>Total</OCUnits>
+          </SoilOrganicMatter>
+          <Analysis>
+            <Thickness>
+              <double>250</double>
+              <double>250</double>
+              <double>40</double>
+              <double>40</double>
+              <double>190</double>
+              <double>190</double>
+              <double>280</double>
+              <double>280</double>
+            </Thickness>
+            <Texture>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+              <string>CL</string>
+            </Texture>
+            <MunsellColour>
+              <string />
+              <string />
+              <string />
+              <string />
+              <string />
+              <string />
+              <string />
+              <string />
+            </MunsellColour>
+            <PH>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+              <double>6.804</double>
+            </PH>
+            <PHMetadata>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+              <string>Estimated based on local knowledge</string>
+            </PHMetadata>
+            <CEC>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+              <double>0</double>
+            </CEC>
+            <CECMetadata>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+            </CECMetadata>
+            <ParticleSizeSand>
+              <double>35.4</double>
+              <double>35.4</double>
+              <double>33.5</double>
+              <double>33.5</double>
+              <double>35.9</double>
+              <double>35.9</double>
+              <double>38</double>
+              <double>38</double>
+            </ParticleSizeSand>
+            <ParticleSizeSandMetadata>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+            </ParticleSizeSandMetadata>
+            <ParticleSizeSilt>
+              <double>33.6</double>
+              <double>33.6</double>
+              <double>36.5</double>
+              <double>36.5</double>
+              <double>39.1</double>
+              <double>39.1</double>
+              <double>36</double>
+              <double>36</double>
+            </ParticleSizeSilt>
+            <ParticleSizeSiltMetadata>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+            </ParticleSizeSiltMetadata>
+            <ParticleSizeClay>
+              <double>31</double>
+              <double>31</double>
+              <double>30</double>
+              <double>30</double>
+              <double>25</double>
+              <double>25</double>
+              <double>26</double>
+              <double>26</double>
+            </ParticleSizeClay>
+            <ParticleSizeClayMetadata>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+              <string>Measured</string>
+            </ParticleSizeClayMetadata>
+            <PHUnits>Water</PHUnits>
+            <BoronUnits>HotWater</BoronUnits>
+          </Analysis>
+          <InitialWater>
+            <FractionFull>1</FractionFull>
+            <DepthWetSoil>NaN</DepthWetSoil>
+            <PercentMethod>FilledFromTop</PercentMethod>
+          </InitialWater>
+          <Sample name="InitialNitrogen">
+            <Thickness>
+              <double>250</double>
+              <double>250</double>
+              <double>40</double>
+              <double>40</double>
+              <double>190</double>
+              <double>190</double>
+              <double>280</double>
+              <double>280</double>
+            </Thickness>
+            <NO3>
+              <double>0</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+            </NO3>
+            <NH4>
+              <double>0</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+              <double>NaN</double>
+            </NH4>
+            <NO3Units>ppm</NO3Units>
+            <NH4Units>ppm</NH4Units>
+            <SWUnits>Volumetric</SWUnits>
+            <OCUnits>Total</OCUnits>
+            <PHUnits>Water</PHUnits>
+          </Sample>
+          <Swim>
+            <Salb>0.13</Salb>
+            <CN2Bare>75</CN2Bare>
+            <CNRed>20</CNRed>
+            <CNCov>0.8</CNCov>
+            <KDul>0.1</KDul>
+            <PSIDul>-100</PSIDul>
+            <VC>true</VC>
+            <DTmin>0</DTmin>
+            <DTmax>1440</DTmax>
+            <MaxWaterIncrement>10</MaxWaterIncrement>
+            <SpaceWeightingFactor>0</SpaceWeightingFactor>
+            <SoluteSpaceWeightingFactor>0</SoluteSpaceWeightingFactor>
+            <Diagnostics>false</Diagnostics>
+            <SwimSoluteParameters>
+              <Dis>15</Dis>
+              <Disp>1</Disp>
+              <A>1</A>
+              <DTHC>0</DTHC>
+              <DTHP>1</DTHP>
+              <WaterTableCl>0</WaterTableCl>
+              <WaterTableNO3>0</WaterTableNO3>
+              <WaterTableNH4>0</WaterTableNH4>
+              <WaterTableUrea>0</WaterTableUrea>
+              <WaterTableTracer>0</WaterTableTracer>
+              <WaterTableMineralisationInhibitor>0</WaterTableMineralisationInhibitor>
+              <WaterTableUreaseInhibitor>0</WaterTableUreaseInhibitor>
+              <WaterTableNitrificationInhibitor>0</WaterTableNitrificationInhibitor>
+              <WaterTableDenitrificationInhibitor>0</WaterTableDenitrificationInhibitor>
+              <Thickness>
+                <double>1000</double>
+                <double>500</double>
+                <double>20</double>
+              </Thickness>
+              <NO3Exco>
+                <double>0</double>
+                <double>0</double>
+                <double>0</double>
+              </NO3Exco>
+              <NO3FIP>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </NO3FIP>
+              <NH4Exco>
+                <double>100</double>
+                <double>100</double>
+                <double>100</double>
+              </NH4Exco>
+              <NH4FIP>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </NH4FIP>
+              <UreaExco>
+                <double>0</double>
+                <double>0</double>
+                <double>0</double>
+              </UreaExco>
+              <UreaFIP>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </UreaFIP>
+              <ClExco>
+                <double>0</double>
+                <double>0</double>
+                <double>0</double>
+              </ClExco>
+              <ClFIP>
+                <double>1</double>
+                <double>1</double>
+                <double>1</double>
+              </ClFIP>
+            </SwimSoluteParameters>
+            <SwimWaterTable>
+              <WaterTableDepth>2000</WaterTableDepth>
+            </SwimWaterTable>
+            <SwimSubsurfaceDrain>
+              <DrainDepth>1200</DrainDepth>
+              <DrainSpacing>6100</DrainSpacing>
+              <DrainRadius>38</DrainRadius>
+              <Klat>1000</Klat>
+              <ImpermDepth>3000</ImpermDepth>
+            </SwimSubsurfaceDrain>
+          </Swim>
+        </Soil>
+        <surfaceom name="SurfaceOrganicMatter">
+          <PoolName type="text" description="Organic Matter pool name">wheat</PoolName>
+          <type type="list" listvalues="bambatsi,barley,base_type,broccoli,camaldulensis,canola,centro,chickpea,chikenmanure_base,cm,cmA,cmB,constants,cotton,cowpea,danthonia,fababean,fieldpea,fym,gbean,globulus,goatmanure,grandis,grass,horsegram,inert,lablab,lentil,lucerne,lupin,maize,manB,manure,medic,millet,mucuna,nativepasture,navybean,oats,orobanche,peanut,pigeonpea,potato,rice,sorghum,soybean,stylo,sugar,sunflower,sweetcorn,sweetsorghum,tillage,tithonia,vetch,weed,wheat" description="Organic Matter type">wheat</type>
+          <mass type="text" description="Initial surface residue (kg/ha)">1000</mass>
+          <cnr type="text" description="C:N ratio of initial residue">80</cnr>
+          <standing_fraction type="text" description="Fraction of residue standing">0.20</standing_fraction>
+        </surfaceom>
+        <fertiliser />
+        <maize />
+        <manager name="Sow on a fixed date-maize">
+          <ui>
+            <category type="category" description="Sowing criteria" />
+            <date type="text" description="Enter sowing date (dd-mmm) : ">1-may</date>
+            <category type="category" description="Sowing parameters" />
+            <crop type="crop" description="Enter name of crop to sow : ">maize</crop>
+            <density type="text" description="Enter sowing density  (plants/m2) : ">9</density>
+            <depth type="text" description="Enter sowing depth  (mm) : ">50</depth>
+            <cultivar type="cultivars" description="Enter cultivar : ">A_110</cultivar>
+            <class type="classes" description="Enter crop growth class : ">maize</class>
+            <row_spacing type="text" description="Enter row spacing (mm) : ">762</row_spacing>
+          </ui>
+          <script>
+            <text>
+        if (today = date('[date]') then
+              [crop] sow plants =[density], sowing_depth = [depth], cultivar = [cultivar], row_spacing = [row_spacing], crop_class = [class]
+         endif
+               </text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+        <manager name="End crop on a fixed date -maize">
+          <ui>
+            <category type="category" description="Harvesting criteria" />
+            <crop type="crop" description="Enter name of crop to harvest when ripe : ">maize</crop>
+            <date type="text" description="Enter ending date (dd-mmm) : ">30-sep</date>
+          </ui>
+          <script>
+            <text>
+
+        if (today = date('[date]') then
+              [crop]  end_crop
+        endif
+
+            </text>
+            <event>end_of_day</event>
+          </script>
+        </manager>
+        <manager name="Fertilise at sowing">
+          <ui>
+            <category type="category" description="When should fertiliser be applied" />
+            <modulename type="modulename" description="On which module should the event come from : ">maize</modulename>
+            <eventname type="text" description="On which event should fertiliser be applied : ">sowing</eventname>
+            <category type="category" description="Fertiliser application details" />
+            <fertmodule type="modulename" description="Module used to apply the fertiliser : ">fertiliser</fertmodule>
+            <fert_amount_sow type="text" description="Amount of starter fertiliser at sowing (kg/ha) : ">150</fert_amount_sow>
+            <fert_type_sow type="list" listvalues="NO3_N, NH4_N, NH4NO3, urea_N, urea_no3, urea, nh4so4_n, rock_p, banded_p, broadcast_p" description="Sowing fertiliser type : ">urea_N</fert_type_sow>
+          </ui>
+          <script>
+            <text>
+        [fertmodule] apply amount = [fert_amount_sow] (kg/ha), depth = 50 (mm), type = [fert_type_sow]
+            </text>
+            <event>[modulename].[eventname]</event>
+          </script>
+        </manager>
+        <erosion name="Erosion">
+          <model type="text" description="Model Name">freebairn</model>
+          <slope type="text" description="Slope of plot in percent (%)">2</slope>
+          <slope_length type="text" description="Length of plot (m)">60.0</slope_length>
+          <k_factor type="text" description="Soil erodibility factor (t/ha/EI 30 )">0.29</k_factor>
+          <p_factor type="text" description="Supporting practise factor (unitless)">0.9</p_factor>
+          <bed_depth type="text" description="Depth to bedrock (mm)">1900</bed_depth>
+          <profile_reduction type="list" listvalues="off,on" description="Profile Reduction">off</profile_reduction>
+          <profile_layer_merge type="text" description="Fraction of original size in which the lowest layer is merged into the layer above (0-1)">0.05</profile_layer_merge>
+          <minimum_depth type="text" description="If the profile erodes to this depth, the simulation is stopped (mm)">100.0</minimum_depth>
+        </erosion>
+        <outputfile>
+          <filename output="yes">IA-CC_Canisteo_No-Cover.out</filename>
+          <title>IA-CC_Canisteo_No-Cover</title>
+          <variables name="Variables">
+            <variable>dd/mm/yyyy as Date</variable>
+            <variable>biomass</variable>
+            <variable>yield</variable>
+            <variable>day</variable>
+            <variable>year</variable>
+            <variable>rain</variable>
+            <variable>sw</variable>
+            <variable>tt</variable>
+            <variable>zadok_stage</variable>
+            <variable>subsurface_drain_no3</variable>
+            <variable>no3(1-4)</variable>
+            <variable>biomass_n</variable>
+            <variable>subsurface_drain</variable>
+            <variable>runoff</variable>
+            <variable>soil_loss</variable>
+            <variable>subsurface_drain_no3</variable>
+            <variable>surfaceom_cover</variable>
+            <variable>stover_wt</variable>
+            <variable>oc(1)</variable>
+            <variable>fom_c(1)</variable>
+            <variable>surfaceom_wt</variable>
+            <variable>sw_stress_expan</variable>
+          </variables>
+          <events name="Reporting Frequency">
+            <event>Daily</event>
+          </events>
+          <Graph name="Maize yield and biomass">
+            <Legend>
+            </Legend>
+            <Plot>
+              <SeriesType>Solid line</SeriesType>
+              <PointType>Circle</PointType>
+              <colour>
+              </colour>
+              <X>Date</X>
+              <Y>paddock.maize.biomass</Y>
+              <Y>paddock.maize.yield</Y>
+              <Y>paddock.wheat.biomass</Y>
+              <GDApsimFileReader name="ApsimFileReader" />
+            </Plot>
+          </Graph>
+        </outputfile>
+      </area>
+    </simulation>
+  </folder>
+</folder>

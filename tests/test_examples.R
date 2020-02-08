@@ -18,5 +18,7 @@ if(run.example.tests){
   }
   end <- Sys.time()
   cat("Total time:", end - start, "\n")
-  cat("APSIM-X version:", apsim_version(which = "inuse"),"\n")
+    
+  cat("APSIM-X version:", as.vector(apsim_version(which = "inuse")[[2]]),"\n")
+
 }
