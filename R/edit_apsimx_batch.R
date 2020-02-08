@@ -103,13 +103,14 @@ edit_apsimx_batch <- function(file, src.dir = ".", wrt.dir = NULL,
   if(.Platform$OS.type == "windows"){
     ada <- auto_detect_apsimx()
     run.strng <- paste0(ada," ",paste0(file,".apsimx")," /Edit ",fn.po)
-    cmd.out <- shell(cmd = run.strng, translate = TRUE, intern = TRUE)
+    cmd.out <- shell(cmd = run.strng, translate = FALSE, intern = TRUE)
   }
   
   if(verbose){
     cat("Edited parameters file: ",fn.po, "\n")
     cat("Edited parameters: ",names(parms), "\n")
     cat("Created new: ",paste0(wrt.dir,"/",file,".apsimx"),"\n")
+    if(.Platform$OS.type == "windows") print(cmd.out)
   }
 }
 
