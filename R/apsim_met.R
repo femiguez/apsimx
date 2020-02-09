@@ -167,7 +167,7 @@ write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL){
   writeLines(paste(attr(met,"units"), collapse = " "), con = con)
   
   names(met) <- NULL
-  utils::write.table(met, file = con, 
+  utils::write.table(met, file = con,
                      append = TRUE, quote = FALSE,
                      row.names = FALSE, col.names = FALSE)
   close(con)

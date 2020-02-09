@@ -107,16 +107,16 @@ get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".",
   ## Process snow water equivalent
   dmet.swe <- apply(raster::as.array(dmet0$swe), 3, FUN = mean)
   
-  dmet <- data.frame(dmet.year, dmet.doy, dmet.maxt, dmet.tmin, dmet.srad.total, dmet.prcp, dmet.vp, dmet.swe)
+  dmet <- data.frame(dmet.year, dmet.doy, dmet.srad.total, dmet.maxt, dmet.tmin, dmet.prcp, dmet.vp, dmet.swe)
   
-  names(dmet) <- c("year","day","maxt","mint","radn","rain","vp","swe")
+  names(dmet) <- c("year","day","radn","maxt","mint","rain","vp","swe")
   
-  units <- c("()","()","(oC)","(oC)","(MJ/m2/day)","(mm)","Pa","kg/m2")
+  units <- c("()","()","(MJ/m2/day)","(oC)","(oC)","(mm)","Pa","kg/m2")
   
   comments <- paste("!data from DayMet obtained through FedDdata R pacakge. retrieved: ",Sys.time())
   
   attr(dmet, "filename") <- filename
-  attr(dmet, "site") <- paste("!site = ", sub(".met","", filename, fixed = TRUE))
+  attr(dmet, "site") <- paste("site = ", sub(".met","", filename, fixed = TRUE))
   attr(dmet, "latitude") <- paste("latitude =",lonlat[2])
   attr(dmet, "longitude") <- paste("longitude =",lonlat[1])
   attr(dmet, "tav") <- paste("tav =",mean(colMeans(dmet[,c("maxt","mint")],na.rm=TRUE),na.rm=TRUE))

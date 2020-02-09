@@ -52,9 +52,9 @@ This package has been tested on:
 
 **Mac**: ApsimX version (2020-01-29) 4007 (R 3.6.2)
 
-**Debian**: ApsimX version 4236
+**Debian**: ApsimX version ...
 
-**Windows**: ApsimX version 4236
+**Windows**: ApsimX version 4236 (2020-01-29) 4007 (R 3.6.2)
 
 ## Installing APSIM-X
 

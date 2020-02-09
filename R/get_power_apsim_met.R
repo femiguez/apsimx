@@ -51,17 +51,18 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
                               lonlat = lonlat,
                               temporal_average = "DAILY")
   
-  pwr <- subset(as.data.frame(pwr), select = c("YEAR","DOY","T2M_MAX","T2M_MIN",
-                                                "ALLSKY_SFC_SW_DWN","PRECTOT",
-                                                "RH2M","WS2M"))
+  pwr <- subset(as.data.frame(pwr), select = c("YEAR","DOY",
+                                               "ALLSKY_SFC_SW_DWN",
+                                               "T2M_MAX","T2M_MIN",
+                                               "PRECTOT","RH2M","WS2M"))
   
-  names(pwr) <- c("year","day","maxt","mint","radn","rain","rh","wind_speed")
-  units <- c("()","()","(oC)","(oC)","(MJ/m2/day)","(mm)","(%)","(m/s)")
+  names(pwr) <- c("year","day","radn","maxt","mint","rain","rh","wind_speed")
+  units <- c("()","()","(MJ/m2/day)","(oC)","(oC)","(mm)","(%)","(m/s)")
   
   comments <- paste("!data from nasapower R pacakge. retrieved: ",Sys.time())
     
   attr(pwr, "filename") <- filename
-  attr(pwr, "site") <- paste("!site = ", sub(".met","", filename, fixed = TRUE))
+  attr(pwr, "site") <- paste("site = ", sub(".met","", filename, fixed = TRUE))
   attr(pwr, "latitude") <- paste("latitude =",lonlat[2])
   attr(pwr, "longitude") <- paste("longitude =",lonlat[1])
   attr(pwr, "tav") <- paste("tav =",mean(colMeans(pwr[,c("maxt","mint")],na.rm=TRUE),na.rm=TRUE))
