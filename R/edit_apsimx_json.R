@@ -128,10 +128,10 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     }
     
     if(length(parm) == 2){
-      if(parm == "Start"){
+      if(parm[1] == "Start"){
         parent.node[wlcl][[1]][start] <- value[1]
       }
-      if(parm == "End"){
+      if(parm[2] == "End"){
         parent.node[wlcl][[1]][end] <- value[2]
       }
     }
