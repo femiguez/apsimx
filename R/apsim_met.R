@@ -26,7 +26,7 @@ read_apsim_met <- function(file, src.dir = ".", verbose = TRUE){
 
   if(!grepl("met$",file)) stop("file should have a .met extension")
   
-  file.path <- paste0(src.dir,"/",file)
+  file.path <- file.path(src.dir,file)
 
   ## Read the header
   header <- scan(file = file.path, 
@@ -208,7 +208,7 @@ print.met <- function(x,...){
 
 impute_apsim_met <- function(met, method = c("approx","splines","mean"), verbose = FALSE){
   
-  if(class(met)[1] != "met") stop("met should be of class 'met'")
+  if(!inherits(met, "met")) stop("met should be of class 'met'") 
   
   method <- match.arg(method)
   
@@ -269,85 +269,85 @@ impute_apsim_met <- function(met, method = c("approx","splines","mean"), verbose
 #' 
 check_apsim_met <- function(met){
   
-  if(class(met)[1] == "met"){
-    col.names <- c("year","day","mint","maxt","radn","rain")
-    ## check for column names
-    if(sum(names(met) %in% col.names) < 6) warning("column names might be wrong")
-    ## Detect possible errors with years
-    if(any(is.na(met[["year"]]))){
-      print(met[is.na(met$year),])
-      warning("Missing values found for year")
-    }
-    if(any(min(met[["year"]]) < 1500, na.rm = TRUE)){
-      print(met[met$year < 1500,])
-      warning("year is less than 1500")
-    }
-    if(any(max(met[["year"]]) > 3000, na.rm = TRUE)){
-      print(met[met$year > 3000,])
-      warning("year is greater than 3000")
-    }
-    ## Detect possible errors with day
-    if(any(is.na(met[["day"]]))){
-      print(met[is.na(met$day),])
-      warning("Missing values found for day")
-    }
-    if(any(min(met[["day"]]) < 1, na.rm = TRUE)){
-      print(met[met$day < 1,])
-      warning("day is less than 1")
-    }
-    if(any(max(met[["day"]])> 366, na.rm = TRUE)){
-      print(met[met$day > 366,])
-      warning("day is greater than 366")
-    }
-    ## Detect possible errors with minimum temperature
-    if(any(is.na(met[["mint"]]))){
-      print(met[is.na(met$mint),])
-      warning("Missing values found for minimum temperature")
-    }
-    if(any(min(met[["mint"]]) < -60, na.rm = TRUE)){
-      print(met[met$mint < -60,])
-      warning("Minimum temperature is less than -60")
-    }
-    if(any(max(met[["mint"]]) > 40, na.rm = TRUE)){
-      print(met[met$mint > 40,])
-      warning("Minimum temperature is greater than 40")
-    }
-    ## Detect possible errors with maximum temperature
-    if(any(is.na(met[["maxt"]]))){
-      print(met[is.na(met$maxt),])
-      warning("Missing values found for maximum temperature")
-    }
-    if(any(min(met[["maxt"]]) < -60)){
-      print(met[met$maxt < -60,])
-      warning("Maximum temperature less -60")
-    }
-    if(any(max(met[["maxt"]])> 60)){
-      print(met[met$maxt > 60,])
-      warning("Maximum temperature is greater than 60")
-    }
-    ## Detect possible errors with radiation
-    if(any(is.na(met[["radn"]]))){
-      print(met[is.na(met$radn),])
-      warning("Missing values found for solar radiation")
-    }
-    if(any(min(met[["radn"]]) < 0, na.rm=TRUE)){
-      print(met[met$radn < 0,])
-      warning("Radiation is negative")
-    }
-    if(any(max(met[["radn"]])> 40, na.rm = TRUE)){
-      print(met[met$radn > 40,])
-      warning("Radiation is greater than 40 (MJ/m2/day)")
-    }
-    ## Detect possible errors with rain
-    if(any(is.na(met[["rain"]]))){
-      print(met[is.na(met$rain),])
-      warning("Missing values found for precipitation")
-    }
-    if(any(min(met[["rain"]]) < 0, na.rm = TRUE)){
-      warning("Rain is negative")
-    }
-    if(any(max(met[["rain"]])> 100, na.rm = TRUE)){
-      warning("Rain is possibly too high")
-    }
+  if(!inherits(met, "met")) stop("object should be of class 'met'")
+  
+  col.names <- c("year","day","radn","mint","maxt","rain")
+  ## check for column names
+  if(sum(names(met) %in% col.names) < 6) warning("column names might be wrong")
+  ## Detect possible errors with years
+  if(any(is.na(met[["year"]]))){
+    print(met[is.na(met$year),])
+    warning("Missing values found for year")
+  }
+  if(any(min(met[["year"]]) < 1500, na.rm = TRUE)){
+    print(met[met$year < 1500,])
+    warning("year is less than 1500")
+  }
+  if(any(max(met[["year"]]) > 3000, na.rm = TRUE)){
+    print(met[met$year > 3000,])
+    warning("year is greater than 3000")
+  }
+  ## Detect possible errors with day
+  if(any(is.na(met[["day"]]))){
+    print(met[is.na(met$day),])
+    warning("Missing values found for day")
+  }
+  if(any(min(met[["day"]]) < 1, na.rm = TRUE)){
+    print(met[met$day < 1,])
+    warning("day is less than 1")
+  }
+  if(any(max(met[["day"]])> 366, na.rm = TRUE)){
+    print(met[met$day > 366,])
+    warning("day is greater than 366")
+  }
+  ## Detect possible errors with minimum temperature
+  if(any(is.na(met[["mint"]]))){
+    print(met[is.na(met$mint),])
+    warning("Missing values found for minimum temperature")
+  }
+  if(any(min(met[["mint"]]) < -60, na.rm = TRUE)){
+    print(met[met$mint < -60,])
+    warning("Minimum temperature is less than -60")
+  }
+  if(any(max(met[["mint"]]) > 40, na.rm = TRUE)){
+    print(met[met$mint > 40,])
+    warning("Minimum temperature is greater than 40")
+  }
+  ## Detect possible errors with maximum temperature
+  if(any(is.na(met[["maxt"]]))){
+    print(met[is.na(met$maxt),])
+    warning("Missing values found for maximum temperature")
+  }
+  if(any(min(met[["maxt"]]) < -60)){
+    print(met[met$maxt < -60,])
+    warning("Maximum temperature less -60")
+  }
+  if(any(max(met[["maxt"]])> 60)){
+    print(met[met$maxt > 60,])
+    warning("Maximum temperature is greater than 60")
+  }
+  ## Detect possible errors with radiation
+  if(any(is.na(met[["radn"]]))){
+    print(met[is.na(met$radn),])
+    warning("Missing values found for solar radiation")
+  }
+  if(any(min(met[["radn"]]) < 0, na.rm=TRUE)){
+    print(met[met$radn < 0,])
+    warning("Radiation is negative")
+  }
+  if(any(max(met[["radn"]])> 40, na.rm = TRUE)){
+    print(met[met$radn > 40,])
+    warning("Radiation is greater than 40 (MJ/m2/day)")
+  }
+  ## Detect possible errors with rain
+  if(any(is.na(met[["rain"]]))){
+    print(met[is.na(met$rain),])
+    warning("Missing values found for precipitation")
+  }
+  if(any(min(met[["rain"]]) < 0, na.rm = TRUE)){
+    warning("Rain is negative")
+  }
+  if(any(max(met[["rain"]])> 100, na.rm = TRUE)){
+    warning("Rain is possibly too high")
   }
 }

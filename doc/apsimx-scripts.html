@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2020-02-09" />
+<meta name="date" content="2020-02-26" />
 
 <title>apsimx: writing scripts</title>
 
@@ -303,7 +303,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">apsimx: writing scripts</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2020-02-09</h4>
+<h4 class="date">2020-02-26</h4>
 
 
 
@@ -316,7 +316,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>Let’s see what is needed to run APSIM-X at the command line.</p>
 <div id="windows" class="section level2">
 <h2>Windows</h2>
-<p>In Windows if you use the current (2020-02-09) version of the installer the program will be, most likely, in:</p>
+<p>In Windows if you use the current (2020-02-26) version of the installer the program will be, most likely, in:</p>
 <p><strong>C:\Program Files\APSIM2019.10.04.4236\Bin\Models.exe</strong></p>
 <p>Notice that for each new build of APSIM-X the path will change. After ‘APSIM’ is the year, month, date and version separated by a period. In this case ‘2019.10.04.4236’. In the folder ‘Bin’(for ‘binary’) there are many libraries (‘.dll files’) and some executables. The ‘Models.exe’ is the one that can run .apsimx files.</p>
 <p>When trying to invoke that line at the command line, the space after ‘Program’ is a problem. There are some possible solutions. One is to add quotations (for example see ‘shQuote’ function in R). Another option is to use Windows short name paths, which in this case, for ‘Program Files’ is ‘PROGRA~1’ (but this can change). If running the program from R, for example, the separator needs to be either a double backslash ‘\\’ or a forward slash ‘/’. So one example would be:</p>
@@ -409,7 +409,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] apsimx_1.88
+## [1] apsimx_1.901
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_1.0.2        pillar_1.4.2      compiler_3.6.2   
@@ -434,7 +434,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">Sys.info</span>()[[<span class="st">&quot;release&quot;</span>]]</a></code></pre></div>
 <pre><code>## [1] &quot;17.7.0&quot;</code></pre>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">Sys.info</span>()[[<span class="st">&quot;version&quot;</span>]]</a></code></pre></div>
-<pre><code>## [1] &quot;Darwin Kernel Version 17.7.0: Sun Dec  1 19:19:56 PST 2019; root:xnu-4570.71.63~1/RELEASE_X86_64&quot;</code></pre>
+<pre><code>## [1] &quot;Darwin Kernel Version 17.7.0: Thu Jan 23 07:05:23 PST 2020; root:xnu-4570.71.69~1/RELEASE_X86_64&quot;</code></pre>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="cf">if</span>(.Platform<span class="op">$</span>OS.type <span class="op">==</span><span class="st"> &quot;unix&quot;</span>) <span class="kw">system</span>(<span class="dt">command =</span> <span class="st">&quot;mono --version&quot;</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>##  [1] &quot;Mono JIT compiler version 5.18.1.3 (2018-08/fdb26b0a445 Wed Mar 20 10:02:02 EDT 2019)&quot;  
 ##  [2] &quot;Copyright (C) 2002-2014 Novell, Inc, Xamarin Inc and Contributors. www.mono-project.com&quot;

@@ -42,13 +42,13 @@ apsimx <- function(file = "", src.dir=".",
   
   file <- match.arg(file, file.names)
   
-  file.name.path <- paste0(src.dir,"/",file)
+  file.name.path <- file.path(src.dir,file)
   
   ada <- auto_detect_apsimx()
 
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
-    run.strng <- paste0(mono," ",ada," ",file.name.path)
+    run.strng <- paste0(mono," ",ada," ",file.name.path) ## Could use 'paste' instead I guess...
     ## Run APSIM-X on the command line
     system(command = run.strng, ignore.stdout = silent)
   }
@@ -105,6 +105,8 @@ auto_detect_apsimx <- function(){
       if(length(find.apsim) == 1){
         apsimx.name <- laf[find.apsim]
         apsimx_dir <- paste0(st1,apsimx.name,st3)
+        ## I could use 'file.path' instead, but it this is not a 'file'
+        ## so it could be confusing
       }
       ## If there is more than one version of APSIM-X
       if(length(find.apsim) > 1){
@@ -336,7 +338,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   example <- match.arg(example, choices = ex.ch)
   
   ex.dir <- auto_detect_apsimx_examples()
-  ex <- paste0(ex.dir,"/",example,".apsimx")
+  ex <- file.path(ex.dir,paste0(example,".apsimx"))
   
   if(!file.exists(ex)) stop(paste0("cannot find example file ",example))
   ## Make a temporary copy of the file to the current directory
@@ -376,7 +378,7 @@ read_apsimx <- function(file = "", src.dir = ".",
   
   value <- match.arg(value)
   
-  file.name.path <- paste0(src.dir,"/",file)
+  file.name.path <- file.path(src.dir,file)
   
   con <- DBI::dbConnect(RSQLite::SQLite(), file.name.path)
   ## create data frame for each table

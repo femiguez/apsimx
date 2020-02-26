@@ -94,6 +94,12 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   
   if(!is.null(rep.node$CropType)) cat("CropType", rep.node$CropType,"\n")
   
+  ## This tries to handle the fact that ther paramter might be at this
+  ## high of a level
+  if(!missing(parm) && parm %in% names(rep.node)){
+    unpack_node(rep.node, parm = parm, display.available = display.available)
+  }
+  
   ## Available node children
   rep.node.children.names <- sapply(rep.node$Children, function(x) x$Name)
   if(display.available){

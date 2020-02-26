@@ -25,7 +25,8 @@ Read APSIM generated .out files
 \examples{
 \dontrun{
 extd.dir <- system.file("extdata", package = "apsimx")
-ans <- read_apsim("Maize", src.dir = extd.dir, value = "report")
+maize.out <- read_apsim("Maize", src.dir = extd.dir, value = "report")
+millet.out <- read_apsim("Millet", src.dir = extd.dir, value = "report")
 }
 
 }

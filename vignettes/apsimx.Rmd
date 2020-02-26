@@ -459,8 +459,7 @@ Files in 'inst/extdata' and how they are used (ordered alphabetically):
 * **Maize.out**: This file is needed for the 'read_apsim' example.
 * **MaizeSoybean.apsimx**: This file is needed for the vignette and for testing in 'test_replacements.R'
 * **Millet.apsim**: Millet example from APSIM 'Classic' for testing 'inspect_apsim' and used in the vignette.
-* **Millet.sim**: result from the Millet simulation. Not sure if it is needed.
-* **nasamets** (folder): files created using the 'nasapower' package for testing imputation 'impute_apsim_met'.
+* **Millet.out/sum**: result from the Millet simulation. Used in the 'read_apsim' example.
 * **Soybean.apsimx**: Soybean example for APSIM-X. Used in 'test_replacements.R'.
 * **Wheat.apsimx**: This file is used in the vignette.
 * **Wheat.db**: This file is used in the vignette.

@@ -36,7 +36,7 @@ apsim <- function(file = "", src.dir=".",
   
   .check_apsim_name(.file = file)
   
-  ## The following lines are somewhat not needed
+  ## Extra checking, not sure if it will be triggered
   file.names <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
   
   if(length(file.names)==0){
@@ -45,7 +45,7 @@ apsim <- function(file = "", src.dir=".",
   
   file <- match.arg(file, file.names, several.ok=FALSE)
   
-  file.name.path <- paste0(src.dir,"/",file)
+  file.name.path <- file.path(src.dir,file)
   
   ## Can you run in APSIM 'Classic' from any directory or only from the current one?
   ## I'm assuming only from the current one
@@ -54,7 +54,7 @@ apsim <- function(file = "", src.dir=".",
   }
   
   ada <- auto_detect_apsim()
-  run.strng <- paste0(ada," ./",file)
+  run.strng <- paste0(ada," ./",file) ## This is a command not a file.path
   shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   
   ## It turns out that the name of the .out file is not as simple
@@ -92,6 +92,7 @@ apsim <- function(file = "", src.dir=".",
 }
 
 ## This is an internal function so I won't export/document it
+## I should still write documentation though and use noRd
 auto_detect_apsim <- function(){
 
   if(.Platform$OS.type != "windows"){
@@ -126,10 +127,9 @@ auto_detect_apsim <- function(){
   if(!is.na(apsimx::apsim.options$exe.path)){
     ## Windows paths can contain white spaces which are
     ## problematic when running them at the command line
-    ## shQuote might be useful for this purpose
-    ## However I think shQuote is not needed 
-    ## Because shell does its own translate
-    ## Need to test this
+    ## I will simply not allow white spaces
+    if(grepl("\\s", apsimx::apsim.options$exe.path))
+      stop("White spaces are not allowed in APSIM Classic exe.path")
     apsim_dir <- apsimx::apsim.options$exe.path
   }
   return(apsim_dir)
@@ -179,6 +179,8 @@ auto_detect_apsim_examples <- function(){
   
   if(!is.na(apsimx::apsim.options$examples.path)){
     ## Not sure if I need shQuote here
+    if(grepl("\\s", apsimx::apsim.options$examples.path))
+      stop("White spaces are not allowed in APSIM Classic examples.path")
     apsim_ex_dir <- apsimx::apsim.options$examples.path
   }
   return(apsim_ex_dir)
@@ -225,7 +227,7 @@ apsim_example <- function(example = "Millet", silent = FALSE){
   
   ada <- auto_detect_apsim()
   ex.dir <- auto_detect_apsim_examples()
-  ex <- paste0(ex.dir,"/",example,".apsim")
+  ex <- file.path(ex.dir,paste0(example,".apsim"))
   
   if(!file.exists(ex)) stop("cannot find example files")
   ## Make a temporary copy of the file to the current directory
@@ -268,7 +270,8 @@ apsim_example <- function(example = "Millet", silent = FALSE){
 #' @examples 
 #' \dontrun{
 #' extd.dir <- system.file("extdata", package = "apsimx")
-#' ans <- read_apsim("Maize", src.dir = extd.dir, value = "report")
+#' maize.out <- read_apsim("Maize", src.dir = extd.dir, value = "report")
+#' millet.out <- read_apsim("Millet", src.dir = extd.dir, value = "report")
 #' }
 #' 
 

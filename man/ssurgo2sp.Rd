@@ -43,16 +43,19 @@ but also many other files which are not needed for creating a soil profile.
 \examples{
 \dontrun{
 require(ggplot2)
+require(sf)
 extd.dir <- system.file("extdata", package = "apsimx")
 
 chorizon <- read.csv(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_chorizon.csv"))
 component <- read.csv(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_component.csv"))
 mapunit <- read.csv(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_mapunit.csv"))
+mapunit.shp <- st_read(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_Mapunits.shp"), quiet = TRUE)
 
 ## Using default 'constant' method
 sp.c <- ssurgo2sp(mapunit = mapunit, 
                  component = component, 
-                 chorizon = chorizon)
+                 chorizon = chorizon, 
+                 mapunit.shp = mapunit.shp)
 
 ggplot(data = sp.c, aes(y = -Depth, x = Carbon)) + 
 geom_point() + 
@@ -63,7 +66,9 @@ geom_point() +
 ## Using 'linear' method
 sp.l <- ssurgo2sp(mapunit = mapunit, 
                  component = component, 
-                 chorizon = chorizon, method = "linear")
+                 chorizon = chorizon, 
+                 mapunit.shp = mapunit.shp,
+                 method = "linear")
                  
 ggplot(data = sp.l, aes(y = -Depth, x = Carbon)) + 
 geom_point() + 
