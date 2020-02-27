@@ -10,7 +10,7 @@ edit_apsim(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
   "OrganicMatter", "Chemical", "Analysis", "InitialWater", "Sample",
   "SWIM"), manager.child = NULL, parm = NULL, value = NULL,
   overwrite = FALSE, edit.tag = "-edited", parm.path = NULL,
-  verbose = TRUE)
+  verbose = TRUE, check.length = TRUE)
 }
 \arguments{
 \item{file}{file ending in .apsim to be edited}
@@ -36,6 +36,8 @@ edit_apsim(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
 \item{parm.path}{path to the attribute to edit when node is 'Other'}
 
 \item{verbose}{whether to print information about successful edit}
+
+\item{check.length}{check whether vectors are of the correct length}
 }
 \value{
 (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.

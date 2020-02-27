@@ -26,6 +26,7 @@
 #' @param edit.tag if the file is edited a different tag from the default '-edited' can be used.
 #' @param parm.path path to the attribute to edit when node is 'Other'
 #' @param verbose whether to print information about successful edit
+#' @param check.length check whether vectors are of the correct length
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
 #' As a side effect this function creates a new (XML) .apsimx file.
 #' @note The components that can be edited are restricted becuase this is better in preventing
@@ -53,7 +54,8 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                        overwrite = FALSE,
                        edit.tag = "-edited",
                        parm.path = NULL,
-                       verbose = TRUE){
+                       verbose = TRUE,
+                       check.length = TRUE){
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
@@ -128,19 +130,36 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                             "CN2Bare","CNRed","CNCov")
       
       if(parm %in% soil.water.parms){
+        ## These are of length 1
         parm.path <- paste0(".//Soil/Water","/",parm)
         soil.water.node <- xml2::xml_find_first(apsim_xml, parm.path)
         ## Error checking
-        if(length(value) != length(soil.water.node))
-          stop("value vector of incorrect length")
+        if(check.length){
+          if(length(value) != length(soil.water.node))
+            stop("value vector of incorrect length")
+        }
+        xml2::xml_set_text(soil.water.node, as.character(value))
       }else{
         soil.water.node <- xml2::xml_find_first(apsim_xml, parm.path)
-        if(length(value) != length(xml2::xml_children(soil.water.node)))
-          stop("value vector of incorrect length")
+        if(check.length){
+          if(length(value) != length(xml2::xml_children(soil.water.node)))
+            stop("value vector of incorrect length")
+        }
+        ## With this code it is still possible to provide an incorrect parameter
+        ## Not sure...
+        len.child.soil.water.node <- length(xml2::xml_children(soil.water.node))
+        ## If value is larger I grow the children to match lengths
+        if(length(value) > len.child.soil.water.node){
+            for(i in seq_len(length(value) - len.child.soil.water.node)){
+              xml2::xml_add_child(soil.water.node, xml2::xml_children(soil.water.node)[[len.child.soil.water.node]])
+            }
+        }
+        if(length(value) < len.child.soil.water.node){
+          warning("length of value is shorter than length of soil water node.")
+          stop("Don't really know how to do this yet")
+        }
+        xml2::xml_set_text(xml2::xml_children(soil.water.node), as.character(value))
       }
-      ## With this code it is still possible to provide an incorrect parameter
-      ## Not sure...
-      xml2::xml_set_text(xml2::xml_children(soil.water.node), as.character(value))
     }
 
     if(soil.child == "SWIM"){
@@ -190,7 +209,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       parm.path <- paste0(".//Soil/SoilOrganicMatter","/",parm)
       
       if(parm %in% parm.ch1){
-        if(length(value) != 1) stop("value should be of length=1")
+        if(length(value) != 1) stop("value should be of length = 1")
         soil.OM.node <- xml2::xml_find_first(apsim_xml, parm.path)
         xml2::xml_set_text(soil.OM.node, as.character(value))
       }
@@ -198,9 +217,22 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       if(parm %in% parm.ch2){
         soil.OM.node <- xml2::xml_find_first(apsim_xml, parm.path)
         
-        if(length(value) != length(xml2::xml_children(soil.OM.node)))
-          stop("value vector of incorrect length")
+        if(check.length){
+          if(length(value) != length(xml2::xml_children(soil.OM.node)))
+            stop("value vector of incorrect length")
+        }
         
+        len.child.soil.OM.node <- length(xml2::xml_children(soil.OM.node))
+        ## If value is larger I grow the children to match lengths
+        if(length(value) > len.child.soil.OM.node){
+          for(i in seq_len(length(value) - len.child.soil.OM.node)){
+            xml2::xml_add_child(soil.OM.node, xml2::xml_children(soil.OM.node)[[len.child.soil.OM.node]])
+          }
+        }
+        if(length(value) < len.child.soil.OM.node){
+          warning("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.")
+          stop("Don't really know how to do this yet.")
+        }
         xml2::xml_set_text(xml2::xml_children(soil.OM.node), as.character(value))
       }
     }
@@ -215,8 +247,22 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       soil.Analysis.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
-      if(length(value) != length(xml2::xml_children(soil.Analysis.node)))
-        stop("value vector of incorrect length")
+      if(check.length){
+        if(length(value) != length(xml2::xml_children(soil.Analysis.node)))
+          stop("value vector of incorrect length")
+      }
+      
+      len.child.soil.Analysis.node <- length(xml2::xml_children(soil.Analysis.node))
+      ## If value is larger I grow the children to match lengths
+      if(length(value) > len.child.soil.Analysis.node){
+        for(i in seq_len(length(value) - len.child.soil.Analysis.node)){
+          xml2::xml_add_child(soil.Analysis.node, xml2::xml_children(soil.Analysis.node)[[len.child.soil.Analysis.node]])
+        }
+      }
+      if(length(value) < len.child.soil.Analysis.node){
+        warning("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.")
+        stop("Don't really know how to do this yet.")
+      }
       
       xml2::xml_set_text(xml2::xml_children(soil.Analysis.node), as.character(value))
     }
@@ -231,8 +277,22 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       soil.InitialWater.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
-      if(length(value) != length(soil.InitialWater.node))
-        stop("value vector of incorrect length")
+      if(check.length){
+        if(length(value) != length(soil.InitialWater.node))
+          stop("value vector of incorrect length")
+      }
+      
+      len.child.soil.InitialWater.node <- length(xml2::xml_children(soil.InitialWater.node))
+      ## If value is larger I grow the children to match lengths
+      if(length(value) > len.child.soil.InitialWater.node){
+        for(i in seq_len(length(value) - len.child.soil.InitialWater.node)){
+          xml2::xml_add_child(soil.InitialWater.node, xml2::xml_children(soil.InitialWater.node)[[len.child.soil.InitialWater.node]])
+        }
+      }
+      if(length(value) < len.child.soil.InitialWater.node){
+        warning("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.")
+        stop("Don't really know how to do this yet.")
+      }
       
       xml2::xml_set_text(soil.InitialWater.node, as.character(value))
     }
@@ -247,10 +307,24 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       soil.Sample.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
-      if(length(value) != length(soil.Sample.node))
-        stop("value vector of incorrect length")
+      if(check.length){
+        if(length(value) != length(soil.Sample.node))
+          stop("value vector of incorrect length")
+      }
       
-      xml2::xml_set_text(soil.Sample.node, as.character(value))
+      len.child.soil.Sample.node <- length(xml2::xml_children(soil.Sample.node))
+      ## If value is larger I grow the children to match lengths
+      if(length(value) > len.child.soil.Sample.node){
+        for(i in seq_len(length(value) - len.child.soil.Sample.node)){
+          xml2::xml_add_child(soil.Sample.node, xml2::xml_children(soil.Sample.node)[[len.child.soil.Sample.node]])
+        }
+      }
+      if(length(value) < len.child.soil.Sample.node){
+        warning("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.")
+        stop("Don't really know how to do this yet.")
+      }
+      
+      xml2::xml_set_text(xml2::xml_children(soil.Sample.node), as.character(value))
     }
     ## For now changing other components of the 'Soil' might make little sense
   }
@@ -267,8 +341,22 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       soil.Pools.Pool.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
-      if(length(value) != length(soil.Pools.Pool.node))
-        stop("value vector of incorrect length")
+      if(check.length){
+        if(length(value) != length(soil.Pools.Pool.node))
+          stop("value vector of incorrect length")
+      }
+      
+      len.child.soil.Pools.Pool.node <- length(xml2::xml_children(soil.Pools.Pool.node))
+      ## If value is larger I grow the children to match lengths
+      if(length(value) > len.child.soil.Pools.Pool.node){
+        for(i in seq_len(length(value) - len.child.soil.Pools.Pool.node)){
+          xml2::xml_add_child(soil.Pools.Pool.node, xml2::xml_children(soil.Pools.Pool.node)[[len.child.soil.Pools.Pool.node]])
+        }
+      }
+      if(length(value) < len.child.soil.Pools.Pool.node){
+        warning("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.")
+        stop("Don't really know how to do this yet.")
+      }
       
       xml2::xml_set_text(soil.Pools.Pool.node, as.character(value))
   }
@@ -282,8 +370,10 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     
     if(length(crop.node) == 0) stop("parm not found")
     
-    if(length(value) != length(crop.node))
-        stop("value vector of incorrect length")
+    if(check.length){
+      if(length(value) != length(crop.node))
+          stop("value vector of incorrect length")
+    }
     
     xml2::xml_set_text(crop.node, as.character(value))
   }
@@ -298,7 +388,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   
   if(overwrite == FALSE){
     wr.path <- paste0(wrt.dir,"/",
-                      strsplit(file,".",fixed = TRUE)[[1]][1],
+                      tools::file_path_sans_ext(file),
                       edit.tag,".apsim")
   }else{
     wr.path <- paste0(wrt.dir,"/",file)

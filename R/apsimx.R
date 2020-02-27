@@ -495,5 +495,6 @@ assign('warn.find.apsimx', TRUE, apsimx.options)
 #' @import DBI jsonlite knitr RSQLite xml2 
 #' @importFrom utils read.table
 #' @importFrom utils write.table
+#' @importFrom tools file_path_sans_ext
 NULL
 

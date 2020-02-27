@@ -14,7 +14,9 @@
 #' @return writes a file to disk with the supplied soil profile
 #' @details This function is designed to batch replace the whole soil in an APSIM simulation. 
 #' @note There is no such thing as a default soil, carefully build the profile for each simulation.
-#'  dont export for now
+#' This function replaces values and it can grow an XML node, but it cannot edit a property
+#' which is not present in the original file.
+#' @export
 #' @examples 
 #' \dontrun{
 #' sp <- apsimx_soil_profile()
@@ -49,6 +51,141 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
   
   if(missing(soil.profile)) stop("soil profile is missing")
   
-  stop("This is a placeholder. This function has not been developed yet.")
+  ## I might have to replace things one by one
+  soil.water.parms <- c("Thickness","SAT","DUL","KS","LL15","BD","AirDry")
   
+  ## This is the first editing that occurs and it it creates a temporary file
+  ## with a '-tmp' edit tag
+  k <- 1
+  for(i in soil.water.parms){
+    if(k == 1){
+      edit_apsim(file = file, src.dir = src.dir, wrt.dir = ".", 
+                 node = "Soil", soil.child = "Water", 
+                 edit.tag = "-tmp",
+                 parm = i, value = soil.profile$soil[[i]],
+                 check.length = FALSE,
+                 verbose = verbose)
+    }else{
+      new.file.path <- paste0(tools::file_path_sans_ext(file),"-tmp.apsim")
+
+      edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".", 
+                 node = "Soil", soil.child = "Water", 
+                 overwrite = TRUE,
+                 parm = i, value = soil.profile$soil[[i]],
+                 check.length = FALSE,
+                 verbose = verbose)
+    }
+    k <- k + 1
+  }
+  
+  ## Edit Carbon (OC), FBiom and FInert
+  for(i in c("Thickness","Carbon","FBiom","FInert")){
+    if(i == "Carbon"){
+      ii <- "OC"
+    }else{
+      ii <- i
+    }
+    edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".", 
+             node = "Soil", soil.child = "OrganicMatter", 
+             overwrite = TRUE,
+             parm = ii, value = soil.profile$soil[[i]],
+             check.length = FALSE,
+             verbose = verbose)
+  }
+  
+  ## Edit Analysis PH
+  for(i in c("Thickness","PH","EC")){
+    if(i == "EC"){
+      edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".", 
+                 node = "Soil", soil.child = "Analysis", 
+                 overwrite = TRUE,
+                 parm = i, value = rep(0, nrow(soil.profile$soil)),
+                 check.length = FALSE,
+                 verbose = verbose)
+    }else{
+      edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".", 
+                 node = "Soil", soil.child = "Analysis", 
+                 overwrite = TRUE,
+                 parm = i, value = soil.profile$soil[[i]],
+                 check.length = FALSE,
+                 verbose = verbose)
+    }
+  }
+  
+  ## Edit Sample (NO3, NH4)
+  for(i in c("Thickness","NO3N","NH4N")){
+    if(i == "Thickness") ii <- "Thickness"
+    if(i == "NO3N") ii <- "NO3"
+    if(i == "NH4N") ii <- "NH4"
+
+    edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".", 
+             node = "Soil", soil.child = "Sample", 
+             overwrite = TRUE,
+             parm = ii, value = soil.profile$soil[[i]],
+             check.length = FALSE,
+             verbose = verbose)
+  }
+  
+  ## Parse apsim file (XML), but the -tmp one
+  apsim_xml <- xml2::read_xml(new.file.path)
+  
+  ## Try removing the temp file
+  ## Do not clean up at this time
+  ## unlink(new.file.path)
+  
+  ## Print names of crops present in the original file
+  crop.names <- xml2::xml_attr(xml2::xml_find_all(apsim_xml, ".//Soil/Water/SoilCrop"), "name")
+  
+  if(verbose) cat("Crops in the original file",crop.names,"\n")
+  
+  if(!all.equal(soil.profile$crops, crop.names)){
+      cat("Name of crops in soil profile", soil.profile$crops,"\n")
+      cat("Name of crops in APSIM file", crop.names,"\n")
+      stop("Names of crops are not the same")
+  }
+  
+  soil.crops.node <- xml2::xml_find_all(apsim_xml, ".//Soil/Water/SoilCrop")
+  
+  for(i in soil.profile$crops){
+    crop.index <- which(crop.names == i)
+    for(j in c("Thickness","XF","LL","KL")){
+      crop.specific.node <- xml2::xml_find_first(xml2::xml_find_all(apsim_xml, ".//Soil/Water/SoilCrop")[[crop.index]],paste0("./",j))
+      
+      len.child.crop.specific.node <- length(xml2::xml_children(crop.specific.node))
+      rows.soil.profile <- nrow(soil.profile$soil)
+      ## If value is larger I grow the children to match lengths
+      if(rows.soil.profile > len.child.crop.specific.node){
+        for(i in seq_len(rows.soil.profile - len.child.crop.specific.node)){
+          xml2::xml_add_child(crop.specific.node, xml2::xml_children(crop.specific.node)[[len.child.crop.specific.node]])
+        }
+      }
+      if(rows.soil.profile < len.child.crop.specific.node){
+        cat("Number of rows of soil profile:", rows.soil.profile,"\n")
+        cat("Number of layers in apsim file:", len.child.crop.specific.node,"\n")
+        cat("length of value is shorter than length of crop specific node. \n At the moment I think I can grow XML nodes but not shrink them.")
+        stop("Sorry. Don't really know how to do this yet.")
+      }
+      
+      if(j != "Thickness"){
+        jj <- paste0("crop.",j)
+      }else{
+        jj <- j
+      }
+      
+      xml2::xml_set_text(xml2::xml_children(crop.specific.node), as.character(soil.profile$soil[[jj]]))
+    }
+  }
+
+  if(overwrite == FALSE){
+    wr.path <- paste0(wrt.dir,"/",
+                      tools::file_path_sans_ext(file),
+                      edit.tag,".apsim")
+  }else{
+    wr.path <- paste0(wrt.dir,"/",file)
+  }
+  xml2::write_xml(apsim_xml, file = wr.path)
+  
+  if(verbose){
+    cat("Created ",wr.path,"\n")
+  }
 }

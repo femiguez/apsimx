@@ -38,7 +38,8 @@ This function is designed to batch replace the whole soil in an APSIM simulation
 }
 \note{
 There is no such thing as a default soil, carefully build the profile for each simulation.
- dont export for now
+This function replaces values and it can grow an XML node, but it cannot edit a property
+which is not present in the original file.
 }
 \examples{
 \dontrun{
