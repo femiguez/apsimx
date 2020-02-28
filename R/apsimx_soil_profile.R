@@ -13,7 +13,7 @@
 #' @title Create APSIM-X Soil Profiles
 #' @name apsimx_soil_profile
 #' @rdname apsimx_soil_profile
-#' @description Generates a soil profile that can then replace the existing one in an \sQuote{.apsimx} simulation file
+#' @description Generates a soil profile that can then replace the existing one in an \sQuote{.apsimx} or \sQuote{.apsim} simulation file
 #' @param nlayers Number of soil layers (default = 10)
 #' @param Depth specific depths for each soil layer (cm)
 #' @param Thickness thickness for each soil layer (mm)
@@ -39,7 +39,9 @@
 #' @param water.table water table level (not used at the moment) (cm)
 #' @param soil.type might use it in the future for auto filling missing information
 #' @param crops name of crops being grown
-#' @param metadata list with soil metadata. For possible parameters and values see an example of 'inspect_apsimx' with soil.child = "Metadata".
+#' @param metadata list with soil metadata. For possible parameters and values see an example of \code{\link{inspect_apsimx}} with soil.child = "Metadata".
+#' @param soilwat optional \sQuote{list} of class \sQuote{soilwat_parms}
+#' @param swim optional \sQuote{list} of class \sQuote{swim_parms}
 #' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
 #' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
 #' If a != 0 and b != 0 then the equation is \code{a*soil.layer*exp(-b*soil.layer)}.  
@@ -79,6 +81,8 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                  soil.type = 0,
                                  crops = c("Maize","Soybean","Wheat"),
                                  metadata = NULL,
+                                 soilwat = NA,
+                                 swim = NA,
                                  dist.parms = list(a = 0, b = 0.2)){
 
   if(!is.null(Depth) & !is.null(Thickness)){
@@ -362,7 +366,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
                      "DUL","SAT","KS","crop.XF","crop.KL","crop.LL",
                      "Carbon","SoilCNRatio", "FOM","FOM.CN","FBiom","FInert",
                      "NO3N","NH4N","PH")
-    ans <- list(soil=soil, crops = crops, metadata = metadata)
+    ans <- list(soil=soil, crops = crops, metadata = metadata, soilwat = soilwat, swim = swim)
     class(ans) <- "soil_profile"
     return(ans)
   }

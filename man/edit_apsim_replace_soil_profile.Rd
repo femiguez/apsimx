@@ -3,11 +3,6 @@
 \name{edit_apsim_replace_soil_profile}
 \alias{edit_apsim_replace_soil_profile}
 \title{Edit APSIM 'Classic' file with a replaced soil profile}
-\usage{
-edit_apsim_replace_soil_profile(file = "", src.dir = ".",
-  wrt.dir = NULL, soil.profile = NULL, swim = NULL, soilwat = NULL,
-  edit.tag = "-edited", overwrite = FALSE, verbose = TRUE)
-}
 \arguments{
 \item{file}{name of the .apsimx file to be edited}
 
@@ -44,11 +39,16 @@ which is not present in the original file.
 \examples{
 \dontrun{
 sp <- apsimx_soil_profile()
+
 extd.dir <- system.file("extdata", package = "apsimx")
+
 edit_apsim_replace_soil_profile("Millet.apsim", soil.profile = sp, 
-                                  src.dir = extd.dir, wrt.dir = ".")
-inspect_apsim("Millet-edited.apsim", src.dir = ".",
-                 node = "Soil")
+                                edit.tag = "-newsoil",
+                                src.dir = extd.dir, 
+                                wrt.dir = ".")
+                                
+inspect_apsim("Millet-newsoil.apsim", src.dir = ".",
+              node = "Soil", soil.child = "Water")
  }
 
 }

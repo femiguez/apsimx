@@ -20,13 +20,19 @@
 #' @examples 
 #' \dontrun{
 #' sp <- apsimx_soil_profile()
+#' 
 #' extd.dir <- system.file("extdata", package = "apsimx")
+#' 
 #' edit_apsim_replace_soil_profile("Millet.apsim", soil.profile = sp, 
-#'                                   src.dir = extd.dir, wrt.dir = ".")
-#' inspect_apsim("Millet-edited.apsim", src.dir = ".",
-#'                  node = "Soil")
+#'                                 edit.tag = "-newsoil",
+#'                                 src.dir = extd.dir, 
+#'                                 wrt.dir = ".")
+#'                                 
+#' inspect_apsim("Millet-newsoil.apsim", src.dir = ".",
+#'               node = "Soil", soil.child = "Water")
 #'  }
 #'
+NULL
 
 edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
                                              wrt.dir = NULL,
@@ -76,6 +82,59 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
                  verbose = verbose)
     }
     k <- k + 1
+  }
+  
+  ## Edit soil water parameters
+  if(!missing(soilwat) || !is.na(soil.profile$soilwat)){
+    if(!inherits(soilwat, "soilwat_parms")) stop("object should be of class 'soilwat_parms'")
+    
+    for(i in seq_along(soilwat)){
+      prm.vl <- soilwat[[i]]
+      if(is.na(prm.vl)) next
+      
+      edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".",
+                 node = "Soil", soil.child = "Water", 
+                 overwrite = TRUE, parm = names(soilwat[i]),
+                 value = prm.vl)
+    }
+  }
+  
+  if(!missing(swim) || !is.na(soil.profile$swim)){
+    if(!inherits(swim, "swim_parms")) stop("object should be of class 'swim_parms'")
+    
+    for(i in seq_along(swim)){
+      prm.vl <- swim[[i]]
+      if(is.na(prm.vl)) next
+      
+      if(grepl("^Swim", names(swim[i]))){
+        prm.nm <- strsplit(names(swim[i]),"_")[[1]][2]
+      }else{
+        prm.nm <- names(swim[i])
+      }
+      
+      edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".",
+                 node = "Soil", soil.child = "SWIM", 
+                 overwrite = TRUE, parm = prm.nm,
+                 value = prm.vl)
+    }
+  }
+  
+  ## Edit metadata
+  if(!is.null(soil.profile$metadata)){
+    
+    for(i in seq_along(soil.profile$metadata)){
+      prm.vl <- soil.profile$metadata[[i]]
+      if(is.na(prm.vl)) next
+      
+      prm.nm <- names(soil.profile$metadata[i])
+    
+      edit_apsim(file = new.file.path, 
+                 src.dir = ".", wrt.dir = ".",
+                 node = "Soil", soil.child = "Metadata", 
+                 overwrite = TRUE, 
+                 parm = prm.nm,
+                 value = prm.vl)
+    }
   }
   
   ## Edit Carbon (OC), FBiom and FInert
@@ -188,4 +247,107 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
   if(verbose){
     cat("Created ",wr.path,"\n")
   }
+}
+
+
+#' 
+#' @title Helper function to supply SoilWat parameters
+#' @name soilwat_parms
+#' @description Creates a list with specific components for the SoilWat model
+#' @param SummerCona see APSIM documentation
+#' @param SummerU see APSIM documentation
+#' @param SummerDate see APSIM documentation
+#' @param WinterCona see APSIM documentation
+#' @param WinterU see APSIM documentation
+#' @param WinterDate see APSIM documentation
+#' @param DiffusConst see APSIM documentation
+#' @param DiffusSlope see APSIM documentation
+#' @param Salb soil albedo (see APSIM documentation)
+#' @param CN2Bare see APSIM documentation
+#' @param CNRed see APSIM documentation
+#' @param CNCov see APSIM documentation
+#' @return a 'list' with class 'soilwat_parms'
+#' @details current documentation for APSIM 7.10 \url{https://www.apsim.info/documentation/model-documentation/soil-modules-documentation/soilwat/}
+#' @export
+#' 
+
+soilwat_parms <- function(SummerCona = NA, SummerU = NA, SummerDate = NA,
+                          WinterCona = NA, WinterU = NA, WinterDate = NA,
+                          DiffusConst = NA, DiffusSlope = NA, Salb = NA,
+                          CN2Bare = NA, CNRed = NA, CNCov = NA){
+  
+  ## Could incorporate error checking in the future
+  
+  sw.lst <- list(SummerCona = SummerCona, SummerU = SummerU, SummerDate = SummerDate,
+              WinterCona = WinterCona, WinterU = WinterU, WinterDate = WinterDate,
+              DiffusConst = DiffusConst, DiffusSlope = DiffusSlope, Salb = Salb,
+              CN2Bare = CN2Bare, CNRed = CNRed, CNCov = CNCov)
+  
+  
+  ans <- structure(sw.lst, class = c("soilwat_parms","list"))
+  
+  ans
+
+}
+
+#'
+#' @title Helper function to supply SWIM parameters
+#' @name swim_parms
+#' @description Creates a list with specific components for the SWIM model
+#' @param Salb see APSIM documentation
+#' @param CN2Bare see APSIM documentation
+#' @param CNRed see APSIM documentation
+#' @param CNCov see APSIM documentation
+#' @param KDul see APSIM documentation
+#' @param PSIDul see APSIM documentation
+#' @param VC see APSIM documentation
+#' @param DTmin see APSIM documentation
+#' @param DTmax see APSIM documentation
+#' @param MaxWaterIncrement see APSIM documentation
+#' @param SpaceWeightingFactor see APSIM documentation
+#' @param SoluteSpaceWeightingFactor see APSIM documentation
+#' @param Diagnostics see APSIM documentation
+#' @param SwimWaterTable_WaterTableDepth see APSIM documentation
+#' @param SwimSubsurfaceDrain_DrainDepth see APSIM documentation
+#' @param SwimSubsurfaceDrain_DrainSpacing see APSIM documentation
+#' @param SwimSubsurfaceDrain_DrainRadius see APSIM documentation
+#' @param SwimSubsurfaceDrain_Klat see APSIM documentation
+#' @param SwimSubsurfaceDrain_ImpermDepth see APSIM documentation
+#' @return a 'list' with class 'swim_parms'
+#' @details current documentation for APSIM 7.10 \url{https://www.apsim.info/documentation/model-documentation/soil-modules-documentation/swim3/}
+#' @export
+#' 
+
+swim_parms <- function(Salb = NA, CN2Bare = NA, CNRed = NA,
+                       CNCov = NA, KDul = NA, PSIDul = NA,
+                       VC = NA, DTmin = NA, DTmax = NA,
+                       MaxWaterIncrement = NA, SpaceWeightingFactor = NA, 
+                       SoluteSpaceWeightingFactor = NA, Diagnostics = NA,
+                       SwimWaterTable_WaterTableDepth = NA, 
+                       SwimSubsurfaceDrain_DrainDepth = NA,
+                       SwimSubsurfaceDrain_DrainSpacing = NA,
+                       SwimSubsurfaceDrain_DrainRadius = NA,
+                       SwimSubsurfaceDrain_Klat = NA, 
+                       SwimSubsurfaceDrain_ImpermDepth = NA){
+  
+  ## Could incorporate error checking in the future
+  
+  swim.lst <- list(Salb = Salb, CN2Bare = CN2Bare, CNRed = CNRed,
+                 CNCov = CNCov, KDul = KDul, PSIDul = PSIDul,
+                 VC = VC, DTmin = DTmin, DTmax = DTmax,
+                 MaxWaterIncrement = MaxWaterIncrement, 
+                 SpaceWeightingFactor = SpaceWeightingFactor, 
+                 SoluteSpaceWeightingFactor = SoluteSpaceWeightingFactor, 
+                 Diagnostics = Diagnostics,
+                 SwimWaterTable_WaterTableDepth = SwimWaterTable_WaterTableDepth, 
+                 SwimSubsurfaceDrain_DrainDepth = SwimSubsurfaceDrain_DrainDepth,
+                 SwimSubsurfaceDrain_DrainSpacing = SwimSubsurfaceDrain_DrainSpacing,
+                 SwimSubsurfaceDrain_DrainRadius = SwimSubsurfaceDrain_DrainRadius,
+                 SwimSubsurfaceDrain_Klat = SwimSubsurfaceDrain_Klat, 
+                 SwimSubsurfaceDrain_ImpermDepth = SwimSubsurfaceDrain_ImpermDepth)
+  
+  ans <- structure(swim.lst, class = c("swim_parms","list"))
+  
+  ans
+  
 }

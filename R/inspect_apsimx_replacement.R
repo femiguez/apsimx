@@ -96,7 +96,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".", node = NULL, no
   
   ## This tries to handle the fact that ther paramter might be at this
   ## high of a level
-  if(!missing(parm) && parm %in% names(rep.node)){
+  if(!missing(parm) && any(parm %in% names(rep.node))){
     unpack_node(rep.node, parm = parm, display.available = display.available)
   }
   
