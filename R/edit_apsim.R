@@ -155,7 +155,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
             }
         }
         if(length(value) < len.child.soil.water.node){
-          warning("length of value is shorter than length of soil water node.")
+          cat("length of value is shorter than length of soil water node.\n")
           stop("Don't really know how to do this yet")
         }
         xml2::xml_set_text(xml2::xml_children(soil.water.node), as.character(value))
@@ -230,7 +230,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
           }
         }
         if(length(value) < len.child.soil.OM.node){
-          warning("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.")
+          cat("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.\n")
           stop("Don't really know how to do this yet.")
         }
         xml2::xml_set_text(xml2::xml_children(soil.OM.node), as.character(value))
@@ -260,7 +260,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
         }
       }
       if(length(value) < len.child.soil.Analysis.node){
-        warning("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.")
+        cat("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.\n")
         stop("Don't really know how to do this yet.")
       }
       
@@ -290,7 +290,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
         }
       }
       if(length(value) < len.child.soil.InitialWater.node){
-        warning("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.")
+        cat("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.\n")
         stop("Don't really know how to do this yet.")
       }
       
@@ -320,7 +320,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
         }
       }
       if(length(value) < len.child.soil.Sample.node){
-        warning("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.")
+        cat("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.\n")
         stop("Don't really know how to do this yet.")
       }
       
@@ -354,7 +354,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
         }
       }
       if(length(value) < len.child.soil.Pools.Pool.node){
-        warning("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.")
+        cat("length of value is shorter than length of soil water node. \n At the moment I think I can grow XML nodes but not shrink them.\n")
         stop("Don't really know how to do this yet.")
       }
       

@@ -190,14 +190,14 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
   
   ## Try removing the temp file
   ## Do not clean up at this time
-  ## unlink(new.file.path)
+  unlink(new.file.path)
   
   ## Print names of crops present in the original file
   crop.names <- xml2::xml_attr(xml2::xml_find_all(apsim_xml, ".//Soil/Water/SoilCrop"), "name")
   
   if(verbose) cat("Crops in the original file",crop.names,"\n")
-  
-  if(!all.equal(soil.profile$crops, crop.names)){
+
+  if(!identical(sort(soil.profile$crops), sort(crop.names))){
       cat("Name of crops in soil profile", soil.profile$crops,"\n")
       cat("Name of crops in APSIM file", crop.names,"\n")
       stop("Names of crops are not the same")
@@ -221,7 +221,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
       if(rows.soil.profile < len.child.crop.specific.node){
         cat("Number of rows of soil profile:", rows.soil.profile,"\n")
         cat("Number of layers in apsim file:", len.child.crop.specific.node,"\n")
-        cat("length of value is shorter than length of crop specific node. \n At the moment I think I can grow XML nodes but not shrink them.")
+        cat("length of 'value' is shorter than length of crop specific node. \n At the moment I think I can grow XML nodes but not shrink them.")
         stop("Sorry. Don't really know how to do this yet.")
       }
       
