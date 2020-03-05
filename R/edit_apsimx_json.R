@@ -98,10 +98,11 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   ## Parse apsimx file (JSON)
   apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
   
-  parent.node0 <- apsimx_json$Children
   ## Where is the 'Core' simulation?
-  wcore <- grep("Core.Simulation", parent.node0)
-  parent.node <- parent.node0[[wcore]]$Children
+  wcore <- grep("Core.Simulation", apsimx_json$Children)
+  ## In the future, if there are multiple 'Core simulations'
+  ## I can try to index them positionally
+  parent.node <- apsimx_json$Children[[wcore]]$Children
   
   ## Edit the 'Clock'
   if(node == "Clock"){
@@ -321,16 +322,17 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
         manager.child.node[[i]]$Value <- value
       }
     }
+    
     manager.node[[wmc]]$Parameters <- manager.child.node
     core.zone.node[wmmn] <- manager.node
   }
   
   parent.node[wcz][[1]]$Children <- core.zone.node
-  apsimx_json$Children[[1]]$Children <- parent.node
+  apsimx_json$Children[[wcore]]$Children <- parent.node
   
   if(overwrite == FALSE){
     wr.path <- paste0(wrt.dir,"/",
-                      strsplit(file,".",fixed = TRUE)[[1]][1],
+                      tools::file_path_sans_ext(file),
                       edit.tag,".apsimx")
   }else{
     wr.path <- paste0(wrt.dir,"/",file)

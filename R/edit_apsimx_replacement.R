@@ -226,7 +226,7 @@ edit_node <- function(x, parm = NULL, value = NULL){
   
   if(length(parm) == 1){
     x.nms <- names(x)
-    print(x.nms)
+##    print(x.nms)
     ## wne <- which(x.nms == parm)
     wne <- grep(parm, x.nms)
 ##    if(length(x[[wne]]) != 1) stop("value should be of length = 1")

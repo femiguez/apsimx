@@ -12,8 +12,7 @@
 #' }
 #' 
 
-apsim_version <- function(which = c("all","inuse"),
-                          verbose = TRUE){
+apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
   
   ## Internal function
   fevc <- function(x) as.numeric(sub("r","",strsplit(x, "-", fixed = TRUE)[[1]][2]))
@@ -33,23 +32,29 @@ apsim_version <- function(which = c("all","inuse"),
   if(.Platform$OS.type == "unix"){
     
     if(grepl("Darwin", Sys.info()[["sysname"]])){
-      laf <- list.files("/Applications/")
+        laf <- list.files("/Applications/")
+        find.apsim <- grep("APSIM",laf, ignore.case = TRUE)
+        if(length(find.apsim) == 0) warning("APSIM-X not found")
+        apsimx.versions <- laf[find.apsim]
+        
+        if(length(find.apsim) > 0){ 
+            tmp.mat <- matrix(NA, nrow = 2, ncol = length(find.apsim))
+            tmp.mat[2,seq_along(find.apsim)] <- rev(apsimx.versions)
+            ans <- data.frame(tmp.dat, as.data.frame(tmp.mat))
+            names(ans) <- c("APSIM",paste0("Version.",seq_along(find.apsim)))
+        }
     }
     
     if(grepl("Linux", Sys.info()[["sysname"]])){
-      laf <- list.files("/usr/local/lib/apsim")
-    }
-    
-    find.apsim <- grep("APSIM",laf, ignore.case = TRUE)
-    
-    if(length(find.apsim) == 0) warning("APSIM-X not found")
-    
-    if(length(find.apsim) > 0){ 
-      apsimx.versions <- laf[find.apsim]
-      tmp.mat <- matrix(NA, nrow = 2, ncol = length(find.apsim))
-      tmp.mat[2,seq_along(find.apsim)] <- rev(apsimx.versions)
-      ans <- data.frame(tmp.dat, as.data.frame(tmp.mat))
-      names(ans) <- c("APSIM",paste0("Version.",seq_along(find.apsim)))
+        laf <- list.files("/usr/local/lib")
+        find.apsim <- grep("apsim",laf, ignore.case = TRUE)
+        if(length(find.apsim) == 0) warning("APSIM-X not found")
+        apsimx.version <- paste0("/usr/local/lib/apsim/",list.files("/usr/local/lib/apsim"))
+        ## Apparently only one version can be present at a time on Debian
+        tmp.mat <- matrix(NA, nrow = 2, ncol = length(find.apsim))
+        tmp.mat[2,length(find.apsim)] <- list.files("/usr/local/lib/apsim")
+        ans <- data.frame(tmp.dat, as.data.frame(tmp.mat))
+        names(ans) <- c("APSIM","Version")
     }
   }
   

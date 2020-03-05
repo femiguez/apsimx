@@ -52,7 +52,7 @@ This package has been tested on:
 
 **Mac**: ApsimX version (2020-01-29) 4007 (R 3.6.2)
 
-**Debian**: ApsimX version ...
+**Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
 **Windows**: ApsimX version 4236 (2020-01-29) 4007 (R 3.6.2)
 
