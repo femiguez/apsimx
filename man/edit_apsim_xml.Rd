@@ -64,5 +64,4 @@ edit_apsim_xml("Maize75.xml",
                parm.path = ".//Model/rue",
                value = values)
 }
-
 }

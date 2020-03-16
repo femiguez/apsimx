@@ -9,6 +9,7 @@
 #' @param parm parameter to refine the inspection of the 'manager' list('parm','position'), use 'NA' for all the positions. 'parm' can be a regular expression for partial matching.
 #' @param digits number of decimals to print (default 3). Not used now because everything is a character.
 #' @param print.path whether to print the path to the specific parameter. Useful to give the later editing. (Also returned as 'invisible')
+#' @param root root node label. In simulation structures such as factorials there will be multiple possible nodes. This can be specified by supplying an appropriate character.
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 #'          To investigate the available 'soil.childs' specify 'Soil' for 'node' and do not specify the 'soil.child'.
 #' @return prints a table with inspected parameters and values (and 'parm path' when 'print.path' = TRUE).
@@ -41,7 +42,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                                           "Nutrient","Organic"),
                            parm = NULL,
                            digits = 3,
-                           print.path = FALSE){
+                           print.path = FALSE,
+                           root){
   
   .check_apsim_name(file)
   
@@ -67,9 +69,32 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## is under this Children/Children node
   ## It looks like I need to 'find' the "Models.Core.Simulation" node
   fcsn <- grep("Models.Core.Simulation", apsimx_json$Children, fixed = TRUE)
-  parent.node <- apsimx_json$Children[[fcsn]]$Children
   
-  parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[fcsn]]$Name)
+  if(length(fcsn) > 1){
+    if(missing(root)){
+      cat("Simulation structure: \n")
+      str_list(apsimx_json)
+      stop("more than one simulation found and no root node label has been specified \n select one of the children names above")   
+    }else{
+      if(length(root) == 1){
+        fcsn <- grep(as.character(root), apsimx_json$Children, fixed = TRUE)
+        parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[fcsn]]$Name)
+        if(length(fcsn) == 0 || length(fcsn) > 1)
+          stop("no root node label found or root is not unique")
+      }else{
+        fcsn1 <- grep(as.character(root[1]), apsimx_json$Children, fixed = TRUE)
+        root.node.0 <- apsimx_json$Children[[fcsn1]]
+        root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)
+        fcsn2 <- grep(as.character(root[2]), root.node.0.child.names, fixed = TRUE)
+        parent.node <- apsimx_json$Children[[fcsn1]]$Children[[fcsn2]]$Children
+        parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[fcsn1]]$Children[[fcsn2]])
+      }
+    }
+  }else{
+    parent.node <- apsimx_json$Children[[fcsn]]$Children  
+    parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[fcsn]]$Name)
+  }
+  
   
   if(node == "Clock"){
     wlc <- function(x) grepl("Clock", x$Name, ignore.case = TRUE)

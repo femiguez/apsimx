@@ -293,7 +293,7 @@ read_apsim <- function(file = "", src.dir = ".",
     ## I assume the extention was included
     ## Only use the name from here 
     ## This strips the extension
-    file <- strsplit(file, ".", fixed = TRUE)[[1]][1]
+    file <- tools::file_path_sans_ext(file)
   }
   
   file.name.path <- paste0(src.dir,"/",file,".out")

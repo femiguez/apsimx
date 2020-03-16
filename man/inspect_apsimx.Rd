@@ -9,7 +9,7 @@ inspect_apsimx(file = "", src.dir = ".", node = c("Clock", "Weather",
   "Other"), soil.child = c("Metadata", "Water", "InitialWater",
   "Chemical", "Physical", "Analysis", "SoilWater", "InitialN",
   "CERESSoilTemperature", "Sample", "Nutrient", "Organic"), parm = NULL,
-  digits = 3, print.path = FALSE)
+  digits = 3, print.path = FALSE, root)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected (JSON)}
@@ -25,6 +25,8 @@ inspect_apsimx(file = "", src.dir = ".", node = c("Clock", "Weather",
 \item{digits}{number of decimals to print (default 3). Not used now because everything is a character.}
 
 \item{print.path}{whether to print the path to the specific parameter. Useful to give the later editing. (Also returned as 'invisible')}
+
+\item{root}{root node label. In simulation structures such as factorials there will be multiple possible nodes. This can be specified by supplying an appropriate character.}
 }
 \value{
 prints a table with inspected parameters and values (and 'parm path' when 'print.path' = TRUE).

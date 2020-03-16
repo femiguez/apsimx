@@ -43,7 +43,6 @@
 #'                parm.path = ".//Model/rue",
 #'                value = values)
 #' }
-#' 
 
 edit_apsim_xml <- function(file, src.dir = ".", wrt.dir = NULL,
                            parm.path=NULL, 

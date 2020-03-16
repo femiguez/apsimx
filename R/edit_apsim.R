@@ -61,11 +61,8 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   
   file.names <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
   
-  if(length(file.names)==0){
+  if(identical(length(file.names),0))
     stop("There are no .apsim files in the specified directory to edit.")
-  }
-  
-  if(!missing(manager.child)) stop("not implemented yet")
   
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)
@@ -361,21 +358,36 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       xml2::xml_set_text(soil.Pools.Pool.node, as.character(value))
   }
   
-  if(node == "Crop" | node == "Manager"){
+  if(node == "Crop" || node == "Manager"){
     
-    ## Trying to figure this out
-    ## xml_text(xml_find_all(apsim_xml, ".//manager[4]/ui/fert_date"))
-    ## xml_path(xml_find_all(apsim_xml,".//fert_date"))
-    crop.node <- xml2::xml_find_all(apsim_xml, parm)
-    
-    if(length(crop.node) == 0) stop("parm not found")
-    
-    if(check.length){
-      if(length(value) != length(crop.node))
-          stop("value vector of incorrect length")
+    if(!missing(manager.child)){
+      
+      manager.node <- xml2::xml_find_all(apsim_xml, ".//manager")
+      manager.node.names <- xml2::xml_attr(manager.node, "name")
+      wmnn <- grep(manager.child, manager.node.names, ignore.case = TRUE)
+      
+      if(length(wmnn) == 0L) stop("manager child not found")
+      
+      select.manager.node <- manager.node[[wmnn]]
+      
+      ## If parameter is missing I should print available options, maybe...
+      parm.select.manager.node <- xml2::xml_find_first(select.manager.node, paste0(".//",parm))
+      
+      xml2::xml_set_text(parm.select.manager.node, as.character(value))
+      
+    }else{
+      crop.node <- xml2::xml_find_all(apsim_xml, parm)
+      
+      if(length(crop.node) == 0) stop("parm not found")
+      
+      if(check.length){
+        if(length(value) != length(crop.node))
+            stop("value vector of incorrect length")
+      }
+      
+      xml2::xml_set_text(crop.node, as.character(value))
+      
     }
-    
-    xml2::xml_set_text(crop.node, as.character(value))
   }
   
   if(node == "Other"){

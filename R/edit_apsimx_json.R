@@ -25,6 +25,7 @@
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
 #' @param edit.tag if the file is edited a different tag from the default '-edited' can be used.
 #' @param parm.path path to the attribute to edit when node is 'Other'
+#' @param root supply the node postion in the case of multiple simulations such as factorials.
 #' @param verbose whether to print information about successful edit
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
 #' As a side effect this function creates a new (JSON) .apsimx file.
@@ -73,6 +74,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         overwrite = FALSE,
                         edit.tag = "-edited",
                         parm.path = NULL,
+                        root,
                         verbose = TRUE){
   
   .check_apsim_name(file)
@@ -102,6 +104,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   wcore <- grep("Core.Simulation", apsimx_json$Children)
   ## In the future, if there are multiple 'Core simulations'
   ## I can try to index them positionally
+    
   parent.node <- apsimx_json$Children[[wcore]]$Children
   
   ## Edit the 'Clock'

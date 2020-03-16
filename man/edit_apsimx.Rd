@@ -9,7 +9,7 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
   "Manager"), soil.child = c("Metadata", "Water", "Organic", "Physical",
   "Analysis", "Chemical", "InitialWater", "Sample"),
   manager.child = NULL, parm = NULL, value = NULL,
-  overwrite = FALSE, edit.tag = "-edited", parm.path = NULL,
+  overwrite = FALSE, edit.tag = "-edited", parm.path = NULL, root,
   verbose = TRUE)
 }
 \arguments{
@@ -34,6 +34,8 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
 \item{edit.tag}{if the file is edited a different tag from the default '-edited' can be used.}
 
 \item{parm.path}{path to the attribute to edit when node is 'Other'}
+
+\item{root}{supply the node postion in the case of multiple simulations such as factorials.}
 
 \item{verbose}{whether to print information about successful edit}
 }
