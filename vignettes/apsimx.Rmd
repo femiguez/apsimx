@@ -393,6 +393,30 @@ inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
 
 Here we stop at this level but it is possible to dig deeper using 'node.subchild' and 'node.subsubchild'. It is not possible at this point to dig deeper than 'node.subsubchild' in the hierarchy level.
 
+The **inspect_apsimx** function can also handle factorials. 
+
+```{r inspect-apsimx-factorial-1, eval = FALSE}
+inspect_apsimx("Factorial.apsimx", src.dir = extd.dir)
+## Simulation structure: 
+## list Name: Simulations 
+# list length: 8 
+# list names: $type ExplorerWidth Version Name Children IncludeInDocumentation Enabled ReadOnly 
+# Children: Yes 
+# Children length: 6 
+# Children Names: Experiment RangeExperiment OperationsExpt Compound ManagerExpt DataStore 
+# Error in inspect_apsimx("Factorial", src.dir = ex.dir) : 
+#   more than one simulation found and no root node label has been specified 
+#  select one of the children names above
+```
+
+We need to pick one out of the possible factorials. If you check this file with the APSIM GUI, you'll see that within 'RangeExperiment' there is 'Factors' and 'Base2', but the core simulation is within 'Base2'. The 'root' argument provides the specific factorial and the node 'Base2' within that factorial.
+
+```{r inspect-apsimx-factorial-2}
+inspect_apsimx("Factorial.apsimx", src.dir = extd.dir,
+               root = c("RangeExperiment","Base2"),
+               node = "Weather")
+```
+
 I won't be running the 'Factorial' example here, but if you are interested this is done in the folder 'tests' in the pacakge source. 
 
 # APSIM-X Inputs: Weather and Soil

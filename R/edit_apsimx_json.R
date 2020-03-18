@@ -102,11 +102,31 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   
   ## Where is the 'Core' simulation?
   wcore <- grep("Core.Simulation", apsimx_json$Children)
-  ## In the future, if there are multiple 'Core simulations'
-  ## I can try to index them positionally
-    
-  parent.node <- apsimx_json$Children[[wcore]]$Children
-  
+
+  if(length(wcore) > 1){
+    if(missing(root)){
+      cat("Simulation structure: \n")
+      str_list(apsimx_json)
+      stop("more than one simulation found and no root node label has been specified \n select one of the children names above")   
+    }else{
+      if(length(root) == 1){
+        wcore1 <- grep(as.character(root), apsimx_json$Children)
+        if(length(wcore1) == 0 || length(wcore1) > 1)
+          stop("no root node label found or root is not unique")
+        parent.node <- apsimx_json$Children[[wcore1]]$Children
+      }else{
+        root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
+        wcore1 <- grep(as.character(root[1]), root.node.0.names)
+        root.node.0 <- apsimx_json$Children[[wcore1]]
+        root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)
+        wcore2 <- grep(as.character(root[2]), root.node.0.child.names)
+        parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children
+      }
+    }
+  }else{
+    parent.node <- apsimx_json$Children[[wcore]]$Children  
+  }
+
   ## Edit the 'Clock'
   if(node == "Clock"){
     parm.choices <- c("Start","End")
@@ -147,7 +167,6 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     wlw <- function(x) grepl("Weather", x$Name)
     wlwl <- sapply(parent.node, FUN = wlw)
     parent.node[wlwl][[1]]$FileName <- value
-    apsimx_json$Children[[1]]$Children <- parent.node
   }
   
   ## Extract 'Core' simulation
@@ -331,7 +350,18 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   }
   
   parent.node[wcz][[1]]$Children <- core.zone.node
-  apsimx_json$Children[[wcore]]$Children <- parent.node
+  
+  if(length(wcore) > 1){
+    ## I have to assume that root was supplied 
+    ## otherwise an error would have been triggered before
+    if(length(root) == 1){
+      apsimx_json$Children[[wcore1]]$Children <- parent.node 
+    }else{
+      apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children <- parent.node 
+    }
+  }else{
+    apsimx_json$Children[[wcore]]$Children <- parent.node 
+  }
   
   if(overwrite == FALSE){
     wr.path <- paste0(wrt.dir,"/",
