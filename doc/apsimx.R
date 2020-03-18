@@ -187,6 +187,30 @@ inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
                            node = "Base", node.child = "Clock",
                            display.available = TRUE)
 
+## ----inspect-apsimx-factorial-1, eval = FALSE----------------------------
+#  inspect_apsimx("Factorial.apsimx", src.dir = extd.dir)
+#  ## Simulation structure:
+#  ## list Name: Simulations
+#  # list length: 8
+#  # list names: $type ExplorerWidth Version Name Children IncludeInDocumentation Enabled ReadOnly
+#  # Children: Yes
+#  # Children length: 6
+#  # Children Names: Experiment RangeExperiment OperationsExpt Compound ManagerExpt DataStore
+#  # Error in inspect_apsimx("Factorial", src.dir = ex.dir) :
+#  #   more than one simulation found and no root node label has been specified
+#  #  select one of the children names above
+
+## ----inspect-apsimx-factorial-2------------------------------------------
+inspect_apsimx("Factorial.apsimx", src.dir = extd.dir,
+               root = c("RangeExperiment","Base2"),
+               node = "Weather")
+
+## ----edit-apsimx-factorial-2---------------------------------------------
+edit_apsimx("Factorial.apsimx", src.dir = extd.dir,
+            root = c("RangeExperiment","Base2"),
+            node = "Weather", 
+            value = "Ames.met")
+
 ## ----apsim-verions-tail--------------------------------------------------
 ava <- apsim_version()
 aiu <- apsim_version(which = "inuse")

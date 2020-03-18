@@ -362,7 +362,7 @@ inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
                            parm = c("X","Y")) 
 ```
 
-## Inspecting a Factorial
+## Inspecting and editing a Factorial
 
 The complexity of APSIM-X files can be mind-boggling and it makes it difficult to write robust functions across all tasks that APSIM is able to accomplish. I wrote the 'inspect_apsimx_replacement' and 'edit_apsimx_replacement' specifically to edit replacements but these functions have much more flexibility than 'inspect_apsimx' and 'edit_apsimx'. The function 'apsimx_example' is limited in the number of examples that it is allowed to run, but this does not mean that you cannot run the other examples which are distributed with APSIM-X. Let's take the 'Factorial' example:
 
@@ -417,6 +417,15 @@ inspect_apsimx("Factorial.apsimx", src.dir = extd.dir,
                node = "Weather")
 ```
 
+Following this structure, if we want to edit the path to the weather file we can use the following example.
+
+```{r edit-apsimx-factorial-2}
+edit_apsimx("Factorial.apsimx", src.dir = extd.dir,
+            root = c("RangeExperiment","Base2"),
+            node = "Weather", 
+            value = "Ames.met")
+```
+
 I won't be running the 'Factorial' example here, but if you are interested this is done in the folder 'tests' in the pacakge source. 
 
 # APSIM-X Inputs: Weather and Soil
@@ -457,14 +466,12 @@ aiu <- apsim_version(which = "inuse")
 
 # To-Do
 
-* Fix possible bug when editing factorials in 'edit_apsim' and 'edit_apsimx'
-
 * **inspect_apsimx_replacement** challenge this function with more complex
 examples. It has problems with 'manager' when replacements are present.
 
 * Add more tests using the 'CoverCrop example' (APSIM 'Classic'). This would be the motivation for writing a function for 'factorials'. 'edit_apsim_factorial'.
 
-* Include parameter estimation example for maize
+* Include parameter estimation example
 
 # Appendix
 
