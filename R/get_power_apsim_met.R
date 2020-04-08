@@ -1,5 +1,5 @@
 #'
-#' This function requires the \sQuote{nasapower} pacakge.
+#' This function requires the \sQuote{nasapower} package.
 #'
 #' @title Get POWER data for an APSIM met file
 #' @description Uses '\sQuote{get_power} from the \sQuote{nasapower} package to download data to create an APSIM met file.
@@ -59,7 +59,7 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
   names(pwr) <- c("year","day","radn","maxt","mint","rain","rh","wind_speed")
   units <- c("()","()","(MJ/m2/day)","(oC)","(oC)","(mm)","(%)","(m/s)")
   
-  comments <- paste("!data from nasapower R pacakge. retrieved: ",Sys.time())
+  comments <- paste("!data from nasapower R package. retrieved: ",Sys.time())
     
   attr(pwr, "filename") <- filename
   attr(pwr, "site") <- paste("site = ", sub(".met","", filename, fixed = TRUE))
