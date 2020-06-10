@@ -8,7 +8,7 @@
 #' @param node.child specific node child component to be inspected.
 #' @param node.subchild specific node sub-child to be inspected.
 #' @param node.subsubchild specific node sub-subchild to be inspected.
-#' @param root 'root' for the inspection of a replacement file (it gives flexibility to inspect other types of files).
+#' @param root \sQuote{root} for the inspection of a replacement file (it gives flexibility to inspect other types of files).
 #' @param parm specific parameter to display
 #' @param display.available logical. Whether to display available components to be inspected (default = FALSE)
 #' @param digits number of decimals to print (default 3)
@@ -17,12 +17,13 @@
 #' @return table with inspected parameters and values
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 #'                            node = "Maize", node.child = "Phenology",
 #'                            node.subchild = "ThermalTime", parm = c("X","Y")) 
-#'  
+#'}
+#'\dontrun{  
 #' ## This function can also be used to inspect more complex APSIM-X files
 #' ## For example the 'Factorial' example
 #' ex.dir <- auto_detect_apsimx_examples()
@@ -367,3 +368,8 @@ format_parm_path <- function(x, parm = NULL){
   }
  ans
 }
+
+## Note: In the package I distribute some files which have additional 'replacements'
+## The specific replacement needs to be incorporated by copying code from
+## ApsimX/Models/Resources/
+## Or: https://github.com/APSIMInitiative/ApsimX/tree/master/Models/Resources

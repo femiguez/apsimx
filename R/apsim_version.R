@@ -1,7 +1,7 @@
-#' Display available APSIM and APSIM-X versions
+#' Display available APSIM \sQuote{Classic} and APSIM-X versions
 #' 
 #' @name apsim_version
-#' @param which either 'all' or 'inuse'
+#' @param which either \sQuote{all} or \sQuote{inuse}
 #' @param verbose whether to print the information to standard output
 #' @return a data frame (all) or a vector (inuse) with APSIM-X and/or APSIM versions
 #' @export

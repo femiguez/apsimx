@@ -6,8 +6,8 @@
 #' in the source directory \code{src.dir} are edited. The old values are replaced with \code{value}, which
 #' is a list that has the same number of elements as the length of the vector \code{parm}.  The current
 #' .apsimx file will be overwritten if \code{overwrite} is set to \code{TRUE}; otherwise the file
-#' \emph{'file'-edited.apsimx} will be created.  If (verbose = TRUE) then the name
-#'  of the written file is returned. The function is similar to the edit_apsim functin in the 'apsimr'
+#' \sQuote{file} \emph{-edited.apsimx} will be created.  If (verbose = TRUE) then the name
+#'  of the written file is returned. The function is similar to the edit_apsim functin in the \sQuote{apsimr}
 #'  package, but with the difference that only some variables (parameters) can be modified.
 #'  
 #'  The function inspect_apsimx is for a quick look from within R. The APSIM GUI provides a more
@@ -17,21 +17,22 @@
 #' @param file file ending in .apsimx to be edited (JSON)
 #' @param src.dir directory containing the .apsimx file to be edited; defaults to the current working directory
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
-#' @param node either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other' 
+#' @param node either \sQuote{Clock}, \sQuote{Weather}, \sQuote{Soil}, 
+#' \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other} 
 #' @param soil.child specific soil component to be edited
 #' @param manager.child specific manager component to be edited
 #' @param parm parameter to be edited
 #' @param value new values for the parameter to be edited 
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
-#' @param edit.tag if the file is edited a different tag from the default '-edited' can be used.
-#' @param parm.path path to the attribute to edit when node is 'Other'
+#' @param edit.tag if the file is edited a different tag from the default \sQuote{-edited} can be used.
+#' @param parm.path path to the attribute to edit when node is \sQuote{Other}
 #' @param root supply the node postion in the case of multiple simulations such as factorials.
 #' @param verbose whether to print information about successful edit
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
 #' As a side effect this function creates a new (JSON) .apsimx file.
 #' @note The components that can be edited are restricted becuase this is better in preventing
 #' errors of editing unintended parts of the file. The disadvantage is that there is less flexibility
-#' compared to the similar function in the 'apsimr' package. 
+#' compared to the similar function in the \sQuote{apsimr} package. 
 #' @export
 #' @examples 
 #' \dontrun{

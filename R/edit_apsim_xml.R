@@ -6,8 +6,8 @@
 #' in the source directory \code{src.dir} are edited. The old values are replaced with \code{value}, which
 #' is a list that has the same number of elements as the length of the vector \code{parm}.  The current
 #' .apsim file will be overwritten if \code{overwrite} is set to \code{TRUE}; otherwise the file
-#' \emph{'file'-edited.apsim} will be created.  If (verbose = TRUE) then the name
-#'  of the written file is returned. The function is similar to the edit_apsim functin in the 'apsimr'
+#' \sQuote{file} \emph{-edited.apsim} will be created.  If (verbose = TRUE) then the name
+#'  of the written file is returned. The function is similar to the edit_apsim functin in the \sQuote{apsimr}
 #'  package, but with the difference that only some variables (parameters) can be modified.
 #'  
 #'  The function inspect_apsim is for a quick look from within R. The APSIM GUI provides a more
@@ -20,7 +20,7 @@
 #' @param parm.path parameter path to be edited (see example)
 #' @param value new values for the parameter to be edited 
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
-#' @param edit.tag if the file is edited a different tag from the default '-edited' can be used.
+#' @param edit.tag if the file is edited a different tag from the default \sQuote{-edited} can be used.
 #' @param verbose whether to print information about successful edit
 #' @return (when verbose=TRUE) complete file path to edited .xml file is returned as a character string.
 #' As a side effect this function creates a new XML file.
@@ -30,7 +30,7 @@
 #' flexible than \sQuote{edit_apsim} and (perhaps) equivalent to \sQuote{apsimr::edit_sim_file}.
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' ## This example changes the RUE values
 #' 
 #' extd.dir <- system.file("extdata", package = "apsimx")

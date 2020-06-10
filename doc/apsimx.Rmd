@@ -50,7 +50,7 @@ See the following for details
 
 This package has been tested on:
 
-**Mac**: ApsimX version (2020-01-29) 4007 (R 3.6.2)
+**Mac**: ApsimX version (2020-06-05) 5260 (R 3.6.2)
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
@@ -466,14 +466,12 @@ aiu <- apsim_version(which = "inuse")
 
 # To-Do
 
-* Fix possible bug when editing factorials in 'edit_apsim' and 'edit_apsimx'
-
 * **inspect_apsimx_replacement** challenge this function with more complex
 examples. It has problems with 'manager' when replacements are present.
 
 * Add more tests using the 'CoverCrop example' (APSIM 'Classic'). This would be the motivation for writing a function for 'factorials'. 'edit_apsim_factorial'.
 
-* Include parameter estimation example for maize
+* Include parameter estimation example
 
 # Appendix
 

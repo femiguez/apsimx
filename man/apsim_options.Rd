@@ -2,10 +2,9 @@
 % Please edit documentation in R/apsim_classic.R
 \name{apsim_options}
 \alias{apsim_options}
-\title{Setting some options specific to APSIM (7.x) "Classic"}
+\title{Setting some options specific to APSIM (7.x) \sQuote{Classic}}
 \usage{
-apsim_options(exe.path = NA, examples.path = NA,
-  warn.versions = TRUE)
+apsim_options(exe.path = NA, examples.path = NA, warn.versions = TRUE)
 }
 \arguments{
 \item{exe.path}{path to apsim executable}
@@ -21,7 +20,7 @@ Set the path to the APSIM executable, examples and warning suppression.
 Set apsim options
 }
 \note{
-It is possible that APSIM 7.x "Classic" is installed in some alternative location other than the 
+It is possible that APSIM 7.x \sQuote{Classic} is installed in some alternative location other than the 
       defaults ones. Guessing this can be difficult and then the auto_detect functions might
       fail. Also, if multiple versions of APSIM are installed apsim will choose the newest
       one but it will issue a warning. Suppress the warning by setting warn.versions = FLASE.

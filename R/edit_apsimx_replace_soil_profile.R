@@ -5,8 +5,8 @@
 #' @param file name of the .apsimx file to be edited
 #' @param src.dir source directory
 #' @param wrt.dir writing directory
-#' @param soil.profile a soil profile object with class 'soil_profile'
-#' @param edit.tag default edit tag '-edited'
+#' @param soil.profile a soil profile object with class \sQuote{soil_profile}
+#' @param edit.tag default edit tag \sQuote{-edited}
 #' @param overwrite default FALSE
 #' @param verbose default TRUE and it will print messages to console
 #' @return writes a file to disk with the supplied soil profile
@@ -14,7 +14,7 @@
 #' @note There is no such thing as a default soil, carefully build the profile for each simulation.
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' sp <- apsimx_soil_profile()
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' edit_apsimx_replace_soil_profile("Maize.apsimx", soil.profile = sp, 

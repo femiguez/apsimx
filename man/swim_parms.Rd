@@ -4,15 +4,27 @@
 \alias{swim_parms}
 \title{Helper function to supply SWIM parameters}
 \usage{
-swim_parms(Salb = NA, CN2Bare = NA, CNRed = NA, CNCov = NA,
-  KDul = NA, PSIDul = NA, VC = NA, DTmin = NA, DTmax = NA,
-  MaxWaterIncrement = NA, SpaceWeightingFactor = NA,
-  SoluteSpaceWeightingFactor = NA, Diagnostics = NA,
+swim_parms(
+  Salb = NA,
+  CN2Bare = NA,
+  CNRed = NA,
+  CNCov = NA,
+  KDul = NA,
+  PSIDul = NA,
+  VC = NA,
+  DTmin = NA,
+  DTmax = NA,
+  MaxWaterIncrement = NA,
+  SpaceWeightingFactor = NA,
+  SoluteSpaceWeightingFactor = NA,
+  Diagnostics = NA,
   SwimWaterTable_WaterTableDepth = NA,
   SwimSubsurfaceDrain_DrainDepth = NA,
   SwimSubsurfaceDrain_DrainSpacing = NA,
-  SwimSubsurfaceDrain_DrainRadius = NA, SwimSubsurfaceDrain_Klat = NA,
-  SwimSubsurfaceDrain_ImpermDepth = NA)
+  SwimSubsurfaceDrain_DrainRadius = NA,
+  SwimSubsurfaceDrain_Klat = NA,
+  SwimSubsurfaceDrain_ImpermDepth = NA
+)
 }
 \arguments{
 \item{Salb}{see APSIM documentation}
@@ -54,7 +66,7 @@ swim_parms(Salb = NA, CN2Bare = NA, CNRed = NA, CNCov = NA,
 \item{SwimSubsurfaceDrain_ImpermDepth}{see APSIM documentation}
 }
 \value{
-a 'list' with class 'swim_parms'
+a \sQuote{list} with class \sQuote{swim_parms}
 }
 \description{
 Creates a list with specific components for the SWIM model

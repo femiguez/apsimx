@@ -7,13 +7,13 @@
 auto_detect_apsim_examples()
 }
 \value{
-will create a directory pointing to APSIM "Classic" distributed examples
+will create a directory pointing to APSIM \sQuote{Classic} distributed examples
 }
 \description{
-simple function to detect where APSIM "Classic" examples are located
+simple function to detect where APSIM \sQuote{Classic} examples are located
 }
 \details{
-Auto detect where APSIM (7.x) "Classic" examples are located
+Auto detect where APSIM (7.x) \sQuote{Classic} examples are located
 }
 \examples{
 \dontrun{

@@ -1,14 +1,14 @@
 #'
-#' @title Edit APSIM 'Classic' file with a replaced soil profile
+#' @title Edit APSIM \sQuote{Classic} file with a replaced soil profile
 #' @name edit_apsim_replace_soil_profile
 #' @description Edits an APSIM-X simulation by replacing the soil profile
 #' @param file name of the .apsimx file to be edited
 #' @param src.dir source directory
 #' @param wrt.dir writing directory
-#' @param soil.profile a soil profile object with class 'soil_profile'
+#' @param soil.profile a soil profile object with class \sQuote{soil_profile}
 #' @param swim list with SWIM specific parameters
 #' @param soilwat list with SoilWat specific parameters
-#' @param edit.tag default edit tag '-edited'
+#' @param edit.tag default edit tag \sQuote{-edited}
 #' @param overwrite default FALSE
 #' @param verbose default TRUE. Will print messages indicating what was done.
 #' @return writes a file to disk with the supplied soil profile
@@ -18,8 +18,11 @@
 #' which is not present in the original file.
 #' @export
 #' @examples 
-#' \dontrun{
-#' sp <- apsimx_soil_profile()
+#' \donttest{
+#' sp <- apsimx_soil_profile(nlayers = 20,
+#'                           crops = c("Barley", "Chickpea", "Lucerne", 
+#'                           "Maize", "Perennial Grass", "Sorghum", 
+#'                           "Wheat", "Millet"))
 #' 
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' 
@@ -197,7 +200,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
   
   if(verbose) cat("Crops in the original file",crop.names,"\n")
 
-  if(!identical(sort(soil.profile$crops), sort(crop.names))){
+  if(!isTRUE(all.equal(sort(soil.profile$crops), sort(crop.names)))){
       cat("Name of crops in soil profile", soil.profile$crops,"\n")
       cat("Name of crops in APSIM file", crop.names,"\n")
       stop("Names of crops are not the same")
@@ -266,7 +269,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
 #' @param CN2Bare see APSIM documentation
 #' @param CNRed see APSIM documentation
 #' @param CNCov see APSIM documentation
-#' @return a 'list' with class 'soilwat_parms'
+#' @return a \sQuote{list} with class \sQuote{soilwat_parms}
 #' @details current documentation for APSIM 7.10 \url{https://www.apsim.info/documentation/model-documentation/soil-modules-documentation/soilwat/}
 #' @export
 #' 
@@ -313,7 +316,7 @@ soilwat_parms <- function(SummerCona = NA, SummerU = NA, SummerDate = NA,
 #' @param SwimSubsurfaceDrain_DrainRadius see APSIM documentation
 #' @param SwimSubsurfaceDrain_Klat see APSIM documentation
 #' @param SwimSubsurfaceDrain_ImpermDepth see APSIM documentation
-#' @return a 'list' with class 'swim_parms'
+#' @return a \sQuote{list} with class \sQuote{swim_parms}
 #' @details current documentation for APSIM 7.10 \url{https://www.apsim.info/documentation/model-documentation/soil-modules-documentation/swim3/}
 #' @export
 #' 

@@ -4,9 +4,15 @@
 \alias{edit_apsimx_replace_soil_profile}
 \title{Edit APSIM-X file with a replaced soil profile}
 \usage{
-edit_apsimx_replace_soil_profile(file = "", src.dir = ".",
-  wrt.dir = NULL, soil.profile = NULL, edit.tag = "-edited",
-  overwrite = FALSE, verbose = TRUE)
+edit_apsimx_replace_soil_profile(
+  file = "",
+  src.dir = ".",
+  wrt.dir = NULL,
+  soil.profile = NULL,
+  edit.tag = "-edited",
+  overwrite = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{file}{name of the .apsimx file to be edited}
@@ -15,9 +21,9 @@ edit_apsimx_replace_soil_profile(file = "", src.dir = ".",
 
 \item{wrt.dir}{writing directory}
 
-\item{soil.profile}{a soil profile object with class 'soil_profile'}
+\item{soil.profile}{a soil profile object with class \sQuote{soil_profile}}
 
-\item{edit.tag}{default edit tag '-edited'}
+\item{edit.tag}{default edit tag \sQuote{-edited}}
 
 \item{overwrite}{default FALSE}
 
@@ -36,7 +42,7 @@ This function is designed to batch replace the whole soil in an APSIM simulation
 There is no such thing as a default soil, carefully build the profile for each simulation.
 }
 \examples{
-\dontrun{
+\donttest{
 sp <- apsimx_soil_profile()
 extd.dir <- system.file("extdata", package = "apsimx")
 edit_apsimx_replace_soil_profile("Maize.apsimx", soil.profile = sp, 

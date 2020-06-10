@@ -12,13 +12,14 @@
 #' @param soil.bottom bottom of the soil profile
 #' @param method method used for interpolation (see \code{\link{approx}})
 #' @param nlayers number of soil layers to generate
+#' @param verbose whether to print details of the process
 #' @return a list with soil profile matrices with length equal to nsoil
 #' @details Download the data from \acronym{SSURGO} using the \sQuote{FedData} package \cr
 #' This will generate csv files \sQuote{chorizon}, \sQuote{component} and \sQuote{mapunit}, \cr
 #' but also many other files which are not needed for creating a soil profile.
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' require(ggplot2)
 #' require(sf)
 #' extd.dir <- system.file("extdata", package = "apsimx")
@@ -34,11 +35,14 @@
 #'                  chorizon = chorizon, 
 #'                  mapunit.shp = mapunit.shp)
 #' 
+#' sp.c <- sp.c[[1]]
+#' 
 #' ggplot(data = sp.c, aes(y = -Depth, x = Carbon)) + 
 #' geom_point() + 
 #'   geom_path() + 
 #'   ylab("Soil Depth (cm)") + xlab("Organic Matter (percent)") +
 #'   ggtitle("method = constant")
+#'   
 #'   
 #' ## Using 'linear' method
 #' sp.l <- ssurgo2sp(mapunit = mapunit, 
@@ -46,6 +50,8 @@
 #'                  chorizon = chorizon, 
 #'                  mapunit.shp = mapunit.shp,
 #'                  method = "linear")
+#'                  
+#' sp.l <- sp.l[[1]]
 #'                  
 #' ggplot(data = sp.l, aes(y = -Depth, x = Carbon)) + 
 #' geom_point() + 
@@ -60,7 +66,8 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
                       nmapunit = 1, nsoil = 1,
                       xout = NULL, soil.bottom = 200,
                       method = c("constant","linear"),
-                      nlayers = 10){
+                      nlayers = 10,
+                      verbose = FALSE){
   
   if(!requireNamespace("sf",quietly = TRUE)){
     warning("sf is required for this function")
@@ -75,7 +82,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   ## In decreasing order of number of acres
   mapunit2$muacres.percent <- mapunit2$muacres/sum(mapunit2$muacres) * 100
   mapunit2 <- mapunit2[order(mapunit2$muacres, decreasing = TRUE),]
-  mapunit3 <- mapunit2[1:nmapunit,]
+  mapunit3 <- mapunit2[seq_len(nmapunit),]
   
   ## Process component
   component2 <- subset(component, 
@@ -98,11 +105,14 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     component4$state <- rep(unique(strtrim(as.character(mapunit.shp.d[mapunit.shp.d$MUKEY == i,"AREASYMBOL"]),2)),nrow(component4))
     component4$longitude <- lonlat[1]
     component4$latitude <- lonlat[2]
-    component5 <- rbind(component5, component4[1:nsoil,])
+    component5 <- rbind(component5, component4[seq_len(nsoil),])
   }
   
   ## Process chorizon
   chorizon2 <- chorizon[chorizon$cokey %in% component5$cokey,]
+  if(nrow(chorizon2) < 1){
+    stop("component horizon does not match component cokey")
+  }
   chorizon3 <- subset(chorizon2, 
                       select = c("hzname", "hzdept.r", "hzdepb.r", 
                                  "hzthk.r", "sandtotal.r", "silttotal.r",
@@ -116,7 +126,13 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   
   ## Rename to match APSIM
   chorizon3$Depth <- chorizon3$hzdepa.r
-  chorizon3$Thickness <- chorizon3$hzthk.r
+  
+  if(any(is.na(chorizon3$hzthk.r))){
+    chorizon3$Thickness <- chorizon3$hzdepb.r - chorizon3$hzdept.r
+  }else{
+    chorizon3$Thickness <- chorizon3$hzthk.r  
+  }
+  
   chorizon3$LL15 <- chorizon3$wfifteenbar.r * 1e-2 ## convert to fraction
   chorizon3$DUL <- chorizon3$wthirdbar.r * 1e-2 ## convert to fraction
   chorizon3$SAT <- chorizon3$wsatiated.r * 1e-2 ## convert to fraction
@@ -145,6 +161,10 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   for(sz in 1:length(soil.names)){
     
     one.soil <- chorizon3[chorizon3$cokey == component5$cokey[sz],]
+    
+    if(nrow(one.soil) < 1){
+      stop("There is no soil horizon for this component")
+    }
   
     soil.mat <- matrix(nrow = nlayers, ncol = length(vars))
   
@@ -156,11 +176,19 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     
       nlayers <- ifelse(vars[i] == "Thickness", nlayers1, nlayers0)
     
-      sva <- approx_soil_variable(tmp, 
+      if(verbose) cat("Processing variable:", vars[i],"\n")
+      
+      sva <- try(approx_soil_variable(tmp, 
                                   xout = xout, 
                                   soil.bottom = soil.bottom,
                                   method = method, 
-                                  nlayers = nlayers)
+                                  nlayers = nlayers), silent = TRUE)
+      
+      if(inherits(sva,"try-error")){
+        print(one.soil)
+        print(tmp)
+        stop("interpolation did not work. Possibly due to missing values.")
+      }
     
       if(vars[i] == "Thickness"){
         thck <- numeric(nlayers0)

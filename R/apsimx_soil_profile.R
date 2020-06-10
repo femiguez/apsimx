@@ -4,11 +4,11 @@
 #' a soil profile with an arbitrary number of layers and have flexibility in the 
 #' distribution of soil physical and chemical properties. Steps:
 #'  
-#'  1. 'apsimx_soil_profile' is a function which can create a soil matrix with many layers \cr
+#'  1. \code{\link{apsimx_soil_profile}} is a function which can create a soil matrix with many layers \cr
 #'  2. It allows for creating a smooth distribution for Physical (or Water), Chemical, InitialWater, Analysis, InitialN, Organic or SoilOrganicMatter \cr
-#'  3. The distribution can be specified with the 'a' and 'c' parameter of an exponential decay function, using a list. E.g. DUL = list(0.35, 0, -0.1).
+#'  3. The distribution can be specified with the \sQuote{a} and \sQuote{c} parameter of an exponential decay function, using a list. E.g. DUL = list(0.35, 0, -0.1).
 #'  This means that the top value for DUL will be 0.35 and it will decay with a rate of -0.1. \cr
-#'  4. If an increase and then a decay is needed the Ricker function can be used. See 'SSricker' in the 'nlraa' package. \cr
+#'  4. If an increase and then a decay is needed the Ricker function can be used. See \sQuote{SSricker} in the \sQuote{nlraa} package. \cr
 #'  
 #' @title Create APSIM-X Soil Profiles
 #' @name apsimx_soil_profile
@@ -17,7 +17,7 @@
 #' @param nlayers Number of soil layers (default = 10)
 #' @param Depth specific depths for each soil layer (cm)
 #' @param Thickness thickness for each soil layer (mm)
-#' @param BD bulk density for each soil layer (g/cc) -- 'cc' is cubic cm
+#' @param BD bulk density for each soil layer (g/cc) -- \sQuote{cc} is cubic cm
 #' @param AirDry air dry for each soil layer (mm/mm)
 #' @param LL15 lower limit (15 bar) for each soil layer (mm/mm)
 #' @param DUL drainage upper limit (0.33 bar) for each soil layer (mm/mm)
@@ -39,13 +39,13 @@
 #' @param water.table water table level (not used at the moment) (cm)
 #' @param soil.type might use it in the future for auto filling missing information
 #' @param crops name of crops being grown
-#' @param metadata list with soil metadata. For possible parameters and values see an example of \code{\link{inspect_apsimx}} with soil.child = "Metadata".
+#' @param metadata list with soil metadata. For possible parameters and values see an example of \code{\link{inspect_apsimx}} with soil.child = \dQuote{Metadata}.
 #' @param soilwat optional \sQuote{list} of class \sQuote{soilwat_parms}
 #' @param swim optional \sQuote{list} of class \sQuote{swim_parms}
 #' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
 #' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
 #' If a != 0 and b != 0 then the equation is \code{a*soil.layer*exp(-b*soil.layer)}.  
-#' @return a soil profile with class 'soil_profile' with elements 'soil' and 'crops' (for now)
+#' @return a soil profile with class \sQuote{soil_profile} with elements \sQuote{soil} and \sQuote{crops} (for now)
 #' @export
 #' @examples 
 #' \dontrun{
@@ -408,10 +408,10 @@ soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
 }
 
 #' @rdname apsimx_soil_profile
-#' @description plotting function for a soil profile, it requires 'ggplot2'
-#' @param x object of class 'soil_profile'.
+#' @description plotting function for a soil profile, it requires \sQuote{ggplot2}
+#' @param x object of class \sQuote{soil_profile}.
 #' @param ... additional plotting arguments (none use at the moment).
-#' @param property "all" for plotting all soil properties, "water" for just SAT, DUL and LL15
+#' @param property \dQuote{all} for plotting all soil properties, \dQuote{water} for just SAT, DUL and LL15
 #' @export 
 plot.soil_profile <- function(x,..., property = c("all", "water","BD",
                                               "AirDry","LL15","DUL","SAT",

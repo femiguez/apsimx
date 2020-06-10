@@ -9,10 +9,10 @@ read_apsimx_all(src.dir = ".", value = c("report", "all"))
 \arguments{
 \item{src.dir}{source directory where files are located}
 
-\item{value}{either 'report' or 'all' (only 'report' implemented at the moment)}
+\item{value}{either \sQuote{report} or \sQuote{all} (only \sQuote{report} implemented at the moment)}
 }
 \description{
-Like 'read_apsimx', but it reads all .db files in a directory.
+Like \code{\link{read_apsimx}}, but it reads all .db files in a directory.
 }
 \details{
 Read all APSIM-X generated .db files in a directory

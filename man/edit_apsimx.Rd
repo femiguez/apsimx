@@ -4,13 +4,23 @@
 \alias{edit_apsimx}
 \title{Edit an APSIM-X (JSON) Simulation}
 \usage{
-edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
-  "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-  "Manager"), soil.child = c("Metadata", "Water", "Organic", "Physical",
-  "Analysis", "Chemical", "InitialWater", "Sample"),
-  manager.child = NULL, parm = NULL, value = NULL,
-  overwrite = FALSE, edit.tag = "-edited", parm.path = NULL, root,
-  verbose = TRUE)
+edit_apsimx(
+  file,
+  src.dir = ".",
+  wrt.dir = NULL,
+  node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
+    "Manager"),
+  soil.child = c("Metadata", "Water", "Organic", "Physical", "Analysis", "Chemical",
+    "InitialWater", "Sample"),
+  manager.child = NULL,
+  parm = NULL,
+  value = NULL,
+  overwrite = FALSE,
+  edit.tag = "-edited",
+  parm.path = NULL,
+  root,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be edited (JSON)}
@@ -19,7 +29,8 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
 
 \item{wrt.dir}{should be used if the destination directory is different from the src.dir}
 
-\item{node}{either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'}
+\item{node}{either \sQuote{Clock}, \sQuote{Weather}, \sQuote{Soil}, 
+\sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other}}
 
 \item{soil.child}{specific soil component to be edited}
 
@@ -31,9 +42,9 @@ edit_apsimx(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
 
 \item{overwrite}{logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise}
 
-\item{edit.tag}{if the file is edited a different tag from the default '-edited' can be used.}
+\item{edit.tag}{if the file is edited a different tag from the default \sQuote{-edited} can be used.}
 
-\item{parm.path}{path to the attribute to edit when node is 'Other'}
+\item{parm.path}{path to the attribute to edit when node is \sQuote{Other}}
 
 \item{root}{supply the node postion in the case of multiple simulations such as factorials.}
 
@@ -51,8 +62,8 @@ The variables specified by \code{parm} within the .apsimx file specified by \cod
 in the source directory \code{src.dir} are edited. The old values are replaced with \code{value}, which
 is a list that has the same number of elements as the length of the vector \code{parm}.  The current
 .apsimx file will be overwritten if \code{overwrite} is set to \code{TRUE}; otherwise the file
-\emph{'file'-edited.apsimx} will be created.  If (verbose = TRUE) then the name
- of the written file is returned. The function is similar to the edit_apsim functin in the 'apsimr'
+\sQuote{file} \emph{-edited.apsimx} will be created.  If (verbose = TRUE) then the name
+ of the written file is returned. The function is similar to the edit_apsim functin in the \sQuote{apsimr}
  package, but with the difference that only some variables (parameters) can be modified.
  
  The function inspect_apsimx is for a quick look from within R. The APSIM GUI provides a more
@@ -61,7 +72,7 @@ is a list that has the same number of elements as the length of the vector \code
 \note{
 The components that can be edited are restricted becuase this is better in preventing
 errors of editing unintended parts of the file. The disadvantage is that there is less flexibility
-compared to the similar function in the 'apsimr' package.
+compared to the similar function in the \sQuote{apsimr} package.
 }
 \examples{
 \dontrun{

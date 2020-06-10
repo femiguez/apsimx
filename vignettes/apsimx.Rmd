@@ -50,7 +50,7 @@ See the following for details
 
 This package has been tested on:
 
-**Mac**: ApsimX version (2020-01-29) 4007 (R 3.6.2)
+**Mac**: ApsimX version (2020-06-05) 5260 (R 3.6.2)
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
@@ -244,7 +244,7 @@ pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
 Once we have identified the parameter we want to edit, we can do so by using the 'edit_apsim' function. When using the 'parm.path' argument, node should be "Other".
 
 ```{r Millet-edit}
-edit_apsim("Millet", src.dir = extd.dir, wrt.dir = ".",
+edit_apsim("Millet.apsim", src.dir = extd.dir, wrt.dir = ".",
            node = "Other", parm.path = pp, value = 8, 
            edit.tag = "-pp")
 ```

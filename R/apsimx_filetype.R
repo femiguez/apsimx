@@ -5,9 +5,9 @@
 #' @name apsimx_filetype
 #' @param file file ending in .apsimx to be tested
 #' @param src.dir directory containing the .apsimx file to be tested; defaults to the current working directory
-#' @return 'xml', 'json' or 'unknown'
+#' @return \sQuote{xml}, \sQuote{json} or \sQuote{unknown}
 #' @note Minimal function which reads only the first line in a file and tries to guess whether it is
-#'       an 'xml' or 'json' file type.
+#'       an \sQuote{xml} or \sQuote{json} file type.
 #' @export
 #' @examples 
 #' \dontrun{

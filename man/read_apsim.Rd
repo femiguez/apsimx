@@ -4,20 +4,24 @@
 \alias{read_apsim}
 \title{Read APSIM generated .out files}
 \usage{
-read_apsim(file = "", src.dir = ".", value = c("report", "all"),
-  date.format = "\%d/\%m/\%Y")
+read_apsim(
+  file = "",
+  src.dir = ".",
+  value = c("report", "all"),
+  date.format = "\%d/\%m/\%Y"
+)
 }
 \arguments{
 \item{file}{file name}
 
 \item{src.dir}{source directory where file is located}
 
-\item{value}{either 'report' (data.frame) or 'all' (list)}
+\item{value}{either \sQuote{report} (data.frame) or \sQuote{all} (list)}
 
-\item{date.format}{format for adding 'Date' column}
+\item{date.format}{format for adding \sQuote{Date} column}
 }
 \description{
-read 'output' databases created by APSIM runs (.out and .sim). One file at a time.
+read \sQuote{output} databases created by APSIM runs (.out and .sim). One file at a time.
 }
 \details{
 Read APSIM generated .out files

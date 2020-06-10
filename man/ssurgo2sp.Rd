@@ -4,9 +4,19 @@
 \alias{ssurgo2sp}
 \title{Take in \acronym{SSURGO} csv files and create a soil profile}
 \usage{
-ssurgo2sp(mapunit = NULL, component = NULL, chorizon = NULL,
-  mapunit.shp = NULL, nmapunit = 1, nsoil = 1, xout = NULL,
-  soil.bottom = 200, method = c("constant", "linear"), nlayers = 10)
+ssurgo2sp(
+  mapunit = NULL,
+  component = NULL,
+  chorizon = NULL,
+  mapunit.shp = NULL,
+  nmapunit = 1,
+  nsoil = 1,
+  xout = NULL,
+  soil.bottom = 200,
+  method = c("constant", "linear"),
+  nlayers = 10,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{mapunit}{mapunit \acronym{SSURGO} file}
@@ -28,6 +38,8 @@ ssurgo2sp(mapunit = NULL, component = NULL, chorizon = NULL,
 \item{method}{method used for interpolation (see \code{\link{approx}})}
 
 \item{nlayers}{number of soil layers to generate}
+
+\item{verbose}{whether to print details of the process}
 }
 \value{
 a list with soil profile matrices with length equal to nsoil
@@ -41,7 +53,7 @@ This will generate csv files \sQuote{chorizon}, \sQuote{component} and \sQuote{m
 but also many other files which are not needed for creating a soil profile.
 }
 \examples{
-\dontrun{
+\donttest{
 require(ggplot2)
 require(sf)
 extd.dir <- system.file("extdata", package = "apsimx")
@@ -57,11 +69,14 @@ sp.c <- ssurgo2sp(mapunit = mapunit,
                  chorizon = chorizon, 
                  mapunit.shp = mapunit.shp)
 
+sp.c <- sp.c[[1]]
+
 ggplot(data = sp.c, aes(y = -Depth, x = Carbon)) + 
 geom_point() + 
   geom_path() + 
   ylab("Soil Depth (cm)") + xlab("Organic Matter (percent)") +
   ggtitle("method = constant")
+  
   
 ## Using 'linear' method
 sp.l <- ssurgo2sp(mapunit = mapunit, 
@@ -69,6 +84,8 @@ sp.l <- ssurgo2sp(mapunit = mapunit,
                  chorizon = chorizon, 
                  mapunit.shp = mapunit.shp,
                  method = "linear")
+                 
+sp.l <- sp.l[[1]]
                  
 ggplot(data = sp.l, aes(y = -Depth, x = Carbon)) + 
 geom_point() + 

@@ -12,14 +12,14 @@ apsimx_filetype(file = "", src.dir = ".")
 \item{src.dir}{directory containing the .apsimx file to be tested; defaults to the current working directory}
 }
 \value{
-'xml', 'json' or 'unknown'
+\sQuote{xml}, \sQuote{json} or \sQuote{unknown}
 }
 \description{
 Test whether an .apsimx file is XML or json
 }
 \note{
 Minimal function which reads only the first line in a file and tries to guess whether it is
-      an 'xml' or 'json' file type.
+      an \sQuote{xml} or \sQuote{json} file type.
 }
 \examples{
 \dontrun{

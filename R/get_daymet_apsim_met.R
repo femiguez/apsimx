@@ -1,31 +1,31 @@
 #'
-#' This function requires the \sQuote{FedData} pacakge.
+#' This function requires the \CRANpkg{FedData} pacakge.
 #'
 #' @title Get DAYMET data for an APSIM met file
-#' @description Uses \sQuote{get_daymet} from the \sQuote{FedData} package to download data to create an APSIM met file.
+#' @description Uses \code{\link[FedData]{get_daymet}} from the \CRANpkg{FedData} package to download data to create an APSIM met file.
 #' @name get_daymet_apsim_met
 #' @param lonlat Longitude and latitude vector
 #' @param years a numeric vector of years to extract
 #' @param wrt.dir write directory
 #' @param filename file name for writing out to disk
 #' @param width.height width and height of the cropped area (default 0.001, 0.001)
-#' @param template A Raster or Spatial object to serve as a template for cropping (see FedData::get_daymet).
-#' @param label a character string naming the area (see FedData::get_daymet)
-#' @param elements see FedData::get_daymet
-#' @param raw.dir see FedData::get_daymet
-#' @param extraction.dir see FedData::get_daymet
-#' @param force.redo see FedData::get_daymet
+#' @param template A Raster or Spatial object to serve as a template for cropping (see \code{\link[FedData]{get_daymet}}).
+#' @param label a character string naming the area (see \code{\link[FedData]{get_daymet}})
+#' @param elements see \code{\link[FedData]{get_daymet}}
+#' @param raw.dir see \code{\link[FedData]{get_daymet}}
+#' @param extraction.dir see \code{\link[FedData]{get_daymet}}
+#' @param force.redo see \code{\link[FedData]{get_daymet}}
 #' @param cleanup whether to delete download directories (default is FALSE). 
 #' If the intention is for cleanup to delete all the files, \sQuote{raw.dir} 
 #' and \sQuote{extraction.dir} should be supplied, supplying a sinlge name, 
-#' such as 'RAW' and 'EXTRACTION'.
+#' such as \sQuote{RAW} and \sQuote{EXTRACTION}.
 #' @details If the filename is not provided it will not write the file to disk, 
-#' but it will return an object of class 'met'. This is useful in case manipulation
+#' but it will return an object of class \sQuote{met}. This is useful in case manipulation
 #' is required before writing to disk. The variable \sQuote{srad} as downloaded from
 #' daymet is average solar radiation, so it is converted to total. 
 #' Daily total radiation (MJ/m2/day) can be calculated as 
 #' follows: ((srad (W/m2) * dayl (s/day)) / 1,000,000)
-#' @source The data is retrieved using the \sQuote{FedData} package. For the original
+#' @source The data is retrieved using the \CRANpkg{FedData} package. For the original
 #' source see: https://daymet.ornl.gov/
 #' @export
 #' @examples 

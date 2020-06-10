@@ -5,7 +5,6 @@ run.test.apsim.swim <- TRUE
 
 extd.dir <- system.file("extdata", package = "apsimx")
 
-
 if(run.test.apsim.swim){
 
   inspect_apsim("maize-swim.apsim", src.dir = extd.dir)  

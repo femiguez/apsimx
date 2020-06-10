@@ -4,10 +4,20 @@
 \alias{soilwat_parms}
 \title{Helper function to supply SoilWat parameters}
 \usage{
-soilwat_parms(SummerCona = NA, SummerU = NA, SummerDate = NA,
-  WinterCona = NA, WinterU = NA, WinterDate = NA, DiffusConst = NA,
-  DiffusSlope = NA, Salb = NA, CN2Bare = NA, CNRed = NA,
-  CNCov = NA)
+soilwat_parms(
+  SummerCona = NA,
+  SummerU = NA,
+  SummerDate = NA,
+  WinterCona = NA,
+  WinterU = NA,
+  WinterDate = NA,
+  DiffusConst = NA,
+  DiffusSlope = NA,
+  Salb = NA,
+  CN2Bare = NA,
+  CNRed = NA,
+  CNCov = NA
+)
 }
 \arguments{
 \item{SummerCona}{see APSIM documentation}
@@ -35,7 +45,7 @@ soilwat_parms(SummerCona = NA, SummerU = NA, SummerDate = NA,
 \item{CNCov}{see APSIM documentation}
 }
 \value{
-a 'list' with class 'soilwat_parms'
+a \sQuote{list} with class \sQuote{soilwat_parms}
 }
 \description{
 Creates a list with specific components for the SoilWat model

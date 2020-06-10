@@ -9,11 +9,11 @@
 #' @param node.child specific node child component to edit.
 #' @param node.subchild specific node sub-child to edit.
 #' @param node.subsubchild specific node sub-subchild to edit.
-#' @param root 'root' node to explore (default = "Models.Core.Replacements")
+#' @param root \sQuote{root} node to explore (default = \dQuote{Models.Core.Replacements})
 #' @param parm specific parameter to edit
 #' @param value new values for the parameter
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
-#' @param edit.tag if the file is edited a different tag from the default '-edited' can be used.
+#' @param edit.tag if the file is edited a different tag from the default \sQuote{-edited} can be used.
 #' @param verbose whether to print information about successful edit
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
@@ -22,7 +22,7 @@
 #' errors of editing unintended parts of the file.
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 #'                            node = "Maize", node.child = "Phenology",
@@ -78,7 +78,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   wrn <- grep(node, replacements.node$Children)
   rep.node <- replacements.node$Children[[wrn]]
   
-  if(!is.null(rep.node$CropType) & verbose) cat("CropType", rep.node$CropType,"\n")
+  if(!is.null(rep.node$CropType) && verbose) cat("CropType", rep.node$CropType,"\n")
   
   if(parm %in% names(rep.node)){
     lvl <- 0

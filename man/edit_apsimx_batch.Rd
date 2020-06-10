@@ -4,8 +4,14 @@
 \alias{edit_apsimx_batch}
 \title{Edit an APSIM-X (JSON) Simulation in Batch mode}
 \usage{
-edit_apsimx_batch(file, src.dir = ".", wrt.dir = NULL, parms = NULL,
-  silent = FALSE, verbose = TRUE)
+edit_apsimx_batch(
+  file,
+  src.dir = ".",
+  wrt.dir = NULL,
+  parms = NULL,
+  silent = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be edited (JSON)}
@@ -14,7 +20,7 @@ edit_apsimx_batch(file, src.dir = ".", wrt.dir = NULL, parms = NULL,
 
 \item{wrt.dir}{should be used if the destination directory is different from the src.dir}
 
-\item{parms}{parameter to be edited in the for of 'key = value'}
+\item{parms}{parameter to be edited in the for of \sQuote{key = value}}
 
 \item{silent}{controls the output of running APSIM at the command line}
 
@@ -32,7 +38,7 @@ from hol430
 
 This allows the user to specify an .apsimx file and a config file when running Models.exe. The .apsimx file will not be run but instead, the changes listed in the config file will be applied to the .apsimx file, which will then be written to disk under the same filename.
 
-The config file should contain lines of the form 'path = value'
+The config file should contain lines of the form \sQuote{path = value}
 
 e.g.
 
@@ -59,7 +65,7 @@ The file will be upgraded to the latest file version as part of this
 process.
 }
 \examples{
-\dontrun{
+\donttest{
 ## This example will read one of the examples distributed with APSIM-X
 ## but write to the current directory
 

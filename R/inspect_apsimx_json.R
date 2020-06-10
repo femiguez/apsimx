@@ -4,15 +4,17 @@
 #' @description inspect a JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
 #' @param file file ending in .apsimx to be inspected (JSON)
 #' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
-#' @param node specific node to be inspected either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'
+#' @param node specific node to be inspected either \sQuote{Clock}, \sQuote{Weather}, 
+#' \sQuote{Soil}, \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop},
+#'  \sQuote{Manager} or \sQuote{Other}
 #' @param soil.child specific soil component to be inspected. The options vary depending on what is available (see details)
-#' @param parm parameter to refine the inspection of the 'manager' list('parm','position'), use 'NA' for all the positions. 'parm' can be a regular expression for partial matching.
+#' @param parm parameter to refine the inspection of the \sQuote{manager} list(\sQuote{parm},\sQuote{position}), use \sQuote{NA} for all the positions. \sQuote{parm} can be a regular expression for partial matching.
 #' @param digits number of decimals to print (default 3). Not used now because everything is a character.
-#' @param print.path whether to print the path to the specific parameter. Useful to give the later editing. (Also returned as 'invisible')
+#' @param print.path whether to print the path to the specific parameter. Useful to give the later editing. (Also returned as \sQuote{invisible})
 #' @param root root node label. In simulation structures such as factorials there will be multiple possible nodes. This can be specified by supplying an appropriate character.
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
-#'          To investigate the available 'soil.childs' specify 'Soil' for 'node' and do not specify the 'soil.child'.
-#' @return prints a table with inspected parameters and values (and 'parm path' when 'print.path' = TRUE).
+#'          To investigate the available \sQuote{soil.childs} specify \sQuote{Soil} for \sQuote{node} and do not specify the \sQuote{soil.child}.
+#' @return prints a table with inspected parameters and values (and \sQuote{parm path} when \sQuote{print.path} = TRUE).
 #' @export
 #' @examples 
 #' \dontrun{

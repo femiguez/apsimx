@@ -1,7 +1,7 @@
-#' Auxiliary unexported and 'hidden' functions
-#' Find output file names in an APSIM 'Classic' file
+#' Auxiliary unexported and \sQuote{hidden} functions
+#' Find output file names in an APSIM \sQuote{Classic} file
 #' @name .find_ouput_names
-#' @description In APSIM 'Classic' the outputfiles are named internally and this
+#' @description In APSIM \sQuote{Classic} the outputfiles are named internally and this
 #' function can retrieve this information
 #' @param .file file name
 #' @param .src.dir source directory
@@ -59,7 +59,7 @@
 #' Find Apsim Version Date
 #' @name .favd
 #' @description Extract the date from an APSIM binary name being used
-#' @param x an APISM binary name such as 'APSIM2019.12.10.3010.app'
+#' @param x an APISM binary name such as 'APSIM2020.06.05.5260.app'
 #' @noRd
 #' 
 .favd <- function(x){

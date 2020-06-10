@@ -5,19 +5,45 @@
 \alias{plot.soil_profile}
 \title{Create APSIM-X Soil Profiles}
 \usage{
-apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
-  BD = NULL, AirDry = NULL, LL15 = NULL, DUL = NULL, SAT = NULL,
-  KS = NULL, crop.LL = NULL, crop.KL = NULL, crop.XF = NULL,
-  Carbon = NULL, SoilCNRatio = NULL, FOM = NULL, FOM.CN = NULL,
-  FBiom = NULL, FInert = NULL, NO3N = NULL, NH4N = NULL,
-  PH = NULL, soil.bottom = 150, water.table = 200, soil.type = 0,
-  crops = c("Maize", "Soybean", "Wheat"), metadata = NULL,
-  soilwat = NA, swim = NA, dist.parms = list(a = 0, b = 0.2))
+apsimx_soil_profile(
+  nlayers = 10,
+  Depth = NULL,
+  Thickness = NULL,
+  BD = NULL,
+  AirDry = NULL,
+  LL15 = NULL,
+  DUL = NULL,
+  SAT = NULL,
+  KS = NULL,
+  crop.LL = NULL,
+  crop.KL = NULL,
+  crop.XF = NULL,
+  Carbon = NULL,
+  SoilCNRatio = NULL,
+  FOM = NULL,
+  FOM.CN = NULL,
+  FBiom = NULL,
+  FInert = NULL,
+  NO3N = NULL,
+  NH4N = NULL,
+  PH = NULL,
+  soil.bottom = 150,
+  water.table = 200,
+  soil.type = 0,
+  crops = c("Maize", "Soybean", "Wheat"),
+  metadata = NULL,
+  soilwat = NA,
+  swim = NA,
+  dist.parms = list(a = 0, b = 0.2)
+)
 
-\method{plot}{soil_profile}(x, ..., property = c("all", "water", "BD",
-  "AirDry", "LL15", "DUL", "SAT", "KS", "crop.XF", "crop.KL", "crop.LL",
-  "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
-  "NH4N", "PH"))
+\method{plot}{soil_profile}(
+  x,
+  ...,
+  property = c("all", "water", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", "crop.XF",
+    "crop.KL", "crop.LL", "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert",
+    "NO3N", "NH4N", "PH")
+)
 }
 \arguments{
 \item{nlayers}{Number of soil layers (default = 10)}
@@ -26,7 +52,7 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
 
 \item{Thickness}{thickness for each soil layer (mm)}
 
-\item{BD}{bulk density for each soil layer (g/cc) -- 'cc' is cubic cm}
+\item{BD}{bulk density for each soil layer (g/cc) -- \sQuote{cc} is cubic cm}
 
 \item{AirDry}{air dry for each soil layer (mm/mm)}
 
@@ -70,7 +96,7 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
 
 \item{crops}{name of crops being grown}
 
-\item{metadata}{list with soil metadata. For possible parameters and values see an example of \code{\link{inspect_apsimx}} with soil.child = "Metadata".}
+\item{metadata}{list with soil metadata. For possible parameters and values see an example of \code{\link{inspect_apsimx}} with soil.child = \dQuote{Metadata}.}
 
 \item{soilwat}{optional \sQuote{list} of class \sQuote{soilwat_parms}}
 
@@ -80,19 +106,19 @@ apsimx_soil_profile(nlayers = 10, Depth = NULL, Thickness = NULL,
 a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
 If a != 0 and b != 0 then the equation is \code{a*soil.layer*exp(-b*soil.layer)}.}
 
-\item{x}{object of class 'soil_profile'.}
+\item{x}{object of class \sQuote{soil_profile}.}
 
 \item{...}{additional plotting arguments (none use at the moment).}
 
-\item{property}{"all" for plotting all soil properties, "water" for just SAT, DUL and LL15}
+\item{property}{\dQuote{all} for plotting all soil properties, \dQuote{water} for just SAT, DUL and LL15}
 }
 \value{
-a soil profile with class 'soil_profile' with elements 'soil' and 'crops' (for now)
+a soil profile with class \sQuote{soil_profile} with elements \sQuote{soil} and \sQuote{crops} (for now)
 }
 \description{
 Generates a soil profile that can then replace the existing one in an \sQuote{.apsimx} or \sQuote{.apsim} simulation file
 
-plotting function for a soil profile, it requires 'ggplot2'
+plotting function for a soil profile, it requires \sQuote{ggplot2}
 }
 \details{
 Soil Profiles
@@ -101,11 +127,11 @@ Real soils might have discontinuities, but for APSIM it might be beneficial to b
 a soil profile with an arbitrary number of layers and have flexibility in the 
 distribution of soil physical and chemical properties. Steps:
  
- 1. 'apsimx_soil_profile' is a function which can create a soil matrix with many layers \cr
+ 1. \code{\link{apsimx_soil_profile}} is a function which can create a soil matrix with many layers \cr
  2. It allows for creating a smooth distribution for Physical (or Water), Chemical, InitialWater, Analysis, InitialN, Organic or SoilOrganicMatter \cr
- 3. The distribution can be specified with the 'a' and 'c' parameter of an exponential decay function, using a list. E.g. DUL = list(0.35, 0, -0.1).
+ 3. The distribution can be specified with the \sQuote{a} and \sQuote{c} parameter of an exponential decay function, using a list. E.g. DUL = list(0.35, 0, -0.1).
  This means that the top value for DUL will be 0.35 and it will decay with a rate of -0.1. \cr
- 4. If an increase and then a decay is needed the Ricker function can be used. See 'SSricker' in the 'nlraa' package. \cr
+ 4. If an increase and then a decay is needed the Ricker function can be used. See \sQuote{SSricker} in the \sQuote{nlraa} package. \cr
 }
 \examples{
 \dontrun{

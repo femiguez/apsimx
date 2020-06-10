@@ -4,13 +4,23 @@
 \alias{edit_apsim}
 \title{Edit an APSIM (Classic) Simulation}
 \usage{
-edit_apsim(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
-  "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-  "Manager", "Other"), soil.child = c("Metadata", "Water",
-  "OrganicMatter", "Chemical", "Analysis", "InitialWater", "Sample",
-  "SWIM"), manager.child = NULL, parm = NULL, value = NULL,
-  overwrite = FALSE, edit.tag = "-edited", parm.path = NULL,
-  verbose = TRUE, check.length = TRUE)
+edit_apsim(
+  file,
+  src.dir = ".",
+  wrt.dir = NULL,
+  node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
+    "Manager", "Other"),
+  soil.child = c("Metadata", "Water", "OrganicMatter", "Chemical", "Analysis",
+    "InitialWater", "Sample", "SWIM"),
+  manager.child = NULL,
+  parm = NULL,
+  value = NULL,
+  overwrite = FALSE,
+  edit.tag = "-edited",
+  parm.path = NULL,
+  verbose = TRUE,
+  check.length = TRUE
+)
 }
 \arguments{
 \item{file}{file ending in .apsim to be edited}
@@ -19,7 +29,8 @@ edit_apsim(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
 
 \item{wrt.dir}{should be used if the destination directory is different from the src.dir}
 
-\item{node}{either 'Clock', 'Weather', 'Soil', 'SurfaceOrganicMatter', 'MicroClimate', 'Crop', 'Manager' or 'Other'}
+\item{node}{either \sQuote{Clock}, \sQuote{Weather}, \sQuote{Soil}, 
+\sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other}}
 
 \item{soil.child}{specific soil component to be edited}
 
@@ -31,9 +42,9 @@ edit_apsim(file, src.dir = ".", wrt.dir = NULL, node = c("Clock",
 
 \item{overwrite}{logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise}
 
-\item{edit.tag}{if the file is edited a different tag from the default '-edited' can be used.}
+\item{edit.tag}{if the file is edited a different tag from the default \sQuote{-edited} can be used.}
 
-\item{parm.path}{path to the attribute to edit when node is 'Other'}
+\item{parm.path}{path to the attribute to edit when node is \sQuote{Other}}
 
 \item{verbose}{whether to print information about successful edit}
 
@@ -51,8 +62,8 @@ The variables specified by \code{parm} within the .apsim file specified by \code
 in the source directory \code{src.dir} are edited. The old values are replaced with \code{value}, which
 is a list that has the same number of elements as the length of the vector \code{parm}.  The current
 .apsim file will be overwritten if \code{overwrite} is set to \code{TRUE}; otherwise the file
-\emph{'file'-edited.apsim} will be created.  If (verbose = TRUE) then the name
- of the written file is returned. The function is similar to the edit_apsim functin in the 'apsimr'
+\sQuote{file} \emph{-edited.apsim} will be created.  If (verbose = TRUE) then the name
+ of the written file is returned. The function is similar to the edit_apsim functin in the \sQuote{apsimr}
  package, but with the difference that only some variables (parameters) can be modified.
  
  The function inspect_apsim is for a quick look from within R. The APSIM GUI provides a more
@@ -64,7 +75,7 @@ errors of editing unintended parts of the file. The disadvantage is that there i
 compared to the similar function in the 'apsimr' package.
 }
 \examples{
-\dontrun{
+\donttest{
 ## This example will read one of the examples distributed with APSIM
 ## but write to the current directory
 

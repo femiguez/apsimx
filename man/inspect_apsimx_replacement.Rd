@@ -4,10 +4,19 @@
 \alias{inspect_apsimx_replacement}
 \title{Inspect a replacement component in an .apsimx (JSON) file}
 \usage{
-inspect_apsimx_replacement(file = "", src.dir = ".", node = NULL,
-  node.child = NULL, node.subchild = NULL, node.subsubchild = NULL,
-  root = list("Models.Core.Replacements", NA), parm = NULL,
-  display.available = FALSE, digits = 3, print.path = FALSE)
+inspect_apsimx_replacement(
+  file = "",
+  src.dir = ".",
+  node = NULL,
+  node.child = NULL,
+  node.subchild = NULL,
+  node.subsubchild = NULL,
+  root = list("Models.Core.Replacements", NA),
+  parm = NULL,
+  display.available = FALSE,
+  digits = 3,
+  print.path = FALSE
+)
 }
 \arguments{
 \item{file}{file ending in .apsimx to be inspected (JSON)}
@@ -22,7 +31,7 @@ inspect_apsimx_replacement(file = "", src.dir = ".", node = NULL,
 
 \item{node.subsubchild}{specific node sub-subchild to be inspected.}
 
-\item{root}{'root' for the inspection of a replacement file (it gives flexibility to inspect other types of files).}
+\item{root}{\sQuote{root} for the inspection of a replacement file (it gives flexibility to inspect other types of files).}
 
 \item{parm}{specific parameter to display}
 
@@ -42,12 +51,13 @@ inspect the replacement componenet of an JSON apsimx file. It does not replace t
 This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 }
 \examples{
-\dontrun{
+\donttest{
 extd.dir <- system.file("extdata", package = "apsimx")
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", parm = c("X","Y")) 
- 
+}
+\dontrun{  
 ## This function can also be used to inspect more complex APSIM-X files
 ## For example the 'Factorial' example
 ex.dir <- auto_detect_apsimx_examples()

@@ -4,15 +4,24 @@
 \alias{get_daymet_apsim_met}
 \title{Get DAYMET data for an APSIM met file}
 \source{
-The data is retrieved using the \sQuote{FedData} package. For the original
+The data is retrieved using the \CRANpkg{FedData} package. For the original
 source see: https://daymet.ornl.gov/
 }
 \usage{
-get_daymet_apsim_met(lonlat, years, wrt.dir = ".", filename = NULL,
-  width.height = c(0.001, 0.001), template, label = NULL,
-  elements = NULL, raw.dir = "./RAW/DAYMET",
+get_daymet_apsim_met(
+  lonlat,
+  years,
+  wrt.dir = ".",
+  filename = NULL,
+  width.height = c(0.001, 0.001),
+  template,
+  label = NULL,
+  elements = NULL,
+  raw.dir = "./RAW/DAYMET",
   extraction.dir = paste0("./EXTRACTIONS/", label, "/DAYMET"),
-  force.redo = FALSE, cleanup = FALSE)
+  force.redo = FALSE,
+  cleanup = FALSE
+)
 }
 \arguments{
 \item{lonlat}{Longitude and latitude vector}
@@ -25,31 +34,31 @@ get_daymet_apsim_met(lonlat, years, wrt.dir = ".", filename = NULL,
 
 \item{width.height}{width and height of the cropped area (default 0.001, 0.001)}
 
-\item{template}{A Raster or Spatial object to serve as a template for cropping (see FedData::get_daymet).}
+\item{template}{A Raster or Spatial object to serve as a template for cropping (see \code{\link[FedData]{get_daymet}}).}
 
-\item{label}{a character string naming the area (see FedData::get_daymet)}
+\item{label}{a character string naming the area (see \code{\link[FedData]{get_daymet}})}
 
-\item{elements}{see FedData::get_daymet}
+\item{elements}{see \code{\link[FedData]{get_daymet}}}
 
-\item{raw.dir}{see FedData::get_daymet}
+\item{raw.dir}{see \code{\link[FedData]{get_daymet}}}
 
-\item{extraction.dir}{see FedData::get_daymet}
+\item{extraction.dir}{see \code{\link[FedData]{get_daymet}}}
 
-\item{force.redo}{see FedData::get_daymet}
+\item{force.redo}{see \code{\link[FedData]{get_daymet}}}
 
 \item{cleanup}{whether to delete download directories (default is FALSE). 
 If the intention is for cleanup to delete all the files, \sQuote{raw.dir} 
 and \sQuote{extraction.dir} should be supplied, supplying a sinlge name, 
-such as 'RAW' and 'EXTRACTION'.}
+such as \sQuote{RAW} and \sQuote{EXTRACTION}.}
 }
 \description{
-Uses \sQuote{get_daymet} from the \sQuote{FedData} package to download data to create an APSIM met file.
+Uses \code{\link[FedData]{get_daymet}} from the \CRANpkg{FedData} package to download data to create an APSIM met file.
 }
 \details{
-This function requires the \sQuote{FedData} pacakge.
+This function requires the \CRANpkg{FedData} pacakge.
 
 If the filename is not provided it will not write the file to disk, 
-but it will return an object of class 'met'. This is useful in case manipulation
+but it will return an object of class \sQuote{met}. This is useful in case manipulation
 is required before writing to disk. The variable \sQuote{srad} as downloaded from
 daymet is average solar radiation, so it is converted to total. 
 Daily total radiation (MJ/m2/day) can be calculated as 

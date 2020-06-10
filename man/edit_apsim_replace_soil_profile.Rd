@@ -2,7 +2,7 @@
 % Please edit documentation in R/edit_apsim_replace_soil_profile.R
 \name{edit_apsim_replace_soil_profile}
 \alias{edit_apsim_replace_soil_profile}
-\title{Edit APSIM 'Classic' file with a replaced soil profile}
+\title{Edit APSIM \sQuote{Classic} file with a replaced soil profile}
 \arguments{
 \item{file}{name of the .apsimx file to be edited}
 
@@ -10,13 +10,13 @@
 
 \item{wrt.dir}{writing directory}
 
-\item{soil.profile}{a soil profile object with class 'soil_profile'}
+\item{soil.profile}{a soil profile object with class \sQuote{soil_profile}}
 
 \item{swim}{list with SWIM specific parameters}
 
 \item{soilwat}{list with SoilWat specific parameters}
 
-\item{edit.tag}{default edit tag '-edited'}
+\item{edit.tag}{default edit tag \sQuote{-edited}}
 
 \item{overwrite}{default FALSE}
 
@@ -37,8 +37,11 @@ This function replaces values and it can grow an XML node, but it cannot edit a 
 which is not present in the original file.
 }
 \examples{
-\dontrun{
-sp <- apsimx_soil_profile()
+\donttest{
+sp <- apsimx_soil_profile(nlayers = 20,
+                          crops = c("Barley", "Chickpea", "Lucerne", 
+                          "Maize", "Perennial Grass", "Sorghum", 
+                          "Wheat", "Millet"))
 
 extd.dir <- system.file("extdata", package = "apsimx")
 

@@ -2,12 +2,12 @@
 % Please edit documentation in R/apsim_version.R
 \name{apsim_version}
 \alias{apsim_version}
-\title{Display available APSIM and APSIM-X versions}
+\title{Display available APSIM \sQuote{Classic} and APSIM-X versions}
 \usage{
 apsim_version(which = c("all", "inuse"), verbose = TRUE)
 }
 \arguments{
-\item{which}{either 'all' or 'inuse'}
+\item{which}{either \sQuote{all} or \sQuote{inuse}}
 
 \item{verbose}{whether to print the information to standard output}
 }
@@ -15,7 +15,7 @@ apsim_version(which = c("all", "inuse"), verbose = TRUE)
 a data frame (all) or a vector (inuse) with APSIM-X and/or APSIM versions
 }
 \description{
-Display available APSIM and APSIM-X versions
+Display available APSIM \sQuote{Classic} and APSIM-X versions
 }
 \examples{
 \dontrun{

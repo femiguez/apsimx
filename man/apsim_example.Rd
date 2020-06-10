@@ -7,7 +7,7 @@
 apsim_example(example = "Millet", silent = FALSE)
 }
 \arguments{
-\item{example}{run an example from built-in APSIM. Options are all of the ones included with the APSIM distribution, except 'Graph'.}
+\item{example}{run an example from built-in APSIM. Options are all of the ones included with the APSIM distribution, except \sQuote{Graph}.}
 
 \item{silent}{whether to print standard output from the APSIM execution}
 }
@@ -16,11 +16,11 @@ simple function to run some of the built-in APSIM examples
 }
 \details{
 This function creates a temporary copy of the example file distributed with APSIM to avoid writing a .out file 
-         to the directory where the 'Examples' are located. It is not a good practice and there is no guarantee that 
+         to the directory where the \sQuote{Examples} are located. It is not a good practice and there is no guarantee that 
          the user has read/write permissions in that directory.
 }
 \note{
-This function creates a new column 'Date' which is in the R 'Date' format which is convenient for graphics.
+This function creates a new column \sQuote{Date} which is in the R \sQuote{Date} format which is convenient for graphics.
 }
 \examples{
 \dontrun{

@@ -8,11 +8,11 @@
 #' 
 #' @title Read in an APSIM met file
 #' @name read_apsim_met
-#' @description Read into R a met file and return an object of class 'met'
+#' @description Read into R a met file and return an object of class \sQuote{met}
 #' @param file path to met file
 #' @param src.dir optional source directory
 #' @param verbose whether to suppress all messages and warnings
-#' @return an object of class 'met' with attributes
+#' @return an object of class \sQuote{met} with attributes
 #' @export
 #' @examples 
 #' \dontrun{

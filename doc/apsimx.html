@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2020-03-18" />
+<meta name="date" content="2020-06-10" />
 
 <title>apsimx: An R package for APSIM Next Generation (and Classic)</title>
 
@@ -303,7 +303,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation (and Classic)</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2020-03-18</h4>
+<h4 class="date">2020-06-10</h4>
 
 
 <div id="TOC">
@@ -340,11 +340,11 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </div>
 
 <pre><code>## OS: Darwin 
-## APSIM-X version date: 2020-01-29
+## APSIM-X version date: 2020-06-05
 ## 
 ## |x                        |
 ## |:------------------------|
-## |APSIM2020.01.29.4007.app |</code></pre>
+## |APSIM2020.06.05.5260.app |</code></pre>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>Are you a user of APSIM-X (“Next Generation”)? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the <strong>apsimx</strong> package, which allows you to inspect, edit, run and read files created by APSIM-X – .apsim(x) files. New .apsimx files are based on the JSON (JavaScript Object Notation <a href="https://www.json.org/" class="uri">https://www.json.org/</a>) format and it is used to communicate information to the APSIM-X engine. By using the ‘jsonlite’ R package <strong>apsimx</strong> can read and write (‘inspect’ and ‘edit’) files in this format. APSIM ‘Classic’ used an XML format and this type is now fully supported (‘inspect’, ‘edit’, ‘run’ and ‘read’). For ‘inspect’ and ‘edit’ in the APSIM ‘Classic’ version I use the ‘xml2’ package. To run simulations the <em>apsimx</em> function (<em>apsim</em> for ‘Classic’) is available and results from the simulation can be imported as an R object with a dedicated function (<em>read_apsimx</em> ‘NG’ and <em>read_apsim</em> for ‘Classic’). If you need to write scripts (regardless of whether you use the <strong>apsimx</strong> package or not) the vignette ‘writing scripts’ might be useful. The package is currently being developed and available at: <a href="https://github.com/femiguez/apsimx" class="uri">https://github.com/femiguez/apsimx</a>. If you have any questions write to: femiguez <em>at</em> iastate.edu.</p>
@@ -357,7 +357,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p><a href="https://apsimnextgeneration.netlify.com/">APSIM-X</a></p>
 <p><a href="https://www.sciencedirect.com/science/article/pii/S1364815217311921">Holzworth et al. (2018)</a></p>
 <p>This package has been tested on:</p>
-<p><strong>Mac</strong>: ApsimX version (2020-01-29) 4007 (R 3.6.2)</p>
+<p><strong>Mac</strong>: ApsimX version (2020-06-05) 5260 (R 3.6.2)</p>
 <p><strong>Debian</strong>: ApsimX version (2020-01-29) 4007 (R 3.6.1)</p>
 <p><strong>Windows</strong>: ApsimX version 4236 (2020-01-29) 4007 (R 3.6.2)</p>
 </div>
@@ -757,8 +757,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## CropType Maize 
 ## Level: node 
 ## list Name: Maize 
-## list length: 10 
-## list names: $type CropType IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
+## list length: 11 
+## list names: $type CropType IsAlive IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
 ## Children: Yes 
 ## Children length: 20 
 ## Children Names: Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
@@ -772,8 +772,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## CropType Maize 
 ## Level: node 
 ## list Name: Maize 
-## list length: 10 
-## list names: $type CropType IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
+## list length: 11 
+## list names: $type CropType IsAlive IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
 ## Children: Yes 
 ## Children length: 20 
 ## Children Names: Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
@@ -796,8 +796,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## CropType Maize 
 ## Level: node 
 ## list Name: Maize 
-## list length: 10 
-## list names: $type CropType IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
+## list length: 11 
+## list names: $type CropType IsAlive IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
 ## Children: Yes 
 ## Children length: 20 
 ## Children Names: Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
@@ -826,8 +826,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## CropType Maize 
 ## Level: node 
 ## list Name: Maize 
-## list length: 10 
-## list names: $type CropType IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
+## list length: 11 
+## list names: $type CropType IsAlive IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
 ## Children: Yes 
 ## Children length: 20 
 ## Children Names: Arbitrator Phenology Structure Grain Root Leaf Husk Rachis Stem AboveGround BelowGround Total TotalLive TotalDead EarLive AboveGroundLive AboveGroundDead Future Development Needs CultivarFolder Spike 
@@ -862,7 +862,15 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## $type : Models.Functions.XYPairs, Models 
 ## X : 0 18 26 34 44 
 ## Y : 0 10 18 26 0 
-## Name : XYPairs 
+## Name : TemperatureResponse 
+## Children : 
+## IncludeInDocumentation : TRUE 
+## Enabled : TRUE 
+## ReadOnly : FALSE 
+##  
+## $type : Models.Functions.ThreeHourSin, Models 
+## TempRangeFactors : 
+## Name : InterpolationMethod 
 ## Children : 
 ## IncludeInDocumentation : TRUE 
 ## Enabled : TRUE 
@@ -882,7 +890,12 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## Subchild Name:  ThermalTime 
 ## Name sub-sub-child:  BaseThermalTime 
 ## $type : Models.Functions.AirTemperatureFunction, Models 
+## agregationMethod : 0 
 ## Name : BaseThermalTime 
+##  : Models.Functions.XYPairs, Models 0 18 26 34 44 0 10 18 26 0 TemperatureResponse TRUE TRUE FALSE 
+## $type : Models.Functions.XYPairs, Models 
+## X : 0 18 26 34 44 
+## Y : 0 10 18 26 0 
 ## $type : Models.Functions.XYPairs, Models 
 ## X : 0 18 26 34 44 
 ## Y : 0 10 18 26 0 
@@ -899,8 +912,8 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## CropType Soybean 
 ## Level: node 
 ## list Name: Soybean 
-## list length: 10 
-## list names: $type CropType IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
+## list length: 11 
+## list names: $type CropType IsAlive IsEnding DaysAfterEnding ResourceName Name Children IncludeInDocumentation Enabled ReadOnly 
 ## Children: Yes 
 ## Children length: 41 
 ## Children Names: Arbitrator Phenology Structure Grain Root Nodule Shell Leaf Stem AboveGround BelowGround Total TotalLive TotalDead Pod Memo PioneerP932T16R_MG32 PioneerP22T69R_MG22 Trial_MG00 Lambert_MG0 IA1006_MG10 IA2008_MG20 Macon_MG30 Pioneer94B01_MG40 Hutcheson_MG50 NK622_MG60 Becks367NRR_MG37 AsgrowAG4403_MG40 HornbeckHBK4891_MG40 AsgrowAG5701_MG50 PioneerP9504_MG50 Pioneer92MGI_MG26 Becks321NRR_MG32 Hooper_MG40 Stephens_MG40 Davis PioneerP92Y75_MG27 PioneerP22T61_MG22 Buchanan Djakal PioneerP93M11_MG31 
@@ -964,7 +977,12 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## Subchild Name:  ThermalTime 
 ## Name sub-sub-child:  BaseThermalTime 
 ## $type : Models.Functions.AirTemperatureFunction, Models 
+## agregationMethod : 0 
 ## Name : BaseThermalTime 
+##  : Models.Functions.XYPairs, Models 0 18 26 34 44 0 10 18 26 0 TemperatureResponse TRUE TRUE FALSE 
+## $type : Models.Functions.XYPairs, Models 
+## X : 0 18 26 34 44 
+## Y : 0 10 18 26 0 
 ## $type : Models.Functions.XYPairs, Models 
 ## X : 0 18 26 34 44 
 ## Y : 0 10 18 26 0 
@@ -1052,7 +1070,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## Edited (child):  none 
 ## Edited parameters:  
 ## New values:  Ames.met 
-## Created:  /private/var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T/RtmpXsbDjf/temp_libpathe491169b5981/apsimx/extdata/Factorial-edited.apsimx</code></pre>
+## Created:  /private/var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T/RtmpIn7Jd0/temp_libpath4cdb7936c896/apsimx/extdata/Factorial-edited.apsimx</code></pre>
 <p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge source.</p>
 </div>
 </div>
@@ -1088,26 +1106,25 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## OS: Darwin 
 ## 
 ## 
-## APSIM             Version.1                  Version.2                  Version.3                  Version.4                
-## ----------------  -------------------------  -------------------------  -------------------------  -------------------------
-## Classic           NA                         NA                         NA                         NA                       
-## Next Generation   APSIM2020.01.29.4007.app   APSIM2019.12.11.3010.app   APSIM2019.10.04.4236.app   APSIM2019.09.24.4200.app</code></pre>
+## APSIM             Version.1                  Version.2                
+## ----------------  -------------------------  -------------------------
+## Classic           NA                         NA                       
+## Next Generation   APSIM2020.06.05.5260.app   APSIM2020.01.29.4007.app</code></pre>
 <div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb76-1" data-line-number="1">aiu &lt;-<span class="st"> </span><span class="kw">apsim_version</span>(<span class="dt">which =</span> <span class="st">&quot;inuse&quot;</span>)</a></code></pre></div>
 <pre><code>## OS: Darwin 
-## APSIM-X version date: 2020-01-29
+## APSIM-X version date: 2020-06-05
 ## 
 ## |x                        |
 ## |:------------------------|
-## |APSIM2020.01.29.4007.app |</code></pre>
+## |APSIM2020.06.05.5260.app |</code></pre>
 <p><strong>edit_apsimx_batch</strong>: Uses APSIM-X built-in functionality to edit parameters. In testing, it is slower than the other ’edit_apsimx*’ functions.</p>
 </div>
 <div id="to-do" class="section level1">
 <h1>To-Do</h1>
 <ul>
-<li><p>Fix possible bug when editing factorials in ‘edit_apsim’ and ‘edit_apsimx’</p></li>
 <li><p><strong>inspect_apsimx_replacement</strong> challenge this function with more complex examples. It has problems with ‘manager’ when replacements are present.</p></li>
 <li><p>Add more tests using the ‘CoverCrop example’ (APSIM ‘Classic’). This would be the motivation for writing a function for ‘factorials’. ‘edit_apsim_factorial’.</p></li>
-<li><p>Include parameter estimation example for maize</p></li>
+<li><p>Include parameter estimation example</p></li>
 </ul>
 </div>
 <div id="appendix" class="section level1">

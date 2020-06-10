@@ -32,11 +32,11 @@ maize.soy <- apsimx("MaizeSoybean.apsimx")
 aiu <- apsim_version(which = "inuse", verbose = FALSE)
 
 ## Need to change this for new versions of APSIM-X
-apsimx.new.version <- as.numeric(strsplit(aiu, ".", fixed = TRUE)[[1]][4]) == 4007
+apsimx.new.version <- as.numeric(strsplit(aiu, ".", fixed = TRUE)[[1]][4])
 
 my.laptop <- grepl("fernandomiguez", Sys.info()[["user"]])
 ## This is only for my laptop
-if(my.laptop & apsimx.new.version){
+if(my.laptop & apsimx.new.version == 5260){
   my.extd <- "~/Dropbox/apsimx/inst/extdata"
   file.copy(from = paste0(ex.dir,"/","Maize.apsimx"),
             to = my.extd, copy.mode = FALSE, 

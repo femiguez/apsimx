@@ -4,8 +4,7 @@
 \alias{impute_apsim_met}
 \title{Perform imputation for missing data in a met file}
 \usage{
-impute_apsim_met(met, method = c("approx", "splines", "mean"),
-  verbose = FALSE)
+impute_apsim_met(met, method = c("approx", "splines", "mean"), verbose = FALSE)
 }
 \arguments{
 \item{met}{object of class \sQuote{met}}

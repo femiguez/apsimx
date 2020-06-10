@@ -4,20 +4,24 @@
 \alias{read_apsim_all}
 \title{Read all APSIM generated .out files in a directory}
 \usage{
-read_apsim_all(filenames, src.dir = ".", value = c("report", "all"),
-  date.format = "\%d/\%m/\%Y")
+read_apsim_all(
+  filenames,
+  src.dir = ".",
+  value = c("report", "all"),
+  date.format = "\%d/\%m/\%Y"
+)
 }
 \arguments{
 \item{filenames}{names of files to be read}
 
 \item{src.dir}{source directory where files are located}
 
-\item{value}{either 'report' or 'all' (only 'report' implemented at the moment)}
+\item{value}{either \sQuote{report} or \sQuote{all} (only \sQuote{report} implemented at the moment)}
 
-\item{date.format}{format for adding 'Date' column}
+\item{date.format}{format for adding \sQuote{Date} column}
 }
 \description{
-Like 'read_apsim', but it reads all .out files in a directory.
+Like \code{\link{read_apsim}}, but it reads all .out files in a directory.
 }
 \details{
 Read all APSIM generated .out files in a directory

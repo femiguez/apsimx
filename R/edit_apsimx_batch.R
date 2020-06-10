@@ -6,7 +6,7 @@
 #' 
 #' This allows the user to specify an .apsimx file and a config file when running Models.exe. The .apsimx file will not be run but instead, the changes listed in the config file will be applied to the .apsimx file, which will then be written to disk under the same filename.
 #' 
-#' The config file should contain lines of the form 'path = value'
+#' The config file should contain lines of the form \sQuote{path = value}
 #'
 #' e.g.
 #' 
@@ -36,14 +36,14 @@
 #' @param file file ending in .apsimx to be edited (JSON)
 #' @param src.dir directory containing the .apsimx file to be edited; defaults to the current working directory
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
-#' @param parms parameter to be edited in the for of 'key = value'
+#' @param parms parameter to be edited in the for of \sQuote{key = value}
 #' @param silent controls the output of running APSIM at the command line
 #' @param verbose whether to print information about successful edit
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
 #' As a side effect this function creates a new (JSON) .apsimx file.
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' ## This example will read one of the examples distributed with APSIM-X
 #' ## but write to the current directory
 #' 

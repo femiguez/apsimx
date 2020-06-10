@@ -14,10 +14,10 @@ read_apsim_met(file, src.dir = ".", verbose = TRUE)
 \item{verbose}{whether to suppress all messages and warnings}
 }
 \value{
-an object of class 'met' with attributes
+an object of class \sQuote{met} with attributes
 }
 \description{
-Read into R a met file and return an object of class 'met'
+Read into R a met file and return an object of class \sQuote{met}
 }
 \details{
 Read a met file into R

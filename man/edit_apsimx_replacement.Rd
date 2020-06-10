@@ -4,11 +4,21 @@
 \alias{edit_apsimx_replacement}
 \title{Edit a replacement component in an .apsimx (JSON) file}
 \usage{
-edit_apsimx_replacement(file = "", src.dir = ".", wrt.dir = ".",
-  node = NULL, node.child = NULL, node.subchild = NULL,
-  node.subsubchild = NULL, root = list("Models.Core.Replacements", NA),
-  parm = NULL, value = NULL, overwrite = FALSE,
-  edit.tag = "-edited", verbose = TRUE)
+edit_apsimx_replacement(
+  file = "",
+  src.dir = ".",
+  wrt.dir = ".",
+  node = NULL,
+  node.child = NULL,
+  node.subchild = NULL,
+  node.subsubchild = NULL,
+  root = list("Models.Core.Replacements", NA),
+  parm = NULL,
+  value = NULL,
+  overwrite = FALSE,
+  edit.tag = "-edited",
+  verbose = TRUE
+)
 }
 \arguments{
 \item{file}{file ending in .apsimx to edit (JSON)}
@@ -25,7 +35,7 @@ edit_apsimx_replacement(file = "", src.dir = ".", wrt.dir = ".",
 
 \item{node.subsubchild}{specific node sub-subchild to edit.}
 
-\item{root}{'root' node to explore (default = "Models.Core.Replacements")}
+\item{root}{\sQuote{root} node to explore (default = \dQuote{Models.Core.Replacements})}
 
 \item{parm}{specific parameter to edit}
 
@@ -33,7 +43,7 @@ edit_apsimx_replacement(file = "", src.dir = ".", wrt.dir = ".",
 
 \item{overwrite}{logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise}
 
-\item{edit.tag}{if the file is edited a different tag from the default '-edited' can be used.}
+\item{edit.tag}{if the file is edited a different tag from the default \sQuote{-edited} can be used.}
 
 \item{verbose}{whether to print information about successful edit}
 }
@@ -52,7 +62,7 @@ The components that can be edited are restricted becuase this is better in preve
 errors of editing unintended parts of the file.
 }
 \examples{
-\dontrun{
+\donttest{
 extd.dir <- system.file("extdata", package = "apsimx")
 edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
