@@ -17,7 +17,7 @@ library(apsimx)
 library(ggplot2)
 ```
 
-```{r apsimx-options, echo = FALSE}
+```{r apsimx-options, echo = FALSE, eval = FALSE}
 apsimx_options(warn.versions = FALSE)
 ava <- apsim_version(verbose = FALSE)
 aiu <- apsim_version(which = "inuse")
@@ -58,7 +58,7 @@ This package has been tested on:
 
 ## Installing APSIM-X
 
-For most functions in this pacakge you need to have a version of APSIM-X installed (or APSIM 'Classic'). For Mac and Linux, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM-X (https://www.apsim.info/Products/Downloads.aspx). The **apsimx** package will try to detect both mono and APSIM-X. 
+For most functions in this pacakge you need to have a version of APSIM-X installed (or APSIM 'Classic'). For Mac and Linux, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM-X (https://www.apsim.info/download-apsim/downloads/). The **apsimx** package will try to detect both mono and APSIM-X. 
 
 **Mac**: For Mac it is also assumed that APSIM-X has been moved to 'Applications'.
 
@@ -457,7 +457,7 @@ The apsimx package supports inspection and editing of both file types, but XML i
 
 **apsim_version**: displays which version(s) of APSIM(X) are available. For example,
 
-```{r apsim-verions-tail}
+```{r apsim-verions-tail, eval = FALSE}
 ava <- apsim_version()
 aiu <- apsim_version(which = "inuse")
 ```

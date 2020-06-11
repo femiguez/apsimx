@@ -56,7 +56,7 @@ inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Metadata
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilWater") 
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Organic")
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
+inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialN")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "SurfaceOrganicMatter")

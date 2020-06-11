@@ -2,6 +2,11 @@
 require(apsimx)
 require(sf)
 
+## Even though I can run this externally, I will set it so it only
+## runs locally
+run.soil.profile <- get(".run.local.tests", envir = apsimx.options)
+
+if(run.soil.profile){
 ## First create a soil profile
 sp <- apsimx_soil_profile(nlayers = 15, 
                           crops = c("Barley", "Chickpea","Lucerne","Maize",
@@ -80,3 +85,4 @@ edit_apsim_replace_soil_profile("Millet.apsim", soil.profile = asp,
                                 edit.tag = "-newsoil-ssurgo",
                                 src.dir = extd.dir, wrt.dir = ".")
 
+}

@@ -5,15 +5,17 @@ apsimx_options(warn.versions = FALSE)
 
 ## setwd(tempdir())
 
-run.test.apsim.met <- TRUE
+run.test.apsim.met <- get(".run.local.tests", envir = apsimx.options)
 
-ex.dir <- auto_detect_apsimx_examples()
-extd.dir <- system.file("extdata", package = "apsimx")
+if(run.test.apsim.met){
+  ex.dir <- auto_detect_apsimx_examples()
+  extd.dir <- system.file("extdata", package = "apsimx")
 
-lmf <- list.files(paste0(ex.dir,"/WeatherFiles"))
+  lmf <- list.files(paste0(ex.dir,"/WeatherFiles"))
 
-lmf2 <- lmf[lmf %in% c("Dalby.met","Goond.met","Ingham.met","lincoln.met","Popondetta.met",
-                       "VCS_Ruakura.met","WaggaWagga.met")]
+  lmf2 <- lmf[lmf %in% c("Dalby.met","Goond.met","Ingham.met","lincoln.met","Popondetta.met",
+                         "VCS_Ruakura.met","WaggaWagga.met")]
+}
 
 if(run.test.apsim.met){
   for(i in lmf2){
@@ -24,7 +26,7 @@ if(run.test.apsim.met){
 
 ## Test multiple imputation function
 
-run.test.impute.apsim.met <- FALSE
+run.test.impute.apsim.met <- get(".run.local.tests", envir = apsimx.options)
 
 ## One trick to only test this locally?
 username <- Sys.info()[["user"]]

@@ -25,7 +25,7 @@
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilWater") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Organic")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Analysis")
+#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialN")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "SurfaceOrganicMatter")
@@ -79,15 +79,21 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       stop("more than one simulation found and no root node label has been specified \n select one of the children names above")   
     }else{
       if(length(root) == 1){
-        fcsn <- grep(as.character(root), apsimx_json$Children, fixed = TRUE)
-        parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[fcsn]]$Name)
+        nms <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                      FUN.VALUE = "character")
+        fcsn <- grep(as.character(root), nms)
+        parm.path.1 <- paste0(parm.path.0,".", apsimx_json$Children[[fcsn]]$Name)
+        parent.node <- apsimx_json$Children[[fcsn]]$Children
         if(length(fcsn) == 0 || length(fcsn) > 1)
           stop("no root node label found or root is not unique")
       }else{
-        fcsn1 <- grep(as.character(root[1]), apsimx_json$Children, fixed = TRUE)
+        nms1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                      FUN.VALUE = "character")
+        fcsn1 <- grep(as.character(root[1]), nms1)
         root.node.0 <- apsimx_json$Children[[fcsn1]]
-        root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)
-        fcsn2 <- grep(as.character(root[2]), root.node.0.child.names, fixed = TRUE)
+        root.node.0.child.names <- vapply(root.node.0$Children, function(x) x$Name, 
+                                          FUN.VALUE = "character")
+        fcsn2 <- grep(as.character(root[2]), root.node.0.child.names)
         parent.node <- apsimx_json$Children[[fcsn1]]$Children[[fcsn2]]$Children
         parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[fcsn1]]$Children[[fcsn2]])
       }

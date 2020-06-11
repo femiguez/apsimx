@@ -3,7 +3,7 @@
 require(apsimx)
 apsimx_options(warn.versions = FALSE)
 
-run.replacements.tests <- TRUE
+run.replacements.tests <- get(".run.local.tests", envir = apsimx.options)
 
 extd.dir <- system.file("extdata", package = "apsimx")
 

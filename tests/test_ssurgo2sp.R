@@ -5,9 +5,7 @@ apsimx_options(warn.versions = FALSE)
 
 extd.dir <- system.file("extdata", package = "apsimx")
 
-setwd(tempdir())
-
-run.test.ssurgo.workflow <- FALSE
+run.test.ssurgo.workflow <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.test.ssurgo.workflow){
 

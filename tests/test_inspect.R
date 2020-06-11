@@ -1,11 +1,12 @@
 ## Run a few tests for the examples
 require(apsimx)
 apsimx_options(warn.versions = FALSE)
-ex.dir <- auto_detect_apsimx_examples()
 
 ## Run inspect tests
 
-run.inspect.tests <- TRUE
+run.inspect.tests <- get(".run.local.tests", envir = apsimx.options)
+
+if(run.inspect.tests) ex.dir <- auto_detect_apsimx_examples()
 
 if(run.inspect.tests){
   
@@ -77,7 +78,7 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',9))
 }
 
-run.inspect.print.path.tests <- TRUE
+run.inspect.print.path.tests <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.inspect.print.path.tests){
   
@@ -112,7 +113,7 @@ if(run.inspect.print.path.tests){
 }
 
 
-inspect.replacement.test <- TRUE
+inspect.replacement.test <- get(".run.local.tests", envir = apsimx.options)
 
 if(inspect.replacement.test){
   
@@ -120,16 +121,30 @@ if(inspect.replacement.test){
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
                              root = list("Experiment", 1),
                              node = "Base", node.child = "Clock")
+  ## inspect_apsimx version
+  inspect_apsimx("Factorial.apsimx", src.dir = ex.dir,
+                 root = c("^Experiment","Base"),
+                 node = "Clock")
   
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
                              root = list("Experiment", 1),
                              node = "Base", node.child = "Weather")
+  
+  ## inspect_apsimx version
+  inspect_apsimx("Factorial.apsimx", src.dir = ex.dir,
+                 root = c("^Experiment","Base"),
+                 node = "Weather")
   
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
                              root = list("Experiment", 1),
                              node = "Base", node.child = "Field",
                              node.subchild = "Soil",
                              display.available = TRUE)
+  
+  ## inspect_apsimx version
+  inspect_apsimx("Factorial.apsimx", src.dir = ex.dir,
+                 root = c("^Experiment","Base"),
+                 node = "Soil")
   
   ## If we want to look at the second Factorial 'Experiment'
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
@@ -148,7 +163,7 @@ if(inspect.replacement.test){
   
 }
 
-inspect.replacement.test2 <- TRUE
+inspect.replacement.test2 <- get(".run.local.tests", envir = apsimx.options)
 
 extd.dir <- system.file("extdata", package = "apsimx")
 
@@ -202,7 +217,7 @@ if(inspect.replacement.test2){
 }
  
 
-inspect.replacement.test.parm.path <- TRUE
+inspect.replacement.test.parm.path <- get(".run.local.tests", envir = apsimx.options)
 
 if(inspect.replacement.test.parm.path){
   

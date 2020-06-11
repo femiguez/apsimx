@@ -4,9 +4,7 @@ apsimx_options(warn.versions = FALSE)
 
 extd.dir <- system.file("extdata", package = "apsimx")
 
-setwd(tempdir())
-
-run.test.edit.apsimx.batch <- TRUE
+run.test.edit.apsimx.batch <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.test.edit.apsimx.batch){
 

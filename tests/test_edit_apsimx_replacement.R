@@ -2,10 +2,7 @@
 require(apsimx)
 extd.dir <- system.file("extdata", package = "apsimx")
 
-tmpdir <- tempdir()
-setwd(tmpdir)
-
-run.test.edit.apsimx.replacement <- TRUE
+run.test.edit.apsimx.replacement <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.test.edit.apsimx.replacement){
   

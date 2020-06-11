@@ -2,15 +2,16 @@
 require(apsimx)
 apsimx_options(warn.versions = FALSE)
 
-run.example.tests <- TRUE
-
-ex.dir <- auto_detect_apsimx_examples()
+run.example.tests <- get(".run.local.tests", envir = apsimx.options)
 
 examples <- c("Barley","ControlledEnvironment","Eucalyptus",
               "EucalyptusRotation",
               "Maize","Oats","Sugarcane","Wheat")
 
 if(run.example.tests){
+  
+  ex.dir <- auto_detect_apsimx_examples()
+  
   start <- Sys.time()
   for(i in examples){
     ex.tst <- apsimx_example(i)

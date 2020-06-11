@@ -1,6 +1,7 @@
 ## Testing the 'edit_apsim_xml' function
 require(apsimx)
 
+## I guess I can run this non-locally
 extd.dir <- system.file("extdata", package = "apsimx")
  
 values <- paste(rep(1.7, 12), collapse = " ")

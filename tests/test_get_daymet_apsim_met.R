@@ -11,7 +11,7 @@ library(nasapower)
 library(apsimx)
 apsimx_options(warn.versions = FALSE)
 
-run.test.daymet <- FALSE
+run.test.daymet <- get(".run.local.tests", envir = apsimx.options)
 
 username <- Sys.info()[["user"]]
 
@@ -33,7 +33,7 @@ if(run.test.daymet && username == "fernandomiguez"){
 
 ## Does the file produced by DayMet work in APSIM?
 
-run.test.maize.daymet <- FALSE
+run.test.maize.daymet <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.test.maize.daymet && username == "fernandomiguez"){
 
@@ -60,7 +60,7 @@ if(run.test.maize.daymet && username == "fernandomiguez"){
 
 ## What if I get data from POWER?
 
-run.test.power <- FALSE
+run.test.power <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.test.power && username == "fernandomiguez"){
 
@@ -83,7 +83,7 @@ if(run.test.power && username == "fernandomiguez"){
   write_apsim_met(pwr.met2, wrt.dir = ".", filename = "cia-power2.met")
 }
 
-run.test.maize.power <- FALSE
+run.test.maize.power <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.test.maize.daymet && username == "fernandomiguez"){
   

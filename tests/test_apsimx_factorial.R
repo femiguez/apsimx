@@ -2,7 +2,8 @@
 require(apsimx)
 apsimx_options(warn.versions = FALSE)
 
-run.factorial.example <- TRUE
+## These tests can only be run locally
+run.factorial.example <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.factorial.example){
 
@@ -42,7 +43,7 @@ if(run.factorial.example){
   file.remove("Factorial.db")
 }
 
-run.factorial.example2.inspect <- TRUE
+run.factorial.example2.inspect <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.factorial.example2.inspect){
 
@@ -60,7 +61,7 @@ if(run.factorial.example2.inspect){
   
 }
 
-run.factorial.example2.edit <- TRUE
+run.factorial.example2.edit <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.factorial.example2.edit){
   

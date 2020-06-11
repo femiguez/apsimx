@@ -1,6 +1,7 @@
 ## Test APSIM SWIM code for 'Classic'
 require(apsimx)
 
+## This test does not need APSIM Classic to run
 run.test.apsim.swim <- TRUE
 
 extd.dir <- system.file("extdata", package = "apsimx")

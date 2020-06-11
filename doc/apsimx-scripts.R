@@ -1,6 +1,6 @@
 ## ----setup, include=FALSE------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
-require(apsimx)
+##require(apsimx)
 
 ## ----apsimx-windows, eval = FALSE----------------------------------------
 #  run.strng <- "C:/PROGRA~1/APSIM2019.07.19.4025/Bin/Models.exe ./Wheat.apsimx"

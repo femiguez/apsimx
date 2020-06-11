@@ -11,7 +11,7 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-require(apsimx)
+##require(apsimx)
 ```
 
 # Writing scripts and running APSIM-X at the command line
@@ -184,25 +184,25 @@ R.version
 
 There are some links on the APSIM forums related to this, but I have found the information in those links to be incomplete or outdated. This document is meant to be a comprehensive summary of this topic.
 
-Running APSIM-X command line (Mac): https://www.apsim.info/Support/tabid/254/forumid/1/threadid/2312/scope/posts/Default.aspx
+<!-- Running APSIM-X command line (Mac): https://www.apsim.info/Support/tabid/254/forumid/1/threadid/2312/scope/posts/Default.aspx This link does not exist anymore -->
 
-Here it is mentioned that 'Modelx.exe' can work (Windows):
-https://www.apsim.info/Support/tabid/254/forumid/1/threadid/2037/scope/posts/Default.aspx
+<!-- Here it is mentioned that 'Modelx.exe' can work (Windows): -->
+<!-- https://www.apsim.info/Support/tabid/254/forumid/1/threadid/2037/scope/posts/Default.aspx -->
 
-For previous version of APSIM (7.x):
-https://www.apsim.info/Support/tabid/254/forumid/1/postid/2088/scope/posts/Default.aspx
+<!-- For previous version of APSIM (7.x): -->
+<!-- https://www.apsim.info/Support/tabid/254/forumid/1/postid/2088/scope/posts/Default.aspx -->
 
 I believe this information is outdated:
-https://www.apsim.info/Documentation/TechnicalandDevelopment/RunAPSIMfromcommandlineorfromscripts.aspx
+https://www.apsim.info/documentation/model-documentation/technical-documentation/run-apsim-from-command-line-or-from-scripts/
 
 Here it is mentioned that 'Models.exe Wheat.apsimx' should be able to run APSIM-X at the command line:
 https://github.com/APSIMInitiative/ApsimX/issues/2199
 
-This information could be useful:
-http://www.apsim.info/Documentation/TrainingManualsandResources/APSIMTraining(SIMLESA)/Climatechangeprojections.aspx
+<!-- This information could be useful: -->
+<!-- http://www.apsim.info/Documentation/TrainingManualsandResources/APSIMTraining(SIMLESA)/Climatechangeprojections.aspx -->
 
-Large scale simulations and climate change:
-http://www.apsim.info/Portals/0/Documentation/SIMLESA/Apsim-Climate-change-2010.pdf
+<!-- Large scale simulations and climate change: -->
+<!-- http://www.apsim.info/Portals/0/Documentation/SIMLESA/Apsim-Climate-change-2010.pdf -->
 
 
 

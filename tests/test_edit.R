@@ -3,7 +3,7 @@ require(apsimx)
 
 extd.dir <- system.file("extdata", package = "apsimx")
 
-run.apsimx.edit <- TRUE
+run.apsimx.edit <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.apsimx.edit){
   
@@ -28,7 +28,7 @@ if(run.apsimx.edit){
   
 }
 
-run.apsim.edit.millet <- TRUE
+run.apsim.edit.millet <- get(".run.local.tests", envir = apsimx.options)
 
 if(run.apsim.edit.millet){
   

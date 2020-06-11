@@ -130,15 +130,21 @@ read_apsim_met <- function(file, src.dir = ".", verbose = TRUE){
 #' 
 write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL){
   
-  if(missing(wrt.dir) & missing(filename)){
+  if(missing(wrt.dir) && missing(filename)){
     ## This assumes that the full path is in filename
     file.path <- attr(met,"filename")
   }
-  if(!missing(wrt.dir) & missing(filename)){
+  if(!missing(wrt.dir) && missing(filename)){
     stop("Need to supply filename if 'wrt.dir' is not NULL")
   }
-  if(!missing(wrt.dir) & !missing(filename)){
+  if(missing(wrt.dir) && !missing(filename)){
+    stop("Need to supply 'wrt.dir' if filename is not NULL")
+  }
+  if(!missing(wrt.dir) && !missing(filename)){
     file.path <- paste0(wrt.dir,"/",filename)
+  }
+  if(!missing(filename)){
+    if(!grepl(".met", filename, fixed=TRUE)) stop("filename should end in .met")
   }
   ## Open connection
   con <- file(description = file.path, open = "w")
@@ -349,5 +355,11 @@ check_apsim_met <- function(met){
   }
   if(any(max(met[["rain"]])> 100, na.rm = TRUE)){
     warning("Rain is possibly too high")
+  }
+  
+  if(!is.null(met$vp)){
+    if(max(met[["vp"]], na.rm = TRUE) > 100){
+      warning("Vapor Pressure units might be worng. It should be in hecto Pascals")
+    }
   }
 }

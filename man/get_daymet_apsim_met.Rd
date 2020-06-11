@@ -62,7 +62,8 @@ but it will return an object of class \sQuote{met}. This is useful in case manip
 is required before writing to disk. The variable \sQuote{srad} as downloaded from
 daymet is average solar radiation, so it is converted to total. 
 Daily total radiation (MJ/m2/day) can be calculated as 
-follows: ((srad (W/m2) * dayl (s/day)) / 1,000,000)
+follows: ((srad (W/m2) * dayl (s/day)) / 1,000,000) \cr
+Vapor Pressure Deficit (vp) should be in hecto Pascals
 }
 \examples{
 \dontrun{

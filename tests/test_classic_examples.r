@@ -2,7 +2,8 @@
 require(apsimx)
 apsim_options(warn.versions = FALSE)
 
-run.classic.examples <- grepl("windows",Sys.info()[["sysname"]], ignore.case = TRUE)
+## This needs windows and APSIM Classic
+run.classic.examples <- grepl("windows",Sys.info()[["sysname"]], ignore.case = TRUE) && get(".run.local.tests", envir = apsimx.options)
 
 if(run.classic.examples){
   

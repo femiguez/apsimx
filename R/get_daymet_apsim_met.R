@@ -24,7 +24,8 @@
 #' is required before writing to disk. The variable \sQuote{srad} as downloaded from
 #' daymet is average solar radiation, so it is converted to total. 
 #' Daily total radiation (MJ/m2/day) can be calculated as 
-#' follows: ((srad (W/m2) * dayl (s/day)) / 1,000,000)
+#' follows: ((srad (W/m2) * dayl (s/day)) / 1,000,000) \cr
+#' Vapor Pressure Deficit (vp) should be in hecto Pascals
 #' @source The data is retrieved using the \CRANpkg{FedData} package. For the original
 #' source see: https://daymet.ornl.gov/
 #' @export
@@ -103,7 +104,8 @@ get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".",
   ## Process precipitation
   dmet.prcp <- apply(raster::as.array(dmet0$prcp), 3, FUN = mean)
   ## Process water vapor pressure
-  dmet.vp <- apply(raster::as.array(dmet0$vp), 3, FUN = mean)
+  ## Need to convert from Pa to hPa
+  dmet.vp <- apply(raster::as.array(dmet0$vp), 3, FUN = mean) * 0.01 
   ## Process snow water equivalent
   dmet.swe <- apply(raster::as.array(dmet0$swe), 3, FUN = mean)
   
@@ -111,7 +113,7 @@ get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".",
   
   names(dmet) <- c("year","day","radn","maxt","mint","rain","vp","swe")
   
-  units <- c("()","()","(MJ/m2/day)","(oC)","(oC)","(mm)","Pa","kg/m2")
+  units <- c("()","()","(MJ/m2/day)","(oC)","(oC)","(mm)","hPa","kg/m2")
   
   comments <- paste("!data from DayMet obtained through FedDdata R pacakge. retrieved: ",Sys.time())
   

@@ -3,11 +3,11 @@ knitr::opts_chunk$set(echo = TRUE)
 library(apsimx)
 library(ggplot2)
 
-## ----apsimx-options, echo = FALSE----------------------------------------
-apsimx_options(warn.versions = FALSE)
-ava <- apsim_version(verbose = FALSE)
-aiu <- apsim_version(which = "inuse")
-##if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
+## ----apsimx-options, echo = FALSE, eval = FALSE--------------------------
+#  apsimx_options(warn.versions = FALSE)
+#  ava <- apsim_version(verbose = FALSE)
+#  aiu <- apsim_version(which = "inuse")
+#  ##if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
 
 ## ----create-temp-dir, echo = FALSE, eval = FALSE-------------------------
 #  tmp.dir <- tempdir()
@@ -95,7 +95,7 @@ pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
               parm = list("Sow on a fixed date",5), print.path = TRUE)
 
 ## ----Millet-edit---------------------------------------------------------
-edit_apsim("Millet", src.dir = extd.dir, wrt.dir = ".",
+edit_apsim("Millet.apsim", src.dir = extd.dir, wrt.dir = ".",
            node = "Other", parm.path = pp, value = 8, 
            edit.tag = "-pp")
 
@@ -211,7 +211,7 @@ edit_apsimx("Factorial.apsimx", src.dir = extd.dir,
             node = "Weather", 
             value = "Ames.met")
 
-## ----apsim-verions-tail--------------------------------------------------
-ava <- apsim_version()
-aiu <- apsim_version(which = "inuse")
+## ----apsim-verions-tail, eval = FALSE------------------------------------
+#  ava <- apsim_version()
+#  aiu <- apsim_version(which = "inuse")
 
