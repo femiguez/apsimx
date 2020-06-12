@@ -54,7 +54,7 @@ This package has been tested on:
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
-**Windows**: ApsimX version 4236 (2020-01-29) 4007 (R 3.6.2)
+**Windows**: ApsimX version 4236 (2020-06-05) 5260 (R 3.6.2)
 
 ## Installing APSIM-X
 

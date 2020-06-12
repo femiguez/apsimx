@@ -1,6 +1,6 @@
 ## Function to check whether mono (unix only) and APSIM-X are installed
 
-.onLoad <- function(libname, pkgname){
+.onAttach <- function(libname, pkgname){
   
   find.apsim <- NULL
   ## For unix
@@ -44,7 +44,7 @@
     ## Won't print ApsimX at the moment but might change it in the future
     ## packageStartupMessage(fax)
   }else{
-    warning("APSIM(X) not found. \n 
+    packageStartupMessage("APSIM(X) not found. \n 
              If APSIM(X) is installed in an alternative location, \n
             set paths manually using 'apsimx_options' or 'apsim_options'")
   }
