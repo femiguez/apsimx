@@ -11,11 +11,14 @@ inspect_apsimx_replacement(
   node.child = NULL,
   node.subchild = NULL,
   node.subsubchild = NULL,
+  node.sub3child = NULL,
+  node.string = NULL,
   root = list("Models.Core.Replacements", NA),
   parm = NULL,
   display.available = FALSE,
   digits = 3,
-  print.path = FALSE
+  print.path = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -31,6 +34,12 @@ inspect_apsimx_replacement(
 
 \item{node.subsubchild}{specific node sub-subchild to be inspected.}
 
+\item{node.sub3child}{specific node sub-sub-subchild to be inspected.}
+
+\item{node.string}{passing of a string instead of the node hierarchy.
+Do not use this and also the other node arguments. This argument will
+overwrite the other node specifications.}
+
 \item{root}{\sQuote{root} for the inspection of a replacement file (it gives flexibility to inspect other types of files).}
 
 \item{parm}{specific parameter to display}
@@ -40,6 +49,8 @@ inspect_apsimx_replacement(
 \item{digits}{number of decimals to print (default 3)}
 
 \item{print.path}{print the path to the inspected parameter (default FALSE)}
+
+\item{verbose}{whether to print additional information, default: TRUE}
 }
 \value{
 table with inspected parameters and values
@@ -50,12 +61,17 @@ inspect the replacement componenet of an JSON apsimx file. It does not replace t
 \details{
 This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 }
+\note{
+I need to make some changes in order to be able to handle multiple parameters. At this point, it
+might work but it will generate warnings.
+}
 \examples{
 \donttest{
 extd.dir <- system.file("extdata", package = "apsimx")
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
-                           node.subchild = "ThermalTime", parm = c("X","Y")) 
+                           node.subchild = "ThermalTime", 
+                           node.subsubchild = "BaseThermalTime") 
 }
 \dontrun{  
 ## This function can also be used to inspect more complex APSIM-X files

@@ -12,6 +12,8 @@ edit_apsimx_replacement(
   node.child = NULL,
   node.subchild = NULL,
   node.subsubchild = NULL,
+  node.sub3child = NULL,
+  node.string = NULL,
   root = list("Models.Core.Replacements", NA),
   parm = NULL,
   value = NULL,
@@ -34,6 +36,10 @@ edit_apsimx_replacement(
 \item{node.subchild}{specific node sub-child to edit.}
 
 \item{node.subsubchild}{specific node sub-subchild to edit.}
+
+\item{node.sub3child}{specific node sub-sub-subchild to be inspected.}
+
+\item{node.string}{passing of a string instead of the node hierarchy.}
 
 \item{root}{\sQuote{root} node to explore (default = \dQuote{Models.Core.Replacements})}
 

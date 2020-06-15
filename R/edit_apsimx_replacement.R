@@ -9,6 +9,8 @@
 #' @param node.child specific node child component to edit.
 #' @param node.subchild specific node sub-child to edit.
 #' @param node.subsubchild specific node sub-subchild to edit.
+#' @param node.sub3child specific node sub-sub-subchild to be inspected.
+#' @param node.string passing of a string instead of the node hierarchy.
 #' @param root \sQuote{root} node to explore (default = \dQuote{Models.Core.Replacements})
 #' @param parm specific parameter to edit
 #' @param value new values for the parameter
@@ -34,6 +36,7 @@
 edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                     node = NULL, node.child = NULL,
                                     node.subchild = NULL, node.subsubchild = NULL,
+                                    node.sub3child = NULL, node.string = NULL,
                                     root = list("Models.Core.Replacements",NA),
                                     parm = NULL, value = NULL, overwrite = FALSE,
                                     edit.tag = "-edited", verbose = TRUE){
@@ -48,7 +51,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   ## Notice that the .apsimx extension will be added here
   file <- match.arg(file, file.names, several.ok=FALSE)
   
-  if(missing(parm) | missing(value)) stop("'parm' and/or 'value' are missing")
+  if(missing(parm) || missing(value)) stop("'parm' and/or 'value' are missing")
   
   apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
   
@@ -69,13 +72,23 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   }
   
   ## Print names of replacements
-  replacements.node.names <- sapply(replacements.node$Children, function(x) x$Name)
+  replacements.node.names <- vapply(replacements.node$Children, function(x) x$Name, 
+                                    FUN.VALUE = "character")
   if(verbose) cat("Replacements: ", replacements.node.names, "\n")
+  
+  if(!missing(node.string)){
+    nodes <- strsplit(node.string, ".", fixed = TRUE)[[1]]
+    node <- nodes[1]
+    if(!is.na(nodes[2])) node.child <- nodes[2]
+    if(!is.na(nodes[3])) node.subchild <- nodes[3]
+    if(!is.na(nodes[4])) node.subsubchild <- nodes[4]
+    if(!is.na(nodes[5])) node.sub3child <- nodes[5]
+  }
   
   if(missing(node)) return(cat("Please provide a node \n"))
   ## Let's call this level = 0, at the 'node' level (nothing to edit)
   lvl <- -1
-  wrn <- grep(node, replacements.node$Children)
+  wrn <- grep(node, replacements.node.names)
   rep.node <- replacements.node$Children[[wrn]]
   
   if(!is.null(rep.node$CropType) && verbose) cat("CropType", rep.node$CropType,"\n")
@@ -142,8 +155,9 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   if(missing(node.subsubchild) && verbose && missing(parm)) cat("missing node.subsubchild\n")
   
   if(!missing(node.subsubchild)){
-    rep.node.subsubchildren.names <- sapply(rep.node.subchild$Children, function(x) x$Name)
-    ## Select a specific node.subchild
+    rep.node.subsubchildren.names <- vapply(rep.node.subchild$Children, function(x) x$Name,
+                                            FUN.VALUE = "character")
+    ## Select a specific node.subsubchild
     wrnssc <- grep(node.subsubchild, rep.node.subsubchildren.names)
     rep.node.subsubchild <- rep.node.subchild$Children[[wrnssc]]
   
@@ -191,6 +205,58 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     }
   }
 
+  ## Inserting deeper level June 15th 2020
+  if(missing(node.sub3child) && verbose && missing(parm)) cat("missing node.sub3child\n")  
+  
+  if(!missing(node.sub3child)){
+    rep.node.sub3children.names <- vapply(rep.node.subsubchild$Children, function(x) x$Name,
+                                            FUN.VALUE = "character")
+    ## Select a specific node.subchild
+    wrnsssc <- grep(node.sub3child, rep.node.sub3children.names)
+    rep.node.sub3child <- rep.node.subsubchild$Children[[wrnsssc]]
+    
+    if(verbose) cat("Sub-sub-subchild Name: ", rep.node.sub3child$Name,"\n")
+    
+    if(parm %in% names(rep.node.sub3child)){
+      rep.node.sub3child <- edit_node(rep.node.sub3child, parm = parm, value = value)
+      lvl <- 6
+      # node is edited, now put it back in place
+      rep.node.subsubchild$Children[[wrnsssc]] <- rep.node.sub3child
+      rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
+      rep.node.child$Children[[wrnsc]] <- rep.node.subchild
+      rep.node$Children[[wrnc]] <- rep.node.child
+      replacements.node$Children[[wrn]] <- rep.node
+      if(length(frn) == 1){
+        apsimx_json$Children[[frn]] <- replacements.node
+      }else{
+        apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+      }
+      ## apsimx_json is ready to be written back to file
+    }
+    
+    ## Cultivar parameters can be in 'Command'
+    if(length(rep.node.sub3child$Command) > 0){
+      if(any(grepl(parm, unlist(rep.node.sub3child$Command)))){
+        lvl <- 7
+        wrnssscc <- grep(parm, unlist(rep.node.sub3child$Command))
+        ## Break it up and reassemble
+        cmdstrng <- strsplit(rep.node.sub3child$Command[[wrnssscc]],"=")[[1]][1]
+        rep.node.sub3child$Command[[wrnssscc]] <- paste(cmdstrng,"=",value)
+        ## Now write back to list
+        rep.node.subsubchild$Children[[wrnsssc]] <- rep.node.sub3child
+        rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
+        rep.node.child$Children[[wrnsc]] <- rep.node.subchild
+        rep.node$Children[[wrnc]] <- rep.node.child
+        replacements.node$Children[[wrn]] <- rep.node
+        if(length(frn) == 1){
+          apsimx_json$Children[[frn]] <- replacements.node
+        }else{
+          apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+        }
+      }
+    }
+  }
+  
   ## Write back to a file
   if(overwrite == FALSE){
     wr.path <- paste0(wrt.dir,"/",
@@ -209,6 +275,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     if(!missing(node.child)) cat("Edited (node.child): ", node.child,"\n")
     if(!missing(node.subchild)) cat("Edited (node.subchild): ", node.subchild,"\n")
     if(!missing(node.subsubchild)) cat("Edited (node.subsubchild): ", node.subsubchild,"\n")
+    if(!missing(node.sub3child)) cat("Edited (node.sub3child): ", node.sub3child,"\n")
     cat("Edit (level): ", lvl,"\n")
     cat("Edited parameter: ",parm, "\n")
     cat("New values: ",value, "\n")

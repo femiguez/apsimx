@@ -292,34 +292,38 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            display.available = TRUE)
 ```
 
-Now we need to pick from within 'ThermalTime'
-
-```{r inspect-replacement-node-subchild-thermal}
-inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                           node = "Maize", node.child = "Phenology",
-                           node.subchild = "ThermalTime", display.available = TRUE) 
-```
-
-There is a component named "BaseThermalTime".
+Now we need to pick from within 'ThermalTime'. There is a component named "BaseThermalTime".
 
 ```{r inspect-replacement-node-subchild-subsubchild}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", 
-                           node.subsubchild = "BaseThermalTime") 
+                           node.subsubchild = "BaseThermalTime",
+                           display.available = TRUE) 
 ```
 
-Choose the 'X' and 'Y' parameters within 'BaseThermalTime'.
+'BaseThermalTime' is the only child inside 'ThermalTime', but within 'BaseThermalTime' there are two Children: 'TemperatureResponse' and 'InterpolationMethod'. There is not much to edit for 'InterpolationMethod', so we choose 'TemperatureResponse'.
 
-```{r inspect-replacement-node-subchild-subsubchild-parm}
+```{r inspect-replacement-node-subchild-subsubchild-temp-response}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           parm = c("X","Y")) 
+                           node.sub3child = "TemperatureResponse") 
 ```
 
-The function shows the available replacements ("Maize" and "Soybean"), the 'CropType' if available, the subchild name and the xy pair in this example. If parm is not specified all elements will be displayed.
+Choose the 'X' and 'Y' parameters within 'TemperatureResponse'.
+
+```{r inspect-replacement-node-subchild-subsubchild-temp-response-parm}
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                           node = "Maize", node.child = "Phenology",
+                           node.subchild = "ThermalTime", 
+                           node.subsubchild = "BaseThermalTime",
+                           node.sub3child = "TemperatureResponse",
+                           parm = c("Y","X")) 
+```
+
+The function shows the available replacements ("Maize" and "Soybean"), the 'CropType' if available, the subchild name and the 'Y' vector in this example. If parm is not specified all elements will be displayed.
 
 Let's say we want to inspect details of soybean cultivars in the same file:
 
@@ -348,6 +352,7 @@ edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                         node = "Maize", node.child = "Phenology",
                         node.subchild = "ThermalTime", 
                         node.subsubchild = "BaseThermalTime",
+                        node.sub3child = "TemperatureResponse",
                         parm = "Y", value = c(0,12,20,28,0))
 ```
 
@@ -359,7 +364,8 @@ inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
                            node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           parm = c("X","Y")) 
+                           node.sub3child = "TemperatureResponse",
+                           parm = "Y") 
 ```
 
 ## Inspecting and editing a Factorial
