@@ -6,12 +6,15 @@
 ## have a large impact on final yield estimates
 ## the difference is 171.1547 g per meter squared
 ## with higher values for power over daymet
+## Note (2020-06-15): This takes for ever, I'm not running it for a while
 library(FedData)
 library(nasapower)
 library(apsimx)
 apsimx_options(warn.versions = FALSE)
 
-run.test.daymet <- get(".run.local.tests", envir = apsimx.options)
+run.test.daymet0 <- FALSE
+
+run.test.daymet <- get(".run.local.tests", envir = apsimx.options) & run.test.daymet0
 
 username <- Sys.info()[["user"]]
 
@@ -33,7 +36,7 @@ if(run.test.daymet && username == "fernandomiguez"){
 
 ## Does the file produced by DayMet work in APSIM?
 
-run.test.maize.daymet <- get(".run.local.tests", envir = apsimx.options)
+run.test.maize.daymet <- get(".run.local.tests", envir = apsimx.options) & run.test.daymet0
 
 if(run.test.maize.daymet && username == "fernandomiguez"){
 
@@ -60,7 +63,7 @@ if(run.test.maize.daymet && username == "fernandomiguez"){
 
 ## What if I get data from POWER?
 
-run.test.power <- get(".run.local.tests", envir = apsimx.options)
+run.test.power <- get(".run.local.tests", envir = apsimx.options) & run.test.daymet0
 
 if(run.test.power && username == "fernandomiguez"){
 
@@ -83,7 +86,7 @@ if(run.test.power && username == "fernandomiguez"){
   write_apsim_met(pwr.met2, wrt.dir = ".", filename = "cia-power2.met")
 }
 
-run.test.maize.power <- get(".run.local.tests", envir = apsimx.options)
+run.test.maize.power <- get(".run.local.tests", envir = apsimx.options) & run.test.daymet0
 
 if(run.test.maize.daymet && username == "fernandomiguez"){
   
