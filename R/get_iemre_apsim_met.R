@@ -177,7 +177,7 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir=".",
                                    coords = c("lon","lat"), 
                                    crs = sf::st_crs(4326))
     station.coords <- sf::st_transform(station.coords, crs = 3857)
-    near.station.index <- sf::st_nearest_feature(pt.crd, station.coords)
+    near.station.index <- sf::st_nearest_feature(pts, station.coords)
     station <- ftrs[near.station.index, "id"]
     
   }else{

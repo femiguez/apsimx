@@ -42,7 +42,7 @@ apsimx <- function(file = "", src.dir=".",
   
   file <- match.arg(file, file.names)
   
-  file.name.path <- file.path(src.dir,file)
+  file.name.path <- file.path(src.dir, file)
   
   ada <- auto_detect_apsimx()
 
@@ -326,6 +326,8 @@ auto_detect_apsimx_examples <- function(){
 
 apsimx_example <- function(example = "Wheat", silent = FALSE){
 
+  ## Write to a temp directory only
+  tmp.dir <- tempdir()
   ## Run a limited set of examples
   ## Now the only one missing is Graph, which I assume is about
   ## graphics and not that relevant to apsimx
@@ -344,13 +346,13 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   if(!file.exists(ex)) stop(paste0("cannot find example file ",example))
   ## Make a temporary copy of the file to the current directory
   ## Do not transfer permissions?
-  file.copy(from = ex, to = ".", copy.mode = FALSE)
+  file.copy(from = ex, to = tmp.dir, copy.mode = FALSE)
   
-  sim <- apsimx(paste0(example,".apsimx"), src.dir = ".", value = "report")
+  sim <- apsimx(paste0(example,".apsimx"), src.dir = tmp.dir, value = "report")
 
   ## OS independent cleanup (risky?)
-  file.remove(paste0("./",example,".db"))
-  file.remove(paste0("./",example,".apsimx"))
+  file.remove(paste0(tmp.dir,"/",example,".db"))
+  file.remove(paste0(tmp.dir,"/",example,".apsimx"))
 
   return(sim)
 }
@@ -379,7 +381,7 @@ read_apsimx <- function(file = "", src.dir = ".",
   
   value <- match.arg(value)
   
-  file.name.path <- file.path(src.dir,file)
+  file.name.path <- file.path(src.dir, file)
   
   con <- DBI::dbConnect(RSQLite::SQLite(), file.name.path)
   ## create data frame for each table

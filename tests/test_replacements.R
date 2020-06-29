@@ -9,6 +9,10 @@ extd.dir <- system.file("extdata", package = "apsimx")
 
 replacements <- c("MaizeSoybean.apsimx","WheatRye.apsimx","Soybean.apsimx")
 
+tmp.dir <- tempdir()
+
+setwd(tmp.dir)
+
 if(run.replacements.tests){
   start <- Sys.time()
   for(i in replacements){

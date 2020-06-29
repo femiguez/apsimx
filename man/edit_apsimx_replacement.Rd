@@ -70,10 +70,13 @@ errors of editing unintended parts of the file.
 \examples{
 \donttest{
 extd.dir <- system.file("extdata", package = "apsimx")
-edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                           node = "Maize", node.child = "Phenology",
-                           node.subchild = "ThermalTime", parm = c("X","Y"),
-                           value = c(1,2,3,4,5)) 
+## Writing to a temp directory, but change as needed
+tmp.dir <- tempdir()
+edit_apsimx_replacement("MaizeSoybean.apsimx", 
+                        src.dir = extd.dir, wrt.dir = tmp.dir,
+                        node = "Maize", node.child = "Phenology",
+                        node.subchild = "ThermalTime", parm = c("X","Y"),
+                        value = c(1,2,3,4,5)) 
 }
 
 }

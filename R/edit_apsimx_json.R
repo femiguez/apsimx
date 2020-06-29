@@ -37,33 +37,35 @@
 #' @examples 
 #' \dontrun{
 #' ## This example will read one of the examples distributed with APSIM-X
-#' ## but write to the current directory
+#' ## but write to a temporary directory
+#' tmp.dir <- tempdir()
 #' 
 #' ## Edit Bulk density
 #' ex.dir <- auto_detect_apsimx_examples()
 #' bds <- c(1.02, 1.03, 1.09, 1.16, 1.18, 1.19, 1.20)
 #' edit_apsimx("Barley.apsimx", src.dir = ex.dir,
-#'             wrt.dir = ".",
+#'             wrt.dir = tmp.dir,
 #'             node = "Soil",
 #'             soil.child = "Water", 
 #'             parm = "BD", value = bds,
 #'             verbose = FALSE)
 #' ## Inspect file
-#' inspect_apsimx("Barley-edited.apsimx", node = "Soil", soil.child = "Water")
+#' inspect_apsimx("Barley-edited.apsimx", src.dir = tmp.dir,
+#'                 node = "Soil", soil.child = "Water")
 #' ## To delete the file...
-#' file.remove("./Barley-edited.apsimx")
+#' file.remove(paste0(tmp.dir, "/Barley-edited.apsimx"))
 #' 
 #' ## Edit the fertilizer amount in 'Maize.apsimx'
 #' edit_apsimx("Maize.apsimx", src.dir = ex.dir,
-#'              wrt.dir = ".",
+#'              wrt.dir = tmp.dir,
 #'              node = "Manager",
 #'              manager.child = "SowingFertiliser",
 #'              parm = "Amount",
 #'              value = 200, verbose = TRUE)
 #' ## Make sure it worked
-#' inspect_apsimx("Maize-edited.apsimx", node = "Manager")
+#' inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, node = "Manager")
 #' ## Remove the file
-#' file.remove("./Maize-edited.apsimx")
+#' file.remove(paste0(tmp.dir,"/Maize-edited.apsimx"))
 #' }
 #' 
 

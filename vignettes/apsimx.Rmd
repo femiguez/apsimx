@@ -24,9 +24,9 @@ aiu <- apsim_version(which = "inuse")
 ##if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
 ```
 
-```{r create-temp-dir, echo = FALSE, eval = FALSE}
+```{r create-temp-dir, echo = TRUE, eval = TRUE}
+## Will only write file to a temporary directory for these Examples
 tmp.dir <- tempdir()
-setwd(tmp.dir)
 ```
 
 # Introduction
@@ -182,9 +182,11 @@ sim <- apsimx("Wheat.apsimx", src.dir = extd.dir, value = "report")
 If you have APSIM-X installed you can also run it in this way.
 ```{r apsimx-wheat-no-run-two, eval = FALSE}
 ex.dir <- auto_detect_apsimx_examples()
-## Copy 'Wheat' file to your current directory
-file.copy(paste0(ex.dir,"/","Wheat.apsimx"),".")
-sim <- apsimx("Wheat.apsimx", value = "report")
+## Copy 'Wheat' file to a temporary directory
+## (or change as needed)
+tmp.dir2 <- tempdir()
+file.copy(paste0(ex.dir,"/","Wheat.apsimx"), tmp.dir2)
+sim <- apsimx("Wheat.apsimx", src.dir = tmp.dir2, value = "report")
 ```
 
 ```{r apsimx-wheat-read, echo = FALSE}
@@ -244,7 +246,7 @@ pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
 Once we have identified the parameter we want to edit, we can do so by using the 'edit_apsim' function. When using the 'parm.path' argument, node should be "Other".
 
 ```{r Millet-edit}
-edit_apsim("Millet.apsim", src.dir = extd.dir, wrt.dir = ".",
+edit_apsim("Millet.apsim", src.dir = extd.dir, wrt.dir = tmp.dir,
            node = "Other", parm.path = pp, value = 8, 
            edit.tag = "-pp")
 ```
@@ -252,14 +254,14 @@ edit_apsim("Millet.apsim", src.dir = extd.dir, wrt.dir = ".",
 Verify that it was edited correctly.
 
 ```{r Millet-edit-inspect}
-inspect_apsim("Millet-pp.apsim", src.dir = ".",
+inspect_apsim("Millet-pp.apsim", src.dir = tmp.dir,
               node = "Manager",
               parm = list("Sow on a fixed date",NA))
 ```
 
 ```{r removing-Millet-pp, echo = FALSE, eval = TRUE}
 ## Apparently this is not needed
-file.remove("Millet-pp.apsim")
+file.remove(paste0(tmp.dir,"/Millet-pp.apsim"))
 ```
 
 # Advanced Examples
@@ -348,7 +350,8 @@ The function **inspect_apsimx_replacement** can also be used to inspect more com
 After using the 'inspect' version of the file, editing should be much more straight forward.
 
 ```{r edit-replacement}
-edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+edit_apsimx_replacement("MaizeSoybean.apsimx", 
+                        src.dir = extd.dir, wrt.dir = tmp.dir,
                         node = "Maize", node.child = "Phenology",
                         node.subchild = "ThermalTime", 
                         node.subsubchild = "BaseThermalTime",
@@ -359,7 +362,8 @@ edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 Let's inspect the edited file
 
 ```{r inspect-edit-replacement}
-inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
+inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", 
+                           src.dir = tmp.dir,
                            node = "Maize", 
                            node.child = "Phenology",
                            node.subchild = "ThermalTime", 
@@ -426,7 +430,8 @@ inspect_apsimx("Factorial.apsimx", src.dir = extd.dir,
 Following this structure, if we want to edit the path to the weather file we can use the following example.
 
 ```{r edit-apsimx-factorial-2}
-edit_apsimx("Factorial.apsimx", src.dir = extd.dir,
+edit_apsimx("Factorial.apsimx", 
+            src.dir = extd.dir, wrt.dir = tmp.dir,
             root = c("RangeExperiment","Base2"),
             node = "Weather", 
             value = "Ames.met")
@@ -446,6 +451,8 @@ One of the easiest ways of generating weather data (".met" files) is by using th
 * **impute_apsim_met**: impute missing values using linear interpolation, splines or the mean.
 * **get_power_apsim_met**: (requires the 'nasapower' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
 * **get_daymet_apsim_met**: (requires the 'FedData' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
+* **get_iem_apsim_met**: Fetch data from Iowa Environmental Mesonet
+* **get_iemre_apsim_met**: Fetch data from Iowa Environmental Mesonet Reanalysis
 
 Note that similar utilities are available in the 'APSIM' package (loadMet, prepareMet, checkMet, writeMetFile) for reading, preparing, checking and writing a met file, but not for imputing.
 

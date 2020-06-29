@@ -29,7 +29,10 @@ at the moment the read-write cycle will strip comments
 extd.dir <- system.file("extdata", package = "apsimx")
 ames.met <- read_apsim_met("Ames.met", src.dir = extd.dir)
 ames.met
-write_apsim_met(ames.met, wrt.dir = ".", filename = "Ames.met")
+tmpd <- tempdir()
+write_apsim_met(ames.met, wrt.dir = tmpd, filename = "Ames.met")
+## Here I write to a temporary directory, but change this to where
+## you want to write to
 }
 
 }

@@ -59,11 +59,11 @@ edit_apsimx_batch <- function(file, src.dir = ".", wrt.dir = NULL,
                              silent = FALSE,
                              verbose = TRUE){
   
-  if(!missing(wrt.dir)) stop("Not implemented at the moment")
+  if(missing(wrt.dir)) wrt.dir <- src.dir
     
-  fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
-  if(length(fileNames)==0){
+  if(length(file.names)==0){
     stop("There are no .apsimx files in the specified directory to edit.")
   }
   
@@ -88,21 +88,22 @@ edit_apsimx_batch <- function(file, src.dir = ".", wrt.dir = NULL,
   file.name.path <- paste0(src.dir,"/",file,".apsimx")
   
   ## Makes a copy to the working directory
-  file.copy(file.name.path, ".")
+  ## This is not needed but haven't tested it yet
+  ## file.copy(file.name.path, ".")
   
   ## Auto detect apsimx
   ada <- auto_detect_apsimx()
   
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
-    run.strng <- paste0(mono," ",ada," ",paste0(file,".apsimx")," /Edit ",fn.po)
+    run.strng <- paste0(mono," ",ada," ", paste0(src.dir,"/", file,".apsimx")," /Edit ",fn.po)
     ## Run APSIM-X on the command line
     system(command = run.strng, ignore.stdout = silent)
   }
   
   if(.Platform$OS.type == "windows"){
     ada <- auto_detect_apsimx()
-    run.strng <- paste0(ada," ",paste0(file,".apsimx")," /Edit ",fn.po)
+    run.strng <- paste0(ada," ", paste0(src.dir, "/", file,".apsimx")," /Edit ",fn.po)
     cmd.out <- shell(cmd = run.strng, translate = FALSE, intern = TRUE)
   }
   
@@ -112,5 +113,10 @@ edit_apsimx_batch <- function(file, src.dir = ".", wrt.dir = NULL,
     cat("Created new: ",paste0(wrt.dir,"/",file,".apsimx"),"\n")
     if(.Platform$OS.type == "windows") print(cmd.out)
   }
+  
+  if(!is.null(wrt.dir)){
+    file.copy(from = paste0(src.dir,"/", file,".apsimx"),
+              to = paste0(wrt.dir,"/", file,".apsimx"))
+  } 
 }
 

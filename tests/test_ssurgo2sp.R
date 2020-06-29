@@ -7,6 +7,8 @@ extd.dir <- system.file("extdata", package = "apsimx")
 
 run.test.ssurgo.workflow <- get(".run.local.tests", envir = apsimx.options)
 
+tmp.dir <- tempdir()
+
 if(run.test.ssurgo.workflow){
 
   ## Read the main files
@@ -40,17 +42,18 @@ if(run.test.ssurgo.workflow){
 
   edit_apsimx_replace_soil_profile("WheatRye.apsimx",
                                    src.dir = extd.dir,
-                                   wrt.dir = ".",
+                                   wrt.dir = tmp.dir,
                                    soil.profile = asp,
                                    edit.tag = "-sp")
   
-  inspect_apsimx("WheatRye-sp.apsimx", src.dir = ".", node = "Soil")
+  inspect_apsimx("WheatRye-sp.apsimx", src.dir = tmp.dir, node = "Soil")
   
-  inspect_apsimx("WheatRye-sp.apsimx", src.dir = ".", node = "Soil", soil.child = "Physical")
+  inspect_apsimx("WheatRye-sp.apsimx", src.dir = tmp.dir, 
+                 node = "Soil", soil.child = "Physical")
   
   ## If I want to actually run the model
-  file.copy(paste0(extd.dir,"/Ames.met"),".")
+  file.copy(paste0(extd.dir,"/Ames.met"),tmp.dir)
   
-  sim <- apsimx("WheatRye-sp.apsimx", src.dir = ".", value = "report")
+  sim <- apsimx("WheatRye-sp.apsimx", src.dir = tmp.dir, value = "report")
   
 }

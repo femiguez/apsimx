@@ -6,7 +6,7 @@
 \usage{
 apsim(
   file = "",
-  src.dir = ".",
+  src.dir = NULL,
   silent = FALSE,
   value = c("all", "report", "none"),
   cleanup = FALSE

@@ -21,7 +21,7 @@
 #' }
 #'
 
-apsim <- function(file = "", src.dir=".",
+apsim <- function(file = "", src.dir = NULL,
                    silent = FALSE, 
                    value = c("all","report","none"),
                    cleanup = FALSE){
@@ -36,25 +36,27 @@ apsim <- function(file = "", src.dir=".",
   
   .check_apsim_name(.file = file)
   
-  ## Extra checking, not sure if it will be triggered
-  file.names <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
+  if(missing(src.dir)) src.dir <- "."
   
-  if(length(file.names)==0){
+  ## Extra checking, not sure if it will be triggered
+  file.names <- dir(path = src.dir, pattern = ".apsim$", ignore.case = TRUE)
+  
+  if(length(file.names) == 0){
     stop("There are no .apsim files in the specified directory to run.")
   }
   
   file <- match.arg(file, file.names, several.ok=FALSE)
   
-  file.name.path <- file.path(src.dir,file)
+  file.name.path <- file.path(src.dir, file)
   
   ## Can you run in APSIM 'Classic' from any directory or only from the current one?
   ## I'm assuming only from the current one
-  if(src.dir != "."){
-    file.copy(file.name.path, ".")
-  }
+  # if(src.dir != "."){
+  #   file.copy(file.name.path, ".")
+  # }
   
   ada <- auto_detect_apsim()
-  run.strng <- paste0(ada," ./",file) ## This is a command not a file.path
+  run.strng <- paste0(ada, " ", src.dir, "/", file) ## This is a command not a file.path
   shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   
   ## It turns out that the name of the .out file is not as simple
@@ -65,11 +67,11 @@ apsim <- function(file = "", src.dir=".",
   ## always be the current one
   if(value != "none"){
     if(length(output.names) == 1){
-      ans <- read_apsim(file = output.names, src.dir = ".", value = value)
+      ans <- read_apsim(file = output.names, src.dir = src.dir, value = value)
     }else{
       ## This will only work when output files have the same columns
       ans <- read_apsim_all(filenames = output.names, 
-                            src.dir = ".", value = "report")
+                            src.dir = src.dir, value = "report")
     }
   }else{
     if(value == "none" & !silent){
@@ -192,6 +194,7 @@ auto_detect_apsim_examples <- function(){
 #' @description simple function to run some of the built-in APSIM examples
 #' @param example run an example from built-in APSIM. Options are all of the ones included with the APSIM distribution, except \sQuote{Graph}.
 #' @param silent whether to print standard output from the APSIM execution
+#' @param tmp.dir temporary directory where to write files
 #' @note This function creates a new column \sQuote{Date} which is in the R \sQuote{Date} format which is convenient for graphics.
 #' @details This function creates a temporary copy of the example file distributed with APSIM to avoid writing a .out file 
 #'          to the directory where the \sQuote{Examples} are located. It is not a good practice and there is no guarantee that 
@@ -210,11 +213,13 @@ auto_detect_apsim_examples <- function(){
 #' }
 #' 
 
-apsim_example <- function(example = "Millet", silent = FALSE){
+apsim_example <- function(example = "Millet", silent = FALSE, tmp.dir = NULL){
 
   if(.Platform$OS.type != "windows"){
     stop("This is only for windows. Use apsimx instead.")
   }
+  ## Write to a temp dir only
+  if(missing(tmp.dir)) tmp.dir <- "."
   ## Run a limited set of examples
   ## Now the only one missing is Graph, which I assume is about
   ## graphics and not that relevant to apsim
@@ -232,15 +237,15 @@ apsim_example <- function(example = "Millet", silent = FALSE){
   if(!file.exists(ex)) stop("cannot find example files")
   ## Make a temporary copy of the file to the current directory
   ## Do not transfer permissions?
-  file.copy(from = ex, to =".", copy.mode = FALSE)
+  file.copy(from = ex, to = tmp.dir, copy.mode = FALSE)
   
-  run.strng <- paste0(ada," ",paste0("./",example,".apsim"))
+  run.strng <- paste0(ada," ", paste0(tmp.dir, "/",example,".apsim"))
   shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   
   ## Create database connection
   ## I don't need to specify the directory as it should be the current one
   ## I do need to find out the output name
-  out.name <- .find_output_names(paste0(example,".apsim"), .src.dir = ".")
+  out.name <- .find_output_names(paste0(example,".apsim"), .src.dir = tmp.dir)
   if(length(out.name) == 1){
     ans <- read_apsim(out.name, value = "report")
   }
@@ -249,10 +254,10 @@ apsim_example <- function(example = "Millet", silent = FALSE){
   }
   ## OS independent cleanup (risky?)
   for(i in out.name){
-    file.remove(paste0("./",i))
-    file.remove(paste0("./",strsplit(i,".",fixed=TRUE)[[1]][1],".sum"))
+    file.remove(paste0(tmp.dir,"/",i))
+    file.remove(paste0(tmp.dir,"/",strsplit(i,".",fixed=TRUE)[[1]][1],".sum"))
   }
-  file.remove(paste0("./",example,".apsim"))
+  file.remove(paste0(tmp.dir,"/",example,".apsim"))
   ## Return data frame
   return(ans)
 }

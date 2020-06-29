@@ -9,9 +9,9 @@ library(ggplot2)
 #  aiu <- apsim_version(which = "inuse")
 #  ##if(is.na(ava[2,2])) stop("Need APSIM-X to create this vignette")
 
-## ----create-temp-dir, echo = FALSE, eval = FALSE-------------------------
-#  tmp.dir <- tempdir()
-#  setwd(tmp.dir)
+## ----create-temp-dir, echo = TRUE, eval = TRUE---------------------------
+## Will only write file to a temporary directory for these Examples
+tmp.dir <- tempdir()
 
 ## ----apsimx-example, eval = FALSE----------------------------------------
 #  maize <- apsimx_example("Maize")
@@ -52,9 +52,11 @@ inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
 
 ## ----apsimx-wheat-no-run-two, eval = FALSE-------------------------------
 #  ex.dir <- auto_detect_apsimx_examples()
-#  ## Copy 'Wheat' file to your current directory
-#  file.copy(paste0(ex.dir,"/","Wheat.apsimx"),".")
-#  sim <- apsimx("Wheat.apsimx", value = "report")
+#  ## Copy 'Wheat' file to a temporary directory
+#  ## (or change as needed)
+#  tmp.dir2 <- tempdir()
+#  file.copy(paste0(ex.dir,"/","Wheat.apsimx"), tmp.dir2)
+#  sim <- apsimx("Wheat.apsimx", src.dir = tmp.dir2, value = "report")
 
 ## ----apsimx-wheat-read, echo = FALSE-------------------------------------
 sim <- read_apsimx("Wheat.db", src.dir = extd.dir)
@@ -95,18 +97,18 @@ pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
               parm = list("Sow on a fixed date",5), print.path = TRUE)
 
 ## ----Millet-edit---------------------------------------------------------
-edit_apsim("Millet.apsim", src.dir = extd.dir, wrt.dir = ".",
+edit_apsim("Millet.apsim", src.dir = extd.dir, wrt.dir = tmp.dir,
            node = "Other", parm.path = pp, value = 8, 
            edit.tag = "-pp")
 
 ## ----Millet-edit-inspect-------------------------------------------------
-inspect_apsim("Millet-pp.apsim", src.dir = ".",
+inspect_apsim("Millet-pp.apsim", src.dir = tmp.dir,
               node = "Manager",
               parm = list("Sow on a fixed date",NA))
 
 ## ----removing-Millet-pp, echo = FALSE, eval = TRUE-----------------------
 ## Apparently this is not needed
-file.remove("Millet-pp.apsim")
+file.remove(paste0(tmp.dir,"/Millet-pp.apsim"))
 
 ## ----inspect-replacement-node--------------------------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
@@ -123,23 +125,27 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.subchild = "ThermalTime",
                            display.available = TRUE)
 
-## ----inspect-replacement-node-subchild-thermal---------------------------
-inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                           node = "Maize", node.child = "Phenology",
-                           node.subchild = "ThermalTime", display.available = TRUE) 
-
 ## ----inspect-replacement-node-subchild-subsubchild-----------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", 
-                           node.subsubchild = "BaseThermalTime") 
+                           node.subsubchild = "BaseThermalTime",
+                           display.available = TRUE) 
 
-## ----inspect-replacement-node-subchild-subsubchild-parm------------------
+## ----inspect-replacement-node-subchild-subsubchild-temp-response---------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           parm = c("X","Y")) 
+                           node.sub3child = "TemperatureResponse") 
+
+## ----inspect-replacement-node-subchild-subsubchild-temp-response-parm----
+inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                           node = "Maize", node.child = "Phenology",
+                           node.subchild = "ThermalTime", 
+                           node.subsubchild = "BaseThermalTime",
+                           node.sub3child = "TemperatureResponse",
+                           parm = c("Y","X")) 
 
 ## ----inspect-replacement-soybean-cultivar-node---------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
@@ -152,19 +158,23 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            display.available = FALSE) 
 
 ## ----edit-replacement----------------------------------------------------
-edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+edit_apsimx_replacement("MaizeSoybean.apsimx", 
+                        src.dir = extd.dir, wrt.dir = tmp.dir,
                         node = "Maize", node.child = "Phenology",
                         node.subchild = "ThermalTime", 
                         node.subsubchild = "BaseThermalTime",
+                        node.sub3child = "TemperatureResponse",
                         parm = "Y", value = c(0,12,20,28,0))
 
 ## ----inspect-edit-replacement--------------------------------------------
-inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
+inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", 
+                           src.dir = tmp.dir,
                            node = "Maize", 
                            node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           parm = c("X","Y")) 
+                           node.sub3child = "TemperatureResponse",
+                           parm = "Y") 
 
 ## ----inspect-factorial-0, eval = FALSE-----------------------------------
 #  ## There are multiple 'Experiments' so we need to pick one
@@ -206,7 +216,8 @@ inspect_apsimx("Factorial.apsimx", src.dir = extd.dir,
                node = "Weather")
 
 ## ----edit-apsimx-factorial-2---------------------------------------------
-edit_apsimx("Factorial.apsimx", src.dir = extd.dir,
+edit_apsimx("Factorial.apsimx", 
+            src.dir = extd.dir, wrt.dir = tmp.dir,
             root = c("RangeExperiment","Base2"),
             node = "Weather", 
             value = "Ames.met")

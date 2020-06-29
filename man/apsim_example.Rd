@@ -4,12 +4,14 @@
 \alias{apsim_example}
 \title{Access Example APSIM Simulations}
 \usage{
-apsim_example(example = "Millet", silent = FALSE)
+apsim_example(example = "Millet", silent = FALSE, tmp.dir = NULL)
 }
 \arguments{
 \item{example}{run an example from built-in APSIM. Options are all of the ones included with the APSIM distribution, except \sQuote{Graph}.}
 
 \item{silent}{whether to print standard output from the APSIM execution}
+
+\item{tmp.dir}{temporary directory where to write files}
 }
 \description{
 simple function to run some of the built-in APSIM examples

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2020-06-12" />
+<meta name="date" content="2020-06-29" />
 
 <title>apsimx: writing scripts</title>
 
@@ -303,7 +303,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">apsimx: writing scripts</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2020-06-12</h4>
+<h4 class="date">2020-06-29</h4>
 
 
 
@@ -316,7 +316,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p>Let’s see what is needed to run APSIM-X at the command line.</p>
 <div id="windows" class="section level2">
 <h2>Windows</h2>
-<p>In Windows if you use the current (2020-06-12) version of the installer the program will be, most likely, in:</p>
+<p>In Windows if you use the current (2020-06-29) version of the installer the program will be, most likely, in:</p>
 <p><strong>C:\Program Files\APSIM2019.10.04.4236\Bin\Models.exe</strong></p>
 <p>Notice that for each new build of APSIM-X the path will change. After ‘APSIM’ is the year, month, date and version separated by a period. In this case ‘2019.10.04.4236’. In the folder ‘Bin’(for ‘binary’) there are many libraries (‘.dll files’) and some executables. The ‘Models.exe’ is the one that can run .apsimx files.</p>
 <p>When trying to invoke that line at the command line, the space after ‘Program’ is a problem. There are some possible solutions. One is to add quotations (for example see ‘shQuote’ function in R). Another option is to use Windows short name paths, which in this case, for ‘Program Files’ is ‘PROGRA~1’ (but this can change). If running the program from R, for example, the separator needs to be either a double backslash ‘\\’ or a forward slash ‘/’. So one example would be:</p>
@@ -393,70 +393,12 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div id="session-information" class="section level3">
 <h3>Session information</h3>
 <p>Displaying below specific information related to when the vignette was built.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a></code></pre></div>
-<pre><code>## R version 3.6.2 (2019-12-12)
-## Platform: x86_64-apple-darwin15.6.0 (64-bit)
-## Running under: macOS High Sierra 10.13.6
-## 
-## Matrix products: default
-## BLAS:   /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRblas.0.dylib
-## LAPACK: /Library/Frameworks/R.framework/Versions/3.6/Resources/lib/libRlapack.dylib
-## 
-## locale:
-## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
-## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
-## 
-## loaded via a namespace (and not attached):
-##  [1] Rcpp_1.0.2        rstudioapi_0.11   knitr_1.23       
-##  [4] magrittr_1.5      usethis_1.6.1     devtools_2.3.0   
-##  [7] pkgload_1.0.2     R6_2.4.0          rlang_0.4.6      
-## [10] fansi_0.4.0       stringr_1.4.0     tools_3.6.2      
-## [13] pkgbuild_1.0.8    xfun_0.8          sessioninfo_1.1.1
-## [16] cli_2.0.2         withr_2.1.2       htmltools_0.3.6  
-## [19] ellipsis_0.3.0    remotes_2.1.1     yaml_2.2.0       
-## [22] assertthat_0.2.1  digest_0.6.25     rprojroot_1.3-2  
-## [25] crayon_1.3.4      processx_3.4.1    callr_3.4.3      
-## [28] fs_1.3.1          ps_1.3.0          testthat_2.3.2   
-## [31] evaluate_0.14     memoise_1.1.0     glue_1.4.1       
-## [34] rmarkdown_2.0     stringi_1.4.3     compiler_3.6.2   
-## [37] desc_1.2.0        backports_1.1.4   prettyunits_1.0.2</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">Sys.info</span>()[[<span class="st">&quot;sysname&quot;</span>]]</a></code></pre></div>
-<pre><code>## [1] &quot;Darwin&quot;</code></pre>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">Sys.info</span>()[[<span class="st">&quot;release&quot;</span>]]</a></code></pre></div>
-<pre><code>## [1] &quot;17.7.0&quot;</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">Sys.info</span>()[[<span class="st">&quot;version&quot;</span>]]</a></code></pre></div>
-<pre><code>## [1] &quot;Darwin Kernel Version 17.7.0: Mon Apr 27 20:25:53 PDT 2020; root:xnu-4570.71.80~1/RELEASE_X86_64&quot;</code></pre>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="cf">if</span>(.Platform<span class="op">$</span>OS.type <span class="op">==</span><span class="st"> &quot;unix&quot;</span>) <span class="kw">system</span>(<span class="dt">command =</span> <span class="st">&quot;mono --version&quot;</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
-<pre><code>##  [1] &quot;Mono JIT compiler version 5.18.1.3 (2018-08/fdb26b0a445 Wed Mar 20 10:02:02 EDT 2019)&quot;  
-##  [2] &quot;Copyright (C) 2002-2014 Novell, Inc, Xamarin Inc and Contributors. www.mono-project.com&quot;
-##  [3] &quot;\tTLS:           &quot;                                                                      
-##  [4] &quot;\tSIGSEGV:       altstack&quot;                                                              
-##  [5] &quot;\tNotification:  kqueue&quot;                                                                
-##  [6] &quot;\tArchitecture:  amd64&quot;                                                                 
-##  [7] &quot;\tDisabled:      none&quot;                                                                  
-##  [8] &quot;\tMisc:          softdebug &quot;                                                            
-##  [9] &quot;\tInterpreter:   yes&quot;                                                                   
-## [10] &quot;\tLLVM:          yes(600)&quot;                                                              
-## [11] &quot;\tSuspend:       preemptive&quot;                                                            
-## [12] &quot;\tGC:            sgen (concurrent by default)&quot;</code></pre>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">R.version</a></code></pre></div>
-<pre><code>##                _                           
-## platform       x86_64-apple-darwin15.6.0   
-## arch           x86_64                      
-## os             darwin15.6.0                
-## system         x86_64, darwin15.6.0        
-## status                                     
-## major          3                           
-## minor          6.2                         
-## year           2019                        
-## month          12                          
-## day            12                          
-## svn rev        77560                       
-## language       R                           
-## version.string R version 3.6.2 (2019-12-12)
-## nickname       Dark and Stormy Night</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">sessionInfo</span>()</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="kw">Sys.info</span>()[[<span class="st">&quot;sysname&quot;</span>]]</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">Sys.info</span>()[[<span class="st">&quot;release&quot;</span>]]</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw">Sys.info</span>()[[<span class="st">&quot;version&quot;</span>]]</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="cf">if</span>(.Platform<span class="op">$</span>OS.type <span class="op">==</span><span class="st"> &quot;unix&quot;</span>) <span class="kw">system</span>(<span class="dt">command =</span> <span class="st">&quot;mono --version&quot;</span>, <span class="dt">intern =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">R.version</a></code></pre></div>
 </div>
 <div id="links" class="section level3">
 <h3>Links</h3>

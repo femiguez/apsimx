@@ -65,9 +65,12 @@ extd.dir <- system.file("extdata", package = "apsimx")
 
 values <- paste(rep(1.7, 12), collapse = " ")
 
+## Writing to a temp directory, but replace as needed
+tmp.dir <- tempdir()
+
 edit_apsim_xml("Maize75.xml", 
                src.dir = extd.dir,
-               wrt.dir = ".", 
+               wrt.dir = tmp.dir,
                parm.path = ".//Model/rue",
                value = values)
 }

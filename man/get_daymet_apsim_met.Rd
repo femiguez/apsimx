@@ -68,7 +68,12 @@ Vapor Pressure Deficit (vp) should be in hecto Pascals
 \examples{
 \dontrun{
 require(FedData)
-dmet12 <- get_daymet_apsim_met(lonlat = c(-93,42), years = 2012, label = "CIA")
+## I write to a temp directory but replace as needed
+tmp.dir <- tempdir()
+dmet12 <- get_daymet_apsim_met(lonlat = c(-93,42),
+                               raw.dir = paste0(tmp.dir,"/RAW/DAYMET"),
+                               extraction.dir = paste0(tmp.dir,"/EXTRACTIONS/CIA/DAYMET"),
+                               years = 2012, label = "CIA")
 summary(dmet12)
 ## Check for reasonable ranges 
 check_apsim_met(dmet12)

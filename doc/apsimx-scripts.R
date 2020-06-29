@@ -14,11 +14,11 @@ knitr::opts_chunk$set(echo = TRUE)
 #  run.string.debian <- "mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx"
 #  system(command = run.string.debian, intern = TRUE)
 
-## ----sisd----------------------------------------------------------------
-sessionInfo()
-Sys.info()[["sysname"]]
-Sys.info()[["release"]]
-Sys.info()[["version"]]
-if(.Platform$OS.type == "unix") system(command = "mono --version", intern = TRUE)
-R.version
+## ----sisd, eval = FALSE--------------------------------------------------
+#  sessionInfo()
+#  Sys.info()[["sysname"]]
+#  Sys.info()[["release"]]
+#  Sys.info()[["version"]]
+#  if(.Platform$OS.type == "unix") system(command = "mono --version", intern = TRUE)
+#  R.version
 

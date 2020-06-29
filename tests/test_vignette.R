@@ -8,25 +8,27 @@ extd.dir <- system.file("extdata", package = "apsimx")
 
 run.vignette <- get(".run.local.tests", envir = apsimx.options)
 
+tmp.dir <- tempdir()
+
 if(run.vignette){
 
-  ## Copy 'Maize.apsimx' to 'extdata'
+  ## Copy 'Maize.apsimx' to 'tmp.dir'
   ex.dir <- auto_detect_apsimx_examples()
   file.copy(from = paste0(ex.dir,"/","Maize.apsimx"),
-            to = ".", copy.mode = FALSE)
-  maize <- apsimx("Maize.apsimx", src.dir = extd.dir)
+            to = tmp.dir, copy.mode = FALSE)
+  maize <- apsimx("Maize.apsimx", src.dir = tmp.dir)
 
   ## Running 'Wheat' example
   file.copy(from = paste0(ex.dir,"/","Wheat.apsimx"),
-            to = ".", copy.mode = FALSE)
-  wheat <- apsimx("Wheat.apsimx", src.dir = extd.dir)
+            to = tmp.dir, copy.mode = FALSE)
+  wheat <- apsimx("Wheat.apsimx", src.dir = tmp.dir)
 
   ## Running 'MaizeSoybean' example
   file.copy(from = paste0(extd.dir,"/","Ames.met"),
-            to = ".")
+            to = tmp.dir)
   file.copy(from = paste0(extd.dir,"/","MaizeSoybean.apsimx"),
-            to = ".")
-  maize.soy <- apsimx("MaizeSoybean.apsimx")
+            to = tmp.dir)
+  maize.soy <- apsimx("MaizeSoybean.apsimx", src.dir = tmp.dir)
 
   ## The code below should only be run from my laptop and only when a new
   ## version of APSIM-X is released

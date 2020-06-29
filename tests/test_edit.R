@@ -5,6 +5,8 @@ extd.dir <- system.file("extdata", package = "apsimx")
 
 run.apsimx.edit <- get(".run.local.tests", envir = apsimx.options)
 
+tmp.dir <- tempdir()
+
 if(run.apsimx.edit){
   
   ## Inspect manager, Let's look at fertiliser first
@@ -19,11 +21,11 @@ if(run.apsimx.edit){
                        print.path = TRUE)
   ## Edit by moving the file to the current directory
   edit_apsimx("maize-manager.apsimx", src.dir = extd.dir, 
-              wrt.dir = ".", overwrite = TRUE,
+              wrt.dir = tmp.dir, overwrite = TRUE,
               node = "Manager", manager.child = "SowingFertiliser",
               parm = "Amount", value = 150)
   ## Inspect the new file to make sure it worked
-  inspect_apsimx("maize-manager.apsimx", src.dir = ".", 
+  inspect_apsimx("maize-manager.apsimx", src.dir = tmp.dir, 
                  node = "Manager", parm = list("SowingFert",1))
   
 }
@@ -37,7 +39,7 @@ if(run.apsim.edit.millet){
                   parm = list("Sow on a fixed date",5), print.path = TRUE)
   ## Edit
   edit_apsim("Millet.apsim", src.dir = extd.dir, 
-             node = "Other", wrt.dir = ".",
+             node = "Other", wrt.dir = tmp.dir,
              overwrite = TRUE,
              parm.path = pp,
              value = 8)
@@ -49,7 +51,7 @@ if(run.apsim.edit.millet){
                 parm = list("Sow on a fixed date",NA))
   
   edit_apsim("Millet.apsim", src.dir = extd.dir, 
-              wrt.dir = ".", node = "Manager",
+              wrt.dir = tmp.dir, node = "Manager",
              manager.child = "Sow on a fixed date",
              edit.tag = "-smurf",
              parm = "cultivar",

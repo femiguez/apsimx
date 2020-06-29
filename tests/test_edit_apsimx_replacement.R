@@ -4,6 +4,8 @@ extd.dir <- system.file("extdata", package = "apsimx")
 
 run.test.edit.apsimx.replacement <- get(".run.local.tests", envir = apsimx.options)
 
+tmp.dir <- tempdir()
+
 if(run.test.edit.apsimx.replacement){
   
   ## Inspect, edit, inspect
@@ -13,13 +15,13 @@ if(run.test.edit.apsimx.replacement){
                           parm = "Gsmax350")
   
   edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                          wrt.dir = ".", 
+                          wrt.dir = tmp.dir, 
                           node = "Soybean", 
                           node.child = "Leaf",
                           parm = "Gsmax350", value = 0.009, 
                           verbose = FALSE)
   
-  inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
+  inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = tmp.dir,
                           node = "Soybean", 
                           node.child = "Leaf",
                           parm = "Gsmax350")
@@ -33,14 +35,15 @@ if(run.test.edit.apsimx.replacement){
                              node.subsubchild = "RUE",
                              parm = "FixedValue")
   
-  edit_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
-                             node = "Soybean", 
-                             node.child = "Leaf",
-                             node.subchild = "Photosynthesis",
-                             node.subsubchild = "RUE",
-                             parm = "FixedValue", value = 1, verbose = FALSE)
+  edit_apsimx_replacement("MaizeSoybean.apsimx", 
+                          src.dir = extd.dir, wrt.dir = tmp.dir,
+                          node = "Soybean", 
+                          node.child = "Leaf",
+                          node.subchild = "Photosynthesis",
+                          node.subsubchild = "RUE",
+                          parm = "FixedValue", value = 1, verbose = FALSE)
   
-  inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = ".",
+  inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", src.dir = tmp.dir,
                              node = "Soybean", 
                              node.child = "Leaf",
                              node.subchild = "Photosynthesis",

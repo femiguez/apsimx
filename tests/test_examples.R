@@ -8,6 +8,10 @@ examples <- c("Barley","ControlledEnvironment","Eucalyptus",
               "EucalyptusRotation",
               "Maize","Oats","Sugarcane","Wheat")
 
+tmp.dir <- tempdir()
+
+setwd(tmp.dir)
+
 if(run.example.tests){
   
   ex.dir <- auto_detect_apsimx_examples()

@@ -18,6 +18,8 @@ run.test.daymet <- get(".run.local.tests", envir = apsimx.options) & run.test.da
 
 username <- Sys.info()[["user"]]
 
+tmp.dir <- tempdir()
+
 if(run.test.daymet && username == "fernandomiguez"){
 
   lonlat <- c(-93, 42)
@@ -25,11 +27,13 @@ if(run.test.daymet && username == "fernandomiguez"){
   dmet <- get_daymet_apsim_met(lonlat = lonlat, 
                                years = 2015:2016,
                                width.height = c(1e-5,1e-5),
+                               raw.dir = paste0(tmp.dir,"/RAW/DAYMET"),
+                               extraction.dir = paste0(tmp.dir, "/EXTRACTIONS/CIA/DAYMET"),
                                label = "CIA",
                                filename = "cia-daymet.met",
                                cleanup = FALSE)  
   
-  cia.daymet <- read_apsim_met("cia-daymet.met")
+  cia.daymet <- read_apsim_met("/cia-daymet.met", src.dir = tmp.dir)
   
   check_apsim_met(cia.daymet)
 }
@@ -45,19 +49,22 @@ if(run.test.maize.daymet && username == "fernandomiguez"){
   edit_apsimx("Maize.apsimx", 
               node = "Clock", 
               src.dir = extd.dir, 
-              wrt.dir = ".",
+              wrt.dir = tmp.dir,
               parm = c("Start","End"),
               value = c("2015-01-01","2016-12-30"),
               overwrite = FALSE)
 
-  inspect_apsimx("Maize-edited.apsimx", node = "Clock")
+  inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, node = "Clock")
 
-  edit_apsimx("Maize-edited.apsimx", node = "Weather", value = "cia-daymet.met",
+  edit_apsimx("Maize-edited.apsimx", 
+              src.dir = tmp.dir, wrt.dir = tmp.dir,
+              node = "Weather", 
+              value = "cia-daymet.met",
               overwrite = TRUE)
 
-  inspect_apsimx("Maize-edited.apsimx", node = "Weather")
+  inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, node = "Weather")
 
-  maize.daymet <- apsimx("Maize-edited.apsimx", value = "report")
+  maize.daymet <- apsimx("Maize-edited.apsimx", src.dir = tmp.dir, value = "report")
 
 }
 
@@ -69,11 +76,11 @@ if(run.test.power && username == "fernandomiguez"){
 
   lonlat <- c(-93, 42)
 
-  pwr <- get_power_apsim_met(lonlat = lonlat,
+  pwr <- get_power_apsim_met(lonlat = lonlat, wrt.dir = tmp.dir,
                              dates = c("2015-01-01","2016-12-31"),
                              filename = "cia-power.met")
   
-  pwr.met <- read_apsim_met("cia-power.met")
+  pwr.met <- read_apsim_met("cia-power.met", src.dir = tmp.dir)
   
   check_apsim_met(pwr.met)
   
@@ -83,17 +90,19 @@ if(run.test.power && username == "fernandomiguez"){
   
   check_apsim_met(pwr.met2)
   
-  write_apsim_met(pwr.met2, wrt.dir = ".", filename = "cia-power2.met")
+  write_apsim_met(pwr.met2, wrt.dir = tmp.dir, filename = "cia-power2.met")
 }
 
 run.test.maize.power <- get(".run.local.tests", envir = apsimx.options) & run.test.daymet0
 
 if(run.test.maize.daymet && username == "fernandomiguez"){
   
-  edit_apsimx("Maize-edited.apsimx", node = "Weather", value = "cia-power2.met",
+  edit_apsimx("Maize-edited.apsimx", node = "Weather", 
+              value = "cia-power2.met", src.dir = tmp.dir,
               edit.tag = "-power")
   
-  maize.power <- apsimx("Maize-edited-power.apsimx", value = "report")
+  maize.power <- apsimx("Maize-edited-power.apsimx", 
+                        src.dir = tmp.dir, value = "report")
   
   yld.diff <- maize.power$Maize.Grain.Wt - maize.daymet$Maize.Grain.Wt
 }

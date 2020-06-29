@@ -1,11 +1,11 @@
 Package: apsimx
-Title: Inspect, Read, Edit and Run APSIM "Next Generation" and 'APSIM' Classic
-Version: 1.937
+Title: Inspect, Read, Edit and Run 'APSIM' "Next Generation" and 'APSIM' Classic
+Version: 1.940
 Authors@R: person("Fernando", "Miguez", email = "femiguez@iastate.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-4627-8329"))
-Description: The functions in this package inspect, read, edit and run '.apsimx' ('JSON') and '.apsim' ('XML')
-             files and run them from within R through the command line. The '.apsim' files correspond to
-	     'APSIM' Classic (7.x) - Windows only - and the '.apsimx' files correspond to 'APSIM' "Next Generation".
-	     For more information about 'APSIM' see (www.apsim.info) and for 'APSIM'
+Description: The functions in this package inspect, read, edit and run files for 'APSIM' "Next Generation" ('JSON')
+             and 'APSIM' "Classic" ('XML'). The files with an 'apsim' extension correspond to
+	     'APSIM' Classic (7.x) - Windows only - and the ones with an 'apsimx' extension correspond to 'APSIM' "Next Generation".
+	     For more information about 'APSIM' see (<https://www.apsim.info/>) and for 'APSIM'
 	     next generation (<https://apsimnextgeneration.netlify.com/>). 
 Depends: R (>= 3.3.0)
 License: GPL-3

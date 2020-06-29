@@ -26,12 +26,14 @@
 #' 
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' 
+#' ## Writing to a temp directory
+#' tmp.dir <- tempdir()
 #' edit_apsim_replace_soil_profile("Millet.apsim", soil.profile = sp, 
 #'                                 edit.tag = "-newsoil",
 #'                                 src.dir = extd.dir, 
-#'                                 wrt.dir = ".")
+#'                                 wrt.dir = tmp.dir)
 #'                                 
-#' inspect_apsim("Millet-newsoil.apsim", src.dir = ".",
+#' inspect_apsim("Millet-newsoil.apsim", src.dir = tmp.dir,
 #'               node = "Soil", soil.child = "Water")
 #'  }
 #'

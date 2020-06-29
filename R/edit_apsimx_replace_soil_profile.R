@@ -17,9 +17,13 @@
 #' \donttest{
 #' sp <- apsimx_soil_profile()
 #' extd.dir <- system.file("extdata", package = "apsimx")
+#' 
+#' ## I write to a temp directory but replace as needed
+#' tmp.dir <- tempdir()
+#' 
 #' edit_apsimx_replace_soil_profile("Maize.apsimx", soil.profile = sp, 
-#'                                   src.dir = extd.dir, wrt.dir = ".")
-#' inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
+#'                                   src.dir = extd.dir, wrt.dir = tmp.dir)
+#' inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir,
 #'                  node = "Soil")
 #'  }
 #'

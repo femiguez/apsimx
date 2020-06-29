@@ -6,6 +6,8 @@ require(sf)
 ## runs locally
 run.soil.profile <- get(".run.local.tests", envir = apsimx.options)
 
+tmp.dir <- tempdir()
+
 if(run.soil.profile){
 ## First create a soil profile
 sp <- apsimx_soil_profile(nlayers = 15, 
@@ -30,22 +32,22 @@ inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil",
 ## Edit it, replacing with information from the soil profile
 edit_apsim_replace_soil_profile("Millet.apsim", soil.profile = sp, 
                                 edit.tag = "-newsoil",
-                                   src.dir = extd.dir, wrt.dir = ".")
+                                src.dir = extd.dir, wrt.dir = tmp.dir)
 
-inspect_apsim("Millet-newsoil.apsim", src.dir = ".",
+inspect_apsim("Millet-newsoil.apsim", src.dir = tmp.dir,
                   node = "Soil")
 
-inspect_apsim("Millet-newsoil.apsim", src.dir = ".", node = "Soil",
-              soil.child = "Water")
+inspect_apsim("Millet-newsoil.apsim", src.dir = tmp.dir, 
+              node = "Soil", soil.child = "Water")
 
-inspect_apsim("Millet-newsoil.apsim", src.dir = ".", node = "Soil",
-              soil.child = "OrganicMatter")
+inspect_apsim("Millet-newsoil.apsim", src.dir = tmp.dir, 
+              node = "Soil", soil.child = "OrganicMatter")
 
-inspect_apsim("Millet-newsoil.apsim", src.dir = ".", node = "Soil",
-              soil.child = "Analysis")
+inspect_apsim("Millet-newsoil.apsim", src.dir = tmp.dir, 
+              node = "Soil", soil.child = "Analysis")
 
-inspect_apsim("Millet-newsoil.apsim", src.dir = ".", node = "Soil",
-              soil.child = "Sample")
+inspect_apsim("Millet-newsoil.apsim", src.dir = tmp.dir, 
+              node = "Soil", soil.child = "Sample")
 
 ## Should add another example using SSURGO data
 
@@ -83,6 +85,6 @@ asp <- apsimx_soil_profile(nlayers = 20,
 ## Edit it, replacing with information from the soil profile
 edit_apsim_replace_soil_profile("Millet.apsim", soil.profile = asp, 
                                 edit.tag = "-newsoil-ssurgo",
-                                src.dir = extd.dir, wrt.dir = ".")
+                                src.dir = extd.dir, wrt.dir = tmp.dir)
 
 }
