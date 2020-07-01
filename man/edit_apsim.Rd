@@ -77,10 +77,13 @@ compared to the similar function in the 'apsimr' package.
 \examples{
 \donttest{
 ## This example will read one of the examples distributed with APSIM
-## but write to the current directory
+## but write to a temporary directory
+
+tmp.dir <- tempdir()
 
 extd.dir <- system.file("extdata", package = "apsimx")
-edit_apsim("Millet", src.dir = extd.dir, node = "Clock",
+edit_apsim("Millet", src.dir = extd.dir, wrt.dir = tmp.dir, 
+           node = "Clock",
            parm = "start_date", value = "01/02/1940")
 }
 

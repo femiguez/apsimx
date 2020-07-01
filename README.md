@@ -1,5 +1,11 @@
 **apsimx: R package for APSIM-X**
 
+[![CRAN](http://www.r-pkg.org/badges/version/apsimx)](https://CRAN.R-project.org/package=apsimx)
+[![CRAN
+downloads total](https://cranlogs.r-pkg.org/badges/grand-total/apsimx)](https://github.com/metacran/cranlogs.app)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/apsimx)](https://cran.r-project.org/package=apsimx)
+
+
 This package allows for interaction with APSIM-X ("Next Generation")
 and/or APSIM 'Classic' (7.10). It can inspect, edit, run and read
 APSIM files in both platforms. The format is JSON for APSIM-X and XML

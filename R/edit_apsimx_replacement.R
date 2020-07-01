@@ -28,6 +28,7 @@
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' ## Writing to a temp directory, but change as needed
 #' tmp.dir <- tempdir()
+#' 
 #' edit_apsimx_replacement("MaizeSoybean.apsimx", 
 #'                         src.dir = extd.dir, wrt.dir = tmp.dir,
 #'                         node = "Maize", node.child = "Phenology",

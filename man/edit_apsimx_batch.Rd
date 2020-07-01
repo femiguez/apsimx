@@ -67,12 +67,14 @@ process.
 \examples{
 \donttest{
 ## This example will read one of the examples distributed with APSIM-X
-## but write to the current directory
+## but write to a temporary directory
+
+tmp.dir <- tempdir()
 
 ## Edit InitialResidueMass
 extd.dir <- system.file("extdata", package = "apsimx")
 parms <- list(`.Simulations.Simulation.Field.SurfaceOrganicMatter.InitialResidueMass` = 600)
-edit_apsimx_batch("Wheat.apsimx", src.dir = extd.dir, parms = parms)
+edit_apsimx_batch("Wheat.apsimx", src.dir = extd.dir, wrt.dir = tmp.dir, parms = parms)
 }
 
 }

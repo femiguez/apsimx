@@ -62,8 +62,10 @@
 #'              manager.child = "SowingFertiliser",
 #'              parm = "Amount",
 #'              value = 200, verbose = TRUE)
+#'              
 #' ## Make sure it worked
 #' inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, node = "Manager")
+#' 
 #' ## Remove the file
 #' file.remove(paste0(tmp.dir,"/Maize-edited.apsimx"))
 #' }

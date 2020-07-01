@@ -341,9 +341,9 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   example <- match.arg(example, choices = ex.ch)
   
   ex.dir <- auto_detect_apsimx_examples()
-  ex <- file.path(ex.dir,paste0(example,".apsimx"))
+  ex <- file.path(ex.dir, paste0(example,".apsimx"))
   
-  if(!file.exists(ex)) stop(paste0("cannot find example file ",example))
+  if(!file.exists(ex)) stop(paste0("cannot find example file ", example))
   ## Make a temporary copy of the file to the current directory
   ## Do not transfer permissions?
   file.copy(from = ex, to = tmp.dir, copy.mode = FALSE)
@@ -351,8 +351,8 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   sim <- apsimx(paste0(example,".apsimx"), src.dir = tmp.dir, value = "report")
 
   ## OS independent cleanup (risky?)
-  file.remove(paste0(tmp.dir,"/",example,".db"))
-  file.remove(paste0(tmp.dir,"/",example,".apsimx"))
+  file.remove(paste0(tmp.dir,"/", example, ".db"))
+  file.remove(paste0(tmp.dir, "/", example, ".apsimx"))
 
   return(sim)
 }
@@ -373,9 +373,9 @@ read_apsimx <- function(file = "", src.dir = ".",
   
   if(file == "") stop("need to specify file name")
   
-  file.names <- dir(path = src.dir, pattern=".db$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".db$", ignore.case=TRUE)
   
-  if(length(file.names)==0){
+  if(length(file.names) == 0){
     stop("There are no .db files in the specified directory to read.")
   }
   
@@ -427,7 +427,7 @@ read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
   
   value <- match.arg(value)
   
-  file.names <- dir(path = src.dir, pattern=".db$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".db$", ignore.case=TRUE)
   
   ans <- NULL
   
