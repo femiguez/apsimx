@@ -366,6 +366,60 @@ apsimx_soil_profile <-  function(nlayers = 10,
                      "DUL","SAT","KS","crop.XF","crop.KL","crop.LL",
                      "Carbon","SoilCNRatio", "FOM","FOM.CN","FBiom","FInert",
                      "NO3N","NH4N","PH")
+    
+    ## Insert checks before returning, only produce warnings
+    ## Depth cannot be easily checked, need to think harder about this one
+    ## Thickness
+    if(min(soil$Thickness) <= 0) warning("Thickness is zero or negative")
+    ## Bulk Density (BD)
+    if(min(soil$BD) <= 0) warning("BD (Bulk Density) cannot be zero or negative")
+    if(max(soil$BD) >= 3) warning("BD (Bulk Density) value is too high")
+    ## AirDry
+    if(min(soil$AirDry) <= 0) warning("AirDry is zero or negative")
+    if(max(soil$AirDry) > 1) warning("AirDry is too high")
+    ## LL15
+    if(min(soil$LL15) <= 0) warning("LL15 is zero or negative")
+    if(max(soil$LL15) > 1) warning("LL15 is too high")
+    ## DUL
+    if(min(soil$DUL) <= 0) warning("DUL is zero or negative")
+    if(max(soil$DUL) > 1) warning("DUL is too high")
+    ## SAT
+    if(min(soil$SAT) <= 0) warning("SAT is zero or negative")
+    if(max(soil$SAT) > 1) warning("SAT is too high")
+    ## KS 
+    if(min(soil$KS) <= 0) warning("KS is zero or negative")
+    ## crop.XF
+    if(min(soil$crop.XF) <= 0) warning("crop.XF is zero or negative")
+    if(max(soil$crop.XF) > 1) warning("crop.XF is too high")
+    ## crop.KL
+    if(min(soil$crop.KL) <= 0) warning("crop.KL is zero or negative")
+    if(max(soil$crop.KL) > 1) warning("crop.KL is too high")
+    ## crop.LL
+    if(min(soil$crop.LL) <= 0) warning("crop.LL is zero or negative")
+    if(max(soil$crop.LL) > 1) warning("crop.LL is too high")
+    ## Carbon
+    if(min(soil$Carbon) <= 0) warning("Carbon is zero or negative")
+    ## SoilCNRatio
+    if(min(soil$SoilCNRatio) <= 0) warning("SoilCNRatio is zero or negative")
+    ## FOM
+    if(min(soil$FOM) <= 0) warning("FOM is zero or negative")
+    ## FOM.CN
+    if(min(soil$FOM.CN) <= 0) warning("FOM.CN is zero or negative")
+    ## FBiom
+    if(min(soil$FBiom) <= 0) warning("FBiom is zero or negative")
+    if(max(soil$FBiom) > 1) warning("FBiom is too high")
+    ## FInert
+    if(min(soil$FInert) <= 0) warning("FInert is zero or negative")
+    if(max(soil$FInert) > 1) warning("FInert is too high")
+    ## NO3N
+    if(min(soil$NO3N) <= 0) warning("NO3N is zero or negative")
+    ## NH4N
+    if(min(soil$NH4N) <= 0) warning("NH4N is zero or negative")
+    ## PH
+    if(min(soil$PH) <= 0) warning("PH is zero or negative")
+    if(max(soil$PH) > 14) warning("PH is too high")
+    
+    
     ans <- list(soil=soil, crops = crops, metadata = metadata, soilwat = soilwat, swim = swim)
     class(ans) <- "soil_profile"
     return(ans)
@@ -385,6 +439,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
 #' 
 soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
   
+  if(a < 0) stop("a parameter cannot be negative")
   ## The shape will be based on the
   ## Ricker function
   ## Y = a * X * exp(-b * X)

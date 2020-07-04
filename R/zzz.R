@@ -17,7 +17,7 @@
       ## In both of them the command 'mono' seems to work
     }
     
-    ## This is for solaris
+    ## This is for solaris or any other flavor of unix
     laf <- character(0)
     ## List of application files in Darwin (Mac)
     if(grepl("Darwin", Sys.info()[["sysname"]])){
@@ -43,7 +43,7 @@
     find.apsim <- laf2[grepl("APSIM", laf2, ignore.case = TRUE)]
   }
   
-  if(length(find.apsimx) > 0 | length(find.apsim) > 0){
+  if(length(find.apsimx) > 0 || length(find.apsim) > 0){
     
     fax <- paste0("Found APSIM or APSIM-X")
     ## Won't print ApsimX at the moment but might change it in the future

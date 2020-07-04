@@ -22,9 +22,9 @@
 #' }
 #'
 
-apsimx <- function(file = "", src.dir=".",
+apsimx <- function(file = "", src.dir = ".",
                    silent = FALSE, 
-                   value = c("all","report","none"),
+                   value = c("all", "report", "none"),
                    cleanup = FALSE){
   
   value <- match.arg(value)
@@ -34,9 +34,9 @@ apsimx <- function(file = "", src.dir=".",
   .check_apsim_name(file)
   
   ## The might offer suggestions in case there is a typo in 'file'
-  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
   
-  if(length(file.names)==0){
+  if(length(file.names) == 0){
     stop("There are no .apsimx files in the specified directory to run.")
   }
   
@@ -48,7 +48,7 @@ apsimx <- function(file = "", src.dir=".",
 
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
-    run.strng <- paste0(mono," ",ada," ",file.name.path) ## Could use 'paste' instead I guess...
+    run.strng <- paste0(mono, " ", ada, " ", file.name.path) ## Could use 'paste' instead I guess...
     ## Run APSIM-X on the command line
     system(command = run.strng, ignore.stdout = silent)
   }
@@ -56,15 +56,14 @@ apsimx <- function(file = "", src.dir=".",
   if(.Platform$OS.type == "windows"){
     ## Should probably delete the line below
     if(src.dir != ".") stop("In Windows you can only run a file from the current directory.")
-    run.strng <- paste0(ada," ",file.name.path)
+    run.strng <- paste0(ada, " ", file.name.path)
     shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   }
 
   if(value != "none"){
-    ans <- read_apsimx(file = sub("apsimx","db",file), 
-                       src.dir = src.dir, value = value)
+    ans <- read_apsimx(file = sub("apsimx","db",file), src.dir = src.dir, value = value)
   }else{
-    if(value == "none" & !silent){
+    if(value == "none" && !silent){
       cat("APSIM created .db files, but nothing is returned \n")
     }
   }
@@ -73,7 +72,7 @@ apsimx <- function(file = "", src.dir=".",
     ## Default is not to cleanup
     if(value == "none") stop("do not clean up if you choose value = 'none' ")
     ## Delete the apsim-generated sql database 
-    file.remove(paste0(src.dir,"/",sub("apsimx","db",file)))
+    file.remove(paste0(src.dir, "/", sub("apsimx", "db", file)))
   }
   
   if(value != "none")
@@ -88,7 +87,7 @@ auto_detect_apsimx <- function(){
 
     if(grepl("Darwin", Sys.info()[["sysname"]])){
       laf <- list.files("/Applications/")
-      find.apsim <- grep("APSIM",laf)
+      find.apsim <- grep("APSIM", laf)
       ## This deals with the fact that APSIM-X might not be present but perhaps a
       ## custom version is available
       if(length(find.apsim) == 0){
@@ -105,7 +104,7 @@ auto_detect_apsimx <- function(){
       st3 <- "/Contents/Resources/Bin/Models.exe" 
       if(length(find.apsim) == 1){
         apsimx.name <- laf[find.apsim]
-        apsimx_dir <- paste0(st1,apsimx.name,st3)
+        apsimx_dir <- paste0(st1, apsimx.name, st3)
         ## I could use 'file.path' instead, but it this is not a 'file'
         ## so it could be confusing
       }
@@ -116,14 +115,14 @@ auto_detect_apsimx <- function(){
         len.fa <- length(find.apsim)
         ## This extracts the date from the APSIM name but I 
         ## only need this for debugging in case there is a problem
-        fa.dt <- as.numeric(sapply(laf[find.apsim],.favd))
+        fa.dt <- as.numeric(sapply(laf[find.apsim], .favd))
         newest.version <- laf[find.apsim][len.fa]
         if(apsimx::apsimx.options$warn.versions){
            warning(paste("Multiple versions of APSIM-X installed. \n
-                    Choosing the newest one:",newest.version))
+                    Choosing the newest one:", newest.version))
         }
         apsimx.name <- newest.version
-        apsimx_dir <- paste0(st1,apsimx.name,st3)
+        apsimx_dir <- paste0(st1, apsimx.name, st3)
       }
     }
   
@@ -166,7 +165,7 @@ auto_detect_apsimx <- function(){
   if(.Platform$OS.type == "windows"){
     st1 <- "C:/PROGRA~1/"
     laf <- list.files(st1)
-    find.apsim <- grep("APSIM",laf)
+    find.apsim <- grep("APSIM", laf)
     
     ## What if length equals zero?
     if(length(find.apsim) == 0){
@@ -182,7 +181,7 @@ auto_detect_apsimx <- function(){
     if(length(find.apsim) == 1){
       apsimx.versions <- laf[find.apsim]
       apsimx.name <- apsimx.versions
-      apsimx_dir <- paste0(st1,apsimx.name,st3)
+      apsimx_dir <- paste0(st1, apsimx.name, st3)
     }
     
     if(length(find.apsim) > 1){
@@ -190,10 +189,10 @@ auto_detect_apsimx <- function(){
       newest.version <- apsimx.versions[length(find.apsim)]
       if(apsimx::apsimx.options$warn.versions){
         warning(paste("Multiple versions of APSIM-X installed. \n
-                    Choosing the newest one:",newest.version))
+                    Choosing the newest one:", newest.version))
       }
       apsimx.name <- newest.version
-      apsimx_dir <- paste0(st1,apsimx.name,st3)
+      apsimx_dir <- paste0(st1, apsimx.name, st3)
     }
   }
   
@@ -244,7 +243,7 @@ auto_detect_apsimx_examples <- function(){
       }
       st1 <- "/Applications/"
       st3 <- "/Contents/Resources/Examples" 
-      apsimx_ex_dir <- paste0(st1,apsimx.name,st3)
+      apsimx_ex_dir <- paste0(st1, apsimx.name, st3)
       return(apsimx_ex_dir)
     }
   
@@ -258,20 +257,20 @@ auto_detect_apsimx_examples <- function(){
         newest.version <- apsimx.versions[find.apsim]
         if(apsimx.options$warn.versions){
           warning(paste("Multiple versions of APSIM-X installed. \n
-                    Choosing the newest one:",newest.version))
+                    Choosing the newest one:", newest.version))
         }
         apsimx.name <- newest.version
       }else{
         apsimx.name <- apsimx.versions
       }
-      apsimx_ex_dir <- paste0(st1,apsimx.name,"/Examples")
+      apsimx_ex_dir <- paste0(st1, apsimx.name, "/Examples")
     }
   }
   
   if(.Platform$OS.type == "windows"){
       st1 <- "C:/PROGRA~1"
       laf <- list.files(st1)
-      find.apsim <- grep("APSIM",laf)
+      find.apsim <- grep("APSIM", laf)
       
       if(length(find.apsim) == 0) stop("APSIM-X not found")
       
@@ -280,7 +279,7 @@ auto_detect_apsimx_examples <- function(){
         newest.version <- laf[find.apsim][length(find.apsim)]
         if(apsimx.options$warn.versions){
           warning(paste("Multiple versions of APSIM-X installed. \n
-                        Choosing the newest one:",newest.version))
+                        Choosing the newest one:", newest.version))
         }
         apsimx.name <- newest.version
       }else{
@@ -288,7 +287,7 @@ auto_detect_apsimx_examples <- function(){
       }
       ## APSIM path to examples
       st3 <- "/Examples" 
-      apsimx_ex_dir <- paste0(st1,"/",apsimx.name,st3)
+      apsimx_ex_dir <- paste0(st1, "/", apsimx.name, st3)
   }
   
   if(!is.na(apsimx::apsimx.options$examples.path)){
@@ -341,17 +340,17 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   example <- match.arg(example, choices = ex.ch)
   
   ex.dir <- auto_detect_apsimx_examples()
-  ex <- file.path(ex.dir, paste0(example,".apsimx"))
+  ex <- file.path(ex.dir, paste0(example, ".apsimx"))
   
   if(!file.exists(ex)) stop(paste0("cannot find example file ", example))
   ## Make a temporary copy of the file to the current directory
   ## Do not transfer permissions?
   file.copy(from = ex, to = tmp.dir, copy.mode = FALSE)
   
-  sim <- apsimx(paste0(example,".apsimx"), src.dir = tmp.dir, value = "report")
+  sim <- apsimx(paste0(example, ".apsimx"), src.dir = tmp.dir, value = "report")
 
   ## OS independent cleanup (risky?)
-  file.remove(paste0(tmp.dir,"/", example, ".db"))
+  file.remove(paste0(tmp.dir, "/", example, ".db"))
   file.remove(paste0(tmp.dir, "/", example, ".apsimx"))
 
   return(sim)
@@ -368,8 +367,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
 #' @export
 #' 
 
-read_apsimx <- function(file = "", src.dir = ".",
-                        value = c("report","all")){
+read_apsimx <- function(file = "", src.dir = ".", value = c("report","all")){
   
   if(file == "") stop("need to specify file name")
   
@@ -420,7 +418,7 @@ read_apsimx <- function(file = "", src.dir = ".",
 #' @export
 #' 
 
-read_apsimx_all <- function(src.dir = ".", value = c("report","all")){
+read_apsimx_all <- function(src.dir = ".", value = c("report", "all")){
   
   ## This is super memorey hungry and not efficient at all, but it might work 
   ## for now

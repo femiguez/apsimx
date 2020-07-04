@@ -11,7 +11,7 @@ and/or APSIM 'Classic' (7.10). It can inspect, edit, run and read
 APSIM files in both platforms. The format is JSON for APSIM-X and XML
 for 'Classic'.
 
-* Package requirements:
+**Package requirements**
 
 * Other R packages: DBI, jsonlite, knitr, RSQLite, xml2
 

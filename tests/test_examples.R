@@ -29,5 +29,4 @@ if(run.example.tests){
   }else{
     cat("APSIM-X version:", as.vector(apsim_version(which = "inuse")[[2]]),"\n")
   }
-
 }

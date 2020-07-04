@@ -21,9 +21,9 @@
 #' }
 #'
 
-apsim <- function(file = "", src.dir = NULL,
+apsim <- function(file = "", src.dir = ".",
                    silent = FALSE, 
-                   value = c("all","report","none"),
+                   value = c("all", "report", "none"),
                    cleanup = FALSE){
   
   if(.Platform$OS.type != "windows"){
@@ -36,7 +36,7 @@ apsim <- function(file = "", src.dir = NULL,
   
   .check_apsim_name(.file = file)
   
-  if(missing(src.dir)) src.dir <- "."
+  if(src.dir != ".") stop("In APSIM Classic you can only run a file from the current directory.")
   
   ## Extra checking, not sure if it will be triggered
   file.names <- dir(path = src.dir, pattern = ".apsim$", ignore.case = TRUE)
@@ -74,7 +74,7 @@ apsim <- function(file = "", src.dir = NULL,
                             src.dir = src.dir, value = "report")
     }
   }else{
-    if(value == "none" & !silent){
+    if(value == "none" && !silent){
       cat("APSIM created .out files, but nothing is returned \n")
     }
   }
@@ -85,7 +85,7 @@ apsim <- function(file = "", src.dir = NULL,
     ## Delete the apsim-generated out file
     for(i in seq_along(output.names)){
         file.remove(output.names[i])
-        file.remove(sub("out$","sum",output.names[i]))
+        file.remove(sub("out$","sum", output.names[i]))
       }
   }
   
@@ -109,14 +109,17 @@ auto_detect_apsim <- function(){
   st1 <- "C:/PROGRA~2/"
   laf <- list.files(st1)
   find.apsim <- grep("APSIM",laf,ignore.case = TRUE)
+  
   if(length(find.apsim) == 0) stop("APSIM 'Classic' not found")
+  
   apsim.versions <- laf[find.apsim]
+  
   if(length(find.apsim) > 1){
     versions <- sapply(apsim.versions, fev)
     newest.version <- sort(versions, decreasing = TRUE)[1]
     if(apsimx::apsim.options$warn.versions){
       warning(paste("Multiple versions of APSIM installed. \n
-                    Choosing the newest one:",newest.version))
+                    Choosing the newest one:", newest.version))
       }
     apsim.name <- grep(newest.version, apsim.versions, value = TRUE)
   }else{
@@ -124,7 +127,7 @@ auto_detect_apsim <- function(){
   }
   ## APSIM executable
   st3 <- "/Model/Apsim.exe" 
-  apsim_dir <- paste0(st1,apsim.name,st3)
+  apsim_dir <- paste0(st1, apsim.name, st3)
   
   if(!is.na(apsimx::apsim.options$exe.path)){
     ## Windows paths can contain white spaces which are
@@ -162,7 +165,9 @@ auto_detect_apsim_examples <- function(){
   st1 <- "C:/PROGRA~2"
   laf <- list.files(st1)
   find.apsim <- grep("APSIM",laf, ignore.case = TRUE)
+  
   if(length(find.apsim) == 0) stop("APSIM 'Classic' not found")
+  
   apsim.versions <- laf[find.apsim]
   if(length(apsim.versions) > 1){
       versions <- sapply(apsim.versions, fev)
@@ -177,7 +182,7 @@ auto_detect_apsim_examples <- function(){
     }
     ## APSIM path to examples
     st3 <- "/Examples" 
-    apsim_ex_dir <- paste0(st1,"/",apsim.name,st3)
+    apsim_ex_dir <- paste0(st1, "/", apsim.name,st3)
   
   if(!is.na(apsimx::apsim.options$examples.path)){
     ## Not sure if I need shQuote here
@@ -232,14 +237,14 @@ apsim_example <- function(example = "Millet", silent = FALSE, tmp.dir = NULL){
   
   ada <- auto_detect_apsim()
   ex.dir <- auto_detect_apsim_examples()
-  ex <- file.path(ex.dir,paste0(example,".apsim"))
+  ex <- file.path(ex.dir, paste0(example, ".apsim"))
   
   if(!file.exists(ex)) stop("cannot find example files")
   ## Make a temporary copy of the file to the current directory
   ## Do not transfer permissions?
   file.copy(from = ex, to = tmp.dir, copy.mode = FALSE)
   
-  run.strng <- paste0(ada," ", paste0(tmp.dir, "/",example,".apsim"))
+  run.strng <- paste0(ada, " ", paste0(tmp.dir, "/", example, ".apsim"))
   shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   
   ## Create database connection
@@ -254,10 +259,10 @@ apsim_example <- function(example = "Millet", silent = FALSE, tmp.dir = NULL){
   }
   ## OS independent cleanup (risky?)
   for(i in out.name){
-    file.remove(paste0(tmp.dir,"/",i))
-    file.remove(paste0(tmp.dir,"/",strsplit(i,".",fixed=TRUE)[[1]][1],".sum"))
+    file.remove(paste0(tmp.dir, "/", i))
+    file.remove(paste0(tmp.dir, "/", strsplit(i, ".", fixed=TRUE)[[1]][1], ".sum"))
   }
-  file.remove(paste0(tmp.dir,"/",example,".apsim"))
+  file.remove(paste0(tmp.dir, "/", example, ".apsim"))
   ## Return data frame
   return(ans)
 }
@@ -281,27 +286,27 @@ apsim_example <- function(example = "Millet", silent = FALSE, tmp.dir = NULL){
 #' 
 
 read_apsim <- function(file = "", src.dir = ".",
-                        value = c("report","all"),
+                       value = c("report", "all"),
                        date.format = "%d/%m/%Y"){
   
   if(file == "") stop("need to specify file name")
   
-  file.names <- dir(path = src.dir, pattern=".out$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern = ".out$", ignore.case=TRUE)
   
-  if(length(file.names)==0){
+  if(length(file.names) == 0){
     stop("There are no .out files in the specified directory to read.")
   }
   
   value <- match.arg(value)
   
-  if(length(grep(".out$",file)) != 0){
+  if(length(grep(".out$", file)) != 0){
     ## I assume the extention was included
     ## Only use the name from here 
     ## This strips the extension
     file <- tools::file_path_sans_ext(file)
   }
   
-  file.name.path <- paste0(src.dir,"/",file,".out")
+  file.name.path <- paste0(src.dir, "/", file, ".out")
   
   ## Read output file
   hdr <- as.character(sapply(as.vector(read.table(file = file.name.path, 
@@ -311,17 +316,16 @@ read_apsim <- function(file = "", src.dir = ".",
                                                   skip = 2)[1,]), 
                              FUN = function(x) x[[1]]))
   
-  out.file <- read.table(file = file.name.path, header = FALSE,
-                         sep = "", skip = 4)
+  out.file <- read.table(file = file.name.path, header = FALSE, sep = "", skip = 4)
   
   if(length(hdr) != dim(out.file)[2]){
-    cat("length header",length(hdr)," number of columns",dim(out.file)[2],"\n")
+    cat("length header", length(hdr), " number of columns", dim(out.file)[2], "\n")
     stop("header names are not equal to number of columns")
   }
   
   names(out.file) <- hdr
   ## Read summary file
-  file.name.summary <- paste0(src.dir,"/",file,".sum")
+  file.name.summary <- paste0(src.dir, "/", file, ".sum")
   sum.file <- readLines(con = file.name.summary)
   
   if(any(grepl("Date",hdr))){
@@ -351,7 +355,7 @@ read_apsim <- function(file = "", src.dir = ".",
 #' @export
 #' 
 
-read_apsim_all <- function(filenames, src.dir = ".", value = c("report","all"),
+read_apsim_all <- function(filenames, src.dir = ".", value = c("report", "all"),
                            date.format = "%d/%m/%Y"){
   
   ## This is super memorey hungry and not efficient at all, but it might work 
@@ -359,7 +363,7 @@ read_apsim_all <- function(filenames, src.dir = ".", value = c("report","all"),
   
   value <- match.arg(value)
   
-  file.names <- dir(path = src.dir, pattern=".out$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".out$", ignore.case=TRUE)
   
   if(!missing(filenames)){
    file.names <- filenames

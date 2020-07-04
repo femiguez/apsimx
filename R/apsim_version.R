@@ -47,7 +47,7 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
     
     if(grepl("Linux", Sys.info()[["sysname"]])){
         laf <- list.files("/usr/local/lib")
-        find.apsim <- grep("apsim",laf, ignore.case = TRUE)
+        find.apsim <- grep("apsim", laf, ignore.case = TRUE)
         if(length(find.apsim) == 0) warning("APSIM-X not found")
         apsimx.version <- paste0("/usr/local/lib/apsim/",list.files("/usr/local/lib/apsim"))
         ## Apparently only one version can be present at a time on Debian
@@ -108,9 +108,11 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
     ## For Unix
     if(.Platform$OS.type == "unix"){
       ## If there is only one APSIM present
-      if(length(find.apsim) == 1){
-        ans <- laf[find.apsim]
-      }
+        if(length(find.apsim) == 1){
+            ## Darwin is different from Linux
+            if(grepl("Darwin", Sys.info()[["sysname"]])) ans <- laf[find.apsim]
+            if(grepl("Linux", Sys.info()[["sysname"]])) ans <- paste0("apsim", list.files("/usr/local/lib/apsim"))
+        }
       ## If there are multiple APSIMs present
       if(length(find.apsim) > 1){
         len.fa <- length(find.apsim)
