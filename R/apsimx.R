@@ -55,7 +55,9 @@ apsimx <- function(file = "", src.dir = ".",
   
   if(.Platform$OS.type == "windows"){
     ## Should probably delete the line below
-    if(src.dir != ".") stop("In Windows you can only run a file from the current directory.")
+    ## As of 2020-07-04, this seems to be working fine
+    ## I will leave the line below until I'm sure it is not needed
+    ## if(src.dir != ".") stop("In Windows you can only run a file from the current directory.")
     run.strng <- paste0(ada, " ", file.name.path)
     shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   }

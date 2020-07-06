@@ -20,7 +20,7 @@
 view_apsimx <- function(file, src.dir, viewer = c("json","react"), ...){
   
   if(!requireNamespace("listviewer", quietly = TRUE)){
-    warning("The listviewer is required for this function")
+    warning("The listviewer package is required for this function")
     return(NULL)
   }
   
@@ -53,7 +53,7 @@ view_apsimx <- function(file, src.dir, viewer = c("json","react"), ...){
   if(viewer == "react"){
     
     if(!requireNamespace("reactR", quietly = TRUE)){
-      warning("The reactR is required for this function")
+      warning("The reactR package is required for this function")
       return(NULL)
     }
     
@@ -85,7 +85,7 @@ view_apsimx <- function(file, src.dir, viewer = c("json","react"), ...){
 view_apsim <- function(file, src.dir, viewer = c("json","react"), ...){
   
   if(!requireNamespace("listviewer", quietly = TRUE)){
-    warning("The listviewer is required for this function")
+    warning("The listviewer package is required for this function")
     return(NULL)
   }
   
@@ -118,7 +118,7 @@ view_apsim <- function(file, src.dir, viewer = c("json","react"), ...){
   if(viewer == "react"){
     
     if(!requireNamespace("reactR", quietly = TRUE)){
-      warning("The reactR is required for this function")
+      warning("The reactR package is required for this function")
       return(NULL)
     }
     
