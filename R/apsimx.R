@@ -119,7 +119,8 @@ auto_detect_apsimx <- function(){
         ## only need this for debugging in case there is a problem
         fa.dt <- as.numeric(sapply(laf[find.apsim], .favd))
         newest.version <- laf[find.apsim][len.fa]
-        if(apsimx::apsimx.options$warn.versions){
+        if(apsimx::apsimx.options$warn.versions &&
+           is.na(apsimx::apsim.options$exe.path)){
            warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:", newest.version))
         }

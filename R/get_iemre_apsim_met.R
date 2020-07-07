@@ -109,8 +109,9 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
 #' @examples 
 #' \dontrun{
 #' ## This will not write a file to disk
-#' iem.met <- get_iem_apsim_met(state = "IA", station = "IA5198", 
-#'                            dates = c("2012-01-01","2012-12-31"))
+#' iem.met <- get_iem_apsim_met(state = "IA", 
+#'                              station = "IA5198", 
+#'                              dates = c("2012-01-01","2012-12-31"))
 #' 
 #' summary(iem.met)
 #' 
@@ -123,7 +124,7 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
 #' }
 #' 
 
-get_iem_apsim_met <- function(lonlat, dates, wrt.dir=".", 
+get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".", 
                               state, station, filename){
   
   if(missing(filename)) filename <- "noname.met"
@@ -193,7 +194,7 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir=".",
     ## Get the station
     ftrs <- jsonlite::fromJSON(paste0("http://mesonet.agron.iastate.edu/geojson/network.php?network=",stt.climate))$features
     if(!(station %in% ftrs$id)){
-      cat("Available stations",ftrs$id,"\n")
+      cat("Available stations", ftrs$id, "\n")
       stop("station must be incorrect")
     } 
   }
@@ -206,11 +207,11 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir=".",
   
   ## Retrieve data
   iem0 <- readLines(str3)
-  write(iem0, file = filename)
-  iem.dat <- read_apsim_met(filename, verbose = FALSE)
+  write(iem0, file = paste0(wrt.dir, "/", filename))
+  iem.dat <- read_apsim_met(filename, src.dir = wrt.dir, verbose = FALSE)
   
   if(filename == "noname.met"){
-    unlink(filename)
+    unlink(paste0(wrt.dir, "/", filename))
     return(iem.dat)
   }else{
     return(invisible(iem.dat))

@@ -134,27 +134,27 @@ Editing a file has the side effect of creating a new file with '-edited' added t
 Let's say we want to modify the values of 'Organic Carbon' in the soil in the 'Maize.apsimx' example. First we should inspect the current values.
 
 ```{r inspect-maize-oc}
-inspect_apsimx("Maize.apsimx", src.dir = extd.dir, node = "Soil",
-               soil.child = "Organic")
+inspect_apsimx("Maize.apsimx", src.dir = extd.dir, 
+               node = "Soil", soil.child = "Organic")
 ```
 
 The function 'inspect_apsimx', in this example, displays various information about the organic matter in the soil. (See the help page - ?inspect_apsimx - for more options). In the next step, we 'edit' the values.
 
 ```{r edit-maize-oc}
-ocs <- c(1.5,1.4,1.3,1.2,1.1,1.0,0.9)
-edit_apsimx("Maize.apsimx", src.dir = extd.dir,
-             wrt.dir = ".",
-             node = "Soil",
-             soil.child = "Organic", 
-             parm = "Carbon", value = ocs)
+ocs <- c(1.5, 1.4, 1.3, 1.2, 1.1, 1.0, 0.9)
+edit_apsimx("Maize.apsimx", 
+            src.dir = extd.dir,
+            wrt.dir = ".",
+            node = "Soil",
+            soil.child = "Organic", 
+            parm = "Carbon", value = ocs)
 ```
 
 Let's make sure that we have changed the values successfully.
 
 ```{r inspect-maize-oc-check}
 inspect_apsimx("Maize-edited.apsimx", src.dir = ".", 
-               node = "Soil",
-               soil.child = "Organic")
+               node = "Soil", soil.child = "Organic")
 ```
 
 # Proposed workflow
@@ -185,7 +185,7 @@ ex.dir <- auto_detect_apsimx_examples()
 ## Copy 'Wheat' file to a temporary directory
 ## (or change as needed)
 tmp.dir2 <- tempdir()
-file.copy(paste0(ex.dir,"/","Wheat.apsimx"), tmp.dir2)
+file.copy(paste0(ex.dir, "/", "Wheat.apsimx"), tmp.dir2)
 sim <- apsimx("Wheat.apsimx", src.dir = tmp.dir2, value = "report")
 ```
 
@@ -204,17 +204,17 @@ inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop")
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
 ## Looking more in-depth into 'SowingRule1'
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
-               node = "Manager", parm = list("SowingRule1",NA))
+               node = "Manager", parm = list("SowingRule1", NA))
 ```
 
 If you only want to display the Wheat cultivar choose the sixth element in that table.
 
 ```{r apsimx-wheat-cultivar-only}
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
-               node = "Manager", parm = list("SowingRule1",6))
+               node = "Manager", parm = list("SowingRule1", 6))
 ## We can print and store the path to this parameter
 pp <- inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
-               node = "Manager", parm = list("SowingRule1",6),
+               node = "Manager", parm = list("SowingRule1", 6),
                print.path = TRUE)
 ```
 
@@ -230,7 +230,7 @@ We can see that we have 'Sow on a fixed date' as one of the options. Let's say t
 
 ```{r Millet-sow}
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
-              parm = list("Sow on a fixed date",NA))
+              parm = list("Sow on a fixed date", NA))
 ```
 
 Planting density is the fifth element in that table. We can obtain the full path by using the 'print.path' option. It makes sense to use this option once you have found the parameter you are looking for. 
@@ -239,7 +239,7 @@ Planting density is the fifth element in that table. We can obtain the full path
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
               parm = list("Sow on a fixed date",5), print.path = TRUE)
 ## Or store it in an object for later editing
-pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
+pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Manager",
               parm = list("Sow on a fixed date",5), print.path = TRUE)
 ```
 
@@ -256,12 +256,12 @@ Verify that it was edited correctly.
 ```{r Millet-edit-inspect}
 inspect_apsim("Millet-pp.apsim", src.dir = tmp.dir,
               node = "Manager",
-              parm = list("Sow on a fixed date",NA))
+              parm = list("Sow on a fixed date", NA))
 ```
 
 ```{r removing-Millet-pp, echo = FALSE, eval = TRUE}
 ## Apparently this is not needed
-file.remove(paste0(tmp.dir,"/Millet-pp.apsim"))
+file.remove(paste0(tmp.dir, "/Millet-pp.apsim"))
 ```
 
 # Advanced Examples
@@ -322,7 +322,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
                            node.sub3child = "TemperatureResponse",
-                           parm = c("Y","X")) 
+                           parm = c("Y", "X")) 
 ```
 
 The function shows the available replacements ("Maize" and "Soybean"), the 'CropType' if available, the subchild name and the 'Y' vector in this example. If parm is not specified all elements will be displayed.
@@ -337,7 +337,8 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 In this case the cultivars are at the sub-node level.
 
 ```{r inspect-replacement-soybean-cultivar-node-child}
-inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                           src.dir = extd.dir,
                            node = "Soybean", 
                            node.child = "PioneerP22T61_MG22",
                            display.available = FALSE) 
@@ -356,7 +357,7 @@ edit_apsimx_replacement("MaizeSoybean.apsimx",
                         node.subchild = "ThermalTime", 
                         node.subsubchild = "BaseThermalTime",
                         node.sub3child = "TemperatureResponse",
-                        parm = "Y", value = c(0,12,20,28,0))
+                        parm = "Y", value = c(0, 12, 20, 28, 0))
 ```
 
 Let's inspect the edited file
@@ -381,7 +382,7 @@ If we want to inspect and edit this file, we need the 'inspect_apsimx_replacemen
 ```{r inspect-factorial-0, eval = FALSE}
 ## There are multiple 'Experiments' so we need to pick one
 inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
-                           root = list("Experiment",NA))
+                           root = list("Experiment", NA))
 ##These positions matched  Experiment   1 2 3 4 5 
 ##Error in inspect_apsimx_replacement("Factorial", src.dir = ex.dir, root = ##list("Experiment", : Multiple root nodes found. Please provide a position
 ```
@@ -389,14 +390,14 @@ inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
 ```{r inspect-factorial}
 ## There are multiple 'Experiments' so we need to pick one
 inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
-                           root = list("Experiment",1))
+                           root = list("Experiment", 1))
 ## We need to provide a node
 inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
-                           root = list("Experiment",1), 
+                           root = list("Experiment", 1), 
                            node = "Base", display.available = TRUE)
 ## We need to provide a node child
 inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
-                           root = list("Experiment",1), 
+                           root = list("Experiment", 1), 
                            node = "Base", node.child = "Clock",
                            display.available = TRUE)
 ```
@@ -423,7 +424,7 @@ We need to pick one out of the possible factorials. If you check this file with 
 
 ```{r inspect-apsimx-factorial-2}
 inspect_apsimx("Factorial.apsimx", src.dir = extd.dir,
-               root = c("RangeExperiment","Base2"),
+               root = c("RangeExperiment", "Base2"),
                node = "Weather")
 ```
 
@@ -432,7 +433,7 @@ Following this structure, if we want to edit the path to the weather file we can
 ```{r edit-apsimx-factorial-2}
 edit_apsimx("Factorial.apsimx", 
             src.dir = extd.dir, wrt.dir = tmp.dir,
-            root = c("RangeExperiment","Base2"),
+            root = c("RangeExperiment", "Base2"),
             node = "Weather", 
             value = "Ames.met")
 ```

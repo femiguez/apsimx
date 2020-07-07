@@ -98,7 +98,7 @@ apsim <- function(file = "", src.dir = ".",
 auto_detect_apsim <- function(){
 
   if(.Platform$OS.type != "windows"){
-    stop("This is only for windows. Use apsimx instead.")
+    stop("This is only for windows. Use auto_detect_apsimx instead.")
   }
   
   ## Internal function to split APSIM name
@@ -108,7 +108,7 @@ auto_detect_apsim <- function(){
   
   st1 <- "C:/PROGRA~2/"
   laf <- list.files(st1)
-  find.apsim <- grep("APSIM",laf,ignore.case = TRUE)
+  find.apsim <- grep("APSIM", laf, ignore.case = TRUE)
   
   if(length(find.apsim) == 0) stop("APSIM 'Classic' not found")
   
@@ -117,7 +117,8 @@ auto_detect_apsim <- function(){
   if(length(find.apsim) > 1){
     versions <- sapply(apsim.versions, fev)
     newest.version <- sort(versions, decreasing = TRUE)[1]
-    if(apsimx::apsim.options$warn.versions){
+    if(apsimx::apsim.options$warn.versions &&
+       is.na(apsimx::apsim.options$exe.path)){
       warning(paste("Multiple versions of APSIM installed. \n
                     Choosing the newest one:", newest.version))
       }
@@ -156,7 +157,7 @@ auto_detect_apsim <- function(){
 auto_detect_apsim_examples <- function(){
   
   if(.Platform$OS.type != "windows"){
-    stop("This is only for windows. Use apsimx instead.")
+    stop("This is only for windows. Use auto_detect_apsimx_examples instead.")
   }
   
   ## Internal function to split APSIM name
@@ -221,7 +222,7 @@ auto_detect_apsim_examples <- function(){
 apsim_example <- function(example = "Millet", silent = FALSE, tmp.dir = NULL){
 
   if(.Platform$OS.type != "windows"){
-    stop("This is only for windows. Use apsimx instead.")
+    stop("This is only for windows. Use apsimx_example instead.")
   }
   ## Write to a temp dir only
   if(missing(tmp.dir)) tmp.dir <- "."
@@ -229,9 +230,7 @@ apsim_example <- function(example = "Millet", silent = FALSE, tmp.dir = NULL){
   ## Now the only one missing is Graph, which I assume is about
   ## graphics and not that relevant to apsim
   ## Examples not supported: Several
-  ex.ch <- c("agpasture","Canopy","Centro",
-             "Millet",
-             "Potato","Sugar")
+  ex.ch <- c("agpasture", "Canopy", "Centro", "Millet", "Potato", "Sugar")
   
   example <- match.arg(example, choices = ex.ch)
   
@@ -358,7 +357,7 @@ read_apsim <- function(file = "", src.dir = ".",
 read_apsim_all <- function(filenames, src.dir = ".", value = c("report", "all"),
                            date.format = "%d/%m/%Y"){
   
-  ## This is super memorey hungry and not efficient at all, but it might work 
+  ## This is memory hungry and not efficient at all, but it might work 
   ## for now
   
   value <- match.arg(value)

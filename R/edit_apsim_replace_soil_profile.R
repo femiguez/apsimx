@@ -1,8 +1,8 @@
 #'
 #' @title Edit APSIM \sQuote{Classic} file with a replaced soil profile
 #' @name edit_apsim_replace_soil_profile
-#' @description Edits an APSIM-X simulation by replacing the soil profile
-#' @param file name of the .apsimx file to be edited
+#' @description Edits an APSIM Classic simulation by replacing the soil profile
+#' @param file name of the .apsim file to be edited
 #' @param src.dir source directory
 #' @param wrt.dir writing directory
 #' @param soil.profile a soil profile object with class \sQuote{soil_profile}
@@ -37,7 +37,6 @@
 #'               node = "Soil", soil.child = "Water")
 #'  }
 #'
-NULL
 
 edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
                                              wrt.dir = NULL,

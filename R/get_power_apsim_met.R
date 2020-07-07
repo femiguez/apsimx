@@ -29,16 +29,16 @@
 #' }
 #' 
 
-get_power_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
+get_power_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL){
   
   if(!requireNamespace("nasapower", quietly = TRUE)){
-    warning("The nasapower is required for this function")
+    warning("The nasapower package is required for this function")
     return(NULL)
   }
   
   if(missing(filename)) filename <- "noname.met"
    
-  if(!grepl(".met", filename, fixed=TRUE)) stop("filename should end in .met")
+  if(!grepl(".met", filename, fixed = TRUE)) stop("filename should end in .met")
   
   pwr <- nasapower::get_power(community = "AG",
                               pars = c("T2M_MAX",
@@ -51,27 +51,27 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
                               lonlat = lonlat,
                               temporal_average = "DAILY")
   
-  pwr <- subset(as.data.frame(pwr), select = c("YEAR","DOY",
+  pwr <- subset(as.data.frame(pwr), select = c("YEAR", "DOY",
                                                "ALLSKY_SFC_SW_DWN",
-                                               "T2M_MAX","T2M_MIN",
-                                               "PRECTOT","RH2M","WS2M"))
+                                               "T2M_MAX", "T2M_MIN",
+                                               "PRECTOT", "RH2M", "WS2M"))
   
-  names(pwr) <- c("year","day","radn","maxt","mint","rain","rh","wind_speed")
-  units <- c("()","()","(MJ/m2/day)","(oC)","(oC)","(mm)","(%)","(m/s)")
+  names(pwr) <- c("year", "day", "radn", "maxt", "mint", "rain", "rh", "wind_speed")
+  units <- c("()", "()", "(MJ/m2/day)", "(oC)", "(oC)", "(mm)", "(%)", "(m/s)")
   
-  comments <- paste("!data from nasapower R package. retrieved: ",Sys.time())
+  comments <- paste("!data from nasapower R package. retrieved: ", Sys.time())
     
   attr(pwr, "filename") <- filename
-  attr(pwr, "site") <- paste("site = ", sub(".met","", filename, fixed = TRUE))
-  attr(pwr, "latitude") <- paste("latitude =",lonlat[2])
-  attr(pwr, "longitude") <- paste("longitude =",lonlat[1])
-  attr(pwr, "tav") <- paste("tav =",mean(colMeans(pwr[,c("maxt","mint")],na.rm=TRUE),na.rm=TRUE))
-  attr(pwr, "amp") <- paste("amp =",mean(pwr$maxt, na.rm=TRUE) - mean(pwr$mint, na.rm = TRUE))
+  attr(pwr, "site") <- paste("site = ", sub(".met", "", filename, fixed = TRUE))
+  attr(pwr, "latitude") <- paste("latitude =", lonlat[2])
+  attr(pwr, "longitude") <- paste("longitude =", lonlat[1])
+  attr(pwr, "tav") <- paste("tav =", mean(colMeans(pwr[,c("maxt","mint")], na.rm=TRUE), na.rm=TRUE))
+  attr(pwr, "amp") <- paste("amp =", mean(pwr$maxt, na.rm=TRUE) - mean(pwr$mint, na.rm = TRUE))
   attr(pwr, "colnames") <- names(pwr)
   attr(pwr, "units") <- units
   attr(pwr, "comments") <- comments
   ## No constants
-  class(pwr) <- c("met","data.frame")
+  class(pwr) <- c("met", "data.frame")
   
   if(filename != "noname.met"){
     write_apsim_met(pwr, wrt.dir = wrt.dir, filename = filename)

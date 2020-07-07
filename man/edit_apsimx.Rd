@@ -97,17 +97,15 @@ file.remove(paste0(tmp.dir, "/Barley-edited.apsimx"))
 
 ## Edit the fertilizer amount in 'Maize.apsimx'
 edit_apsimx("Maize.apsimx", src.dir = ex.dir,
-             wrt.dir = tmp.dir,
-             node = "Manager",
+             wrt.dir = tmp.dir, node = "Manager",
              manager.child = "SowingFertiliser",
-             parm = "Amount",
-             value = 200, verbose = TRUE)
+             parm = "Amount", value = 200, verbose = TRUE)
              
 ## Make sure it worked
 inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, node = "Manager")
 
 ## Remove the file
-file.remove(paste0(tmp.dir,"/Maize-edited.apsimx"))
+file.remove(paste0(tmp.dir, "/Maize-edited.apsimx"))
 }
 
 }

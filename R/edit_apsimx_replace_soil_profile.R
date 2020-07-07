@@ -39,7 +39,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
-  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
   
   if(length(file.names)==0){
     stop("There are no .apsimx files in the specified directory to edit.")
@@ -50,7 +50,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   if(missing(soil.profile)) stop("soil profile is missing")
   
   ## Parse apsimx file (JSON)
-  apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
+  apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
   
   parent.node0 <- apsimx_json$Children
   ## Where is the 'Core' simulation?
@@ -71,7 +71,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   ## Depth, Thickness, ParticleSizeClay,
   ## BD, AirDry, LL15, DUL, SAT, KS
   soil.physical.node <- soil.node[[1]]$Children[[1]]
-  for(i in c("Depth","Thickness","ParticleSizeClay","BD","AirDry","LL15","DUL","SAT","KS")){
+  for(i in c("Depth", "Thickness", "ParticleSizeClay", "BD", "AirDry", "LL15", "DUL", "SAT", "KS")){
     ## Format the variable
     if(i == "ParticleSizeClay") next
     tmp <- as.vector(soil.profile$soil[[i]], mode = "list")
@@ -82,14 +82,14 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   if(length(soil.profile$crops) > length(soil.physical.node$Children)){
     for(i in seq_along(soil.profile$crops)){
       soil.physical.node$Children[[i]] <- soil.physical.node$Children[[1]]
-      soil.physical.node$Children[[i]]$Name <- paste0(soil.profile$crops[i],"Soil")
+      soil.physical.node$Children[[i]]$Name <- paste0(soil.profile$crops[i], "Soil")
     }
   }
   ## Crop parameters
   for(i in 1:length(soil.profile$crops)){
-    for(j in c("crop.XF","crop.KL","crop.LL")){
+    for(j in c("crop.XF", "crop.KL", "crop.LL")){
       tmp <- as.vector(soil.profile$soil[[j]], mode = "list")
-      strpcrop <- strsplit(j,".",fixed = TRUE)[[1]][2]
+      strpcrop <- strsplit(j, ".", fixed = TRUE)[[1]][2]
       soil.physical.node$Children[[i]][[strpcrop]] <- tmp
     }
   }
@@ -100,7 +100,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   wsomn <- grepl("Organic", soil.node0)
   soil.om.node <- soil.node0[wsomn][[1]]
   
-  for(i in c("Depth","Thickness","Carbon","SoilCNRatio","FBiom","FInert","FOM")){
+  for(i in c("Depth", "Thickness", "Carbon", "SoilCNRatio", "FBiom", "FInert", "FOM")){
     ## Format the variable
     tmp <- as.vector(soil.profile$soil[[i]], mode = "list")
     ## Replace the variable
@@ -113,7 +113,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   wschn <- grepl("Chemical", soil.node0)
   soil.chemical.node <- soil.node0[wschn][[1]]
   
-  for(i in c("Depth","Thickness","NO3N","NH4N","PH")){
+  for(i in c("Depth", "Thickness", "NO3N", "NH4N", "PH")){
     ## Format the variable
     tmp <- as.vector(soil.profile$soil[[i]], mode = "list")
     ## Replace the variable
@@ -125,7 +125,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   ## Edit metadata
   if(!is.null(soil.profile$metadata)){
     soil.node.names <- names(soil.node[[1]])
-    skp.nms <- c("$type","Name","Children","IncludeInDocumentation","Enabled","ReadOnly")
+    skp.nms <- c("$type", "Name", "Children", "IncludeInDocumentation", "Enabled", "ReadOnly")
     for(i in soil.node.names){
       if(i %in% skp.nms) next
       if(i %in% names(soil.profile$metadata)){
@@ -148,11 +148,11 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   apsimx_json$Children[[wcore]]$Children <- parent.node
   
   if(overwrite == FALSE){
-    wr.path <- paste0(wrt.dir,"/",
-                      strsplit(file,".",fixed = TRUE)[[1]][1],
+    wr.path <- paste0(wrt.dir, "/",
+                      tools::file_path_sans_ext(file),
                       edit.tag,".apsimx")
   }else{
-    wr.path <- paste0(wrt.dir,"/",file)
+    wr.path <- paste0(wrt.dir, "/", file)
   }
   
   jsonlite::write_json(apsimx_json, path = wr.path, 
@@ -161,6 +161,6 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
                        na = "null")
   
   if(verbose){
-    cat("Created: ",wr.path,"\n")
+    cat("Created: ", wr.path, "\n")
   }
 }

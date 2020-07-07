@@ -57,25 +57,23 @@
 #' 
 #' ## Edit the fertilizer amount in 'Maize.apsimx'
 #' edit_apsimx("Maize.apsimx", src.dir = ex.dir,
-#'              wrt.dir = tmp.dir,
-#'              node = "Manager",
+#'              wrt.dir = tmp.dir, node = "Manager",
 #'              manager.child = "SowingFertiliser",
-#'              parm = "Amount",
-#'              value = 200, verbose = TRUE)
+#'              parm = "Amount", value = 200, verbose = TRUE)
 #'              
 #' ## Make sure it worked
 #' inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, node = "Manager")
 #' 
 #' ## Remove the file
-#' file.remove(paste0(tmp.dir,"/Maize-edited.apsimx"))
+#' file.remove(paste0(tmp.dir, "/Maize-edited.apsimx"))
 #' }
 #' 
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
-                        node = c("Clock","Weather","Soil","SurfaceOrganicMatter","MicroClimate","Crop","Manager"),
-                        soil.child = c("Metadata","Water","Organic","Physical","Analysis","Chemical","InitialWater","Sample"),
+                        node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
+                        soil.child = c("Metadata", "Water", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample"),
                         manager.child = NULL,
-                        parm=NULL, value=NULL, 
+                        parm = NULL, value = NULL, 
                         overwrite = FALSE,
                         edit.tag = "-edited",
                         parm.path = NULL,
@@ -86,9 +84,9 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
-  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
   
-  if(length(file.names)==0){
+  if(length(file.names) == 0){
     stop("There are no .apsimx files in the specified directory to edit.")
   }
   
@@ -103,7 +101,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     stop("This function only edits JSON files")
   
   ## Parse apsimx file (JSON)
-  apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
+  apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
   
   ## Where is the 'Core' simulation?
   wcore <- grep("Core.Simulation", apsimx_json$Children)
@@ -272,7 +270,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.initialwater.node <- soil.node0[wiwn][[1]]
       
       ## Only three can be edited: PercentMethod, FractionFull, DepthWetSoil
-      siw.parms <- c("PercentMethod", "FractionFull","DepthWetSoil")
+      siw.parms <- c("PercentMethod", "FractionFull", "DepthWetSoil")
       parm <- match.arg(parm, choices = siw.parms)
       
       soil.initialwater.node[[parm]] <- value
@@ -369,11 +367,11 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   }
   
   if(overwrite == FALSE){
-    wr.path <- paste0(wrt.dir,"/",
+    wr.path <- paste0(wrt.dir, "/",
                       tools::file_path_sans_ext(file),
-                      edit.tag,".apsimx")
+                      edit.tag, ".apsimx")
   }else{
-    wr.path <- paste0(wrt.dir,"/",file)
+    wr.path <- paste0(wrt.dir, "/", file)
   }
   
   jsonlite::write_json(apsimx_json, path = wr.path, 
@@ -381,11 +379,11 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                        auto_unbox = TRUE, null = "null")
   
   if(verbose){
-    cat("Edited (node): ",node, "\n")
+    cat("Edited (node): ", node, "\n")
     cat("Edited (child): ", edited.child,"\n")
-    cat("Edited parameters: ",parm, "\n")
-    cat("New values: ",value, "\n")
-    cat("Created: ",wr.path,"\n")
+    cat("Edited parameters: ", parm, "\n")
+    cat("New values: ", value, "\n")
+    cat("Created: ", wr.path,"\n")
   }
 }
 

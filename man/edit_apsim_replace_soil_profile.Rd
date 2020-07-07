@@ -3,8 +3,21 @@
 \name{edit_apsim_replace_soil_profile}
 \alias{edit_apsim_replace_soil_profile}
 \title{Edit APSIM \sQuote{Classic} file with a replaced soil profile}
+\usage{
+edit_apsim_replace_soil_profile(
+  file = "",
+  src.dir = ".",
+  wrt.dir = NULL,
+  soil.profile = NULL,
+  swim = NULL,
+  soilwat = NULL,
+  edit.tag = "-edited",
+  overwrite = FALSE,
+  verbose = TRUE
+)
+}
 \arguments{
-\item{file}{name of the .apsimx file to be edited}
+\item{file}{name of the .apsim file to be edited}
 
 \item{src.dir}{source directory}
 
@@ -26,7 +39,7 @@
 writes a file to disk with the supplied soil profile
 }
 \description{
-Edits an APSIM-X simulation by replacing the soil profile
+Edits an APSIM Classic simulation by replacing the soil profile
 }
 \details{
 This function is designed to batch replace the whole soil in an APSIM simulation.

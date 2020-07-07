@@ -36,8 +36,7 @@
 #'
 
 inspect_apsimx <- function(file = "", src.dir = ".", 
-                           node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
-                                   "MicroClimate","Crop","Manager","Other"),
+                           node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager", "Other"),
                            soil.child = c("Metadata","Water","InitialWater",
                                           "Chemical","Physical","Analysis","SoilWater",
                                           "InitialN", "CERESSoilTemperature","Sample",
@@ -49,9 +48,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   
   .check_apsim_name(file)
   
-  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
   
-  if(length(file.names)==0){
+  if(length(file.names) == 0){
     stop("There are no .apsimx files in the specified directory to inspect.")
   }
   
@@ -64,9 +63,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## Notice that the .apsimx extension will be added here
   file <- match.arg(file, file.names)
   
-  apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
+  apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
   
-  parm.path.0 <- paste0(".",apsimx_json$Name) ## Root
+  parm.path.0 <- paste0(".", apsimx_json$Name) ## Root
   ## I think that everything I might want to look at 
   ## is under this Children/Children node
   ## It looks like I need to 'find' the "Models.Core.Simulation" node
@@ -82,7 +81,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         nms <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
                       FUN.VALUE = "character")
         fcsn <- grep(as.character(root), nms)
-        parm.path.1 <- paste0(parm.path.0,".", apsimx_json$Children[[fcsn]]$Name)
+        parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name)
         parent.node <- apsimx_json$Children[[fcsn]]$Children
         if(length(fcsn) == 0 || length(fcsn) > 1)
           stop("no root node label found or root is not unique")
@@ -128,7 +127,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     weather.node <- parent.node[wlwl]
     ## Select the string which has a met file
     gf1 <- function(x) grep(".met$", x, value = TRUE)
-    cat("Met file:", as.character(sapply(weather.node, gf1)),"\n")
+    cat("Met file:", as.character(sapply(weather.node, gf1)), "\n")
     parm.path <- paste0(parm.path.1,".",parent.node[wlwl][[1]]$Name)
   }
   
@@ -147,15 +146,15 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     parm.path.2.1 <- paste0(parm.path.2,".",soil.node[[1]]$Name)
     
     ## Print some basic soil information
-    cat("Soil Type: ", soil.node[[1]]$SoilType,"\n")
-    cat("Latitude: ", soil.node[[1]]$Latitude,"\n")
-    cat("Longitude: ", soil.node[[1]]$Longitude,"\n")
+    cat("Soil Type: ", soil.node[[1]]$SoilType, "\n")
+    cat("Latitude: ", soil.node[[1]]$Latitude, "\n")
+    cat("Longitude: ", soil.node[[1]]$Longitude, "\n")
     
     if(length(soil.node) != 1) stop("soil.node not equal to one")
     
     soil.children.names <- sapply(soil.node[[1]]$Children, function(x) x$Name)
     
-    cat("Soil children:", soil.children.names,"\n")
+    cat("Soil children:", soil.children.names, "\n")
     
     if(soil.child == "Metadata"){
       parm.path <- parm.path.2.1
@@ -187,8 +186,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       ## Assuming there is only one 'relevant' level here
       ## This parameter level would be 2.1.1
       parm.path <- paste0(parm.path.2.1,".",selected.soil.node.child[[1]]$Name) 
-      enms <- c("IncludeInDocumentation","Enabled","ReadOnly","Children","Name")
-      cnms <- setdiff(names(selected.soil.node.child[[1]]),enms)
+      enms <- c("IncludeInDocumentation", "Enabled", "ReadOnly", "Children", "Name")
+      cnms <- setdiff(names(selected.soil.node.child[[1]]), enms)
       soil.d1 <- NULL
       soil.d2 <- NULL
       col.nms <- NULL
@@ -287,7 +286,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         if(length(ms.params) == 0) warning("parameter not found")
         
         mat <- matrix(NA, ncol=2, nrow = length(ms.params),
-                      dimnames = list(NULL,c("parm","value")))
+                      dimnames = list(NULL, c("parm", "value")))
         
         if(length(ms.params) > 0){
           for(j in 1:length(ms.params)){
@@ -295,7 +294,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             mat[j,2] <- ms.params[[j]]$Value
           }
         }
-        cat("Name: ", selected.manager.node,"\n")
+        cat("Name: ", selected.manager.node, "\n")
         print(knitr::kable(as.data.frame(mat), digits = digits))
         cat("\n") 
       }
@@ -304,7 +303,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         ms.params <- manager.node[[find.manager]]$Parameters
         if(length(ms.params) == 0) warning("no parameters found")
         mat <- matrix(NA, ncol=2, nrow = length(position),
-                      dimnames = list(NULL,c("parm","value")))
+                      dimnames = list(NULL, c("parm", "value")))
         
         k <- 1
         for(j in 1:length(ms.params)){

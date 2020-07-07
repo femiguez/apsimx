@@ -69,8 +69,8 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
                       nlayers = 10,
                       verbose = FALSE){
   
-  if(!requireNamespace("sf",quietly = TRUE)){
-    warning("sf is required for this function")
+  if(!requireNamespace("sf", quietly = TRUE)){
+    warning("sf package is required for this function")
     return(NULL)
   }
   
@@ -122,7 +122,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
                                  "wsatiated.r", "ph1to1h2o.r",
                                  "cokey", "chkey"))
   
-  chorizon3$hzdepa.r <- (chorizon3$hzdept.r + chorizon3$hzdepb.r)/2
+  chorizon3$hzdepa.r <- (chorizon3$hzdept.r + chorizon3$hzdepb.r) / 2
   
   ## Rename to match APSIM
   chorizon3$Depth <- chorizon3$hzdepa.r
@@ -156,7 +156,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   soil.list <- vector(mode = "list", length = length(soil.names))
   names(soil.list) <- soil.names
   
-  vars <- c("Depth","Thickness","BD","AirDry","LL15","DUL","SAT","KS","Carbon","PH")
+  vars <- c("Depth", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", "Carbon", "PH")
   
   for(sz in 1:length(soil.names)){
     
@@ -176,15 +176,15 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     
       nlayers <- ifelse(vars[i] == "Thickness", nlayers1, nlayers0)
     
-      if(verbose) cat("Processing variable:", vars[i],"\n")
+      if(verbose) cat("Processing variable:", vars[i], "\n")
       
       sva <- try(approx_soil_variable(tmp, 
-                                  xout = xout, 
-                                  soil.bottom = soil.bottom,
-                                  method = method, 
-                                  nlayers = nlayers), silent = TRUE)
+                                      xout = xout, 
+                                      soil.bottom = soil.bottom,
+                                      method = method, 
+                                      nlayers = nlayers), silent = TRUE)
       
-      if(inherits(sva,"try-error")){
+      if(inherits(sva, "try-error")){
         print(one.soil)
         print(tmp)
         stop("interpolation did not work. Possibly due to missing values.")
@@ -207,10 +207,10 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     attr(soil.d, which = "Longitude") <- component5$longitude[1]
     attr(soil.d, which = "Latitude") <- component5$latitude[1]
     attr(soil.d, which = "DataSource") <- paste("R package FedData, function get_ssurgo and R package apsimx function ssurgo2sp. Timestamp",Sys.time())
-    attr(soil.d, which = "Comments") <- paste("cokey =",component5$cokey[sz],
-                                              "- acres percent =",component5$acres.proportion[sz] * 100,
-                                              "- component percent =",component5$comppct.r[sz],
-                                              "- taxonomic classification name =",as.character(component5$taxclname)[sz],
+    attr(soil.d, which = "Comments") <- paste("cokey =", component5$cokey[sz],
+                                              "- acres percent =", component5$acres.proportion[sz] * 100,
+                                              "- component percent =", component5$comppct.r[sz],
+                                              "- taxonomic classification name =", as.character(component5$taxclname)[sz],
                                               "- drainage class =", as.character(component5$drainagecl)[sz],
                                               "- elevation =", component5$elev.r[sz],
                                               "- slope =", component5$slope.r[sz],
@@ -234,7 +234,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
 #' @noRd
 #' 
 approx_soil_variable <- function(x, xout = NULL, soil.bottom = 200, 
-                                 method = c("constant","linear"),
+                                 method = c("constant", "linear"),
                                  nlayers = 10){
   
   xd <- as.data.frame(x)

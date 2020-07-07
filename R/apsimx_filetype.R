@@ -23,13 +23,13 @@
 apsimx_filetype <- function(file = "", src.dir = "."){
   
   
-  fileNames <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
-  if(length(fileNames)==0){
+  if(length(file.names)==0){
     stop("There are no .apsimx files in the specified directory to test.")
   }
   
-  file <- match.arg(file, fileNames, several.ok=FALSE)
+  file <- match.arg(file, file.names, several.ok=FALSE)
   
   rfl1 <- utils::read.table(file = paste0(src.dir,"/",file), nrows = 1)[1,1]
   ## The next line will work if all XML files contain xml in the first line

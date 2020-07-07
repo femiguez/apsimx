@@ -39,6 +39,8 @@ if(run.test.ssurgo.workflow){
                             crop.LL = sp[[1]]$LL15,
                             soil.bottom = 200,
                             metadata = metadata)
+  
+  check_apsimx_soil_profile(asp)
 
   edit_apsimx_replace_soil_profile("WheatRye.apsimx",
                                    src.dir = extd.dir,

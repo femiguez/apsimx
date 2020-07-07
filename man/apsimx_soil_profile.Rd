@@ -3,6 +3,7 @@
 \name{apsimx_soil_profile}
 \alias{apsimx_soil_profile}
 \alias{plot.soil_profile}
+\alias{check_apsimx_soil_profile}
 \title{Create APSIM-X Soil Profiles}
 \usage{
 apsimx_soil_profile(
@@ -44,6 +45,8 @@ apsimx_soil_profile(
     "crop.KL", "crop.LL", "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert",
     "NO3N", "NH4N", "PH")
 )
+
+check_apsimx_soil_profile(x)
 }
 \arguments{
 \item{nlayers}{Number of soil layers (default = 10)}
@@ -106,7 +109,8 @@ apsimx_soil_profile(
 a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
 If a != 0 and b != 0 then the equation is \code{a*soil.layer*exp(-b*soil.layer)}.}
 
-\item{x}{object of class \sQuote{soil_profile}.}
+\item{x}{object of class \sQuote{soil_profile} or the \sQuote{soil} 
+component within an object of class \sQuote{soil_profile}.}
 
 \item{...}{additional plotting arguments (none use at the moment).}
 
@@ -119,6 +123,8 @@ a soil profile with class \sQuote{soil_profile} with elements \sQuote{soil} and 
 Generates a soil profile that can then replace the existing one in an \sQuote{.apsimx} or \sQuote{.apsim} simulation file
 
 plotting function for a soil profile, it requires \sQuote{ggplot2}
+
+checking an apsimx soil profile for reasonable values
 }
 \details{
 Soil Profiles

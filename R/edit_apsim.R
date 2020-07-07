@@ -49,12 +49,12 @@
 #' 
 
 edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
-                       node = c("Clock","Weather","Soil","SurfaceOrganicMatter",
-                                "MicroClimate","Crop","Manager","Other"),
-                       soil.child = c("Metadata","Water","OrganicMatter", "Chemical",
-                                      "Analysis","InitialWater","Sample","SWIM"),
+                       node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter",
+                                "MicroClimate", "Crop", "Manager", "Other"),
+                       soil.child = c("Metadata", "Water", "OrganicMatter", "Chemical",
+                                      "Analysis", "InitialWater", "Sample", "SWIM"),
                        manager.child = NULL,
-                       parm=NULL, value=NULL, 
+                       parm = NULL, value = NULL, 
                        overwrite = FALSE,
                        edit.tag = "-edited",
                        parm.path = NULL,
@@ -75,15 +75,15 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   file <- match.arg(file, file.names)
   
   ## Parse apsim file (XML)
-  apsim_xml <- xml2::read_xml(paste0(src.dir,"/",file))
+  apsim_xml <- xml2::read_xml(paste0(src.dir, "/", file))
   
   ## Edit the 'Clock'
   if(node == "Clock"){
-    parm.choices <- c("start_date","end_date")
+    parm.choices <- c("start_date", "end_date")
     parm <- match.arg(parm, choices = parm.choices, several.ok = TRUE)
     j <- 1
     for(i in parm){
-      parm.path <- paste0(".//clock","/",i)
+      parm.path <- paste0(".//clock","/", i)
       startend.node <- xml2::xml_find_first(apsim_xml, parm.path)
       ## apsim requires %Y-%m-%d
       xml2::xml_set_text(startend.node, as.character(value[j]))
@@ -96,7 +96,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     if(missing(parm)){
       parm.path <- paste0("//metfile/filename")
       weather.filename.node <- xml2::xml_find_first(apsim_xml, parm.path)
-      if(length(grep(".met$",value)) == 0) 
+      if(length(grep(".met$", value)) == 0) 
         stop("value should be a .met file")
       xml2::xml_set_text(weather.filename.node, value)
     }else{
@@ -109,30 +109,30 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     
     if(soil.child == "Metadata"){
       ## Not sure if there is minimum set of required parameters
-      parm.path <- paste0(".//Soil/",parm)
+      parm.path <- paste0(".//Soil/", parm)
       soil.metadata.node <- xml2::xml_find_first(apsim_xml, parm.path)
       xml2::xml_set_text(soil.metadata.node, as.character(value))
     }
     
     if(soil.child == "Water"){
       ## First set of parameters are crop specific
-      if(parm %in% c("LL","KL","XF")){
-        parm.path <- paste0(".//Soil/Water/SoilCrop","/",parm)
+      if(parm %in% c("LL", "KL", "XF")){
+        parm.path <- paste0(".//Soil/Water/SoilCrop", "/", parm)
       }
       ## Second set of parameters are soil specific
-      if(parm %in% c("Thickness","BD","AirDry","LL15","DUL","SAT","KS")){
-        parm.path <- paste0(".//Soil/Water","/",parm)
+      if(parm %in% c("Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS")){
+        parm.path <- paste0(".//Soil/Water", "/", parm)
       }
       
       ## Soil Water
       soil.water.parms <- c("SummerCona", "SummerU", "SummerDate",
                             "WinterCona", "WinterU", "WinterDate",
                             "DiffusConst","DiffusSlope", "Salb",
-                            "CN2Bare","CNRed","CNCov")
+                            "CN2Bare", "CNRed", "CNCov")
       
       if(parm %in% soil.water.parms){
         ## These are of length 1
-        parm.path <- paste0(".//Soil/Water","/",parm)
+        parm.path <- paste0(".//Soil/Water", "/", parm)
         soil.water.node <- xml2::xml_find_first(apsim_xml, parm.path)
         ## Error checking
         if(check.length){
@@ -167,22 +167,21 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       
       parm.path.0 <- ".//Soil/Swim"
       ## This first set are single values
-      swim.parms1 <- c("Salb","CN2Bare","CNRed","CNCov","KDul",
-                       "PSIDul","VC","DTmin","DTmax","MaxWaterIncrement",
-                       "SpaceWeightingFactor","SoluteSpaceWeightingFactor",
+      swim.parms1 <- c("Salb", "CN2Bare", "CNRed", "CNCov", "KDul",
+                       "PSIDul", "VC", "DTmin", "DTmax", "MaxWaterIncrement",
+                       "SpaceWeightingFactor", "SoluteSpaceWeightingFactor",
                        "Diagnostics")
 
-      swim.parms2 <- c("DrainDepth","DrainSpacing","DrainRadius",
-                       "Klat","ImpermDepth")
+      swim.parms2 <- c("DrainDepth", "DrainSpacing", "DrainRadius", "Klat", "ImpermDepth")
       
       if(parm %in% swim.parms1){
-        parm.path <- paste0(".//Soil/Swim","/",parm)
+        parm.path <- paste0(".//Soil/Swim", "/", parm)
       }
       if(parm == "WaterTableDepth"){
         parm.path <- ".//Soil/Swim/SwimWaterTable/WaterTableDepth"
       }
       if(parm %in% swim.parms2){
-        parm.path <- paste0(".//Soil/Swim/SwimSubsurfaceDrain","/",parm)
+        parm.path <- paste0(".//Soil/Swim/SwimSubsurfaceDrain", "/", parm)
       }
       soil.swim.node <- xml2::xml_find_first(apsim_xml, parm.path)
       xml2::xml_set_text(soil.swim.node, as.character(value))
@@ -190,24 +189,23 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
         
     if(soil.child == "Nitrogen"){
       stop("not implemented yet")
-      parm.choices <- c("fom_type","fract_carb","fract_cell","fract_lign")
+      parm.choices <- c("fom_type", "fract_carb", "fract_cell", "fract_lign")
       parm <- match.arg(parm, choices = parm.choices)
       
       ## for all of these the length should be 6
       if(length(value) != 6) stop("value should be of length=6")
       
-      parm.path <- paste0(".//Soil/SoilNitrogen","/",parm)
+      parm.path <- paste0(".//Soil/SoilNitrogen", "/", parm)
       soil.nitrogen.node <- xml2::xml_find_first(apsim_xml, parm.path)
       xml2::xml_set_text(xml2::xml_children(soil.nitrogen.node), as.character(value))
     }
     
     if(soil.child == "OrganicMatter"){
       ## State what are organic matter possible parameters
-      parm.ch1 <- c("RootCN","RootWt","SoilCN","EnrACoeff",
-                    "EnrBCoeff")
-      parm.ch2 <- c("Thickness","OC","FBiom","FInert")
+      parm.ch1 <- c("RootCN", "RootWt", "SoilCN", "EnrACoeff", "EnrBCoeff")
+      parm.ch2 <- c("Thickness", "OC", "FBiom", "FInert")
       
-      parm.path <- paste0(".//Soil/SoilOrganicMatter","/",parm)
+      parm.path <- paste0(".//Soil/SoilOrganicMatter", "/", parm)
       
       if(parm %in% parm.ch1){
         if(length(value) != 1) stop("value should be of length = 1")
@@ -240,11 +238,11 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     
     if(soil.child == "Analysis"){
       ## State what are possible analysis parameters
-      parm.ch <- c("Thickness","PH","EC")
+      parm.ch <- c("Thickness", "PH", "EC")
       
       parm <- match.arg(parm, choices = parm.ch)
       
-      parm.path <- paste0(".//Soil/Analysis","/",parm)
+      parm.path <- paste0(".//Soil/Analysis", "/", parm)
       
       soil.Analysis.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
@@ -270,11 +268,11 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     
     if(soil.child == "InitialWater"){
       ## State what are possible InitialWater parameters
-      parm.ch <- c("PercentMethod","FractionFull","DepthWetSoil")
+      parm.ch <- c("PercentMethod", "FractionFull", "DepthWetSoil")
       
       parm <- match.arg(parm, choices = parm.ch)
       
-      parm.path <- paste0(".//Soil/InitialWater","/",parm)
+      parm.path <- paste0(".//Soil/InitialWater", "/", parm)
       
       soil.InitialWater.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
@@ -300,11 +298,11 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     
     if(soil.child == "Sample"){
       ## State what are possible InitialWater parameters
-      parm.ch <- c("Thickness","NO3","NH4","SW","OC","EC","CL","ESP","PH")
+      parm.ch <- c("Thickness", "NO3", "NH4", "SW", "OC", "EC", "CL", "ESP", "PH")
       
       parm <- match.arg(parm, choices = parm.ch)
       
-      parm.path <- paste0(".//Soil/Sample","/",parm)
+      parm.path <- paste0(".//Soil/Sample", "/", parm)
       
       soil.Sample.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
@@ -332,13 +330,13 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   
   if(node == "SurfaceOrganicMatter"){
       ## State what are possible Pools parameters
-      parm.ch <- c("PoolName","ResidueType","Mass","CNRatio",
-                   "CPRatio","StandingFraction", "type", "mass",
-                   "cnr","standing_fraction")
+      parm.ch <- c("PoolName", "ResidueType", "Mass", "CNRatio",
+                   "CPRatio", "StandingFraction", "type", "mass",
+                   "cnr", "standing_fraction")
       
       parm <- match.arg(parm, choices = parm.ch)
       
-      parm.path <- paste0(".//surfaceom/",parm)
+      parm.path <- paste0(".//surfaceom/", parm)
       
       soil.Pools.Pool.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
@@ -403,19 +401,19 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   }
   
   if(overwrite == FALSE){
-    wr.path <- paste0(wrt.dir,"/",
+    wr.path <- paste0(wrt.dir, "/",
                       tools::file_path_sans_ext(file),
-                      edit.tag,".apsim")
+                      edit.tag, ".apsim")
   }else{
-    wr.path <- paste0(wrt.dir,"/",file)
+    wr.path <- paste0(wrt.dir, "/", file)
   }
   xml2::write_xml(apsim_xml, file = wr.path)
   
   if(verbose){
-    cat("Edited",parm.path, "\n")
-    cat("Edited parameter",parm, "\n")
-    cat("New values ",value, "\n")
-    cat("Created ",wr.path,"\n")
+    cat("Edited", parm.path, "\n")
+    cat("Edited parameter", parm, "\n")
+    cat("New values ", value, "\n")
+    cat("Created ", wr.path, "\n")
   }
 }
 

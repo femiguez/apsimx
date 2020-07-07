@@ -34,8 +34,9 @@ and latitude or the state and station, but not both. In fact, \sQuote{state} and
 \examples{
 \dontrun{
 ## This will not write a file to disk
-iem.met <- get_iem_apsim_met(state = "IA", station = "IA5198", 
-                           dates = c("2012-01-01","2012-12-31"))
+iem.met <- get_iem_apsim_met(state = "IA", 
+                             station = "IA5198", 
+                             dates = c("2012-01-01","2012-12-31"))
 
 summary(iem.met)
 

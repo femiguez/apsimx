@@ -43,7 +43,7 @@
 #' As a side effect this function creates a new (JSON) .apsimx file.
 #' @export
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' ## This example will read one of the examples distributed with APSIM-X
 #' ## but write to a temporary directory
 #' 
@@ -56,69 +56,72 @@
 #' }
 #' 
 
-edit_apsimx_batch <- function(file, src.dir = ".", wrt.dir = NULL,
-                             parms=NULL, 
-                             silent = FALSE,
-                             verbose = TRUE){
+edit_apsimx_batch <- function(file, 
+                              src.dir = ".", 
+                              wrt.dir = NULL,
+                              parms = NULL, 
+                              silent = FALSE,
+                              verbose = TRUE){
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
-    
-  file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
-  if(length(file.names)==0){
+
+    
+  file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
+  
+  if(length(file.names) == 0){
     stop("There are no .apsimx files in the specified directory to edit.")
   }
   
   if(missing(parms)) stop("parms is missing")
   
-  fns <- strsplit(file, ".", fixed = TRUE)[[1]][1]
-  fn.po <- paste0(fns,"-prms.conf")
-  write("", file = fn.po)
-  
-  prm.out <- character(length(parms))
-  for(i in seq_along(parms)){
-    prmo <- paste(names(parms[i]),"=",parms[[i]])
-    write(prmo, file = fn.po, append = TRUE)
-  }
-  
-  if(length(grep(".apsimx$",file)) != 0){
+  if(length(grep(".apsimx$", file)) != 0){
     ## I assume the extention was included
     ## Only use the name from here 
-    file <- strsplit(file, ".", fixed = TRUE)[[1]][1]
+    ## file <- strsplit(file, ".", fixed = TRUE)[[1]][1]
+    file <- tools::file_path_sans_ext(file)
   }
   
-  file.name.path <- paste0(src.dir,"/",file,".apsimx")
+  file.name.path <- paste0(src.dir, "/", file, ".apsimx")
   
-  ## Makes a copy to the working directory
-  ## This is not needed but haven't tested it yet
-  ## file.copy(file.name.path, ".")
+  if(!is.null(wrt.dir)){
+    ## Need to copy the file to wrt.dir and then clean up
+    file.copy(from = file.name.path, 
+              to = wrt.dir)
+  }
+  
+  fns <- strsplit(file, ".", fixed = TRUE)[[1]][1]
+  fn.po <- paste0(fns, "-prms.conf")
+  write("", file = paste0(wrt.dir, "/", fn.po))
+  
+  prm.out <- character(length(parms))
+  
+  for(i in seq_along(parms)){
+    prmo <- paste(names(parms[i]), "=", parms[[i]])
+    write(prmo, file = paste0(wrt.dir, "/", fn.po), append = TRUE)
+  }
   
   ## Auto detect apsimx
   ada <- auto_detect_apsimx()
   
   if(.Platform$OS.type == "unix"){
     mono <- system("which mono", intern = TRUE)
-    run.strng <- paste0(mono," ",ada," ", paste0(src.dir,"/", file,".apsimx")," /Edit ",fn.po)
+    run.strng <- paste0(mono, " ", ada, " ", paste0(wrt.dir, "/", file, ".apsimx"), " /Edit ", paste0(wrt.dir, "/", fn.po))
     ## Run APSIM-X on the command line
     system(command = run.strng, ignore.stdout = silent)
   }
   
   if(.Platform$OS.type == "windows"){
     ada <- auto_detect_apsimx()
-    run.strng <- paste0(ada," ", paste0(src.dir, "/", file,".apsimx")," /Edit ",fn.po)
+    run.strng <- paste0(ada, " ", paste0(wrt.dir, "/", file, ".apsimx")," /Edit ", paste0(wrt.dir, "/", fn.po))
     cmd.out <- shell(cmd = run.strng, translate = FALSE, intern = TRUE)
   }
   
   if(verbose){
-    cat("Edited parameters file: ",fn.po, "\n")
-    cat("Edited parameters: ",names(parms), "\n")
-    cat("Created new: ",paste0(wrt.dir,"/",file,".apsimx"),"\n")
+    cat("Edited parameters file: ", paste0(wrt.dir, "/", fn.po), "\n")
+    cat("Edited parameters: ", names(parms), "\n")
+    cat("Created new: ", paste0(wrt.dir, "/", file, ".apsimx"), "\n")
     if(.Platform$OS.type == "windows") print(cmd.out)
   }
-  
-  if(!is.null(wrt.dir)){
-    file.copy(from = paste0(src.dir,"/", file,".apsimx"),
-              to = paste0(wrt.dir,"/", file,".apsimx"))
-  } 
 }
 

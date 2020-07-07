@@ -10,7 +10,7 @@ tmp.dir <- tempdir()
 
 if(run.test.edit.apsimx.batch){
 
-  file.copy(paste0(extd.dir,"/","Wheat.apsimx"), tmp.dir)
+  file.copy(paste0(extd.dir, "/", "Wheat.apsimx"), tmp.dir)
 
   inspect_apsimx("Wheat.apsimx", src.dir = tmp.dir, node = "SurfaceOrganicMatter")
 
