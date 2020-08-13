@@ -103,6 +103,11 @@ auto_detect_apsim <- function(){
   
   ## Internal function to split APSIM name
   fev <- function(x) as.numeric(strsplit(x, "r", fixed = TRUE)[[1]][2])
+  fmv <- function(x){
+    tmp <- strsplit(x, "-", fixed = TRUE)[[1]][1]
+    ans <- as.numeric(strsplit(tmp, "(M|m)")[[1]][2])
+    ans
+  } 
   ## I need to deal with the fact that there might be multiple versions
   ## of APSIM installed
   
@@ -115,14 +120,17 @@ auto_detect_apsim <- function(){
   apsim.versions <- laf[find.apsim]
   
   if(length(find.apsim) > 1){
-    versions <- sapply(apsim.versions, fev)
-    newest.version <- sort(versions, decreasing = TRUE)[1]
+    max.main.version <- max(sapply(apsim.versions, fmv))
+    which.main.versions <- grep(max.main.version, apsim.versions)
+    versions <- sapply(apsim.versions[which.main.versions], fev)
+    newest.version <- apsim.versions[which.max(versions)]
     if(apsimx::apsim.options$warn.versions &&
        is.na(apsimx::apsim.options$exe.path)){
       warning(paste("Multiple versions of APSIM installed. \n
                     Choosing the newest one:", newest.version))
       }
-    apsim.name <- grep(newest.version, apsim.versions, value = TRUE)
+    ## apsim.name <- grep(newest.version, apsim.versions, value = TRUE)
+    apsim.name <- newest.version
   }else{
     apsim.name <- laf[find.apsim]
   }

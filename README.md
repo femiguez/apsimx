@@ -13,7 +13,9 @@ for 'Classic'.
 
 **Package requirements**
 
-* Other R packages: DBI, jsonlite, knitr, RSQLite, xml2
+* Imported R packages: DBI, jsonlite, knitr, RSQLite, tools, utils, xml2
+
+* Suggested R packages: datasets, FedData, ggplot2, listviewer, nasapower, raster, reactR, rmarkdown, sp, spData, sf
 
 * APSIMX:
 

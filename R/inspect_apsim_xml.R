@@ -515,3 +515,64 @@ inspect_apsim <- function(file = "", src.dir = ".",
   }
   invisible(parm.path)
 }
+
+
+#'
+#' @title Inspect an APSIM Classic auxiliary (XML) file
+#' @name inspect_apsim_xml
+#' @description inspect an auxilliary XML apsim file. 
+#' @param file file ending in .xml to be inspected.
+#' @param src.dir directory containing the .xml file to be inspected; defaults to the current working directory
+#' @param parm parameter to inspect.
+#' @param verbose Whether to print to standard output
+#' @param print.path Whether to print the parameter path
+#' @return absolute parameter path
+#' @export
+#' @examples  
+#' \donttest{
+#' extd.dir <- system.file("extdata", package = "apsimx")
+#' 
+#' inspect_apsim_xml("Maize75.xml", src.dir = extd.dir,
+#'                   parm = "leaf_no_rate_change")
+#'                   
+#' pp <- inspect_apsim_xml("Maize75.xml", src.dir = extd.dir,
+#'                         parm = "leaf_no_rate_change",
+#'                         verbose = FALSE, 
+#'                         print.path = FALSE)
+#' }
+
+inspect_apsim_xml <- function(file = "", 
+                              src.dir = ".", 
+                              parm,
+                              verbose = TRUE,
+                              print.path = TRUE){
+  
+  file.names <- dir(path = src.dir, pattern = ".xml$", ignore.case = TRUE)
+  
+  if(length(file.names) == 0){
+    stop("There are no .xml files in the specified directory to inspect.")
+  }
+  
+  file <- match.arg(file, file.names)
+  
+  ## Read the file
+  apsim_xml <- xml2::read_xml(paste0(src.dir, "/", file))
+  
+  find.all <- xml2::xml_find_all(apsim_xml, paste0(".//", parm))
+  
+  if(length(find.all) > 1) stop("found multiple matching parameters")
+    
+  xml_node <- xml2::xml_find_first(apsim_xml, paste0(".//", parm))
+  
+  parm.path <- xml2::xml_path(xml_node)
+  
+  if(verbose){
+    cat("attrs:", xml2::xml_attrs(xml_node, "*"), "\n")
+    cat("text:", xml2::xml_text(xml_node), "\n")  
+  }
+  
+  if(print.path) cat("path:", parm.path, "\n")
+    
+  invisible(parm.path)
+  
+}
