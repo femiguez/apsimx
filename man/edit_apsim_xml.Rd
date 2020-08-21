@@ -18,7 +18,7 @@ edit_apsim_xml(
 \arguments{
 \item{file}{file ending in .xml to be edited}
 
-\item{src.dir}{directory containing the .apsim file to be edited; defaults to the current working directory}
+\item{src.dir}{directory containing the .xml file to be edited; defaults to the current working directory}
 
 \item{wrt.dir}{should be used if the destination directory is different from the src.dir}
 
@@ -43,19 +43,15 @@ This function allows editing of an APSIM (Classic) simulation xml file.
 The variables specified by \code{parm} within the .apsim file specified by \code{file} 
 in the source directory \code{src.dir} are edited. The old values are replaced with \code{value}, which
 is a list that has the same number of elements as the length of the vector \code{parm}.  The current
-.apsim file will be overwritten if \code{overwrite} is set to \code{TRUE}; otherwise the file
-\sQuote{file} \emph{-edited.apsim} will be created.  If (verbose = TRUE) then the name
- of the written file is returned. The function is similar to the edit_apsim functin in the \sQuote{apsimr}
- package, but with the difference that only some variables (parameters) can be modified.
- 
- The function inspect_apsim is for a quick look from within R. The APSIM GUI provides a more
- complete examination of the .apsim file
+.xml file will be overwritten if \code{overwrite} is set to \code{TRUE}; otherwise the file
+\sQuote{file} \emph{-edited.xml} will be created.  If (verbose = TRUE) then the name
+ of the written file is returned. The function is similar to the edit_sim_file functin in the \sQuote{apsimr}
+ package, but with the difference that here the xml2 package is used instead.
 }
 \note{
 This function cannot check whether replacement is of the correct length. Also, there is
-no inspect equivalent, so you need to inspect the file manually and/or use some trial and error
-to find the correct parameter and double check that it was editied correctly. It is more
-flexible than \sQuote{edit_apsim} and (perhaps) equivalent to \sQuote{apsimr::edit_sim_file}.
+an inspect equivalent. It is more flexible than \sQuote{edit_apsim} and (perhaps) similar to 
+\sQuote{apsimr::edit_sim_file}.
 }
 \examples{
 \donttest{

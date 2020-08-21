@@ -10,9 +10,14 @@
 #' @param parm parameter to inspect when node = \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other}
 #' @param digits number of decimals to print (default 3)
 #' @param print.path whether to print the parameter path (default = FALSE)
+#' @param root root node label. In simulation structures such as factorials there will be multiple possible nodes. This can be specified by supplying an appropriate character.
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsim file.
 #'          For \sQuote{Crop}, \sQuote{Manager} and \sQuote{Other}, \sQuote{parm} should be indicated with a first element to look for and a second with the relative position in case there are
 #'          multiple results.
+#' @note When multiple folders are present as it is the case when there are factorials. Inspect will find
+#'       the instance in the first folder unless 'root' is supplied. By providing the name of the folder to root
+#'       (or a regular expression), the appropriate node can be selected. In this case the printed path will
+#'       be absolute instead of relative.
 #' @return table with inspected parameters and values
 #' @export
 #' @examples 
@@ -70,6 +75,16 @@
 #' pp <-  inspect_apsim("Millet.apsim", src.dir = extd.dir, 
 #'                node = "Soil", soil.child = "Water", 
 #'                parm = "DUL", print.path = TRUE)
+#'                
+#' ## Inspecting a factorial
+#' ## (or simply a simulation with multiple folders)
+#' ## No cover
+#' inspect_apsim("maize-factorial.apsim", src.dir = extd.dir, 
+#'                root = "IA-CC_Canisteo_No-Cover")
+#'                
+#' ## Cover
+#' inspect_apsim("maize-factorial.apsim", src.dir = extd.dir, 
+#'                root = "IA-CC_Canisteo_Cover")
 #' }
 #' 
 
@@ -78,7 +93,8 @@ inspect_apsim <- function(file = "", src.dir = ".",
                           soil.child = c("Metadata", "Water", "OrganicMatter", "Nitrogen", "Analysis", "InitialWater", "Sample", "SWIM"),
                           parm = NULL,
                           digits = 3,
-                          print.path = FALSE){
+                          print.path = FALSE,
+                          root){
   
   file.names <- dir(path = src.dir, pattern=".apsim$", ignore.case=TRUE)
   
@@ -99,6 +115,15 @@ inspect_apsim <- function(file = "", src.dir = ".",
   ## Read the file
   apsim_xml <- xml2::read_xml(paste0(src.dir, "/", file))
   
+  ## This is my attempt at picking the right node in a factorial
+  if(!missing(root)){
+    apsim_xml0 <- xml2::xml_find_all(apsim_xml, ".//simulation")
+    sim.names <- unlist(xml2::xml_attrs(apsim_xml0))
+    wsim <- grep(root, sim.names)
+    apsim_xml <- apsim_xml0[[wsim]]
+    parm.path.root <- xml2::xml_path(apsim_xml)
+  }
+  
   ## parm.path.0 is the 'root' path
   parm.path <- NULL
   parm.path.0 <- NULL
@@ -117,7 +142,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
   }
   
   if(node == "Weather"){
-    parm.path.0 <- ".//metfile/filename"
+    parm.path.0 <- ".//metfile/filename" 
     weather.filename.node <- xml2::xml_find_first(apsim_xml, parm.path.0)
     cat("Met file:", (xml2::xml_text(weather.filename.node)), "\n")
   }
@@ -507,6 +532,12 @@ inspect_apsim <- function(file = "", src.dir = ".",
     
   if(print.path){
     if(is.null(parm.path.0)) stop("root parm path not found")
+    
+    if(!missing(root)){
+      parm.path.0 <- paste0(parm.path.root, gsub("./", "", parm.path.0, fixed = TRUE))
+      parm.path.1 <- paste0(parm.path.root, gsub("./", "", parm.path.1, fixed = TRUE))
+    }
+    
     parm.path <- parm.path.0
     if(!is.null(parm.path.1)){
       parm.path <- parm.path.1
@@ -575,4 +606,66 @@ inspect_apsim_xml <- function(file = "",
     
   invisible(parm.path)
   
+}
+
+#' view APSIM XML file
+#' @title View an APSIM Classic auxiliary (XML) file
+#' @name view_apsim_xml
+#' @description view an auxilliary XML apsim file. 
+#' @param file file ending in .xml to be viewed.
+#' @param src.dir directory containing the .xml file to be viewed; defaults to the current working directory
+#' @return nothing
+#' @export
+#' @examples  
+#' \dontrun{
+#' extd.dir <- system.file("extdata", package = "apsimx")
+#' view_apsim_xml("Maize75.xml", src.dir = extd.dir)
+#' }
+#' 
+view_apsim_xml <- function(file, src.dir, viewer = c("json","react"), ...){
+  
+  if(!requireNamespace("listviewer", quietly = TRUE)){
+    warning("The listviewer package is required for this function")
+    return(NULL)
+  }
+  
+  if(missing(file)) stop("need to specify file name")
+  
+  .check_apsim_name(file)
+  
+  ## The might offer suggestions in case there is a typo in 'file'
+  file.names <- dir(path = src.dir, pattern = ".xml$", ignore.case = TRUE)
+  
+  if(length(file.names) == 0){
+    stop("There are no .xml files in the specified directory to run.")
+  }
+  
+  file <- match.arg(file, file.names)
+  
+  if(missing(src.dir)) src.dir <- "."
+  
+  viewer <- match.arg(viewer)
+  
+  file.name.path <- file.path(src.dir, file)
+  
+  apsim_xml <- xml2::read_xml(file.name.path)
+  apsim_lst <- jsonlite::toJSON(xml2::as_list(apsim_xml), auto_unbox = TRUE)
+  
+  names(apsim_lst) <- NULL
+  
+  if(viewer == "json"){
+    ans <- listviewer::jsonedit(listdata = apsim_lst, ...) 
+    return(ans)
+  }
+  
+  if(viewer == "react"){
+    
+    if(!requireNamespace("reactR", quietly = TRUE)){
+      warning("The reactR package is required for this function")
+      return(NULL)
+    }
+    
+    ans <- listviewer::reactjson(listdata = apsim_lst, ...)  
+    return(ans)
+  }
 }

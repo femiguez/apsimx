@@ -13,7 +13,8 @@ inspect_apsim(
     "InitialWater", "Sample", "SWIM"),
   parm = NULL,
   digits = 3,
-  print.path = FALSE
+  print.path = FALSE,
+  root
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ inspect_apsim(
 \item{digits}{number of decimals to print (default 3)}
 
 \item{print.path}{whether to print the parameter path (default = FALSE)}
+
+\item{root}{root node label. In simulation structures such as factorials there will be multiple possible nodes. This can be specified by supplying an appropriate character.}
 }
 \value{
 table with inspected parameters and values
@@ -42,6 +45,12 @@ inspect an XML apsim file. It does not replace the GUI, but it can save time by 
 This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsim file.
          For \sQuote{Crop}, \sQuote{Manager} and \sQuote{Other}, \sQuote{parm} should be indicated with a first element to look for and a second with the relative position in case there are
          multiple results.
+}
+\note{
+When multiple folders are present as it is the case when there are factorials. Inspect will find
+      the instance in the first folder unless 'root' is supplied. By providing the name of the folder to root
+      (or a regular expression), the appropriate node can be selected. In this case the printed path will
+      be absolute instead of relative.
 }
 \examples{
 \donttest{
@@ -98,6 +107,16 @@ inspect_apsim("Millet.apsim", src.dir = extd.dir,
 pp <-  inspect_apsim("Millet.apsim", src.dir = extd.dir, 
                node = "Soil", soil.child = "Water", 
                parm = "DUL", print.path = TRUE)
+               
+## Inspecting a factorial
+## (or simply a simulation with multiple folders)
+## No cover
+inspect_apsim("maize-factorial.apsim", src.dir = extd.dir, 
+               root = "IA-CC_Canisteo_No-Cover")
+               
+## Cover
+inspect_apsim("maize-factorial.apsim", src.dir = extd.dir, 
+               root = "IA-CC_Canisteo_Cover")
 }
 
 }
