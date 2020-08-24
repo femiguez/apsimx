@@ -13,6 +13,7 @@
 #' 
 #' @title Optimize parameters in an APSIM simulation
 #' @name optim_apsim
+#' @rdname optim_apsim
 #' @description It is a wrapper for running APSIM and optimizing parameters using \code{\link{optim}}
 #' @param file file name to be run (the extension .apsim is optional)
 #' @param src.dir directory containing the .apsim file to be run (defaults to the current directory)
@@ -125,10 +126,16 @@ optim_apsim <- function(file, src.dir = ".",
   return(ans)
 }
 
-## May be work on a specific printing method
-print.optim_apsim <- function(x, digits = 3){
+#' @rdname optim_apsim
+#' @description Friendly printing of optim_apsim
+#' @param x object of class \sQuote{optim_apsim}
+#' @param ... additional arguments (none used at the moment)
+#' @param digits number of digits to round up the output
+#' @export
+#' 
+print.optim_apsim <- function(x, ..., digits = 3){
 
-  cat("Initial values \n")
+  cat("Initial values: \n")
   
   for(i in seq_along(x$icrop.parms)){
     
@@ -136,7 +143,7 @@ print.optim_apsim <- function(x, digits = 3){
     cat("\t Values: ", x$icrop.parms[[i]], "\n")
   }   
   
-  cat("Optimized values \n")
+  cat("Optimized values: \n")
   
   for(i in seq_along(x$icrop.parms)){
     

@@ -28,6 +28,7 @@
 #' @param parm.path path to the attribute to edit when node is \sQuote{Other}
 #' @param verbose whether to print information about successful edit
 #' @param check.length check whether vectors are of the correct length
+#' @param root supply the node postion in the case of multiple simulations such as factorials.
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
 #' As a side effect this function creates a new (XML) .apsimx file.
 #' @note The components that can be edited are restricted becuase this is better in preventing
@@ -59,7 +60,8 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                        edit.tag = "-edited",
                        parm.path = NULL,
                        verbose = TRUE,
-                       check.length = TRUE){
+                       check.length = TRUE,
+                       root){
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
@@ -76,6 +78,16 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   
   ## Parse apsim file (XML)
   apsim_xml <- xml2::read_xml(paste0(src.dir, "/", file))
+  
+  ## This is my attempt at picking the right node in a factorial
+  if(!missing(root)){
+    apsim_xml00 <- apsim_xml ## Make a copy to do the right insert later
+    apsim_xml0 <- xml2::xml_find_all(apsim_xml, ".//simulation")
+    sim.names <- unlist(xml2::xml_attrs(apsim_xml0))
+    wsim <- grep(root, sim.names)
+    apsim_xml <- apsim_xml0[[wsim]] ## This replaces the node
+    parm.path.root <- xml2::xml_path(apsim_xml)
+  }
   
   ## Edit the 'Clock'
   if(node == "Clock"){
@@ -407,8 +419,15 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   }else{
     wr.path <- paste0(wrt.dir, "/", file)
   }
-  xml2::write_xml(apsim_xml, file = wr.path)
   
+  ## If I use the root method need to use this workaround
+  if(!missing(root)){
+    apsimx_xml00[[wsim]] <- apsim_xml
+    apsim_xml <- apsim_xml00
+  }
+  
+  xml2::write_xml(apsim_xml, file = wr.path)  
+
   if(verbose){
     cat("Edited", parm.path, "\n")
     cat("Edited parameter", parm, "\n")
