@@ -26,9 +26,9 @@
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
 #' @param edit.tag if the file is edited a different tag from the default \sQuote{-edited} can be used.
 #' @param parm.path path to the attribute to edit when node is \sQuote{Other}
+#' @param root supply the node postion in the case of multiple simulations such as factorials.
 #' @param verbose whether to print information about successful edit
 #' @param check.length check whether vectors are of the correct length
-#' @param root supply the node postion in the case of multiple simulations such as factorials.
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
 #' As a side effect this function creates a new (XML) .apsimx file.
 #' @note The components that can be edited are restricted becuase this is better in preventing
@@ -59,9 +59,9 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                        overwrite = FALSE,
                        edit.tag = "-edited",
                        parm.path = NULL,
+                       root,
                        verbose = TRUE,
-                       check.length = TRUE,
-                       root){
+                       check.length = TRUE){
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   

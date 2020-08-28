@@ -17,7 +17,8 @@
 #' @description It is a wrapper for running APSIM and optimizing parameters using \code{\link{optim}}
 #' @param file file name to be run (the extension .apsim is optional)
 #' @param src.dir directory containing the .apsim file to be run (defaults to the current directory)
-#' @param crop.file name of auxiliary xml file where parameters are stored
+#' @param crop.file name of auxiliary xml file where parameters are stored. If this is missing, it is 
+#'                  assumed that the parameters to be edited are in the main simulation file.
 #' @param parm.paths absolute or relative paths of the coefficients to be optimized. 
 #'             It is recommended that you use \code{\link{inspect_apsim}} for this
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
@@ -35,7 +36,7 @@ optim_apsim <- function(file, src.dir = ".",
                         method = c("optim"), index = "Date",
                         ...){
   
-  ##.check_apsim_name(file)
+  .check_apsim_name(file)
   
   if(src.dir != ".") stop("At the moment it is not possible \n
                           to change the source directory.")
@@ -59,31 +60,52 @@ optim_apsim <- function(file, src.dir = ".",
   if(index == "Date") data$Date <- as.Date(data$Date)
   if(index != "Date") stop("For now Date is the default index")
   
-  ## Retrieve initial value vectors
-  crop.xml <- xml2::read_xml(file.path(src.dir, crop.file))
-  icrop.parms <- vector("list", length = length(parm.paths))
-  names(icrop.parms) <- parm.paths
-  
-  for(i in seq_along(parm.paths)){
-    xml.node <- xml2::xml_find_first(crop.xml, parm.paths[i])
-    crop.parm.text <- xml2::xml_text(xml.node)
-    crop.parm.value <- as.numeric(strsplit(crop.parm.text, "\\s+")[[1]])
-    icrop.parms[[i]] <- crop.parm.value
+  ## What this does is pick the crop.file to be edited when it is not missing
+  if(!missing(crop.file)){
+    aux.file <- crop.file
+    cfile <- TRUE
+  }else{
+    aux.file <- file
+    cfile <- FALSE
   }
   
-  obj_fun <- function(cfs, parm.paths, data, crop.file, icrop.parms){
+  ## Retrieve initial value vectors
+  aux.xml <- xml2::read_xml(file.path(src.dir, aux.file))
+  iaux.parms <- vector("list", length = length(parm.paths))
+  names(iaux.parms) <- parm.paths
     
-    ## Need to edit the parameters in the crop file
+  for(i in seq_along(parm.paths)){
+    xml.node <- xml2::xml_find_first(aux.xml, parm.paths[i])
+    aux.parm.text <- xml2::xml_text(xml.node)
+    aux.parm.value <- as.numeric(strsplit(aux.parm.text, "\\s+")[[1]])
+    iaux.parms[[i]] <- aux.parm.value
+  }    
+  
+  obj_fun <- function(cfs, parm.paths, data, aux.file, iaux.parms, cfile = TRUE){
+    
+    ## Need to edit the parameters in the crop file or the main simulation
     for(i in seq_along(cfs)){
       ## Retrieve the vector of current parameters
-      mparm <- paste(icrop.parms[[i]] * cfs[i], collapse = " ")
+      mparm <- paste(iaux.parms[[i]] * cfs[i], collapse = " ")
       ## Edit the specific parameters with the corresponding values
-      edit_apsim_xml(file = crop.file, 
-                     src.dir = src.dir,
-                     parm.path = parm.paths[i],
-                     overwrite = TRUE,
-                     value = as.character(mparm),
-                     verbose = FALSE)
+      if(cfile){
+        ## Here I'm editing an auxiliary file ending in .xml
+        edit_apsim_xml(file = aux.file, 
+                       src.dir = src.dir,
+                       parm.path = parm.paths[i],
+                       overwrite = TRUE,
+                       value = as.character(mparm),
+                       verbose = FALSE)        
+      }else{
+        ## Here I'm editing the main simulation file .apsim
+        edit_apsim(file = aux.file, 
+                   node = "Other",
+                   src.dir = src.dir,
+                   parm.path = parm.paths[i],
+                   overwrite = TRUE,
+                   value = as.character(mparm),
+                   verbose = FALSE)        
+      }
     }
     
     ## Run simulation  
@@ -117,11 +139,12 @@ optim_apsim <- function(file, src.dir = ".",
               fn = obj_fun, 
               parm.paths = parm.paths, 
               data = data, 
-              crop.file = crop.file, 
-              icrop.parms = icrop.parms,
+              aux.file = aux.file, 
+              iaux.parms = iaux.parms,
+              cfile = cfile,
               ...)
   
-  ans <- structure(list(icrop.parms = icrop.parms, op = op),
+  ans <- structure(list(iaux.parms = iaux.parms, op = op),
                    class = "optim_apsim")
   return(ans)
 }
@@ -137,18 +160,18 @@ print.optim_apsim <- function(x, ..., digits = 3){
 
   cat("Initial values: \n")
   
-  for(i in seq_along(x$icrop.parms)){
+  for(i in seq_along(x$iaux.parms)){
     
-    cat("\t Parameter path: ", names(x$icrop.parms)[i], "\n")
-    cat("\t Values: ", x$icrop.parms[[i]], "\n")
+    cat("\t Parameter path: ", names(x$iaux.parms)[i], "\n")
+    cat("\t Values: ", x$iaux.parms[[i]], "\n")
   }   
   
   cat("Optimized values: \n")
   
-  for(i in seq_along(x$icrop.parms)){
+  for(i in seq_along(x$iaux.parms)){
     
-    cat("\t Parameter path: ", names(x$icrop.parms)[i], "\n")
-    cat("\t Values: ", round(x$icrop.parms[[i]] * x$op$par[i], digits), "\n")
+    cat("\t Parameter path: ", names(x$iaux.parms)[i], "\n")
+    cat("\t Values: ", round(x$iaux.parms[[i]] * x$op$par[i], digits), "\n")
   }   
   
   cat("Convergence:", x$op$convergence,"\n")

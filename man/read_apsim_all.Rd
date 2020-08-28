@@ -8,7 +8,8 @@ read_apsim_all(
   filenames,
   src.dir = ".",
   value = c("report", "all"),
-  date.format = "\%d/\%m/\%Y"
+  date.format = "\%d/\%m/\%Y",
+  simplify = TRUE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ read_apsim_all(
 \item{value}{either \sQuote{report} or \sQuote{all} (only \sQuote{report} implemented at the moment)}
 
 \item{date.format}{format for adding \sQuote{Date} column}
+
+\item{simplify}{whether to return a single data frame or a list.}
 }
 \description{
 Like \code{\link{read_apsim}}, but it reads all .out files in a directory.

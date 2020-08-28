@@ -2,6 +2,7 @@
 
 S3method(plot,soil_profile)
 S3method(print,met)
+S3method(print,optim_apsim)
 export(apsim)
 export(apsim.options)
 export(apsim_example)

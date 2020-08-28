@@ -18,6 +18,7 @@ edit_apsim(
   overwrite = FALSE,
   edit.tag = "-edited",
   parm.path = NULL,
+  root,
   verbose = TRUE,
   check.length = TRUE
 )
@@ -45,6 +46,8 @@ edit_apsim(
 \item{edit.tag}{if the file is edited a different tag from the default \sQuote{-edited} can be used.}
 
 \item{parm.path}{path to the attribute to edit when node is \sQuote{Other}}
+
+\item{root}{supply the node postion in the case of multiple simulations such as factorials.}
 
 \item{verbose}{whether to print information about successful edit}
 
