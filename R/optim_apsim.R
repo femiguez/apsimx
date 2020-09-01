@@ -1,15 +1,22 @@
 #'
 #' Simple optimization for APSIM Classic
 #' 
-#' This function assumes that you want to optimize parameters which are stored in
-#' an auxiliary XML file. These are typically crop or cultivar specific parameters
+#' * This function assumes that you want to optimize parameters which are stored in
+#' an auxiliary XML file. These are typically crop or cultivar specific parameters.
+#' However, it is possible to optimize parameters present in the main simulation
+#' file.
 #' 
-#' Only one observation per day is allowed in the data
+#' * Only one observation per day is allowed in the data.
 #' 
-#' The crop file should be in the same directory as the main simulation
+#' * Given how APSIM Classic works, this can only be run when the main simulation
+#' file is in the current directory and the crop file (or XML) 
+#' should be in the same directory as the main simulation.
 #' 
-#' The initial values for the optimization should be the ones in the stored
-#' crop parameter file
+#' * The initial values for the optimization should be the ones in the stored
+#' crop parameter file.
+#' 
+#' * It is suggested that you keep a backup of the original file. This function
+#' will edit and overwrite the file during the optimization. 
 #' 
 #' @title Optimize parameters in an APSIM simulation
 #' @name optim_apsim
@@ -19,20 +26,18 @@
 #' @param src.dir directory containing the .apsim file to be run (defaults to the current directory)
 #' @param crop.file name of auxiliary xml file where parameters are stored. If this is missing, it is 
 #'                  assumed that the parameters to be edited are in the main simulation file.
-#' @param parm.paths absolute or relative paths of the coefficients to be optimized. 
-#'             It is recommended that you use \code{\link{inspect_apsim}} for this
+#' @param parm.paths absolute paths of the coefficients to be optimized. 
+#'             It is recommended that you use \code{\link{inspect_apsim}} for this.
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
-#' @param method Method used in the optimization. For now, only \sQuote{optim} is used.
+#' @param method Method used in the optimization. For now, only \sQuote{optim} is available.
 #' @param weights Weighting method or values for computing the residual sum of squares. 
-#' @param index Index for filtering APSIM output
+#' @param index Index for filtering APSIM output. \sQuote{Date} is currently used.
 #' @param ... additional arguments to be passed to the optimization algorithm
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
-#' no weighting is applied. It can be 'mean', 'variance' or a numeric vector of appropriate length.
-#' @return vector of optimized coefficients
+#' no weighting is applied. It can be \sQuote{mean}, \sQuote{var} or a numeric vector of appropriate length.
+#' @return object of class \sQuote{optim_apsim}, but really a list with results from optim and additional information.
 #' @export
-#' 
-#' 
 #' 
 
 optim_apsim <- function(file, src.dir = ".", 
@@ -45,12 +50,7 @@ optim_apsim <- function(file, src.dir = ".",
   
   if(src.dir != ".") stop("At the moment it is not possible \n
                           to change the source directory.")
-  ## Create tmp.dir where to store tmp copy of crop file
-  # crop.file.tmp <- paste0(tools::file_path_sans_ext(crop.file),
-  #                         "-opt.xml")
-  # file.copy(from = file.path(src.dir, crop.file),
-  #           to = file.path(src.dir, crop.file.tmp))
-  # 
+
   ## The might offer suggestions in case there is a typo in 'file'
   file.names <- dir(path = src.dir, pattern=".apsim$", ignore.case = TRUE)
   
@@ -68,7 +68,7 @@ optim_apsim <- function(file, src.dir = ".",
   ## Setting up weights
   if(missing(weights)) weights <- rep(1, length(parm.paths))
   if(weights == "mean") weights <- abs(1 / apply(data, 2, mean))
-  if(weights == "var") weights <- abs(1 / apply(data, 2, var))
+  if(weights == "var") weights <- 1 / apply(data, 2, var)
   
   ## What this does is pick the crop.file to be edited when it is not missing
   if(!missing(crop.file)){
@@ -151,17 +151,18 @@ optim_apsim <- function(file, src.dir = ".",
                  weights = weights,
                  cfile = cfile)
   ## optimization
-  op <- optim(par = rep(1, length(parm.paths)), 
-              fn = obj_fun, 
-              parm.paths = parm.paths, 
-              data = data, 
-              aux.file = aux.file, 
-              iaux.parms = iaux.parms,
-              weights = weights,
-              cfile = cfile,
-              ...)
+  op <- stats::optim(par = rep(1, length(parm.paths)), 
+                     fn = obj_fun, 
+                     parm.paths = parm.paths, 
+                     data = data, 
+                     aux.file = aux.file, 
+                     iaux.parms = iaux.parms,
+                     weights = weights,
+                     cfile = cfile,
+                     ...)
   
-  ans <- structure(list(rss = rss, iaux.parms = iaux.parms, op = op),
+  ans <- structure(list(rss = rss, iaux.parms = iaux.parms, 
+                        op = op, n = nrow(data)),
                    class = "optim_apsim")
   return(ans)
 }
@@ -179,7 +180,6 @@ print.optim_apsim <- function(x, ..., digits = 3){
   
   for(i in seq_along(x$iaux.parms)){
     
-
     cat("\t Parameter path: ", names(x$iaux.parms)[i], "\n")
     cat("\t Values: ", x$iaux.parms[[i]], "\n")
   }   
@@ -190,6 +190,14 @@ print.optim_apsim <- function(x, ..., digits = 3){
     
     cat("\t Parameter path: ", names(x$iaux.parms)[i], "\n")
     cat("\t Values: ", round(x$iaux.parms[[i]] * x$op$par[i], digits), "\n")
+    
+    if(!is.null(x$op$hessian)){
+      ## I actually found this way of computing SE here:
+      ## https://www.researchgate.net/post/In_R_how_to_estimate_confidence_intervals_from_the_Hessian_matrix
+      par.se <- sqrt(2 * solve(x$op$hessian)[i,i] * x$op$value / x$n)
+      cat("Lower CI: ", round(x$op$par[i] - 1.96 * par.se, digits),"\n")
+      cat("Upper CI: ", round(x$op$par[i] + 1.96 * par.se, digits),"\n")
+    }
   }   
   cat("\t Optimized RSS: ", x$op$value, "\n")
   cat("Convergence:", x$op$convergence,"\n")
