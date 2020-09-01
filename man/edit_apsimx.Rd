@@ -9,7 +9,7 @@ edit_apsimx(
   src.dir = ".",
   wrt.dir = NULL,
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-    "Manager"),
+    "Manager", "Other"),
   soil.child = c("Metadata", "Water", "Organic", "Physical", "Analysis", "Chemical",
     "InitialWater", "Sample"),
   manager.child = NULL,

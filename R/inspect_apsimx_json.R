@@ -128,7 +128,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     ## Select the string which has a met file
     gf1 <- function(x) grep(".met$", x, value = TRUE)
     cat("Met file:", as.character(sapply(weather.node, gf1)), "\n")
-    parm.path <- paste0(parm.path.1,".",parent.node[wlwl][[1]]$Name)
+    parm.path <- paste0(parm.path.1, ".", parent.node[wlwl][[1]]$Name)
   }
   
   ## From here on there is an important component that lives inside
@@ -143,7 +143,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     wsn <- grepl("Models.Soils.Soil", core.zone.node)
     soil.node <- core.zone.node[wsn]
     
-    parm.path.2.1 <- paste0(parm.path.2,".",soil.node[[1]]$Name)
+    parm.path.2.1 <- paste0(parm.path.2, ".", soil.node[[1]]$Name)
     
     ## Print some basic soil information
     cat("Soil Type: ", soil.node[[1]]$SoilType, "\n")

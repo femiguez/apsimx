@@ -70,7 +70,7 @@
 #' 
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
-                        node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager"),
+                        node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Other"),
                         soil.child = c("Metadata", "Water", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample"),
                         manager.child = NULL,
                         parm = NULL, value = NULL, 
@@ -352,20 +352,116 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     core.zone.node[wmmn] <- manager.node
   }
   
-  parent.node[wcz][[1]]$Children <- core.zone.node
-  
-  if(length(wcore) > 1){
-    ## I have to assume that root was supplied 
-    ## otherwise an error would have been triggered before
-    if(length(root) == 1){
-      apsimx_json$Children[[wcore1]]$Children <- parent.node 
-    }else{
-      apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children <- parent.node 
+  if(node == "Other"){
+    ## Note: this strategy might not always work well
+    ## because cultivar parameters are under Command
+    ## which I think behaves differently
+    ## Here the path should be to the full parameter path
+    ## Unpack the parm.path
+    ## root node starts at .
+    upp <- strsplit(parm.path, ".", fixed = TRUE)[[1]]
+    upp.lngth <- length(upp)
+    if(upp.lngth < 5) stop("Parameter path too short?")
+    if(upp.lngth > 10) stop("Cannot handle this yet")
+    ## upp[2] is typically "Simulations"
+    if(apsimx_json$Name != upp[2])
+      stop("Simulation root name does not match")
+    wl3 <- which(upp[3] == sapply(apsimx_json$Children, function(x) x$Name))
+    if(length(wl3) == 0) stop("Could not find parameter at level 3")
+    ## At this level I select among simulation children
+    ## upp[3] is typically "Simulation"
+    n3 <- apsimx_json$Children[[wl3]]
+    ## Look for the first reasonable parameter
+    wl4 <- which(upp[4] == sapply(n3$Children, function(x) x$Name))
+    if(length(wl4) == 0) stop("Could not find parameter at level 4")
+    ## This is super dumb but I do not know how to do it otherwise
+    if(upp.lngth == 5){
+      if(upp[5] %in% names(n3$Children[[wl4]])){
+        apsimx_json$Children[[wl3]]$Children[[wl4]][[upp[5]]] <- value
+      }else{
+        wl5 <- which(upp[5] == sapply(n3$Children[[wl4]]$Children, function(x) x$Name))
+        if(length(wl5) == 0) stop("Could not find parameter at level 5")
+        apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]][[upp[5]]] <- value
+      }
     }
-  }else{
-    apsimx_json$Children[[wcore]]$Children <- parent.node 
+    ## Handling level 6
+    if(upp.lngth == 6){
+      n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+      wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
+      if(length(wl5) == 0) stop("Could not find parameter at level 5")
+      if(upp[6] %in% names(n4$Children[[wl5]])){
+        apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]][[upp[6]]] <- value
+      }else{
+        if("Parameters" %in% names(n4$Children[[wl5]])){
+          wp <- grep(upp[6], n4$Children[[wl5]]$Parameters)
+          if(length(wp) == 0) stop("Could not find parameter at level 6 (Parameter)")
+          apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Parameters[[wp]]$Value <- value
+        }else{
+          wl6 <- which(upp[6] == sapply(n4$Children[[wl5]]$Children, function(x) x$Name))
+          if(length(wl6) == 0) stop("Could not find parameter at level 6")
+          apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]][[upp[6]]] <- value         
+        }
+      }
+    }
+    ## Handling level 7
+    if(upp.lngth == 7){
+      n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+      wl5 <- grep(upp[5], n4$Children)
+      n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
+      wl6 <- grep(upp[6], n4$Children)
+      apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]][[upp[7]]] <- value
+    }
+    if(upp.lngth == 8){
+      n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+      wl5 <- grep(upp[5], n4$Children)
+      n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
+      wl6 <- grep(upp[6], n5$Children)
+      n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
+      wl7 <- grep(upp[7], n6$Children)
+      apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]][[upp[8]]] <- value
+    }
+    if(upp.lngth == 9){
+      n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+      wl5 <- grep(upp[5], n4$Children)
+      n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
+      wl6 <- grep(upp[6], n5$Children)
+      n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
+      wl7 <- grep(upp[7], n6$Children)
+      n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
+      wl8 <- grep(upp[8], n7$Children)
+      apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]][[upp[9]]] <- value
+    }
+    if(upp.lngth == 10){
+      n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+      wl5 <- grep(upp[5], n4$Children)
+      n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
+      wl6 <- grep(upp[6], n5$Children)
+      n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
+      wl7 <- grep(upp[7], n6$Children)
+      n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
+      wl8 <- grep(upp[8], n7$Children)
+      n8 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]
+      wl9 <- grep(upp[9], n9$Children)
+      apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]$Children[[wl9]][[upp[10]]] <- value
+    }
   }
   
+  if(node != "Other"){
+    parent.node[wcz][[1]]$Children <- core.zone.node
+    
+    if(length(wcore) > 1){
+      ## I have to assume that root was supplied 
+      ## otherwise an error would have been triggered before
+      if(length(root) == 1){
+        apsimx_json$Children[[wcore1]]$Children <- parent.node 
+      }else{
+        apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children <- parent.node 
+      }
+    }else{
+      apsimx_json$Children[[wcore]]$Children <- parent.node 
+    }    
+  }
+
   if(overwrite == FALSE){
     wr.path <- paste0(wrt.dir, "/",
                       tools::file_path_sans_ext(file),

@@ -23,8 +23,12 @@
 #'             It is recommended that you use \code{\link{inspect_apsim}} for this
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
 #' @param method Method used in the optimization. For now, only \sQuote{optim} is used.
+#' @param weights Weighting method or values for computing the residual sum of squares. 
 #' @param index Index for filtering APSIM output
 #' @param ... additional arguments to be passed to the optimization algorithm
+#' @note When computing the objective function (residual sum-of-squares) different variables are combined.
+#' It is common to weight them since they are in different units. If the argument weights is not supplied
+#' no weighting is applied. It can be 'mean', 'variance' or a numeric vector of appropriate length.
 #' @return vector of optimized coefficients
 #' @export
 #' 
@@ -33,7 +37,8 @@
 
 optim_apsim <- function(file, src.dir = ".", 
                         crop.file, parm.paths, data, 
-                        method = c("optim"), index = "Date",
+                        method = c("optim"), 
+                        weights, index = "Date",
                         ...){
   
   .check_apsim_name(file)
@@ -60,6 +65,11 @@ optim_apsim <- function(file, src.dir = ".",
   if(index == "Date") data$Date <- as.Date(data$Date)
   if(index != "Date") stop("For now Date is the default index")
   
+  ## Setting up weights
+  if(missing(weights)) weights <- rep(1, length(parm.paths))
+  if(weights == "mean") weights <- abs(1 / apply(data, 2, mean))
+  if(weights == "var") weights <- abs(1 / apply(data, 2, var))
+  
   ## What this does is pick the crop.file to be edited when it is not missing
   if(!missing(crop.file)){
     aux.file <- crop.file
@@ -81,7 +91,7 @@ optim_apsim <- function(file, src.dir = ".",
     iaux.parms[[i]] <- aux.parm.value
   }    
   
-  obj_fun <- function(cfs, parm.paths, data, aux.file, iaux.parms, cfile = TRUE){
+  obj_fun <- function(cfs, parm.paths, data, aux.file, iaux.parms, weights, cfile = TRUE){
     
     ## Need to edit the parameters in the crop file or the main simulation
     for(i in seq_along(cfs)){
@@ -128,12 +138,18 @@ optim_apsim <- function(file, src.dir = ".",
     ## Now I need to calculate the residual sum of squares
     ## For this to work all variables should be numeric
     diffs <- as.matrix(data) - as.matrix(sim.s)
-    ## Weight by the relative variance of the observed data
-    weights <- 1 / apply(data, 2, var)
     rss <- sum((diffs * weights)^2)
     return(rss)
   }
   
+  ## Pre-optimized RSS
+  rss <- obj_fun(cfs = rep(1, length(parm.paths)),
+                 parm.paths = parm.paths,
+                 data = data,
+                 aux.file = aux.file,
+                 iaux.parms = iaux.parms,
+                 weights = weights,
+                 cfile = cfile)
   ## optimization
   op <- optim(par = rep(1, length(parm.paths)), 
               fn = obj_fun, 
@@ -141,10 +157,11 @@ optim_apsim <- function(file, src.dir = ".",
               data = data, 
               aux.file = aux.file, 
               iaux.parms = iaux.parms,
+              weights = weights,
               cfile = cfile,
               ...)
   
-  ans <- structure(list(iaux.parms = iaux.parms, op = op),
+  ans <- structure(list(rss = rss, iaux.parms = iaux.parms, op = op),
                    class = "optim_apsim")
   return(ans)
 }
@@ -162,10 +179,11 @@ print.optim_apsim <- function(x, ..., digits = 3){
   
   for(i in seq_along(x$iaux.parms)){
     
+
     cat("\t Parameter path: ", names(x$iaux.parms)[i], "\n")
     cat("\t Values: ", x$iaux.parms[[i]], "\n")
   }   
-  
+  cat("\t Pre-optimized RSS: ", x$rss, "\n")
   cat("Optimized values: \n")
   
   for(i in seq_along(x$iaux.parms)){
@@ -173,9 +191,8 @@ print.optim_apsim <- function(x, ..., digits = 3){
     cat("\t Parameter path: ", names(x$iaux.parms)[i], "\n")
     cat("\t Values: ", round(x$iaux.parms[[i]] * x$op$par[i], digits), "\n")
   }   
-  
+  cat("\t Optimized RSS: ", x$op$value, "\n")
   cat("Convergence:", x$op$convergence,"\n")
-  cat("RSS: ", x$op$value, "\n")
 }
   
   
