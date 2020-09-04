@@ -31,7 +31,7 @@
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
 #' @param method Method used in the optimization. For now, only \sQuote{optim} is available.
 #' @param weights Weighting method or values for computing the residual sum of squares. 
-#' @param index Index for filtering APSIM output. \sQuote{Date} is currently used.
+#' @param index Index for filtering APSIM output. \sQuote{Date} is currently used. (I have not tested how well it works using anything other than Date).
 #' @param ... additional arguments to be passed to the optimization algorithm
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
@@ -62,13 +62,13 @@ optim_apsim <- function(file, src.dir = ".",
   
   file.name.path <- file.path(src.dir, file)
   
+  datami <- data[,-which(names(data) == index)]
   if(index == "Date") data$Date <- as.Date(data$Date)
-  if(index != "Date") stop("For now Date is the default index")
   
   ## Setting up weights
-  if(missing(weights)) weights <- rep(1, length(parm.paths))
-  if(weights == "mean") weights <- abs(1 / apply(data, 2, mean))
-  if(weights == "var") weights <- 1 / apply(data, 2, var)
+  if(missing(weights)) weights <- rep(1, ncol(datami))
+  if(weights == "mean") weights <- abs(1 / apply(datami, 2, mean))
+  if(weights == "var") weights <- 1 / apply(datami, 2, var)
   
   ## What this does is pick the crop.file to be edited when it is not missing
   if(!missing(crop.file)){
@@ -91,7 +91,7 @@ optim_apsim <- function(file, src.dir = ".",
     iaux.parms[[i]] <- aux.parm.value
   }    
   
-  obj_fun <- function(cfs, parm.paths, data, aux.file, iaux.parms, weights, cfile = TRUE){
+  obj_fun <- function(cfs, parm.paths, data, aux.file, iaux.parms, weights, index, cfile = TRUE){
     
     ## Need to edit the parameters in the crop file or the main simulation
     for(i in seq_along(cfs)){
@@ -130,11 +130,12 @@ optim_apsim <- function(file, src.dir = ".",
     if(!all(names(data) %in% names(sim))) 
       stop("names in 'data' do not match names in simulation")
     
-    sim.s <- subset(sim, Date %in% data$Date, select = names(data))
+    sim.s <- subset(sim, Date %in% data[,index], select = names(data))
     
     if(nrow(sim.s) == 0L) stop("no rows selected in simulations")
     ## Assuming they are aligned, get rid of the 'Date' column
-    sim.s$Date <- NULL; data$Date <- NULL
+    sim.s <- sim.s[,-which(names(sim.s) == index)]
+    data <- data[,-which(names(data) == index)]
     ## Now I need to calculate the residual sum of squares
     ## For this to work all variables should be numeric
     diffs <- as.matrix(data) - as.matrix(sim.s)
@@ -149,6 +150,7 @@ optim_apsim <- function(file, src.dir = ".",
                  aux.file = aux.file,
                  iaux.parms = iaux.parms,
                  weights = weights,
+                 index = index,
                  cfile = cfile)
   ## optimization
   op <- stats::optim(par = rep(1, length(parm.paths)), 
@@ -158,6 +160,7 @@ optim_apsim <- function(file, src.dir = ".",
                      aux.file = aux.file, 
                      iaux.parms = iaux.parms,
                      weights = weights,
+                     index = index,
                      cfile = cfile,
                      ...)
   
@@ -174,7 +177,7 @@ optim_apsim <- function(file, src.dir = ".",
 #' @param digits number of digits to round up the output
 #' @export
 #' 
-print.optim_apsim <- function(x, ..., digits = 3){
+print.optim_apsim <- function(x, ..., digits = 3, level = 0.05){
 
   cat("Initial values: \n")
   
@@ -195,8 +198,11 @@ print.optim_apsim <- function(x, ..., digits = 3){
       ## I actually found this way of computing SE here:
       ## https://www.researchgate.net/post/In_R_how_to_estimate_confidence_intervals_from_the_Hessian_matrix
       par.se <- sqrt(2 * solve(x$op$hessian)[i,i] * x$op$value / x$n)
-      cat("Lower CI: ", round(x$op$par[i] - 1.96 * par.se, digits),"\n")
-      cat("Upper CI: ", round(x$op$par[i] + 1.96 * par.se, digits),"\n")
+      degf <- x$n - length(x$iaux.parms) ## Degrees of freedom
+      qTT <- qt(level * 0.5, degf) ## t statistic
+      cat("CI level: ", 1 - level * 0.5, "\n")
+      cat("Lower: ", round(x$op$par[i] - qTT * par.se, digits),"\n")
+      cat("Upper: ", round(x$op$par[i] + qTT * par.se, digits),"\n")
     }
   }   
   cat("\t Optimized RSS: ", x$op$value, "\n")
