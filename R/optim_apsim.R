@@ -29,7 +29,7 @@
 #' @param parm.paths absolute paths of the coefficients to be optimized. 
 #'             It is recommended that you use \code{\link{inspect_apsim}} for this.
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
-#' @param method Method used in the optimization. For now, only \sQuote{optim} is available.
+#' @param type Type of optimization. For now, either \sQuote{optim} or \sQuote{ga} for a genetic algorithm.
 #' @param weights Weighting method or values for computing the residual sum of squares. 
 #' @param index Index for filtering APSIM output. \sQuote{Date} is currently used. (I have not tested how well it works using anything other than Date).
 #' @param ... additional arguments to be passed to the optimization algorithm
@@ -42,7 +42,7 @@
 
 optim_apsim <- function(file, src.dir = ".", 
                         crop.file, parm.paths, data, 
-                        method = c("optim"), 
+                        type = c("optim", "ga"), 
                         weights, index = "Date",
                         ...){
   
@@ -62,13 +62,36 @@ optim_apsim <- function(file, src.dir = ".",
   
   file.name.path <- file.path(src.dir, file)
   
+  ## optimization type
+  type <- match.arg(type)
+  
+  if(type == "ga"){
+    if(!requireNamespace("GA", quietly = TRUE)){
+      warning("The GA package is required for this optimization method")
+      return(NULL)
+    }
+  }
+  
   datami <- data[,-which(names(data) == index)]
   if(index == "Date") data$Date <- as.Date(data$Date)
   
   ## Setting up weights
-  if(missing(weights)) weights <- rep(1, ncol(datami))
-  if(weights == "mean") weights <- abs(1 / apply(datami, 2, mean))
-  if(weights == "var") weights <- 1 / apply(datami, 2, var)
+  if(missing(weights)){
+    weights <- rep(1, ncol(datami))
+  }else{
+    if(weights == "mean"){
+      weights <- abs(1 / apply(datami, 2, mean))  
+    }else{
+      if(weights == "var"){
+        weights <- 1 / apply(datami, 2, var)    
+      }else{
+        if(length(weights) != ncol(datami))
+          stop("Weights not of correct length")
+        if(!is.numeric(weights))
+          stop("Weights should be numeric")
+      } 
+    } 
+  } 
   
   ## What this does is pick the crop.file to be edited when it is not missing
   if(!missing(crop.file)){
@@ -91,7 +114,9 @@ optim_apsim <- function(file, src.dir = ".",
     iaux.parms[[i]] <- aux.parm.value
   }    
   
-  obj_fun <- function(cfs, parm.paths, data, aux.file, iaux.parms, weights, index, cfile = TRUE){
+  obj_fun <- function(cfs, parm.paths, data, aux.file, 
+                      iaux.parms, weights, index, cfile = TRUE,
+                      multiplier = 1){
     
     ## Need to edit the parameters in the crop file or the main simulation
     for(i in seq_along(cfs)){
@@ -130,16 +155,16 @@ optim_apsim <- function(file, src.dir = ".",
     if(!all(names(data) %in% names(sim))) 
       stop("names in 'data' do not match names in simulation")
     
-    sim.s <- subset(sim, Date %in% data[,index], select = names(data))
+    sim.s <- subset(sim, Date %in% data[[index]], select = names(data))
     
     if(nrow(sim.s) == 0L) stop("no rows selected in simulations")
-    ## Assuming they are aligned, get rid of the 'Date' column
+    ## Assuming they are aligned, get rid of the 'index' column
     sim.s <- sim.s[,-which(names(sim.s) == index)]
     data <- data[,-which(names(data) == index)]
     ## Now I need to calculate the residual sum of squares
     ## For this to work all variables should be numeric
     diffs <- as.matrix(data) - as.matrix(sim.s)
-    rss <- sum((diffs * weights)^2)
+    rss <- sum((diffs * weights)^2) * multiplier
     return(rss)
   }
   
@@ -153,19 +178,37 @@ optim_apsim <- function(file, src.dir = ".",
                  index = index,
                  cfile = cfile)
   ## optimization
-  op <- stats::optim(par = rep(1, length(parm.paths)), 
-                     fn = obj_fun, 
-                     parm.paths = parm.paths, 
-                     data = data, 
-                     aux.file = aux.file, 
-                     iaux.parms = iaux.parms,
-                     weights = weights,
-                     index = index,
-                     cfile = cfile,
-                     ...)
+  if(type == "optim"){
+    op <- stats::optim(par = rep(1, length(parm.paths)), 
+                       fn = obj_fun, 
+                       parm.paths = parm.paths, 
+                       data = data, 
+                       aux.file = aux.file, 
+                       iaux.parms = iaux.parms,
+                       weights = weights,
+                       index = index,
+                       cfile = cfile,
+                       ...)    
+  }
   
+  if(type == "ga"){
+    gas <- GA::ga(type = "real-valued",
+              fitness = obj_fun,
+              parm.paths = parm.paths, 
+              data = data, 
+              aux.file = aux.file, 
+              iaux.parms = iaux.parms,
+              weights = weights,
+              index = index,
+              cfile = cfile,
+              multiplier = -1, ...)
+    
+    op <- list(par = gas@solution, value = gas@fitnessValue,
+               convergence = NA)
+  }
+
   ans <- structure(list(rss = rss, iaux.parms = iaux.parms, 
-                        op = op, n = nrow(data)),
+                        op = op, n = nrow(data), ga = gas),
                    class = "optim_apsim")
   return(ans)
 }
