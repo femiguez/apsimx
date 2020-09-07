@@ -191,6 +191,7 @@ optim_apsim <- function(file, src.dir = ".",
                        ...)    
   }
   
+  gas <- NULL
   if(type == "ga"){
     gas <- GA::ga(type = "real-valued",
               fitness = obj_fun,
