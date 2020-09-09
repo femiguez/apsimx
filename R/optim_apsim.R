@@ -204,8 +204,7 @@ optim_apsim <- function(file, src.dir = ".",
               cfile = cfile,
               multiplier = -1, ...)
     
-    op <- list(par = gas@solution, value = gas@fitnessValue,
-               convergence = NA)
+    op <- list(par = gas@solution, value = gas@fitnessValue, convergence = NA)
   }
 
   ans <- structure(list(rss = rss, iaux.parms = iaux.parms, 
@@ -219,9 +218,10 @@ optim_apsim <- function(file, src.dir = ".",
 #' @param x object of class \sQuote{optim_apsim}
 #' @param ... additional arguments (none used at the moment)
 #' @param digits number of digits to round up the output
+#' @param level confidence level (default 0.95)
 #' @export
 #' 
-print.optim_apsim <- function(x, ..., digits = 3, level = 0.05){
+print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
 
   cat("Initial values: \n")
   
@@ -243,10 +243,10 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.05){
       ## https://www.researchgate.net/post/In_R_how_to_estimate_confidence_intervals_from_the_Hessian_matrix
       par.se <- sqrt(2 * solve(x$op$hessian)[i,i] * x$op$value / x$n)
       degf <- x$n - length(x$iaux.parms) ## Degrees of freedom
-      qTT <- qt(level * 0.5, degf) ## t statistic
-      cat("CI level: ", 1 - level * 0.5, "\n")
-      cat("Lower: ", round(x$op$par[i] - qTT * par.se, digits),"\n")
-      cat("Upper: ", round(x$op$par[i] + qTT * par.se, digits),"\n")
+      qTT <- -qt((1 - level) * 0.5, degf) ## t statistic
+      cat("\t CI level: ", level)
+      cat("\t Lower: ", round((x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]], digits))
+      cat("\t Upper: ", round((x$op$par[i] + qTT * par.se) * x$iaux.parms[[i]], digits),"\n")
     }
   }   
   cat("\t Optimized RSS: ", x$op$value, "\n")
