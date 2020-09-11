@@ -13,7 +13,7 @@
 #' @param parm.paths absolute paths of the coefficients to be optimized. 
 #'             It is recommended that you use \code{\link{inspect_apsimx}} for this
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
-#' @param method Method used in the optimization. For now, only \sQuote{optim} is used.
+#' @param type Type of optimization. For now, only \sQuote{optim} is used.
 #' @param weights Weighting method or values for computing the residual sum of squares. 
 #' @param index Index for filtering APSIM output
 #' @param replacement TRUE or FALSE for each parameter. Indicating whether it is part of 
@@ -32,7 +32,7 @@
 
 optim_apsimx <- function(file, src.dir = ".", 
                          parm.paths, data, 
-                         method = c("optim"), 
+                         type = c("optim"), 
                          weights, index = "Date",
                          replacement,
                          root,
@@ -100,12 +100,10 @@ optim_apsimx <- function(file, src.dir = ".",
         parm.val <- extract_values_apsimx(file = file, src.dir = src.dir, 
                                           parm.path = parm.paths[i])  
       }
-
       iparms[[i]] <- as.numeric(parm.val)
     }else{
       iparms[[i]] <- as.numeric(initial.values[i])
     }
-    
   }
   
   obj_fun <- function(cfs, parm.paths, data, iparms, weights, replacement, root){
@@ -150,7 +148,13 @@ optim_apsimx <- function(file, src.dir = ".",
     
     sim.s <- subset(sim, Date %in% data[[index]], select = names(data))
     
-    if(nrow(sim.s) == 0L) stop("no rows selected in simulations")
+    if(nrow(sim.s) == 0L){
+      cat("number of rows in sim", nrow(sim),"\n")
+      cat("number of rows in data", nrow(data), "\n")
+      print(sim)
+      print(data)
+      stop("no rows selected in simulations")
+    } 
     ## Assuming they are aligned, get rid of the 'Date' column
     sim.s <- sim.s[,-which(names(sim.s) == index)]
     data <- data[,-which(names(data) == index)]
@@ -266,6 +270,13 @@ extract_values_apsimx <- function(file, src.dir, parm.path){
     n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
     wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
     value <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]][[upp[7]]]
+    if(is.null(value)){
+      n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
+      if("Command" %in% names(n6)){
+        gpv <- grep(upp[7], n6$Command, value = TRUE)
+        value <- as.numeric(strsplit(gpv, "=")[[1]][2])
+      }
+    }
   }
   if(upp.lngth == 8){
     n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
@@ -293,6 +304,13 @@ extract_values_apsimx <- function(file, src.dir, parm.path){
     n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
     wl8 <- which(upp[8] == sapply(n7$Children, function(x) x$Name))
     value <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]][[upp[9]]] 
+    if(is.null(value)){
+      n8 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]
+      if("Command" %in% names(n8)){
+        gpv <- grep(upp[9], n8$Command, value = TRUE)
+        value <- as.numeric(strsplit(gpv, "=")[[1]][2])
+      }
+    }
   }
   if(upp.lngth == 10){
     n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
@@ -306,6 +324,13 @@ extract_values_apsimx <- function(file, src.dir, parm.path){
     n8 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]
     wl9 <- which(upp[9] == sapply(n8$Children, function(x) x$Name))
     value <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]$Children[[wl9]][[upp[10]]]
+    if(is.null(value)){
+      n9 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]$Children[[wl9]]
+      if("Command" %in% names(n9)){
+        gpv <- grep(upp[10], n9$Command, value = TRUE)
+        value <- as.numeric(strsplit(gpv, "=")[[1]][2])
+      }
+    }
   }
   return(value)
 }
