@@ -19,6 +19,7 @@
 #' @param replacement TRUE or FALSE for each parameter. Indicating whether it is part of 
 #' the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.
 #' @param root root argument for \code{\link{edit_apsimx_replacement}}
+#' @param initial.values (optionally) supply the initial values of the parameters
 #' @param ... additional arguments to be passed to the optimization algorithm
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
@@ -35,6 +36,7 @@ optim_apsimx <- function(file, src.dir = ".",
                          weights, index = "Date",
                          replacement,
                          root,
+                         initial.values,
                          ...){
   
   .check_apsim_name(file)
@@ -53,10 +55,27 @@ optim_apsimx <- function(file, src.dir = ".",
   if(index == "Date") data$Date <- as.Date(data$Date)
   if(index != "Date") stop("For now Date is the default index")
   
+  ## Setting up Date
+  datami <- data[,-which(names(data) == index), drop = FALSE]
+  if(index == "Date") data$Date <- as.Date(data$Date)
+  
   ## Setting up weights
-  if(missing(weights)) weights <- rep(1, length(parm.paths))
-  if(weights == "mean") weights <- abs(1 / apply(data, 2, mean))
-  if(weights == "var") weights <- abs(1 / apply(data, 2, var))
+  if(missing(weights)){
+    weights <- rep(1, ncol(datami))
+  }else{
+    if(weights == "mean"){
+      weights <- abs(1 / apply(datami, 2, mean))  
+    }else{
+      if(weights == "var"){
+        weights <- 1 / apply(datami, 2, var)    
+      }else{
+        if(length(weights) != ncol(datami))
+          stop("Weights not of correct length")
+        if(!is.numeric(weights))
+          stop("Weights should be numeric")
+      } 
+    } 
+  } 
   
   ## Set up replacement
   if(missing(replacement)) replacement <- rep(FALSE, length(parm.paths))
@@ -72,11 +91,21 @@ optim_apsimx <- function(file, src.dir = ".",
   names(iparms) <- parm.paths
   
   ## How do I retrieve the current value I want to optimize?
-  ## No idea at the moment...
   for(i in seq_along(parm.paths)){
-    parm.val <- extract_values_apsimx(file = file, src.dir = src.dir, 
-                                      parm.path = parm.paths[i])
-    iparms[[i]] <- as.numeric(parm.val)
+    if(missing(initial.values)){
+      if(replacement[i]){
+        parm.val <- extract_values_apsimx(file = file, src.dir = src.dir, 
+                    parm.path = paste0(".Simulations.Replacements.", parm.paths[i]))  
+      }else{
+        parm.val <- extract_values_apsimx(file = file, src.dir = src.dir, 
+                                          parm.path = parm.paths[i])  
+      }
+
+      iparms[[i]] <- as.numeric(parm.val)
+    }else{
+      iparms[[i]] <- as.numeric(initial.values[i])
+    }
+    
   }
   
   obj_fun <- function(cfs, parm.paths, data, iparms, weights, replacement, root){
@@ -84,7 +113,7 @@ optim_apsimx <- function(file, src.dir = ".",
     ## Need to edit the parameters in the simulation file or replacement
     for(i in seq_along(cfs)){
       ## Edit the specific parameters with the corresponding values
-      par.val <- iparms[i] * cfs[i]
+      par.val <- iparms[[i]] * cfs[i]
       if(replacement[i]){
         pp0 <- strsplit(parm.paths[i], ".", fixed = TRUE)[[1]]
         mpp <- paste0(pp0[-length(pp0)], collapse = ".")
@@ -119,11 +148,12 @@ optim_apsimx <- function(file, src.dir = ".",
     if(!all(names(data) %in% names(sim))) 
       stop("names in 'data' do not match names in simulation")
     
-    sim.s <- subset(sim, Date %in% data$Date, select = names(data))
+    sim.s <- subset(sim, Date %in% data[[index]], select = names(data))
     
     if(nrow(sim.s) == 0L) stop("no rows selected in simulations")
     ## Assuming they are aligned, get rid of the 'Date' column
-    sim.s$Date <- NULL; data$Date <- NULL
+    sim.s <- sim.s[,-which(names(sim.s) == index)]
+    data <- data[,-which(names(data) == index)]
     ## Now I need to calculate the residual sum of squares
     ## For this to work all variables should be numeric
     diffs <- as.matrix(data) - as.matrix(sim.s)
@@ -150,7 +180,7 @@ optim_apsimx <- function(file, src.dir = ".",
               root = root,
               ...)
   
-  ans <- structure(list(rss = rss, iaux.parms = iparms, op = op),
+  ans <- structure(list(rss = rss, iaux.parms = iparms, op = op, n = nrow(data)),
                    class = "optim_apsim")
   return(ans)
 }
@@ -245,6 +275,13 @@ extract_values_apsimx <- function(file, src.dir, parm.path){
     n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
     wl7 <- which(upp[7] == sapply(n6$Children, function(x) x$Name))
     value <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]][[upp[8]]]
+    if(is.null(value)){
+      n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
+      if("Command" %in% names(n7)){
+        gpv <- grep(upp[8], n7$Command, value = TRUE)
+        value <- as.numeric(strsplit(gpv, "=")[[1]][2])
+      }
+    }
   }
   if(upp.lngth == 9){
     n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]

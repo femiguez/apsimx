@@ -72,7 +72,7 @@ optim_apsim <- function(file, src.dir = ".",
     }
   }
   
-  datami <- data[,-which(names(data) == index)]
+  datami <- data[,-which(names(data) == index), drop = FALSE]
   if(index == "Date") data$Date <- as.Date(data$Date)
   
   ## Setting up weights
@@ -244,7 +244,7 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
       par.se <- sqrt(2 * solve(x$op$hessian)[i,i] * x$op$value / x$n)
       degf <- x$n - length(x$iaux.parms) ## Degrees of freedom
       qTT <- -qt((1 - level) * 0.5, degf) ## t statistic
-      cat("\t CI level: ", level)
+      cat("\t CI level: ", level, "\t SE:", par.se)
       cat("\t Lower: ", round((x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]], digits))
       cat("\t Upper: ", round((x$op$par[i] + qTT * par.se) * x$iaux.parms[[i]], digits),"\n")
     }
