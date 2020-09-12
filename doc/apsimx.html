@@ -729,7 +729,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Edited /folder/simulation/area/folder/manager[1]/ui/density 
 ## Edited parameter 
 ## New values  8 
-## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpqZXBzC/Millet-pp.apsim</code></pre>
+## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpvGG09J/Millet-pp.apsim</code></pre>
 <p>Verify that it was edited correctly.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet-pp.apsim&quot;</span>, <span class="dt">src.dir =</span> tmp.dir,</a>
 <a class="sourceLine" id="cb39-2" data-line-number="2">              <span class="dt">node =</span> <span class="st">&quot;Manager&quot;</span>,</a>
@@ -983,7 +983,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## Edit (level):  6 
 ## Edited parameter:  Y 
 ## New values:  0 12 20 28 0 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpqZXBzC/MaizeSoybean-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpvGG09J/MaizeSoybean-edited.apsimx</code></pre>
 <p>Let’s inspect the edited file</p>
 <div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean-edited.apsimx&quot;</span>, </a>
 <a class="sourceLine" id="cb60-2" data-line-number="2">                           <span class="dt">src.dir =</span> tmp.dir,</a>
@@ -1084,7 +1084,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## Edited (child):  none 
 ## Edited parameters:  
 ## New values:  Ames.met 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpqZXBzC/Factorial-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpvGG09J/Factorial-edited.apsimx</code></pre>
 <p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge source.</p>
 </div>
 </div>
@@ -1137,7 +1137,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <li><p>Is the management information accurate?</p></li>
 </ol>
 <p>Clearly, if there are any problems, issues or inaccuracies which are derived from these three sources of information, then calibrating or tweaking crop parameters to compensate for those errors will not result in a useful model. In concrete terms, as an example: Are you modifying the radition use efficiency parameter to compensate for incorrect planting date or fertilizer inputs? Running an optimization algorithm is easier than having to think hard about the scientific questions, the mechanisms and the structure of the model.</p>
-<p>Given this disclaimer, I provide simple functions which connect APSIM with optimization routines. These are <strong>optim_apsim</strong> and <strong>optim_apsimx</strong>. These functions work for situations when the function being optimized is smooth (non-techincal comment: small changes in the outputs results in small changes in the output without big jumps or discontinuities) and the parameters being optimized are continuous. This is that both input parameters and outputs can take any real value.</p>
+<p>Given this disclaimer, I provide simple functions which connect APSIM with optimization routines. These are <strong>optim_apsim</strong> and <strong>optim_apsimx</strong>. These functions work for situations when the function being optimized is smooth (i.e. small changes in the inputs result in small changes in the output without big jumps or discontinuities) and the parameters being optimized are continuous. This is that both input parameters and outputs can take any real value.</p>
 <p>I have been testing them and they work as expected. This means that very often they give you the right answer to the wrong question! For example, the optimized value for a parameter might not be within a physical or biological meaningful range. Let’s look at the arguments:</p>
 <div id="optim_apsim" class="section level2">
 <h2>optim_apsim</h2>
