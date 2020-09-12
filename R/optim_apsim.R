@@ -21,22 +21,22 @@
 #' @title Optimize parameters in an APSIM simulation
 #' @name optim_apsim
 #' @rdname optim_apsim
-#' @description It is a wrapper for running APSIM and optimizing parameters using \code{\link{optim}}
+#' @description It is a wrapper for running APSIM and optimizing parameters using \code{\link[stats]{optim}}
 #' @param file file name to be run (the extension .apsim is optional)
 #' @param src.dir directory containing the .apsim file to be run (defaults to the current directory)
 #' @param crop.file name of auxiliary xml file where parameters are stored. If this is missing, it is 
 #'                  assumed that the parameters to be edited are in the main simulation file.
 #' @param parm.paths absolute paths of the coefficients to be optimized. 
-#'             It is recommended that you use \code{\link{inspect_apsim}} for this.
+#'             It is recommended that you use \code{\link{inspect_apsim}} or \code{\link{inspect_apsim_xml}}  for this.
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
 #' @param type Type of optimization. For now, either \sQuote{optim} or \sQuote{ga} for a genetic algorithm.
-#' @param weights Weighting method or values for computing the residual sum of squares. 
+#' @param weights Weighting method or values for computing the residual sum of squares (see Note). 
 #' @param index Index for filtering APSIM output. \sQuote{Date} is currently used. (I have not tested how well it works using anything other than Date).
-#' @param ... additional arguments to be passed to the optimization algorithm
+#' @param ... additional arguments to be passed to the optimization algorithm. If you want confidence intervals, then include \sQuote{hessian = TRUE}.
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
 #' no weighting is applied. It can be \sQuote{mean}, \sQuote{var} or a numeric vector of appropriate length.
-#' @return object of class \sQuote{optim_apsim}, but really a list with results from optim and additional information.
+#' @return object of class \sQuote{optim_apsim}, but really just a list with results from optim and additional information.
 #' @export
 #' 
 
@@ -45,14 +45,13 @@ optim_apsim <- function(file, src.dir = ".",
                         type = c("optim", "ga"), 
                         weights, index = "Date",
                         ...){
-  
   .check_apsim_name(file)
   
   if(src.dir != ".") stop("At the moment it is not possible \n
                           to change the source directory.")
 
-  ## The might offer suggestions in case there is a typo in 'file'
-  file.names <- dir(path = src.dir, pattern=".apsim$", ignore.case = TRUE)
+  ## This might offer suggestions in case there is a typo in 'file'
+  file.names <- dir(path = src.dir, pattern = ".apsim$", ignore.case = TRUE)
   
   if(length(file.names) == 0){
     stop("There are no .apsim files in the specified directory to run.")
@@ -93,7 +92,7 @@ optim_apsim <- function(file, src.dir = ".",
     } 
   } 
   
-  ## What this does is pick the crop.file to be edited when it is not missing
+  ## What this does, is pick the crop.file to be edited when it is not missing
   if(!missing(crop.file)){
     aux.file <- crop.file
     cfile <- TRUE

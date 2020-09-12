@@ -7,7 +7,7 @@
 #' @title Optimize parameters in an APSIM Next Generation simulation
 #' @name optim_apsimx
 #' @rdname optim_apsimx
-#' @description It is a wrapper for running APSIM-X and optimizing parameters using \code{\link{optim}}
+#' @description It is a wrapper for running APSIM-X and optimizing parameters using \code{\link[stats]{optim}}
 #' @param file file name to be run (the extension .apsimx is optional)
 #' @param src.dir directory containing the .apsimx file to be run (defaults to the current directory)
 #' @param parm.paths absolute paths of the coefficients to be optimized. 
@@ -19,8 +19,8 @@
 #' @param replacement TRUE or FALSE for each parameter. Indicating whether it is part of 
 #' the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.
 #' @param root root argument for \code{\link{edit_apsimx_replacement}}
-#' @param initial.values (optionally) supply the initial values of the parameters
-#' @param ... additional arguments to be passed to the optimization algorithm
+#' @param initial.values (required) supply the initial values of the parameters. (Working on fixing this...)
+#' @param ... additional arguments to be passed to the optimization algorithm. See \code{\link[stats]{optim}}
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
 #' no weighting is applied. It can be 'mean', 'variance' or a numeric vector of appropriate length.
@@ -89,6 +89,9 @@ optim_apsimx <- function(file, src.dir = ".",
   ## Build the initial values
   iparms <- vector("list", length = length(parm.paths))
   names(iparms) <- parm.paths
+  
+  if(missing(initial.values))
+    stop("Initial values should be supplied. (Working on a fix for this)")
   
   ## How do I retrieve the current value I want to optimize?
   for(i in seq_along(parm.paths)){
