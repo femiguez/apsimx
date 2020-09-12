@@ -39,15 +39,15 @@ the \sQuote{replacement} component. Its length should be equal to the length or 
 
 \item{root}{root argument for \code{\link{edit_apsimx_replacement}}}
 
-\item{initial.values}{(optionally) supply the initial values of the parameters}
+\item{initial.values}{(required) supply the initial values of the parameters. (Working on fixing this...)}
 
-\item{...}{additional arguments to be passed to the optimization algorithm}
+\item{...}{additional arguments to be passed to the optimization algorithm. See \code{\link[stats]{optim}}}
 }
 \value{
 vector of optimized coefficients
 }
 \description{
-It is a wrapper for running APSIM-X and optimizing parameters using \code{\link{optim}}
+It is a wrapper for running APSIM-X and optimizing parameters using \code{\link[stats]{optim}}
 }
 \details{
 Simple optimization for APSIM Next Generation

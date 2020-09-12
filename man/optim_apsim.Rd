@@ -28,13 +28,13 @@ optim_apsim(
 assumed that the parameters to be edited are in the main simulation file.}
 
 \item{parm.paths}{absolute paths of the coefficients to be optimized. 
-It is recommended that you use \code{\link{inspect_apsim}} for this.}
+It is recommended that you use \code{\link{inspect_apsim}} or \code{\link{inspect_apsim_xml}}  for this.}
 
 \item{data}{data frame with the observed data. By default is assumes there is a 'Date' column for the index.}
 
 \item{type}{Type of optimization. For now, either \sQuote{optim} or \sQuote{ga} for a genetic algorithm.}
 
-\item{weights}{Weighting method or values for computing the residual sum of squares.}
+\item{weights}{Weighting method or values for computing the residual sum of squares (see Note).}
 
 \item{index}{Index for filtering APSIM output. \sQuote{Date} is currently used. (I have not tested how well it works using anything other than Date).}
 
@@ -47,10 +47,10 @@ It is recommended that you use \code{\link{inspect_apsim}} for this.}
 \item{level}{confidence level (default 0.95)}
 }
 \value{
-object of class \sQuote{optim_apsim}, but really a list with results from optim and additional information.
+object of class \sQuote{optim_apsim}, but really just a list with results from optim and additional information.
 }
 \description{
-It is a wrapper for running APSIM and optimizing parameters using \code{\link{optim}}
+It is a wrapper for running APSIM and optimizing parameters using \code{\link[stats]{optim}}
 
 Friendly printing of optim_apsim
 }

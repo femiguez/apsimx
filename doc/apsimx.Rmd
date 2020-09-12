@@ -106,7 +106,8 @@ After we run this example we can treat it as a standard data frame in R.
 
 ```{r read-in-maize-example, eval = TRUE, echo = FALSE}
 extd.dir <- system.file("extdata", package = "apsimx")
-maize <- read_apsimx("Maize.db", src.dir = extd.dir)
+## maize <- read_apsimx("Maize.db", src.dir = extd.dir)
+maize <- read.csv(paste0(extd.dir, "/Maize.csv"))
 ```
 
 ```{r summary-ggplot-maize}
@@ -134,27 +135,27 @@ Editing a file has the side effect of creating a new file with '-edited' added t
 Let's say we want to modify the values of 'Organic Carbon' in the soil in the 'Maize.apsimx' example. First we should inspect the current values.
 
 ```{r inspect-maize-oc}
-inspect_apsimx("Maize.apsimx", src.dir = extd.dir, node = "Soil",
-               soil.child = "Organic")
+inspect_apsimx("Maize.apsimx", src.dir = extd.dir, 
+               node = "Soil", soil.child = "Organic")
 ```
 
 The function 'inspect_apsimx', in this example, displays various information about the organic matter in the soil. (See the help page - ?inspect_apsimx - for more options). In the next step, we 'edit' the values.
 
 ```{r edit-maize-oc}
-ocs <- c(1.5,1.4,1.3,1.2,1.1,1.0,0.9)
-edit_apsimx("Maize.apsimx", src.dir = extd.dir,
-             wrt.dir = ".",
-             node = "Soil",
-             soil.child = "Organic", 
-             parm = "Carbon", value = ocs)
+ocs <- c(1.5, 1.4, 1.3, 1.2, 1.1, 1.0, 0.9)
+edit_apsimx("Maize.apsimx", 
+            src.dir = extd.dir,
+            wrt.dir = ".",
+            node = "Soil",
+            soil.child = "Organic", 
+            parm = "Carbon", value = ocs)
 ```
 
 Let's make sure that we have changed the values successfully.
 
 ```{r inspect-maize-oc-check}
 inspect_apsimx("Maize-edited.apsimx", src.dir = ".", 
-               node = "Soil",
-               soil.child = "Organic")
+               node = "Soil", soil.child = "Organic")
 ```
 
 # Proposed workflow
@@ -169,7 +170,7 @@ It is recommended that you start by creating an .apsim(x) file using the GUI. In
 6. Read in and/or manipulate the results, possibly using 'read_apsim(x)'
 7. Perform visual and statistical analysis
 
-Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. This is considered for future development, but not a priority since this kind of task is very specific to a given project and they are unlikely to generalize well across a range of applications.
+Another proposed more advanced workflow would involve calibrating or optimizing variables given observed data. This is considered in more detail below.
 
 ## Wheat Example (APSIM-X)
 
@@ -185,12 +186,13 @@ ex.dir <- auto_detect_apsimx_examples()
 ## Copy 'Wheat' file to a temporary directory
 ## (or change as needed)
 tmp.dir2 <- tempdir()
-file.copy(paste0(ex.dir,"/","Wheat.apsimx"), tmp.dir2)
+file.copy(paste0(ex.dir, "/", "Wheat.apsimx"), tmp.dir2)
 sim <- apsimx("Wheat.apsimx", src.dir = tmp.dir2, value = "report")
 ```
 
 ```{r apsimx-wheat-read, echo = FALSE}
-sim <- read_apsimx("Wheat.db", src.dir = extd.dir)
+## sim <- read_apsimx("Wheat.db", src.dir = extd.dir)
+sim <- read.csv(paste0(extd.dir, "/Wheat.csv"))
 ```
 
 ```{r apsimx-wheat-summary}
@@ -204,17 +206,17 @@ inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop")
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
 ## Looking more in-depth into 'SowingRule1'
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
-               node = "Manager", parm = list("SowingRule1",NA))
+               node = "Manager", parm = list("SowingRule1", NA))
 ```
 
 If you only want to display the Wheat cultivar choose the sixth element in that table.
 
 ```{r apsimx-wheat-cultivar-only}
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
-               node = "Manager", parm = list("SowingRule1",6))
+               node = "Manager", parm = list("SowingRule1", 6))
 ## We can print and store the path to this parameter
 pp <- inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, 
-               node = "Manager", parm = list("SowingRule1",6),
+               node = "Manager", parm = list("SowingRule1", 6),
                print.path = TRUE)
 ```
 
@@ -230,7 +232,7 @@ We can see that we have 'Sow on a fixed date' as one of the options. Let's say t
 
 ```{r Millet-sow}
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
-              parm = list("Sow on a fixed date",NA))
+              parm = list("Sow on a fixed date", NA))
 ```
 
 Planting density is the fifth element in that table. We can obtain the full path by using the 'print.path' option. It makes sense to use this option once you have found the parameter you are looking for. 
@@ -239,7 +241,7 @@ Planting density is the fifth element in that table. We can obtain the full path
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
               parm = list("Sow on a fixed date",5), print.path = TRUE)
 ## Or store it in an object for later editing
-pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
+pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Manager",
               parm = list("Sow on a fixed date",5), print.path = TRUE)
 ```
 
@@ -256,12 +258,12 @@ Verify that it was edited correctly.
 ```{r Millet-edit-inspect}
 inspect_apsim("Millet-pp.apsim", src.dir = tmp.dir,
               node = "Manager",
-              parm = list("Sow on a fixed date",NA))
+              parm = list("Sow on a fixed date", NA))
 ```
 
 ```{r removing-Millet-pp, echo = FALSE, eval = TRUE}
 ## Apparently this is not needed
-file.remove(paste0(tmp.dir,"/Millet-pp.apsim"))
+file.remove(paste0(tmp.dir, "/Millet-pp.apsim"))
 ```
 
 # Advanced Examples
@@ -322,7 +324,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
                            node.sub3child = "TemperatureResponse",
-                           parm = c("Y","X")) 
+                           parm = c("Y", "X")) 
 ```
 
 The function shows the available replacements ("Maize" and "Soybean"), the 'CropType' if available, the subchild name and the 'Y' vector in this example. If parm is not specified all elements will be displayed.
@@ -337,7 +339,8 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 In this case the cultivars are at the sub-node level.
 
 ```{r inspect-replacement-soybean-cultivar-node-child}
-inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                           src.dir = extd.dir,
                            node = "Soybean", 
                            node.child = "PioneerP22T61_MG22",
                            display.available = FALSE) 
@@ -356,7 +359,7 @@ edit_apsimx_replacement("MaizeSoybean.apsimx",
                         node.subchild = "ThermalTime", 
                         node.subsubchild = "BaseThermalTime",
                         node.sub3child = "TemperatureResponse",
-                        parm = "Y", value = c(0,12,20,28,0))
+                        parm = "Y", value = c(0, 12, 20, 28, 0))
 ```
 
 Let's inspect the edited file
@@ -381,7 +384,7 @@ If we want to inspect and edit this file, we need the 'inspect_apsimx_replacemen
 ```{r inspect-factorial-0, eval = FALSE}
 ## There are multiple 'Experiments' so we need to pick one
 inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
-                           root = list("Experiment",NA))
+                           root = list("Experiment", NA))
 ##These positions matched  Experiment   1 2 3 4 5 
 ##Error in inspect_apsimx_replacement("Factorial", src.dir = ex.dir, root = ##list("Experiment", : Multiple root nodes found. Please provide a position
 ```
@@ -389,14 +392,14 @@ inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
 ```{r inspect-factorial}
 ## There are multiple 'Experiments' so we need to pick one
 inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
-                           root = list("Experiment",1))
+                           root = list("Experiment", 1))
 ## We need to provide a node
 inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
-                           root = list("Experiment",1), 
+                           root = list("Experiment", 1), 
                            node = "Base", display.available = TRUE)
 ## We need to provide a node child
 inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
-                           root = list("Experiment",1), 
+                           root = list("Experiment", 1), 
                            node = "Base", node.child = "Clock",
                            display.available = TRUE)
 ```
@@ -423,7 +426,7 @@ We need to pick one out of the possible factorials. If you check this file with 
 
 ```{r inspect-apsimx-factorial-2}
 inspect_apsimx("Factorial.apsimx", src.dir = extd.dir,
-               root = c("RangeExperiment","Base2"),
+               root = c("RangeExperiment", "Base2"),
                node = "Weather")
 ```
 
@@ -432,7 +435,7 @@ Following this structure, if we want to edit the path to the weather file we can
 ```{r edit-apsimx-factorial-2}
 edit_apsimx("Factorial.apsimx", 
             src.dir = extd.dir, wrt.dir = tmp.dir,
-            root = c("RangeExperiment","Base2"),
+            root = c("RangeExperiment", "Base2"),
             node = "Weather", 
             value = "Ames.met")
 ```
@@ -477,14 +480,65 @@ aiu <- apsim_version(which = "inuse")
 
 **edit_apsimx_batch**: Uses APSIM-X built-in functionality to edit parameters. In testing, it is slower than the other 'edit_apsimx*' functions.
 
+# Parameter Optimization
+
+Often the simulations from a model like APSIM will not be close enough to the observed data. APSIM (Classic and Next Generation) are very complex models with many moving pieces and unexpected interactions among parameters. If you decide that you need to optimize parameters this is what I suggest:
+
+1. Why do you need to perform parameter optimization?
+
+2. Which parameters do you need to optimize?
+
+3. Are the observed measurements appropriate for the parameters you want to optimize?
+
+I like to emphasize here the importance of thinking deeply about whether parameter optimization is needed in a given application. Before you use an optimization routine consider the following:
+
+1. Did you control the quality of the weather data ('met' file)?
+
+2. Are the soil properties appropriate for the location being simulated?
+
+3. Is the management information accurate?
+
+Clearly, if there are any problems, issues or inaccuracies which are derived from these three sources of information, then calibrating or tweaking crop parameters to compensate for those errors will not result in a useful model. In concrete terms, as an example: Are you modifying the radition use efficiency parameter to compensate for incorrect planting date or fertilizer inputs? Running an optimization algorithm is easier than having to think hard about the scientific questions, the mechanisms and the structure of the model.
+
+Given this disclaimer, I provide simple functions which connect APSIM with optimization routines. These are  **optim_apsim** and **optim_apsimx**. These functions work for situations when the function being optimized is smooth (non-techincal comment: small changes in the outputs results in small changes in the output without big jumps or discontinuities) and the parameters being optimized are continuous. This is that both input parameters and outputs can take any real value.
+
+I have been testing them and they work as expected. This means that very often they give you the right answer to the wrong question! For example, the optimized value for a parameter might not be within a physical or biological meaningful range. Let's look at the arguments:
+
+## optim_apsim
+
+* file = .apsim file
+* src.dir = source directory. Should be the current directory for both this file and the crop file.
+* crop.file = typically something like 'Wheat.xml', 'Maize.xml' or similar. You should have also placed an 'ini' under the crop in in the .apsim file and point to this file.
+* parm.paths = character vector with the full path to the parameters to be optimized. This can be obtained by using **inspect_apsim** or **inspect_apsim_xml**. The length of the parameter vector should be equal to the number of parameters being optimized (sometimes less is more). For example:
+
+```{r inspect-apsimx-xml-maize}
+rue.pth <- inspect_apsim_xml("Maize75.xml", src.dir = extd.dir, parm = "rue")
+ext.pth <- inspect_apsim_xml("Maize75.xml", src.dir = extd.dir, parm = "y_extinct_coef")
+## To pass them to optim_apsim, combine them
+pp <- c(rue.pth, ext.pth)
+```
+Generates the paths for the radiation use efficiency and extinction coefficient paths. 
+
+* data = data frame with the observed measurement which will be compared to APSIM output. It is important that the names match. This is the names given in the output of an APSIM simulation should have the same names as the column names in this data frame so that they can be aligned. Only one observation is allowed per Date.
+
+* type = type of optimization. The default is to use **optim**. There is also a genetic algorithm (much slower) and other options can be added in the future (for example mcmc). 
+
+* weights = weights to apply when multiple variables are being optimized. See help file for more details.
+
+* index = the default is 'Date' this allows the alignment of APSIM output and observed measurements.
+
+* ... = additional arguments to be passed to **optim**. For example, you can include lower and upper bounds and change the optimization algorithm (in this case 'L-BFGS-B'). See **optim** help file and documentation.
+
+## optim_apsimx
+
+This function has a very similar structure to **optim_apsim**. The main difference is that at the moment it is required to supply the initial values for the parameters. It is also required to indicate whether each parameter is present in the 'replacement' component. As expalined before, use **inspect_apsimx** or **inspect_apsimx_replacement**.
+
 # To-Do
 
 * **inspect_apsimx_replacement** challenge this function with more complex
 examples. It has problems with 'manager' when replacements are present.
 
-* Add more tests using the 'CoverCrop example' (APSIM 'Classic'). This would be the motivation for writing a function for 'factorials'. 'edit_apsim_factorial'.
-
-* Include parameter estimation example
+* Include a parameter optimization worked example
 
 # Appendix
 
@@ -500,6 +554,7 @@ Files in 'inst/extdata' and how they are used (ordered alphabetically):
 * **maize-soybean-rotation.apsim**: example file with a maize and soybean rotation used in testing and in the 'inspect_apsim' file.
 * **maize-swim.apsim**: example file with the SWIM module for testing (test_apsim_swim.R).
 * **Maize.apsimx**: This file is needed for the vignette.
+* **Maize.csv**: This file is needed for the vignette.
 * **Maize.db**: This file is needed for the vignette.
 * **Maize.out**: This file is needed for the 'read_apsim' example.
 * **MaizeSoybean.apsimx**: This file is needed for the vignette and for testing in 'test_replacements.R'
@@ -507,6 +562,7 @@ Files in 'inst/extdata' and how they are used (ordered alphabetically):
 * **Millet.out/sum**: result from the Millet simulation. Used in the 'read_apsim' example.
 * **Soybean.apsimx**: Soybean example for APSIM-X. Used in 'test_replacements.R'.
 * **Wheat.apsimx**: This file is used in the vignette.
+* **Wheat.csv**: This file is used in the vignette.
 * **Wheat.db**: This file is used in the vignette.
 * **WheatRye.apsimx**: This file is used in 'test_replacements.R'.
 
