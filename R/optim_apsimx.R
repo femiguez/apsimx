@@ -210,7 +210,8 @@ optim_apsimx <- function(file, src.dir = ".",
               root = root,
               ...)
   
-  ans <- structure(list(rss = rss, iaux.parms = iparms, op = op, n = nrow(data)),
+  ans <- structure(list(rss = rss, iaux.parms = iparms, op = op, n = nrow(data),
+                        parm.vector.index = parm.vector.index),
                    class = "optim_apsim")
   return(ans)
 }

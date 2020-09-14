@@ -229,7 +229,8 @@ optim_apsim <- function(file, src.dir = ".",
   }
 
   ans <- structure(list(rss = rss, iaux.parms = iaux.parms, 
-                        op = op, n = nrow(data), ga = gas),
+                        op = op, n = nrow(data), ga = gas,
+                        parm.vector.index = parm.vector.index),
                    class = "optim_apsim")
   return(ans)
 }
@@ -249,6 +250,7 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
   for(i in seq_along(x$iaux.parms)){
     
     cat("\t Parameter path: ", names(x$iaux.parms)[i], "\n")
+    if(x$parm.vector.index[i] > 0) cat("Vector index: ", x$parm.vector.index[i], "\n")
     cat("\t Values: ", x$iaux.parms[[i]], "\n")
   }   
   cat("\t Pre-optimized RSS: ", x$rss, "\n")
@@ -257,7 +259,14 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
   for(i in seq_along(x$iaux.parms)){
     
     cat("\t Parameter path: ", names(x$iaux.parms)[i], "\n")
-    cat("\t Values: ", round(x$iaux.parms[[i]] * x$op$par[i], digits), "\n")
+    if(x$parm.vector.index[i] > 0) cat("Vector index: ", x$parm.vector.index[i], "\n")
+    if(x$parm.vector.index[i] <= 0){
+      cat("\t Values: ", round(x$iaux.parms[[i]] * x$op$par[i], digits), "\n")  
+    }else{
+      pvi <- parm.vector.index[i]
+      x$iaux.parms[[i]][pvi] <- x$iaux.parms[[i]][pvi] * x$op$par[i]
+      cat("\t Values: ", round(x$iaux.parms[[i]], digits), "\n")        
+    }
     
     if(!is.null(x$op$hessian)){
       ## I actually found this way of computing SE here:
@@ -266,8 +275,14 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
       degf <- x$n - length(x$iaux.parms) ## Degrees of freedom
       qTT <- -qt((1 - level) * 0.5, degf) ## t statistic
       cat("\t CI level: ", level, "\t SE:", par.se)
-      cat("\t Lower: ", round((x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]], digits))
-      cat("\t Upper: ", round((x$op$par[i] + qTT * par.se) * x$iaux.parms[[i]], digits),"\n")
+      if(x$parm.vector.index[i] <= 0){
+        cat("\t Lower: ", round((x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]], digits))
+        cat("\t Upper: ", round((x$op$par[i] + qTT * par.se) * x$iaux.parms[[i]], digits),"\n")        
+      }else{
+        pvi <- parm.vector.index[i]
+        cat("\t Lower: ", round((x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]][pvi], digits))
+        cat("\t Upper: ", round((x$op$par[i] + qTT * par.se) * x$iaux.parms[[i]][pvi], digits),"\n")        
+      }
     }
   }   
   cat("\t Optimized RSS: ", x$op$value, "\n")
