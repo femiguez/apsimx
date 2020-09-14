@@ -263,7 +263,7 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
     if(x$parm.vector.index[i] <= 0){
       cat("\t Values: ", round(x$iaux.parms[[i]] * x$op$par[i], digits), "\n")  
     }else{
-      pvi <- parm.vector.index[i]
+      pvi <- x$parm.vector.index[i]
       x$iaux.parms[[i]][pvi] <- x$iaux.parms[[i]][pvi] * x$op$par[i]
       cat("\t Values: ", round(x$iaux.parms[[i]], digits), "\n")        
     }
@@ -279,7 +279,7 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
         cat("\t Lower: ", round((x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]], digits))
         cat("\t Upper: ", round((x$op$par[i] + qTT * par.se) * x$iaux.parms[[i]], digits),"\n")        
       }else{
-        pvi <- parm.vector.index[i]
+        pvi <- x$parm.vector.index[i]
         cat("\t Lower: ", round((x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]][pvi], digits))
         cat("\t Upper: ", round((x$op$par[i] + qTT * par.se) * x$iaux.parms[[i]][pvi], digits),"\n")        
       }
