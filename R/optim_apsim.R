@@ -130,7 +130,7 @@ optim_apsim <- function(file, src.dir = ".",
     ## Need to edit the parameters in the crop file or the main simulation
     for(i in seq_along(cfs)){
       ## Retrieve the vector of current parameters
-      if(is.na(parm.vector.index)){
+      if(any(is.na(parm.vector.index))){
         mparm <- paste(iaux.parms[[i]] * cfs[i], collapse = " ")  
       }else{
         pvi <- parm.vector.index[i]

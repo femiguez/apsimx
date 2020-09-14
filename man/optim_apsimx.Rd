@@ -12,6 +12,7 @@ optim_apsimx(
   type = c("optim"),
   weights,
   index = "Date",
+  parm.vector.index,
   replacement,
   root,
   initial.values,
@@ -33,6 +34,8 @@ It is recommended that you use \code{\link{inspect_apsimx}} for this}
 \item{weights}{Weighting method or values for computing the residual sum of squares.}
 
 \item{index}{Index for filtering APSIM output}
+
+\item{parm.vector.index}{Index to optimize a specific element of a parameter vector.}
 
 \item{replacement}{TRUE or FALSE for each parameter. Indicating whether it is part of 
 the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.}

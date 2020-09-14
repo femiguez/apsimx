@@ -14,6 +14,7 @@ optim_apsim(
   type = c("optim", "ga"),
   weights,
   index = "Date",
+  parm.vector.index,
   ...
 )
 
@@ -37,6 +38,8 @@ It is recommended that you use \code{\link{inspect_apsim}} or \code{\link{inspec
 \item{weights}{Weighting method or values for computing the residual sum of squares (see Note).}
 
 \item{index}{Index for filtering APSIM output. \sQuote{Date} is currently used. (I have not tested how well it works using anything other than Date).}
+
+\item{parm.vector.index}{Index to optimize a specific element of a parameter vector.}
 
 \item{...}{additional arguments (none used at the moment)}
 

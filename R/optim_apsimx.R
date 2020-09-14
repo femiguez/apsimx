@@ -124,7 +124,7 @@ optim_apsimx <- function(file, src.dir = ".",
     ## Need to edit the parameters in the simulation file or replacement
     for(i in seq_along(cfs)){
       ## Edit the specific parameters with the corresponding values
-      if(is.na(parm.vector.index)){
+      if(any(is.na(parm.vector.index))){
         par.val <- iparms[[i]] * cfs[i]  
       }else{
         pvi <- parm.vector.index[i]
