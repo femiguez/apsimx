@@ -16,6 +16,7 @@
 #' @param type Type of optimization. For now, only \sQuote{optim} is used.
 #' @param weights Weighting method or values for computing the residual sum of squares. 
 #' @param index Index for filtering APSIM output
+#' @param parm.vector.index Index to optimize a specific element of a parameter vector.
 #' @param replacement TRUE or FALSE for each parameter. Indicating whether it is part of 
 #' the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.
 #' @param root root argument for \code{\link{edit_apsimx_replacement}}
@@ -34,6 +35,7 @@ optim_apsimx <- function(file, src.dir = ".",
                          parm.paths, data, 
                          type = c("optim"), 
                          weights, index = "Date",
+                         parm.vector.index,
                          replacement,
                          root,
                          initial.values,
@@ -42,7 +44,7 @@ optim_apsimx <- function(file, src.dir = ".",
   .check_apsim_name(file)
 
   ## The might offer suggestions in case there is a typo in 'file'
-  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case = TRUE)
+  file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
   
   if(length(file.names) == 0){
     stop("There are no .apsimx files in the specified directory to run.")
@@ -77,6 +79,13 @@ optim_apsimx <- function(file, src.dir = ".",
     } 
   } 
   
+  if(!missing(parm.vector.index)){
+    if(length(parm.vector.index) ! = length(parm.paths))
+      stop("parm.vector.index should have length equal to parm.paths")
+  }else{
+    parm.vector.index <- NA
+  }
+  
   ## Set up replacement
   if(missing(replacement)) replacement <- rep(FALSE, length(parm.paths))
   
@@ -109,12 +118,23 @@ optim_apsimx <- function(file, src.dir = ".",
     }
   }
   
-  obj_fun <- function(cfs, parm.paths, data, iparms, weights, replacement, root){
+  obj_fun <- function(cfs, parm.paths, data, iparms, weights,
+                      index, parm.vector.index, replacement, root){
     
     ## Need to edit the parameters in the simulation file or replacement
     for(i in seq_along(cfs)){
       ## Edit the specific parameters with the corresponding values
-      par.val <- iparms[[i]] * cfs[i]
+      if(is.na(parm.vector.index)){
+        par.val <- iparms[[i]] * cfs[i]  
+      }else{
+        pvi <- parm.vector.index[i]
+        if(pvi > 0){
+          par.val <- iparms[[i]][pvi] * cfs[i]  
+        }else{
+          par.val <- iparms[[i]] * cfs[i]  
+        }
+      }
+      
       if(replacement[i]){
         pp0 <- strsplit(parm.paths[i], ".", fixed = TRUE)[[1]]
         mpp <- paste0(pp0[-length(pp0)], collapse = ".")
@@ -174,6 +194,8 @@ optim_apsimx <- function(file, src.dir = ".",
                  data = data,
                  iparms = iparms,
                  weights = weights,
+                 index = index,
+                 parm.vector.index = parm.vector.index,
                  replacement = replacement,
                  root = root)
   ## optimization
@@ -183,6 +205,8 @@ optim_apsimx <- function(file, src.dir = ".",
               data = data, 
               iparms = iparms,
               weights = weights,
+              index = index,
+              parm.vector.index = parm.vector.index,
               replacement = replacement,
               root = root,
               ...)

@@ -32,6 +32,7 @@
 #' @param type Type of optimization. For now, either \sQuote{optim} or \sQuote{ga} for a genetic algorithm.
 #' @param weights Weighting method or values for computing the residual sum of squares (see Note). 
 #' @param index Index for filtering APSIM output. \sQuote{Date} is currently used. (I have not tested how well it works using anything other than Date).
+#' @param parm.vector.index Index to optimize a specific element of a parameter vector.
 #' @param ... additional arguments to be passed to the optimization algorithm. If you want confidence intervals, then include \sQuote{hessian = TRUE}.
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
@@ -44,6 +45,7 @@ optim_apsim <- function(file, src.dir = ".",
                         crop.file, parm.paths, data, 
                         type = c("optim", "ga"), 
                         weights, index = "Date",
+                        parm.vector.index,
                         ...){
   .check_apsim_name(file)
   
@@ -92,6 +94,13 @@ optim_apsim <- function(file, src.dir = ".",
     } 
   } 
   
+  if(!missing(parm.vector.index)){
+    if(length(parm.vector.index) ! = length(parm.paths))
+      stop("parm.vector.index should have length equal to parm.paths")
+  }else{
+    parm.vector.index <- NA
+  }
+  
   ## What this does, is pick the crop.file to be edited when it is not missing
   if(!missing(crop.file)){
     aux.file <- crop.file
@@ -114,13 +123,24 @@ optim_apsim <- function(file, src.dir = ".",
   }    
   
   obj_fun <- function(cfs, parm.paths, data, aux.file, 
-                      iaux.parms, weights, index, cfile = TRUE,
-                      multiplier = 1){
+                      iaux.parms, weights, index, 
+                      parm.vector.index,
+                      cfile = TRUE, multiplier = 1){
     
     ## Need to edit the parameters in the crop file or the main simulation
     for(i in seq_along(cfs)){
       ## Retrieve the vector of current parameters
-      mparm <- paste(iaux.parms[[i]] * cfs[i], collapse = " ")
+      if(is.na(parm.vector.index)){
+        mparm <- paste(iaux.parms[[i]] * cfs[i], collapse = " ")  
+      }else{
+        pvi <- parm.vector.index[i]
+        if(pvi > 0){
+          mparm <- paste(iaux.parms[[i]][pvi] * cfs[i], collapse = " ")    
+        }else{
+          mparm <- paste(iaux.parms[[i]] * cfs[i], collapse = " ")  
+        }
+      }
+      
       ## Edit the specific parameters with the corresponding values
       if(cfile){
         ## Here I'm editing an auxiliary file ending in .xml
@@ -175,6 +195,7 @@ optim_apsim <- function(file, src.dir = ".",
                  iaux.parms = iaux.parms,
                  weights = weights,
                  index = index,
+                 parm.vector.index = parm.vector.index,
                  cfile = cfile)
   ## optimization
   if(type == "optim"){
@@ -186,6 +207,7 @@ optim_apsim <- function(file, src.dir = ".",
                        iaux.parms = iaux.parms,
                        weights = weights,
                        index = index,
+                       parm.vector.index = parm.vector.index,
                        cfile = cfile,
                        ...)    
   }
@@ -200,6 +222,7 @@ optim_apsim <- function(file, src.dir = ".",
               iaux.parms = iaux.parms,
               weights = weights,
               index = index,
+              parm.vector.index = parm.vector.index,
               cfile = cfile,
               multiplier = -1, ...)
     
