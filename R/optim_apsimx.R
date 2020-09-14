@@ -80,7 +80,7 @@ optim_apsimx <- function(file, src.dir = ".",
   } 
   
   if(missing(parm.vector.index)){
-    parm.vector.index <- NA
+    parm.vector.index <- rep(-1, length(parm.paths))
   }else{
     if(length(parm.vector.index) != length(parm.paths))
       stop("parm.vector.index should have length equal to parm.paths") 
@@ -126,16 +126,12 @@ optim_apsimx <- function(file, src.dir = ".",
     ## Need to edit the parameters in the simulation file or replacement
     for(i in seq_along(cfs)){
       ## Edit the specific parameters with the corresponding values
-      if(any(is.na(parm.vector.index))){
+      if(parm.vector.index[i] <= 0){
         par.val <- iparms[[i]] * cfs[i]  
       }else{
         pvi <- parm.vector.index[i]
-        if(pvi > 0){
-          iparms[[i]][pvi] <- iparms[[i]][pvi] * cfs[i]  
-          par.val <- iparms[[i]]
-        }else{
-          par.val <- iparms[[i]] * cfs[i]  
-        }
+        iparms[[i]][pvi] <- iparms[[i]][pvi] * cfs[i]  
+        par.val <- iparms[[i]]
       }
       
       if(replacement[i]){

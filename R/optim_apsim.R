@@ -95,7 +95,7 @@ optim_apsim <- function(file, src.dir = ".",
   } 
   
   if(missing(parm.vector.index)){
-    parm.vector.index <- NA
+    parm.vector.index <- rep(-1, length(parm.paths))
   }else{
     if(length(parm.vector.index) != length(parm.paths))
       stop("parm.vector.index should have length equal to parm.paths") 
@@ -132,16 +132,12 @@ optim_apsim <- function(file, src.dir = ".",
     ## Need to edit the parameters in the crop file or the main simulation
     for(i in seq_along(cfs)){
       ## Retrieve the vector of current parameters
-      if(any(is.na(parm.vector.index))){
+      if(parm.vector.index[i] <= 0){
         mparm <- paste(iaux.parms[[i]] * cfs[i], collapse = " ")  
       }else{
         pvi <- parm.vector.index[i]
-        if(pvi > 0){
-          iaux.parms[[i]][pvi] <- iaux.parms[[i]][pvi] * cfs[i]
-          mparm <- paste(iaux.parms[[i]], collapse = " ")    
-        }else{
-          mparm <- paste(iaux.parms[[i]] * cfs[i], collapse = " ")  
-        }
+        iaux.parms[[i]][pvi] <- iaux.parms[[i]][pvi] * cfs[i]
+        mparm <- paste(iaux.parms[[i]], collapse = " ")    
       }
       
       ## Edit the specific parameters with the corresponding values
