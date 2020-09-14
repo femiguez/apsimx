@@ -79,11 +79,13 @@ optim_apsimx <- function(file, src.dir = ".",
     } 
   } 
   
-  if(!missing(parm.vector.index)){
-    if(length(parm.vector.index) != length(parm.paths))
-      stop("parm.vector.index should have length equal to parm.paths")
-  }else{
+  if(missing(parm.vector.index)){
     parm.vector.index <- NA
+  }else{
+    if(length(parm.vector.index) != length(parm.paths))
+      stop("parm.vector.index should have length equal to parm.paths") 
+    if(!is.numeric(parm.vector.index))
+      stop("parm.vector.index should be numeric")
   }
   
   ## Set up replacement
@@ -129,7 +131,8 @@ optim_apsimx <- function(file, src.dir = ".",
       }else{
         pvi <- parm.vector.index[i]
         if(pvi > 0){
-          par.val <- iparms[[i]][pvi] * cfs[i]  
+          iparms[[i]][pvi] <- iparms[[i]][pvi] * cfs[i]  
+          par.val <- iparms[[i]]
         }else{
           par.val <- iparms[[i]] * cfs[i]  
         }

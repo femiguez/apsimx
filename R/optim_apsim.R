@@ -94,11 +94,13 @@ optim_apsim <- function(file, src.dir = ".",
     } 
   } 
   
-  if(!missing(parm.vector.index)){
-    if(length(parm.vector.index) != length(parm.paths))
-      stop("parm.vector.index should have length equal to parm.paths")
-  }else{
+  if(missing(parm.vector.index)){
     parm.vector.index <- NA
+  }else{
+    if(length(parm.vector.index) != length(parm.paths))
+      stop("parm.vector.index should have length equal to parm.paths") 
+    if(!is.numeric(parm.vector.index))
+      stop("parm.vector.index should be numeric")
   }
   
   ## What this does, is pick the crop.file to be edited when it is not missing
@@ -135,7 +137,8 @@ optim_apsim <- function(file, src.dir = ".",
       }else{
         pvi <- parm.vector.index[i]
         if(pvi > 0){
-          mparm <- paste(iaux.parms[[i]][pvi] * cfs[i], collapse = " ")    
+          iaux.parms[[i]][pvi] <- iaux.parms[[i]][pvi] * cfs[i]
+          mparm <- paste(iaux.parms[[i]], collapse = " ")    
         }else{
           mparm <- paste(iaux.parms[[i]] * cfs[i], collapse = " ")  
         }
