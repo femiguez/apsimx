@@ -95,7 +95,7 @@ optim_apsim <- function(file, src.dir = ".",
   } 
   
   if(!missing(parm.vector.index)){
-    if(length(parm.vector.index) ! = length(parm.paths))
+    if(length(parm.vector.index) != length(parm.paths))
       stop("parm.vector.index should have length equal to parm.paths")
   }else{
     parm.vector.index <- NA
