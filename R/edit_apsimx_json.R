@@ -441,7 +441,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
       wl8 <- grep(upp[8], n7$Children)
       n8 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]
-      wl9 <- grep(upp[9], n9$Children)
+      wl9 <- grep(upp[9], n8$Children)
       apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]$Children[[wl9]][[upp[10]]] <- value
     }
   }

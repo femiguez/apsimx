@@ -527,6 +527,8 @@ Generates the paths for the radiation use efficiency and extinction coefficient 
 
 * index = the default is 'Date' this allows the alignment of APSIM output and observed measurements.
 
+* parm.vector.index = some paths point to a vector of parameters, but sometimes only one element of that vector needs to be optimized. In this case provide the index for which element of the vector needs to be optimized. If some of the parameters need this index while others do not, include a zero for those parameter vectors which are not indexed. 
+
 * ... = additional arguments to be passed to **optim**. For example, you can include lower and upper bounds and change the optimization algorithm (in this case 'L-BFGS-B'). See **optim** help file and documentation.
 
 ## optim_apsimx

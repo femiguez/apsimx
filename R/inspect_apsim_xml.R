@@ -614,6 +614,8 @@ inspect_apsim_xml <- function(file = "",
 #' @description view an auxilliary XML apsim file. 
 #' @param file file ending in .xml to be viewed.
 #' @param src.dir directory containing the .xml file to be viewed; defaults to the current working directory
+#' @param viewer either \dQuote{json} or \dQuote{react}.
+#' @param ... additional arguments passed to either \sQuote{jsonedit} or \sQuote{reactjson}.
 #' @return nothing
 #' @export
 #' @examples  

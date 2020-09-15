@@ -10,6 +10,10 @@ view_apsim_xml(file, src.dir, viewer = c("json", "react"), ...)
 \item{file}{file ending in .xml to be viewed.}
 
 \item{src.dir}{directory containing the .xml file to be viewed; defaults to the current working directory}
+
+\item{viewer}{either \dQuote{json} or \dQuote{react}.}
+
+\item{...}{additional arguments passed to either \sQuote{jsonedit} or \sQuote{reactjson}.}
 }
 \value{
 nothing

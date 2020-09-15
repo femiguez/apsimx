@@ -18,6 +18,10 @@
 #' * It is suggested that you keep a backup of the original file. This function
 #' will edit and overwrite the file during the optimization. 
 #' 
+#' * When you use the parm.vector.index you cannot edit two separate elements of
+#' a vector at the same time. This should be used to target a single element of 
+#' a vector only.
+#' 
 #' @title Optimize parameters in an APSIM simulation
 #' @name optim_apsim
 #' @rdname optim_apsim
@@ -32,7 +36,9 @@
 #' @param type Type of optimization. For now, either \sQuote{optim} or \sQuote{ga} for a genetic algorithm.
 #' @param weights Weighting method or values for computing the residual sum of squares (see Note). 
 #' @param index Index for filtering APSIM output. \sQuote{Date} is currently used. (I have not tested how well it works using anything other than Date).
-#' @param parm.vector.index Index to optimize a specific element of a parameter vector.
+#' @param parm.vector.index Index to optimize a specific element of a parameter vector. At the moment it is
+#' possible to only edit one element at a time. This is because there is a conflict when generating multiple
+#' elements in the candidate vector for the same parameter.
 #' @param ... additional arguments to be passed to the optimization algorithm. If you want confidence intervals, then include \sQuote{hessian = TRUE}.
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
@@ -173,7 +179,7 @@ optim_apsim <- function(file, src.dir = ".",
     if(!all(names(data) %in% names(sim))) 
       stop("names in 'data' do not match names in simulation")
     
-    sim.s <- subset(sim, Date %in% data[[index]], select = names(data))
+    sim.s <- subset(sim, sim$Date %in% data[[index]], select = names(data))
     
     if(nrow(sim.s) == 0L) stop("no rows selected in simulations")
     ## Assuming they are aligned, get rid of the 'index' column
@@ -273,7 +279,7 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
       ## https://www.researchgate.net/post/In_R_how_to_estimate_confidence_intervals_from_the_Hessian_matrix
       par.se <- sqrt(2 * solve(x$op$hessian)[i,i] * x$op$value / x$n)
       degf <- x$n - length(x$iaux.parms) ## Degrees of freedom
-      qTT <- -qt((1 - level) * 0.5, degf) ## t statistic
+      qTT <- -1 * stats::qt((1 - level) * 0.5, degf) ## t statistic
       cat("\t CI level: ", level, "\t SE:", par.se)
       if(x$parm.vector.index[i] <= 0){
         cat("\t Lower: ", round((x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]], digits))
@@ -288,6 +294,5 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
   cat("\t Optimized RSS: ", x$op$value, "\n")
   cat("Convergence:", x$op$convergence,"\n")
 }
-  
   
   

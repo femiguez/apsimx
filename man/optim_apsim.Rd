@@ -39,7 +39,9 @@ It is recommended that you use \code{\link{inspect_apsim}} or \code{\link{inspec
 
 \item{index}{Index for filtering APSIM output. \sQuote{Date} is currently used. (I have not tested how well it works using anything other than Date).}
 
-\item{parm.vector.index}{Index to optimize a specific element of a parameter vector.}
+\item{parm.vector.index}{Index to optimize a specific element of a parameter vector. At the moment it is
+possible to only edit one element at a time. This is because there is a conflict when generating multiple
+elements in the candidate vector for the same parameter.}
 
 \item{...}{additional arguments (none used at the moment)}
 
@@ -75,7 +77,11 @@ should be in the same directory as the main simulation.
 crop parameter file.
 
 * It is suggested that you keep a backup of the original file. This function
-will edit and overwrite the file during the optimization.
+will edit and overwrite the file during the optimization. 
+
+* When you use the parm.vector.index you cannot edit two separate elements of
+a vector at the same time. This should be used to target a single element of 
+a vector only.
 }
 \note{
 When computing the objective function (residual sum-of-squares) different variables are combined.

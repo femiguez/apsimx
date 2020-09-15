@@ -1,8 +1,14 @@
 #'
 #' Simple optimization for APSIM Next Generation
 #' 
-#' Only one observation per day is allowed in the data
+#' * At the moment it is required to provide starting values for the parameters of interest.
 #' 
+#' * It is suggested that you keep a backup of the original file. This function
+#' will edit and overwrite the file during the optimization.
+#' 
+#' * When you use the parm.vector.index you cannot edit two separate elements of
+#' a vector at the same time. This should be used to target a single element of 
+#' a vector only. (I can add this feature in the future if it is justified.)
 #' 
 #' @title Optimize parameters in an APSIM Next Generation simulation
 #' @name optim_apsimx
@@ -16,7 +22,9 @@
 #' @param type Type of optimization. For now, only \sQuote{optim} is used.
 #' @param weights Weighting method or values for computing the residual sum of squares. 
 #' @param index Index for filtering APSIM output
-#' @param parm.vector.index Index to optimize a specific element of a parameter vector.
+#' @param parm.vector.index Index to optimize a specific element of a parameter vector.  At the moment it is
+#' possible to only edit one element at a time. This is because there is a conflict when generating multiple
+#' elements in the candidate vector for the same parameter.
 #' @param replacement TRUE or FALSE for each parameter. Indicating whether it is part of 
 #' the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.
 #' @param root root argument for \code{\link{edit_apsimx_replacement}}
@@ -168,7 +176,7 @@ optim_apsimx <- function(file, src.dir = ".",
     if(!all(names(data) %in% names(sim))) 
       stop("names in 'data' do not match names in simulation")
     
-    sim.s <- subset(sim, Date %in% data[[index]], select = names(data))
+    sim.s <- subset(sim, sim$Date %in% data[[index]], select = names(data))
     
     if(nrow(sim.s) == 0L){
       cat("number of rows in sim", nrow(sim),"\n")
