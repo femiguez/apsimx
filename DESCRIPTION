@@ -23,10 +23,10 @@ Imports:
 Suggests:
         datasets,
         FedData,
-	GA,
 	ggplot2,
 	listviewer,
 	nasapower,
+	nloptr,
 	raster,
 	reactR,
 	rmarkdown,

@@ -14,7 +14,7 @@ A data frame with 10 rows and 4 variables:
 }
 }
 \source{
-This are simulated data. For details see the APSIM documentation
+These are simulated data. For details see the APSIM documentation
 }
 \usage{
 obsWheat

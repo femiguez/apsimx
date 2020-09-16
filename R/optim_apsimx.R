@@ -19,7 +19,7 @@
 #' @param parm.paths absolute paths of the coefficients to be optimized. 
 #'             It is recommended that you use \code{\link{inspect_apsimx}} for this
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
-#' @param type Type of optimization. For now, only \sQuote{optim} is used.
+#' @param type Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}}.
 #' @param weights Weighting method or values for computing the residual sum of squares. 
 #' @param index Index for filtering APSIM output
 #' @param parm.vector.index Index to optimize a specific element of a parameter vector.  At the moment it is
@@ -41,7 +41,7 @@
 
 optim_apsimx <- function(file, src.dir = ".", 
                          parm.paths, data, 
-                         type = c("optim"), 
+                         type = c("optim", "nloptr"), 
                          weights, index = "Date",
                          parm.vector.index,
                          replacement,
@@ -65,6 +65,15 @@ optim_apsimx <- function(file, src.dir = ".",
   if(index == "Date") data$Date <- as.Date(data$Date)
   if(index != "Date") stop("For now Date is the default index")
   
+  type <- match.arg(type)
+  
+  if(type == "nloptr"){
+    if(!requireNamespace("nloptr", quietly = TRUE)){
+      warning("The nloptr package is required for this optimization method")
+      return(NULL)
+    }
+  }
+  
   ## Setting up Date
   datami <- data[,-which(names(data) == index), drop = FALSE]
   if(index == "Date") data$Date <- as.Date(data$Date)
@@ -74,10 +83,12 @@ optim_apsimx <- function(file, src.dir = ".",
     weights <- rep(1, ncol(datami))
   }else{
     if(weights == "mean"){
-      weights <- abs(1 / apply(datami, 2, mean))  
+      vmns <- abs(1 / apply(datami, 2, mean))  
+      weights <- (vmns / sum(vmns)) * ncol(datami)
     }else{
       if(weights == "var"){
-        weights <- 1 / apply(datami, 2, var)    
+        vvrs <- 1 / apply(datami, 2, var)    
+        weights <- (vvrs / sum(vvrs)) * ncol(datami)
       }else{
         if(length(weights) != ncol(datami))
           stop("Weights not of correct length")
@@ -208,17 +219,37 @@ optim_apsimx <- function(file, src.dir = ".",
                  replacement = replacement,
                  root = root)
   ## optimization
-  op <- stats::optim(par = rep(1, length(parm.paths)), 
-                     fn = obj_fun, 
-                     parm.paths = parm.paths, 
-                     data = data, 
-                     iparms = iparms,
-                     weights = weights,
-                     index = index,
-                     parm.vector.index = parm.vector.index,
-                     replacement = replacement,
-                     root = root,
-                     ...)
+  if(type == "optim"){
+    op <- stats::optim(par = rep(1, length(parm.paths)), 
+                       fn = obj_fun, 
+                       parm.paths = parm.paths, 
+                       data = data, 
+                       iparms = iparms,
+                       weights = weights,
+                       index = index,
+                       parm.vector.index = parm.vector.index,
+                       replacement = replacement,
+                       root = root,
+                       ...)    
+  }
+  
+  if(type == "nloptr"){
+    op <- nloptr::nloptr(x0 = rep(1, length(parm.paths)), 
+                         eval_f = obj_fun, 
+                         parm.paths = parm.paths, 
+                         data = data, 
+                         iparms = iparms,
+                         weights = weights,
+                         index = index,
+                         parm.vector.index = parm.vector.index,
+                         replacement = replacement,
+                         root = root,
+                         ...)    
+    op$par <- op$solution
+    op$value <- op$objective 
+    op$convergence <- op$status
+  }
+
   
   ans <- structure(list(rss = rss, iaux.parms = iparms, op = op, n = nrow(data),
                         parm.vector.index = parm.vector.index),

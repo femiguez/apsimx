@@ -33,7 +33,7 @@
 #' @param parm.paths absolute paths of the coefficients to be optimized. 
 #'             It is recommended that you use \code{\link{inspect_apsim}} or \code{\link{inspect_apsim_xml}}  for this.
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
-#' @param type Type of optimization. For now, either \sQuote{optim} or \sQuote{ga} for a genetic algorithm.
+#' @param type Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}}.
 #' @param weights Weighting method or values for computing the residual sum of squares (see Note). 
 #' @param index Index for filtering APSIM output. \sQuote{Date} is currently used. (I have not tested how well it works using anything other than Date).
 #' @param parm.vector.index Index to optimize a specific element of a parameter vector. At the moment it is
@@ -72,9 +72,9 @@ optim_apsim <- function(file, src.dir = ".",
   ## optimization type
   type <- match.arg(type)
   
-  if(type == "ga"){
-    if(!requireNamespace("GA", quietly = TRUE)){
-      warning("The GA package is required for this optimization method")
+  if(type == "nloptr"){
+    if(!requireNamespace("nloptr", quietly = TRUE)){
+      warning("The nloptr package is required for this optimization method")
       return(NULL)
     }
   }
@@ -87,10 +87,12 @@ optim_apsim <- function(file, src.dir = ".",
     weights <- rep(1, ncol(datami))
   }else{
     if(weights == "mean"){
-      weights <- abs(1 / apply(datami, 2, mean))  
+      vmns <- abs(1 / apply(datami, 2, mean))  
+      weights <- (vmns / sum(vmns)) * ncol(datami)
     }else{
       if(weights == "var"){
-        weights <- 1 / apply(datami, 2, var)    
+        vvrs <- 1 / apply(datami, 2, var)    
+        weights <- (vvrs / sum(vvrs)) * ncol(datami)
       }else{
         if(length(weights) != ncol(datami))
           stop("Weights not of correct length")
@@ -98,7 +100,7 @@ optim_apsim <- function(file, src.dir = ".",
           stop("Weights should be numeric")
       } 
     } 
-  } 
+  }
   
   if(missing(parm.vector.index)){
     parm.vector.index <- rep(-1, length(parm.paths))
@@ -217,25 +219,25 @@ optim_apsim <- function(file, src.dir = ".",
                        ...)    
   }
   
-  gas <- NULL
-  if(type == "ga"){
-    gas <- GA::ga(type = "real-valued",
-              fitness = obj_fun,
-              parm.paths = parm.paths, 
-              data = data, 
-              aux.file = aux.file, 
-              iaux.parms = iaux.parms,
-              weights = weights,
-              index = index,
-              parm.vector.index = parm.vector.index,
-              cfile = cfile,
-              multiplier = -1, ...)
-    
-    op <- list(par = gas@solution, value = gas@fitnessValue, convergence = NA)
+  if(type == "nloptr"){
+    op <- nloptr::nloptr(x0 = rep(1, length(parm.paths)),
+                         eval_f = obj_fun,
+                         parm.paths = parm.paths, 
+                         data = data, 
+                         aux.file = aux.file, 
+                         iaux.parms = iaux.parms,
+                         weights = weights,
+                         index = index,
+                         parm.vector.index = parm.vector.index,
+                         cfile = cfile,
+                         ...)
+    op$par <- op$solution
+    op$value <- op$objective 
+    op$convergence <- op$status
   }
 
   ans <- structure(list(rss = rss, iaux.parms = iaux.parms, 
-                        op = op, n = nrow(data), ga = gas,
+                        op = op, n = nrow(data),
                         parm.vector.index = parm.vector.index),
                    class = "optim_apsim")
   return(ans)
@@ -277,8 +279,8 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
     if(!is.null(x$op$hessian)){
       ## I actually found this way of computing SE here:
       ## https://www.researchgate.net/post/In_R_how_to_estimate_confidence_intervals_from_the_Hessian_matrix
-      par.se <- sqrt(2 * (1 / (x$op$hessian[i,i])) * x$op$value / x$n)
       degf <- x$n - length(x$iaux.parms) ## Degrees of freedom
+      par.se <- sqrt((2 * (1 / (x$op$hessian[i,i])) * x$op$value) / degf)
       qTT <- -1 * stats::qt((1 - level) * 0.5, degf) ## t statistic
       cat("\t CI level: ", level, "\t SE:", par.se)
       if(x$parm.vector.index[i] <= 0){
