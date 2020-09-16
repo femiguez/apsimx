@@ -229,9 +229,3 @@ edit_apsimx("Factorial.apsimx",
 #  ava <- apsim_version()
 #  aiu <- apsim_version(which = "inuse")
 
-## ----inspect-apsimx-xml-maize--------------------------------------------
-rue.pth <- inspect_apsim_xml("Maize75.xml", src.dir = extd.dir, parm = "rue")
-ext.pth <- inspect_apsim_xml("Maize75.xml", src.dir = extd.dir, parm = "y_extinct_coef")
-## To pass them to optim_apsim, combine them
-pp <- c(rue.pth, ext.pth)
-

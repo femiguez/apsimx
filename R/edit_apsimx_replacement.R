@@ -194,7 +194,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
         wrnsscc <- grep(parm, unlist(rep.node.subsubchild$Command))
         ## Break it up and reassemble
         cmdstrng <- strsplit(rep.node.subsubchild$Command[[wrnsscc]],"=")[[1]][1]
-        rep.node.subsubchild$Command[[wrnsscc]] <- paste(cmdstrng,"=",value)
+        rep.node.subsubchild$Command[[wrnsscc]] <- paste0(cmdstrng,"=",value)
         ## Now write back to list
         rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
         rep.node.child$Children[[wrnsc]] <- rep.node.subchild
@@ -245,7 +245,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
         wrnssscc <- grep(parm, unlist(rep.node.sub3child$Command))
         ## Break it up and reassemble
         cmdstrng <- strsplit(rep.node.sub3child$Command[[wrnssscc]],"=")[[1]][1]
-        rep.node.sub3child$Command[[wrnssscc]] <- paste(cmdstrng,"=",value)
+        rep.node.sub3child$Command[[wrnssscc]] <- paste0(cmdstrng,"=",value)
         ## Now write back to list
         rep.node.subsubchild$Children[[wrnsssc]] <- rep.node.sub3child
         rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild

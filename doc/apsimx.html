@@ -334,10 +334,6 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </ul></li>
 <li><a href="#file-type-or-file-format-details">File Type (or File Format) Details</a></li>
 <li><a href="#additional-functions">Additional functions</a></li>
-<li><a href="#parameter-optimization">Parameter Optimization</a><ul>
-<li><a href="#optim_apsim">optim_apsim</a></li>
-<li><a href="#optim_apsimx">optim_apsimx</a></li>
-</ul></li>
 <li><a href="#to-do">To-Do</a></li>
 <li><a href="#appendix">Appendix</a></li>
 </ul>
@@ -729,7 +725,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Edited /folder/simulation/area/folder/manager[1]/ui/density 
 ## Edited parameter 
 ## New values  8 
-## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmplINcXW/Millet-pp.apsim</code></pre>
+## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmp4BdeoG/Millet-pp.apsim</code></pre>
 <p>Verify that it was edited correctly.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet-pp.apsim&quot;</span>, <span class="dt">src.dir =</span> tmp.dir,</a>
 <a class="sourceLine" id="cb39-2" data-line-number="2">              <span class="dt">node =</span> <span class="st">&quot;Manager&quot;</span>,</a>
@@ -983,7 +979,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## Edit (level):  6 
 ## Edited parameter:  Y 
 ## New values:  0 12 20 28 0 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmplINcXW/MaizeSoybean-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmp4BdeoG/MaizeSoybean-edited.apsimx</code></pre>
 <p>Let’s inspect the edited file</p>
 <div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb60-1" data-line-number="1"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean-edited.apsimx&quot;</span>, </a>
 <a class="sourceLine" id="cb60-2" data-line-number="2">                           <span class="dt">src.dir =</span> tmp.dir,</a>
@@ -1084,7 +1080,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## Edited (child):  none 
 ## Edited parameters:  
 ## New values:  Ames.met 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmplINcXW/Factorial-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmp4BdeoG/Factorial-edited.apsimx</code></pre>
 <p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge source.</p>
 </div>
 </div>
@@ -1121,56 +1117,6 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb74-1" data-line-number="1">ava &lt;-<span class="st"> </span><span class="kw">apsim_version</span>()</a>
 <a class="sourceLine" id="cb74-2" data-line-number="2">aiu &lt;-<span class="st"> </span><span class="kw">apsim_version</span>(<span class="dt">which =</span> <span class="st">&quot;inuse&quot;</span>)</a></code></pre></div>
 <p><strong>edit_apsimx_batch</strong>: Uses APSIM-X built-in functionality to edit parameters. In testing, it is slower than the other ’edit_apsimx*’ functions.</p>
-</div>
-<div id="parameter-optimization" class="section level1">
-<h1>Parameter Optimization</h1>
-<p>Often the simulations from a model like APSIM will not be close enough to the observed data. APSIM (Classic and Next Generation) are very complex models with many moving pieces and unexpected interactions among parameters. If you decide that you need to optimize parameters this is what I suggest:</p>
-<ol style="list-style-type: decimal">
-<li><p>Why do you need to perform parameter optimization?</p></li>
-<li><p>Which parameters do you need to optimize?</p></li>
-<li><p>Are the observed measurements appropriate for the parameters you want to optimize?</p></li>
-</ol>
-<p>I like to emphasize here the importance of thinking deeply about whether parameter optimization is needed in a given application. Before you use an optimization routine consider the following:</p>
-<ol style="list-style-type: decimal">
-<li><p>Did you control the quality of the weather data (‘met’ file)?</p></li>
-<li><p>Are the soil properties appropriate for the location being simulated?</p></li>
-<li><p>Is the management information accurate?</p></li>
-</ol>
-<p>Clearly, if there are any problems, issues or inaccuracies which are derived from these three sources of information, then calibrating or tweaking crop parameters to compensate for those errors will not result in a useful model. In concrete terms, as an example: Are you modifying the radition use efficiency parameter to compensate for incorrect planting date or fertilizer inputs? Running an optimization algorithm is easier than having to think hard about the scientific questions, the mechanisms and the structure of the model.</p>
-<p>Given this disclaimer, I provide simple functions which connect APSIM with optimization routines. These are <strong>optim_apsim</strong> and <strong>optim_apsimx</strong>. These functions work for situations when the function being optimized is smooth (i.e. small changes in the inputs result in small changes in the output without big jumps or discontinuities) and the parameters being optimized are continuous. This is that both input parameters and outputs can take any real value.</p>
-<p>I have been testing them and they work as expected. This means that very often they give you the right answer to the wrong question! For example, the optimized value for a parameter might not be within a physical or biological meaningful range. Let’s look at the arguments:</p>
-<div id="optim_apsim" class="section level2">
-<h2>optim_apsim</h2>
-<ul>
-<li>file = .apsim file</li>
-<li>src.dir = source directory. Should be the current directory for both this file and the crop file.</li>
-<li>crop.file = typically something like ‘Wheat.xml’, ‘Maize.xml’ or similar. You should have also placed an ‘ini’ under the crop in in the .apsim file and point to this file.</li>
-<li>parm.paths = character vector with the full path to the parameters to be optimized. This can be obtained by using <strong>inspect_apsim</strong> or <strong>inspect_apsim_xml</strong>. The length of the parameter vector should be equal to the number of parameters being optimized (sometimes less is more). For example:</li>
-</ul>
-<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb75-1" data-line-number="1">rue.pth &lt;-<span class="st"> </span><span class="kw">inspect_apsim_xml</span>(<span class="st">&quot;Maize75.xml&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">parm =</span> <span class="st">&quot;rue&quot;</span>)</a></code></pre></div>
-<pre><code>## attrs:  
-## text: 0   0  1.60 1.60  1.60  1.60 1.60 1.40  1.30  1.30   0    0 
-## path: /Type/Model/rue</code></pre>
-<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb77-1" data-line-number="1">ext.pth &lt;-<span class="st"> </span><span class="kw">inspect_apsim_xml</span>(<span class="st">&quot;Maize75.xml&quot;</span>, <span class="dt">src.dir =</span> extd.dir, <span class="dt">parm =</span> <span class="st">&quot;y_extinct_coef&quot;</span>)</a></code></pre></div>
-<pre><code>## attrs: extinction coefficient for green leaf 
-## text: 0.70   0.55   0.55 
-## path: /Type/Model/y_extinct_coef</code></pre>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb79-1" data-line-number="1"><span class="co">## To pass them to optim_apsim, combine them</span></a>
-<a class="sourceLine" id="cb79-2" data-line-number="2">pp &lt;-<span class="st"> </span><span class="kw">c</span>(rue.pth, ext.pth)</a></code></pre></div>
-<p>Generates the paths for the radiation use efficiency and extinction coefficient paths.</p>
-<ul>
-<li><p>data = data frame with the observed measurement which will be compared to APSIM output. It is important that the names match. This is the names given in the output of an APSIM simulation should have the same names as the column names in this data frame so that they can be aligned. Only one observation is allowed per Date.</p></li>
-<li><p>type = type of optimization. The default is to use <strong>optim</strong>. There is also a genetic algorithm (much slower) and other options can be added in the future (for example mcmc).</p></li>
-<li><p>weights = weights to apply when multiple variables are being optimized. See help file for more details.</p></li>
-<li><p>index = the default is ‘Date’ this allows the alignment of APSIM output and observed measurements.</p></li>
-<li><p>parm.vector.index = some paths point to a vector of parameters, but sometimes only one element of that vector needs to be optimized. In this case provide the index for which element of the vector needs to be optimized. If some of the parameters need this index while others do not, include a zero for those parameter vectors which are not indexed.</p></li>
-<li><p>… = additional arguments to be passed to <strong>optim</strong>. For example, you can include lower and upper bounds and change the optimization algorithm (in this case ‘L-BFGS-B’). See <strong>optim</strong> help file and documentation.</p></li>
-</ul>
-</div>
-<div id="optim_apsimx" class="section level2">
-<h2>optim_apsimx</h2>
-<p>This function has a very similar structure to <strong>optim_apsim</strong>. The main difference is that at the moment it is required to supply the initial values for the parameters. It is also required to indicate whether each parameter is present in the ‘replacement’ component. As expalined before, use <strong>inspect_apsimx</strong> or <strong>inspect_apsimx_replacement</strong>.</p>
-</div>
 </div>
 <div id="to-do" class="section level1">
 <h1>To-Do</h1>

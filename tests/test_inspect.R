@@ -214,6 +214,12 @@ if(inspect.replacement.test2){
                              node.subchild = "Photosynthesis",
                              node.subsubchild = "RUE",
                              parm = "FixedValue")
+  
+  ## WheatRye version
+  inspect_apsimx_replacement("WheatRye.apsimx", src.dir = extd.dir,
+                             node = "Wheat", node.child = "Cultivars",
+                             node.subchild = "USA", node.subsubchild = "Yecora")
+                             
 }
  
 

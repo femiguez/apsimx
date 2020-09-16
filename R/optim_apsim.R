@@ -277,7 +277,7 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
     if(!is.null(x$op$hessian)){
       ## I actually found this way of computing SE here:
       ## https://www.researchgate.net/post/In_R_how_to_estimate_confidence_intervals_from_the_Hessian_matrix
-      par.se <- sqrt(2 * solve(x$op$hessian)[i,i] * x$op$value / x$n)
+      par.se <- sqrt(2 * (1 / (x$op$hessian[i,i])) * x$op$value / x$n)
       degf <- x$n - length(x$iaux.parms) ## Degrees of freedom
       qTT <- -1 * stats::qt((1 - level) * 0.5, degf) ## t statistic
       cat("\t CI level: ", level, "\t SE:", par.se)

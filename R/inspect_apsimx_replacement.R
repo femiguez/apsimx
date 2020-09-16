@@ -52,7 +52,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   
   .check_apsim_name(file)
   
-  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case=TRUE)
   
   if(length(file.names) == 0){
     stop("There are no .apsimx files in the specified directory to inspect.")
