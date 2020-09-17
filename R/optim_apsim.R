@@ -190,7 +190,7 @@ optim_apsim <- function(file, src.dir = ".",
     ## Now I need to calculate the residual sum of squares
     ## For this to work all variables should be numeric
     diffs <- as.matrix(data) - as.matrix(sim.s)
-    rss <- sum((diffs * weights)^2) * multiplier
+    rss <- sum(weights * colSums(diffs^2)) * multiplier
     return(rss)
   }
   

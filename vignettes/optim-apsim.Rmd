@@ -39,9 +39,9 @@ I like to emphasize here the importance of thinking deeply about whether paramet
 
 Clearly, if there are any problems, issues or inaccuracies which are derived from these three sources of information, then calibrating or tweaking crop parameters to compensate for those errors will not result in a useful model. In concrete terms, as an example: Are you modifying the radition use efficiency parameter to compensate for incorrect planting date or fertilizer inputs? Running an optimization algorithm is easier than having to think hard about the scientific questions, the mechanisms and the structure of the model.
 
-Given this disclaimer, I provide simple functions which connect APSIM with optimization routines. These are  **optim_apsim** and **optim_apsimx**. These functions work for situations when the function being optimized is smooth (i.e. small changes in the inputs result in small changes in the output without jumps or discontinuities) and the parameters being optimized are continuous. This is: that both input parameters and outputs can take any real value.
+Given this disclaimer, I provide simple functions which connect APSIM with optimization routines. These are  **optim_apsim** and **optim_apsimx**. These functions work best for situations when the function being optimized is smooth (i.e. small changes in the inputs result in small changes in the output without jumps or discontinuities) and the parameters being optimized are continuous. This is: that both input parameters and outputs can take any real value. However, several of the optimization algorithms, such as the default 'Nelder-Mead' work for non-differentiable functions.
 
-I have been testing them and they work as expected. This means that very often they give you the right answer to the wrong question! For example, the optimized value for a parameter might not be within a physical or biological meaningful range. Let's look at the arguments:
+I have been testing them and they work as expected. This means that very often they give you the right answer to the wrong question! For example, the optimized value for a parameter might not be within a physical or biological meaningful range if you are not careful. Let's look at the arguments:
 
 ## optim_apsim
 
@@ -205,6 +205,44 @@ This ran for about 8 minutes and it allows for calculation of confidence interva
 wop.h
 ```
 
-### Additional considerations
+After optimization there is good agreement between observed and simulated.
+
+```{r wop-result-opt, eval = FALSE}
+## We re-run the model because the Wheat-opt-ex.apsimx file 
+## is already edited
+sim.opt <- apsimx("Wheat-opt-ex.apsimx", src.dir = extd.dir, value = "report")  
+sim.opt.s <- subset(sim.opt, 
+                    Date > as.Date("2016-09-30") & Date < as.Date("2017-07-01"))
+```
+
+```{r import-wop-result, echo = FALSE}
+sim.opt.s <- read.csv(file.path(extd.dir, "wheat-sim-opt.csv"))
+sim.opt.s$Date <- as.Date(sim.opt.s$Date)
+```
+
+```{r wop-result-opt-visualize}
+  ## phenology
+  ggplot() + 
+    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Stage)) +
+    geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.Phenology.Stage)) + 
+    ggtitle("Phenology")
+  ## LAI
+  ggplot() + 
+    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Leaf.LAI)) +
+    geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.Leaf.LAI)) + 
+    ggtitle("LAI")
+  ## Biomass
+  ggplot() + 
+    geom_point(data = obsWheat, aes(x = Date, y = Wheat.AboveGround.Wt)) +
+    geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.AboveGround.Wt)) + 
+    ggtitle("Biomass (g/m2)")
+```
+
+### Additional considerations and potential issues
 
 The main additional consideration is that it can be a good idea to set up lower and upper bounds on the parameters in terms of how much higher and lower than the default values can be. In a model such as APSIM usually plus or minus 50 percent is enough of a range and even a lower range can often suffice. These can be included as 0.5 and 1.5. With *optim* it is necessary to use method = "L-BFGS-B". There are also similar options when using **nloptr**. This package has many available algorithms to choose from with more modern implementations than the ones available in **optim**. However, one disadvantage of the **nloptr** function is that it does not seem to be able to compute the Hessian numerically. 
+
+* One issue which I have not fully tracked down is an error which appears which indicates a conflict with disk I/O. Again, I need to check but this may be when trying to read and/or write an apsimx file which is also opened in the APSIM GUI application. It is possible that this issue goes away when the APSIM GUI is closed.
+
+* I'm not convinced that using the Hessian (in the way I'm doing it) produces accurate standard errors. It seems to work just fine when there is one variable and perhaps when there is no weighting applied, but it seems that it breaks down with multiple variables and weighting.
+
