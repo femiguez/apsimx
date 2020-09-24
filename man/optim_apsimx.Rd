@@ -9,7 +9,7 @@ optim_apsimx(
   src.dir = ".",
   parm.paths,
   data,
-  type = c("optim", "nloptr"),
+  type = c("optim", "nloptr", "mcmc"),
   weights,
   index = "Date",
   parm.vector.index,
@@ -29,7 +29,7 @@ It is recommended that you use \code{\link{inspect_apsimx}} for this}
 
 \item{data}{data frame with the observed data. By default is assumes there is a 'Date' column for the index.}
 
-\item{type}{Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}}.}
+\item{type}{Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}} or \sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}.}
 
 \item{weights}{Weighting method or values for computing the residual sum of squares.}
 

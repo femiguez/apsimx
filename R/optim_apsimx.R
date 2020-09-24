@@ -19,7 +19,7 @@
 #' @param parm.paths absolute paths of the coefficients to be optimized. 
 #'             It is recommended that you use \code{\link{inspect_apsimx}} for this
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
-#' @param type Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}}.
+#' @param type Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}} or \sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}.
 #' @param weights Weighting method or values for computing the residual sum of squares. 
 #' @param index Index for filtering APSIM output
 #' @param parm.vector.index Index to optimize a specific element of a parameter vector.  At the moment it is
@@ -41,7 +41,7 @@
 
 optim_apsimx <- function(file, src.dir = ".", 
                          parm.paths, data, 
-                         type = c("optim", "nloptr"), 
+                         type = c("optim", "nloptr", "mcmc"), 
                          weights, index = "Date",
                          parm.vector.index,
                          replacement,
@@ -70,6 +70,13 @@ optim_apsimx <- function(file, src.dir = ".",
   if(type == "nloptr"){
     if(!requireNamespace("nloptr", quietly = TRUE)){
       warning("The nloptr package is required for this optimization method")
+      return(NULL)
+    }
+  }
+  
+  if(type == "mcmc"){
+    if(!requireNamespace("BayesianTools", quietly = TRUE)){
+      warning("The BayesianTools package is required for this method")
       return(NULL)
     }
   }
@@ -249,7 +256,46 @@ optim_apsimx <- function(file, src.dir = ".",
     op$value <- op$objective 
     op$convergence <- op$status
   }
-
+  
+  if(type == "mcmc"){
+    ## Setting defaults
+    datami.sds <- apply(datami, 2, sd)
+    mcmc.args <- list(...)
+    if(is.null(mcmc.args$lower)) lower <- rep(0, length(iparms) + ncol(datami))
+    if(is.null(mcmc.args$upper)) upper <- c(rep(2, length(iparms)), datami.sds * 100)
+    if(is.null(mcmc.args$sampler)) sampler <- "DEzs"
+    if(is.null(mcmc.args$settings)) stop("runMCMC settings are missing with no default")
+   
+    
+    cfs <- c(rep(1, length(iparms)), apply(datami, 2, sd))
+    
+    ## Create environment with objects
+    assign('.file', file, mcmc.apsimx.env)
+    assign('.src.dir', src.dir, mcmc.apsimx.env)
+    assign('.parm.paths', parm.paths, mcmc.apsimx.env)
+    assign('.data', data, mcmc.apsimx.env)
+    assign('.iparms', iparms, mcmc.apsimx.env)
+    assign('.index', index, mcmc.apsimx.env)
+    assign('.parm.vector.index', parm.vector.index, mcmc.apsimx.env)
+    assign('.replacement', replacement, mcmc.apsimx.env)
+    assign('.root', root, mcmc.apsimx.env)
+    
+    ## Pre-optimized log-likelihood
+    pll <- log_lik(cfs)
+    
+    cat("Pre-optimized log-likelihood", pll, "\n")
+    
+    nms <- c(names(iparms), paste0("sd_", names(datami)))
+    bayes.setup <- BayesianTools::createBayesianSetup(log_lik, 
+                                                      lower = lower,
+                                                      upper = upper,
+                                                      names = nms)
+    
+    op.mcmc <- BayesianTools::runMCMC(bayes.setup, 
+                                      sampler = sampler, 
+                                      settings = mcmc.args$settings)
+    return(op.mcmc)
+  }
   
   ans <- structure(list(rss = rss, iaux.parms = iparms, op = op, n = nrow(data),
                         parm.vector.index = parm.vector.index),
@@ -402,4 +448,99 @@ extract_values_apsimx <- function(file, src.dir, parm.path){
   }
   return(value)
 }
+
+## Log-likelihood
+log_lik <- function(.cfs){
+
+  .file <- get('.file', env = mcmc.apsimx.env)
+  .src.dir <- get('.src.dir', env = mcmc.apsimx.env)
+  .parm.paths <- get('.parm.paths', env = mcmc.apsimx.env)
+  .data <- get('.data', env = mcmc.apsimx.env)
+  .iparms <- get('.iparms', env = mcmc.apsimx.env)
+  .index <- get('.index', env = mcmc.apsimx.env)
+  .parm.vector.index <- get('.parm.vector.index', env = mcmc.apsimx.env)
+  .replacement <- get('.replacement', env = mcmc.apsimx.env)
+  .root <- get('.root', env = mcmc.apsimx.env)
+
+  ## Need to edit the parameters in the simulation file or replacement
+  for(i in 1:length(.iparms)){
+    ## Edit the specific parameters with the corresponding values
+    if(.parm.vector.index[i] <= 0){
+      par.val <- .iparms[[i]] * .cfs[i]  
+    }else{
+      pvi <- .parm.vector.index[i]
+      .iparms[[i]][pvi] <- .iparms[[i]][pvi] * .cfs[i]  
+      par.val <- .iparms[[i]]
+    }
+    
+    if(.replacement[i]){
+      pp0 <- strsplit(.parm.paths[i], ".", fixed = TRUE)[[1]]
+      mpp <- paste0(pp0[-length(pp0)], collapse = ".")
+      edit_apsimx_replacement(file = .file, 
+                              src.dir = .src.dir,
+                              wrt.dir = .src.dir,
+                              node.string = mpp,
+                              overwrite = TRUE,
+                              parm = pp0[length(pp0)],
+                              value = par.val,
+                              root = .root,
+                              verbose = FALSE) 
+    }else{
+      edit_apsimx(file = .file, 
+                  src.dir = .src.dir,
+                  wrt.dir = .src.dir,
+                  node = "Other",
+                  parm.path = .parm.paths[i],
+                  overwrite = TRUE,
+                  value = par.val,
+                  verbose = FALSE) 
+    }
+  }
+  
+  ## Run simulation  
+  sim <- try(apsimx(file = .file, src.dir = .src.dir,
+                    silent = TRUE, cleanup = TRUE, value = "report"),
+             silent = TRUE)
+  
+  if(inherits(sim, "try-error")) return(NA)
+  
+  ## Only keep those columns with corresponding names in the data
+  ## and only the dates that match those in 'data'
+  if(!all(names(.data) %in% names(sim))) 
+    stop("names in 'data' do not match names in simulation")
+  
+  sim.s <- subset(sim, sim$Date %in% .data[[.index]], select = names(.data))
+  
+  if(nrow(sim.s) == 0L){
+    cat("number of rows in sim", nrow(sim),"\n")
+    cat("number of rows in data", nrow(.data), "\n")
+    print(sim)
+    print(.data)
+    stop("no rows selected in simulations")
+  } 
+  ## Assuming they are aligned, get rid of the 'Date' column
+  sim.s <- sim.s[,-which(names(sim.s) == .index)]
+  .data <- .data[,-which(names(.data) == .index)]
+  ## Now I need to calculate the residual sum of squares
+  ## For this to work all variables should be numeric
+  diffs <- as.matrix(.data) - as.matrix(sim.s)
+  if(ncol(diffs) == 1){
+    lls <- dnorm(diffs[,1], sd = .cfs[length(.cfs)], log = TRUE)
+    return(sum(lls))
+  }else{
+    Sigma <- diag(.cfs[(length(.iparms) + 1):length(.cfs)])
+    lls <- mvtnorm::dmvnorm(diffs, sigma = Sigma, log = TRUE)
+    return(sum(lls))    
+  }
+}
+
+## Create an environment to solve this problem?
+#' Create an apsimx environment for MCMC
+#' 
+#' @title Environment to store data for apsimx MCMC
+#' @description Environment which stores data for MCMC
+#' @export
+#' 
+mcmc.apsimx.env <- new.env(parent = emptyenv())
+
 
