@@ -153,7 +153,7 @@ if(inspect.replacement.test){
                              node.subchild = "Soil",
                              display.available = TRUE)
   
-  ## Look at Thickness
+  ## Look at Water
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
                              root = list("Experiment", 2),
                              node = "Base2", node.child = "Field",
@@ -161,6 +161,13 @@ if(inspect.replacement.test){
                              node.subsubchild = "Water",
                              display.available = TRUE)
   
+  ## For a specific parameter
+  inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
+                             root = list("Experiment", 2),
+                             node = "Base2", node.child = "Field",
+                             node.subchild = "Soil",
+                             node.subsubchild = "Water",
+                             parm = "Depth")
 }
 
 inspect.replacement.test2 <- get(".run.local.tests", envir = apsimx.options)
@@ -219,6 +226,12 @@ if(inspect.replacement.test2){
   inspect_apsimx_replacement("WheatRye.apsimx", src.dir = extd.dir,
                              node = "Wheat", node.child = "Cultivars",
                              node.subchild = "USA", node.subsubchild = "Yecora")
+  
+  ## Now with parameter
+  inspect_apsimx_replacement("WheatRye.apsimx", src.dir = extd.dir,
+                             node = "Wheat", node.child = "Cultivars",
+                             node.subchild = "USA", node.subsubchild = "Yecora",
+                             parm = "MinimumLeafNumber")
                              
 }
  
