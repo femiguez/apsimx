@@ -452,15 +452,15 @@ extract_values_apsimx <- function(file, src.dir, parm.path){
 ## Log-likelihood
 log_lik <- function(.cfs){
 
-  .file <- get('.file', env = mcmc.apsimx.env)
-  .src.dir <- get('.src.dir', env = mcmc.apsimx.env)
-  .parm.paths <- get('.parm.paths', env = mcmc.apsimx.env)
-  .data <- get('.data', env = mcmc.apsimx.env)
-  .iparms <- get('.iparms', env = mcmc.apsimx.env)
-  .index <- get('.index', env = mcmc.apsimx.env)
-  .parm.vector.index <- get('.parm.vector.index', env = mcmc.apsimx.env)
-  .replacement <- get('.replacement', env = mcmc.apsimx.env)
-  .root <- get('.root', env = mcmc.apsimx.env)
+  .file <- get('.file', envir = mcmc.apsimx.env)
+  .src.dir <- get('.src.dir', envir = mcmc.apsimx.env)
+  .parm.paths <- get('.parm.paths', envir = mcmc.apsimx.env)
+  .data <- get('.data', envir = mcmc.apsimx.env)
+  .iparms <- get('.iparms', envir = mcmc.apsimx.env)
+  .index <- get('.index', envir = mcmc.apsimx.env)
+  .parm.vector.index <- get('.parm.vector.index', envir = mcmc.apsimx.env)
+  .replacement <- get('.replacement', envir = mcmc.apsimx.env)
+  .root <- get('.root', envir = mcmc.apsimx.env)
 
   ## Need to edit the parameters in the simulation file or replacement
   for(i in 1:length(.iparms)){
@@ -525,7 +525,7 @@ log_lik <- function(.cfs){
   ## For this to work all variables should be numeric
   diffs <- as.matrix(.data) - as.matrix(sim.s)
   if(ncol(diffs) == 1){
-    lls <- dnorm(diffs[,1], sd = .cfs[length(.cfs)], log = TRUE)
+    lls <- stats::dnorm(diffs[,1], sd = .cfs[length(.cfs)], log = TRUE)
     return(sum(lls))
   }else{
     Sigma <- diag(.cfs[(length(.iparms) + 1):length(.cfs)])

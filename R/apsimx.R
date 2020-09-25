@@ -504,6 +504,6 @@ assign('.run.local.tests', FALSE, apsimx.options)
 #' @importFrom utils read.table
 #' @importFrom utils write.table
 #' @importFrom tools file_path_sans_ext
-#' @importFrom stats optim qt var
+#' @importFrom stats optim qt var sd
 NULL
 

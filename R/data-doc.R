@@ -8,7 +8,7 @@
 #'   \item{Date}{ -date- date starting Oct 1 2016 and ending June 6 2017}
 #'   \item{Wheat.Phenology.Stage}{ -numeric- phenology stage of wheat}
 #'   \item{Wheat.Leaf.LAI}{ -numeric- Leaf Area Index}
-#'   \item{Wheat.AboveGround.wt}{-numeric- above ground biomass (g/m2)}
+#'   \item{Wheat.AboveGround.Wt}{-numeric- above ground biomass (g/m2)}
 #' }
 #' @source These are simulated data. For details see the APSIM documentation
 "obsWheat"
