@@ -25,7 +25,7 @@
 #' ## Trim pwr data
 #' pwr2 <- pwr[,1:6]
 #' ## Compare them
-#' cmet <- compare_apsim_met(pwr2, iem)
+#' cmet <- compare_apsim_met(pwr2, iem, labels = c("pwr","iem"))
 #' ## Visualize radiation
 #' plot(cmet, met.var = "radn")
 #' plot(cmet, plot.type = "diff")
@@ -54,7 +54,11 @@ compare_apsim_met <- function(...,
   met1 <- mets[[1]]
   
   m.nms <- NULL
-  if(!missing(labels)) m.nms <- labels
+  if(!missing(labels)){
+    m.nms <- labels
+    if(length(labels) != n.mets)
+      stop(" 'labels' lenght should be the same as the number of 'met' objects")
+  } 
   
   if(!inherits(met1, "met")) stop("object should be of class 'met' ")
   
@@ -96,6 +100,7 @@ compare_apsim_met <- function(...,
 
       for(j in 2:ncol(tmp)){
         cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
+        if(!missing(labels))cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
         fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
         cat(" \t Bias: ", coef(fm0)[1], "\n")
         cat(" \t Slope: ", coef(fm0)[2], "\n")
@@ -103,6 +108,25 @@ compare_apsim_met <- function(...,
         cat(" \t RSS: ", deviance(fm0), "\n")
         cat(" \t RMSE: ", sigma(fm0), "\n")
       }
+    }
+  }
+  
+  if(met.var != "all"){
+    ## Just select the appropriate variable
+    idx.met.mrg <- grep(met.var, names(met.mrg))
+    met.mrg.s <- met.mrg[,idx.met.mrg]
+    
+    cat("Variable ", met.var, "\n")
+    tmp <- met.mrg.s
+    for(j in 2:ncol(tmp)){
+      cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
+      if(!missing(labels))cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
+      fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
+      cat(" \t Bias: ", coef(fm0)[1], "\n")
+      cat(" \t Slope: ", coef(fm0)[2], "\n")
+      cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
+      cat(" \t RSS: ", deviance(fm0), "\n")
+      cat(" \t RMSE: ", sigma(fm0), "\n")
     }
   }
   
@@ -182,6 +206,7 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts"),
     prs0 <- paste0(met.var, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
     tmp <- x[, grep(prs, names(x))]
+    tmp$dates <- x$dates ## Put it back in - kinda dumb 
     
     gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = dates, 
                                                     y = eval(parse(text = eval(prs0[1]))),
@@ -205,6 +230,7 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts"),
     prs0 <- paste0(met.var, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
     tmp <- x[, grep(prs, names(x))]
+    tmp$dates <- x$dates
     tmp$cum_var1 <- cumsum(tmp[, pairs[1]])
     tmp$cum_var2 <- cumsum(tmp[, pairs[2]])
     
