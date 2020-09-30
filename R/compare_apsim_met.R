@@ -1,0 +1,227 @@
+#' Compare two or more metfiles
+#' 
+#' @title Compare two or more metfiles
+#' @name compare_apsim_met
+#' @rdname compare_apsim_met
+#' @description Helper function which allows for a simple comparison among help files
+#' @param ... met file objects. Should be of class 'met'
+#' @param met.var meteorological variable to use in the comparison. Either \sQuote{all},
+#' \sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
+#' \sQuote{wind_speed} or \sQuote{vp}. 
+#' @param labels labels for plotting and identification of \sQuote{met} objects.
+#' @export
+#' @return object of class \sQuote{cmet}, which can be used for further plotting
+#' @examples 
+#' \dontrun{
+#' require(nasapower)
+#' ## Specify the location
+#' lonlat <- c(-93, 42)
+#' ## dates
+#' dts <- c("2017-01-01","2017-12-31")
+#' ## Get pwr
+#' pwr <- get_power_apsim_met(lonlat = lonlat, dates = dts)
+#' ## Get data from IEM
+#' iem <- get_iem_apsim_met(lonlat = lonlat, dates = dts)
+#' ## Trim pwr data
+#' pwr2 <- pwr[,1:6]
+#' ## Compare them
+#' cmet <- compare_apsim_met(pwr2, iem)
+#' ## Visualize radiation
+#' plot(cmet, met.var = "radn")
+#' plot(cmet, plot.type = "diff")
+#' plot(cmet, plot.type = "ts")
+#' ## Visualize maxt
+#' plot(cmet, met.var = "maxt")
+#' plot(cmet, met.var = "maxt", plot.type = "diff")
+#' plot(cmet, met.var = "maxt", plot.type = "ts")
+#' }
+#' 
+
+compare_apsim_met <- function(..., 
+                              met.var = c("all", "radn", "maxt", 
+                                          "mint", "rain", "rh", 
+                                          "wind_speed", "vp"),
+                              labels){
+  
+  mets <- list(...)
+  
+  n.mets <- length(mets)
+  
+  met.var <- match.arg(met.var)
+  
+  if(n.mets < 2) stop("you should provide at least two met files")
+  
+  met1 <- mets[[1]]
+  
+  m.nms <- NULL
+  if(!missing(labels)) m.nms <- labels
+  
+  if(!inherits(met1, "met")) stop("object should be of class 'met' ")
+  
+  ## Create the 'date' fir indexing
+  nms1 <- names(met1)
+  met.mrg <- met1
+  yr <- as.character(met1$year[1])
+  met.mrg$dates <- as.Date(0:c(nrow(met1) - 1), origin = as.Date(paste0(yr, "-01-01")))
+  names(met.mrg) <- c(paste0(names(met1), ".1"), "dates")
+
+  for(i in 2:n.mets){
+    
+    met.i <- mets[[i]]
+    
+    if(ncol(met1) != ncol(met.i)) stop("met files should have the same number of columns")
+    if(all(!names(met1) %in% names(met.i))) stop("met files should have the same column names")
+    
+    yr <- as.character(met.i$year[1])
+    met.i$dates <- as.Date(0:c(nrow(met.i) - 1), origin = as.Date(paste0(yr, "-01-01")))
+    names(met.i) <- c(paste0(names(met1), ".", i), "dates")
+    
+    nms <- names(met.i)
+    ## drop the year.i and day.i names
+    met.mrg <- merge(met.mrg, met.i, by = "dates")
+  }
+  
+  ## Calculate bias for all variables
+  if(met.var == "all"){
+    met.var.sel <- nms1[!(nms1 %in% c("year", "day", "dates"))]
+    gvar.sel <- paste0(met.var.sel, collapse = "|")
+    idx.met.mrg <- grep(gvar.sel, names(met.mrg))
+    met.mrg.s <- met.mrg[,idx.met.mrg]
+    
+    ## Compute Bias matrix
+    for(i in met.var.sel){
+      cat("Variable ", i, "\n")
+      tmp <- met.mrg.s[, grep(i, names(met.mrg.s))]
+      if(ncol(tmp) < 2) stop("merged selected variables should be at least of length 2")
+
+      for(j in 2:ncol(tmp)){
+        cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
+        fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
+        cat(" \t Bias: ", coef(fm0)[1], "\n")
+        cat(" \t Slope: ", coef(fm0)[2], "\n")
+        cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
+        cat(" \t RSS: ", deviance(fm0), "\n")
+      }
+    }
+  }
+  
+  class(met.mrg) <- "met_mrg"
+  attr(met.mrg, "met.names") <- m.nms
+  invisible(met.mrg)
+}
+
+#' Plotting function for weather data
+#' @rdname compare_apsim_met
+#' @description plotting function for compare_apsim_met, it requires ggplot2
+#' @param x object of class \sQuote{met_mrg}
+#' @param ... additional arguments, none used at the moment
+#' @param plot.type either \sQuote{vs}, \sQuote{diff} or \sQuote{ts} - for time series
+#' @param pairs pair of objects to compare, defaults to 1 and 2 but others are possible
+#' @param cummulative whether to plot cummulative values (default FALSE)
+#' @param met.var meteorological variable to plot 
+#' @export
+#' 
+plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts"),
+                         pairs = c(1, 2),
+                         cummulative = FALSE,
+                         met.var = c("radn", "maxt", "mint", "rain")){
+
+  if(!requireNamespace("ggplot2", quietly = TRUE)){
+    warning("ggplot2 is required for this plotting function")
+    return(NULL)
+  }
+  
+  m.nms <- attr(x, "met.names")
+  x <- as.data.frame(unclass(x))
+  
+  plot.type <- match.arg(plot.type)
+  met.var <- match.arg(met.var)
+  
+  if(cummulative && plot.type != "ts") 
+    stop("cummulative is only available for plot.type = 'ts' ")
+  
+  if(plot.type == "vs" && met.var != "all" && !cummulative){
+    tmp <- x[, grep(met.var, names(x))]
+    prs <- paste0(met.var, ".", pairs)
+    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs[1]))), 
+                                  y = eval(parse(text = eval(prs[2]))))) +
+                 ggplot2::geom_point() + 
+                 ggplot2::xlab(paste(m.nms[pairs[1]], prs[1])) + 
+                 ggplot2::ylab(paste(m.nms[pairs[2]], prs[2])) + 
+                 ggplot2::geom_smooth(method = "lm") + 
+                 ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange")
+    
+    print(gp1)
+
+  }
+  
+  if(plot.type == "diff" && met.var != "all" && !cummulative){
+    
+    prs0 <- paste0(met.var, ".", pairs)
+    prs <- paste0(prs0, collapse = "|")
+    tmp <- x[, grep(prs, names(x))]
+    
+    ## x Variable is prs[1]
+    ## y Variable is prs[2] - prs[1]
+    dff <- tmp[,prs0[2]] - tmp[,prs0[1]]
+    
+    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs0[1]))), 
+                                                    y = dff)) +
+      ggplot2::geom_point() + 
+      ggplot2::xlab(paste(m.nms[pairs[1]], prs0[1])) + 
+      ggplot2::ylab(paste("Difference", prs0[2], "-", prs0[1])) + 
+      ggplot2::geom_smooth(method = "lm") + 
+      ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange")
+  
+    print(gp1)   
+  }
+  
+  if(plot.type == "ts" && met.var != "all" && !cummulative){
+    
+    prs0 <- paste0(met.var, ".", pairs)
+    prs <- paste0(prs0, collapse = "|")
+    tmp <- x[, grep(prs, names(x))]
+    
+    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = dates, 
+                                                    y = eval(parse(text = eval(prs0[1]))),
+                                                    color = paste(m.nms[pairs[1]], prs0[1]))) +
+                                                    
+      ggplot2::geom_point() + 
+      ggplot2::geom_smooth() + 
+      ggplot2::geom_point(ggplot2::aes(y = eval(parse(text = eval(prs0[2]))),
+                                       color = paste(m.nms[pairs[2]], prs0[2]))) + 
+      ggplot2::geom_smooth(ggplot2::aes(y = eval(parse(text = eval(prs0[2]))),
+                                        color = paste(m.nms[pairs[2]], prs0[2]))) + 
+      ggplot2::xlab("Date") + 
+      ggplot2::ylab(met.var) + 
+      ggplot2::theme(legend.title = ggplot2::element_blank())
+    
+    print(gp1)   
+  }
+  
+  if(plot.type == "ts" && met.var != "all" && cummulative){
+    
+    prs0 <- paste0(met.var, ".", pairs)
+    prs <- paste0(prs0, collapse = "|")
+    tmp <- x[, grep(prs, names(x))]
+    tmp$cum_var1 <- cumsum(tmp[, pairs[1]])
+    tmp$cum_var2 <- cumsum(tmp[, pairs[2]])
+    
+    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = dates, 
+                                                    y = cum_var1,
+                                                    color = paste(m.nms[pairs[1]], prs0[1]))) +
+      
+      ggplot2::geom_line() + 
+      ggplot2::geom_line(ggplot2::aes(y = cum_var2,
+                                       color = paste(m.nms[pairs[2]], prs0[2]))) + 
+      ggplot2::xlab("Date") + 
+      ggplot2::ylab(paste("Cummulative ", met.var)) + 
+      ggplot2::theme(legend.title = ggplot2::element_blank())
+    
+    print(gp1)   
+  }
+}
+
+
+
+

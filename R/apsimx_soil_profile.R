@@ -425,7 +425,7 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
                                               "FOM","FOM.CN","FBiom",
                                               "FInert","NO3N","NH4N","PH")){
   ## Test for existence of ggplot2
-  if(!requireNamespace("ggplot2",quietly = TRUE)){
+  if(!requireNamespace("ggplot2", quietly = TRUE)){
     warning("ggplot2 is required for this plotting function")
     return(NULL)
   }
