@@ -101,6 +101,7 @@ compare_apsim_met <- function(...,
         cat(" \t Slope: ", coef(fm0)[2], "\n")
         cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
         cat(" \t RSS: ", deviance(fm0), "\n")
+        cat(" \t RMSE: ", sigma(fm0), "\n")
       }
     }
   }
