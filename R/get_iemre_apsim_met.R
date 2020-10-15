@@ -210,6 +210,13 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
   write(iem0, file = paste0(wrt.dir, "/", filename))
   iem.dat <- read_apsim_met(filename, src.dir = wrt.dir, verbose = FALSE)
   
+  attr(iem.dat, "filename") <- paste0(state, "-", station, ".met")
+  attr(iem.dat, "site") <- paste0("site = ", state, "-", station)
+  
+  if(!missing(lonlat)){
+    attr(iem.dat, "longitude") <- paste("longitude =", lonlat[1], "(DECIMAL DEGREES)")
+  }
+  
   if(filename == "noname.met"){
     unlink(paste0(wrt.dir, "/", filename))
     return(iem.dat)

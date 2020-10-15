@@ -494,7 +494,7 @@ assign('exe.path', NA, apsimx.options)
 assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
-assign('.run.local.tests', FALSE, apsimx.options)
+assign('.run.local.tests', TRUE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests
 ## which do not require an APSIM install
@@ -504,6 +504,10 @@ assign('.run.local.tests', FALSE, apsimx.options)
 #' @importFrom utils read.table
 #' @importFrom utils write.table
 #' @importFrom tools file_path_sans_ext
-#' @importFrom stats optim qt var sd
+#' @importFrom stats coef cor deviance lm optim qt var sd sigma
 NULL
+
+utils::globalVariables(".data")
+
+
 

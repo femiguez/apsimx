@@ -14,14 +14,15 @@ compare_apsim_met(
 \method{plot}{met_mrg}(
   x,
   ...,
-  plot.type = c("vs", "diff", "ts"),
+  plot.type = c("vs", "diff", "ts", "density"),
   pairs = c(1, 2),
   cummulative = FALSE,
-  met.var = c("radn", "maxt", "mint", "rain")
+  met.var = c("radn", "maxt", "mint", "rain"),
+  id
 )
 }
 \arguments{
-\item{...}{additional arguments, none used at the moment}
+\item{...}{additional arguments, can be passed to certain ggplot2 functions}
 
 \item{met.var}{meteorological variable to plot}
 
@@ -29,11 +30,13 @@ compare_apsim_met(
 
 \item{x}{object of class \sQuote{met_mrg}}
 
-\item{plot.type}{either \sQuote{vs}, \sQuote{diff} or \sQuote{ts} - for time series}
+\item{plot.type}{either \sQuote{vs}, \sQuote{diff}, \sQuote{ts} - for time series or \sQuote{density}}
 
 \item{pairs}{pair of objects to compare, defaults to 1 and 2 but others are possible}
 
 \item{cummulative}{whether to plot cummulative values (default FALSE)}
+
+\item{id}{identification ??}
 }
 \value{
 object of class \sQuote{cmet}, which can be used for further plotting
@@ -46,6 +49,10 @@ plotting function for compare_apsim_met, it requires ggplot2
 \details{
 Compare two or more metfiles
 }
+\note{
+I have only tested this for 2 or 3 objects. The code is set up to be able to 
+compare more, but I'm not sure that would be all that useful.
+}
 \examples{
 \dontrun{
 require(nasapower)
@@ -57,10 +64,8 @@ dts <- c("2017-01-01","2017-12-31")
 pwr <- get_power_apsim_met(lonlat = lonlat, dates = dts)
 ## Get data from IEM
 iem <- get_iem_apsim_met(lonlat = lonlat, dates = dts)
-## Trim pwr data
-pwr2 <- pwr[,1:6]
 ## Compare them
-cmet <- compare_apsim_met(pwr2, iem)
+cmet <- compare_apsim_met(pwr[,1:6], iem, labels = c("pwr","iem"))
 ## Visualize radiation
 plot(cmet, met.var = "radn")
 plot(cmet, plot.type = "diff")
@@ -69,6 +74,8 @@ plot(cmet, plot.type = "ts")
 plot(cmet, met.var = "maxt")
 plot(cmet, met.var = "maxt", plot.type = "diff")
 plot(cmet, met.var = "maxt", plot.type = "ts")
+## Cummulative rain
+plot(cmet, met.var = "rain", plot.type = "ts", cummulative = TRUE)
 }
 
 }

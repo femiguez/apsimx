@@ -72,7 +72,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           node.sub3child = "TemperatureResponse") 
+                           node.sub3child = "Response") 
 }
 \dontrun{  
 ## This function can also be used to inspect more complex APSIM-X files

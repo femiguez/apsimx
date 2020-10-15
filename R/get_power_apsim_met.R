@@ -1,7 +1,7 @@
 #'
 #' This function requires the \CRANpkg{nasapower} package.
 #'
-#' @title Get POWER data for an APSIM met file
+#' @title Get NASA-POWER data for an APSIM met file
 #' @description Uses \code{\link[nasapower]{get_power}} from the \CRANpkg{nasapower} package to download data to create an APSIM met file.
 #' @name get_power_apsim_met
 #' @param lonlat Longitude and latitude vector
@@ -62,7 +62,7 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL){
   comments <- paste("!data from nasapower R package. retrieved: ", Sys.time())
     
   attr(pwr, "filename") <- filename
-  attr(pwr, "site") <- paste("site = ", sub(".met", "", filename, fixed = TRUE))
+  attr(pwr, "site") <- paste("site =", sub(".met", "", filename, fixed = TRUE))
   attr(pwr, "latitude") <- paste("latitude =", lonlat[2])
   attr(pwr, "longitude") <- paste("longitude =", lonlat[1])
   attr(pwr, "tav") <- paste("tav =", mean(colMeans(pwr[,c("maxt","mint")], na.rm=TRUE), na.rm=TRUE))

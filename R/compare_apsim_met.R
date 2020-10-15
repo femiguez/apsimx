@@ -9,6 +9,8 @@
 #' \sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
 #' \sQuote{wind_speed} or \sQuote{vp}. 
 #' @param labels labels for plotting and identification of \sQuote{met} objects.
+#' @note I have only tested this for 2 or 3 objects. The code is set up to be able to 
+#' compare more, but I'm not sure that would be all that useful.
 #' @export
 #' @return object of class \sQuote{cmet}, which can be used for further plotting
 #' @examples 
@@ -22,10 +24,8 @@
 #' pwr <- get_power_apsim_met(lonlat = lonlat, dates = dts)
 #' ## Get data from IEM
 #' iem <- get_iem_apsim_met(lonlat = lonlat, dates = dts)
-#' ## Trim pwr data
-#' pwr2 <- pwr[,1:6]
 #' ## Compare them
-#' cmet <- compare_apsim_met(pwr2, iem, labels = c("pwr","iem"))
+#' cmet <- compare_apsim_met(pwr[,1:6], iem, labels = c("pwr","iem"))
 #' ## Visualize radiation
 #' plot(cmet, met.var = "radn")
 #' plot(cmet, plot.type = "diff")
@@ -34,6 +34,8 @@
 #' plot(cmet, met.var = "maxt")
 #' plot(cmet, met.var = "maxt", plot.type = "diff")
 #' plot(cmet, met.var = "maxt", plot.type = "ts")
+#' ## Cummulative rain
+#' plot(cmet, met.var = "rain", plot.type = "ts", cummulative = TRUE)
 #' }
 #' 
 
@@ -132,6 +134,7 @@ compare_apsim_met <- function(...,
   
   class(met.mrg) <- "met_mrg"
   attr(met.mrg, "met.names") <- m.nms
+  attr(met.mrg, "length.mets") <- n.mets
   invisible(met.mrg)
 }
 
@@ -139,17 +142,19 @@ compare_apsim_met <- function(...,
 #' @rdname compare_apsim_met
 #' @description plotting function for compare_apsim_met, it requires ggplot2
 #' @param x object of class \sQuote{met_mrg}
-#' @param ... additional arguments, none used at the moment
-#' @param plot.type either \sQuote{vs}, \sQuote{diff} or \sQuote{ts} - for time series
+#' @param ... additional arguments, can be passed to certain ggplot2 functions
+#' @param plot.type either \sQuote{vs}, \sQuote{diff}, \sQuote{ts} - for time series or \sQuote{density}
 #' @param pairs pair of objects to compare, defaults to 1 and 2 but others are possible
 #' @param cummulative whether to plot cummulative values (default FALSE)
 #' @param met.var meteorological variable to plot 
+#' @param id identification ??
 #' @export
 #' 
-plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts"),
+plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
                          pairs = c(1, 2),
                          cummulative = FALSE,
-                         met.var = c("radn", "maxt", "mint", "rain")){
+                         met.var = c("radn", "maxt", "mint", "rain"),
+                         id){
 
   if(!requireNamespace("ggplot2", quietly = TRUE)){
     warning("ggplot2 is required for this plotting function")
@@ -157,6 +162,8 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts"),
   }
   
   m.nms <- attr(x, "met.names")
+  if(max(pairs) > attr(x, "length.mets")) stop("pairs index larger than length of mets")
+  
   x <- as.data.frame(unclass(x))
   
   plot.type <- match.arg(plot.type)
@@ -195,8 +202,8 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts"),
       ggplot2::geom_point() + 
       ggplot2::xlab(paste(m.nms[pairs[1]], prs0[1])) + 
       ggplot2::ylab(paste("Difference", prs0[2], "-", prs0[1])) + 
-      ggplot2::geom_smooth(method = "lm") + 
-      ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange")
+      ggplot2::geom_smooth(method = "lm", ...) + 
+      ggplot2::geom_hline(yintercept = 0, color = "orange")
   
     print(gp1)   
   }
@@ -208,16 +215,17 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts"),
     tmp <- x[, grep(prs, names(x))]
     tmp$dates <- x$dates ## Put it back in - kinda dumb 
     
-    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = dates, 
+    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = .data[["dates"]], 
                                                     y = eval(parse(text = eval(prs0[1]))),
                                                     color = paste(m.nms[pairs[1]], prs0[1]))) +
                                                     
       ggplot2::geom_point() + 
-      ggplot2::geom_smooth() + 
+      ggplot2::geom_smooth(...) + 
       ggplot2::geom_point(ggplot2::aes(y = eval(parse(text = eval(prs0[2]))),
                                        color = paste(m.nms[pairs[2]], prs0[2]))) + 
       ggplot2::geom_smooth(ggplot2::aes(y = eval(parse(text = eval(prs0[2]))),
-                                        color = paste(m.nms[pairs[2]], prs0[2]))) + 
+                                        color = paste(m.nms[pairs[2]], prs0[2])),
+                           ...) + 
       ggplot2::xlab("Date") + 
       ggplot2::ylab(met.var) + 
       ggplot2::theme(legend.title = ggplot2::element_blank())
@@ -231,21 +239,38 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts"),
     prs <- paste0(prs0, collapse = "|")
     tmp <- x[, grep(prs, names(x))]
     tmp$dates <- x$dates
-    tmp$cum_var1 <- cumsum(tmp[, pairs[1]])
-    tmp$cum_var2 <- cumsum(tmp[, pairs[2]])
+    tmp$cum_var1 <- cumsum(tmp[, prs0[1]])
+    tmp$cum_var2 <- cumsum(tmp[, prs0[2]])
     
-    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = dates, 
-                                                    y = cum_var1,
+    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = .data[["dates"]], 
+                                                    y = .data[["cum_var1"]],
                                                     color = paste(m.nms[pairs[1]], prs0[1]))) +
       
       ggplot2::geom_line() + 
-      ggplot2::geom_line(ggplot2::aes(y = cum_var2,
+      ggplot2::geom_line(ggplot2::aes(y = .data[["cum_var2"]],
                                        color = paste(m.nms[pairs[2]], prs0[2]))) + 
       ggplot2::xlab("Date") + 
       ggplot2::ylab(paste("Cummulative ", met.var)) + 
       ggplot2::theme(legend.title = ggplot2::element_blank())
     
     print(gp1)   
+  }
+  
+  if(plot.type == "density" && met.var != "all" && !cummulative){
+    
+    prs0 <- paste0(met.var, ".", pairs)
+    prs <- paste0(prs0, collapse = "|")
+    tmp <- x[, grep(prs, names(x))]
+    
+    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs0[1]))),
+                                                    color = paste(m.nms[pairs[1]], prs0[1]))) + 
+      ggplot2::geom_density() + 
+      ggplot2::geom_density(ggplot2::aes(x = eval(parse(text = eval(prs0[2]))),
+                                         color = paste(m.nms[pairs[2]], prs0[2]))) +
+      ggplot2::xlab(met.var) + 
+      ggplot2::theme(legend.title = ggplot2::element_blank())
+    
+    print(gp1)
   }
 }
 

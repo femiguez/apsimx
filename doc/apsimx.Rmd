@@ -313,17 +313,17 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           node.sub3child = "TemperatureResponse") 
+                           node.sub3child = "Response") 
 ```
 
-Choose the 'X' and 'Y' parameters within 'TemperatureResponse'.
+Choose the 'X' and 'Y' parameters within 'Response'.
 
 ```{r inspect-replacement-node-subchild-subsubchild-temp-response-parm}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           node.sub3child = "TemperatureResponse",
+                           node.sub3child = "Response",
                            parm = c("Y", "X")) 
 ```
 
@@ -358,7 +358,7 @@ edit_apsimx_replacement("MaizeSoybean.apsimx",
                         node = "Maize", node.child = "Phenology",
                         node.subchild = "ThermalTime", 
                         node.subsubchild = "BaseThermalTime",
-                        node.sub3child = "TemperatureResponse",
+                        node.sub3child = "Response",
                         parm = "Y", value = c(0, 12, 20, 28, 0))
 ```
 
@@ -371,7 +371,7 @@ inspect_apsimx_replacement("MaizeSoybean-edited.apsimx",
                            node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           node.sub3child = "TemperatureResponse",
+                           node.sub3child = "Response",
                            parm = "Y") 
 ```
 
@@ -442,26 +442,28 @@ edit_apsimx("Factorial.apsimx",
 
 I won't be running the 'Factorial' example here, but if you are interested this is done in the folder 'tests' in the pacakge source. 
 
-# APSIM-X Inputs: Weather and Soil
+# APSIM Inputs: Weather and Soil
 
 ## Obtaining weather data
 
-One of the easiest ways of generating weather data (".met" files) is by using the 'nasapower' (https://github.com/ropensci/nasapower) or 'FedData' (https://github.com/ropensci/FedData) packages. See function 'nasapower::create_met'. In addition in this package the following utilities are provided:
+One of the easiest ways of generating weather data (".met" files) is by using the 'GSODR' (https://github.com/ropensci/GSODR), 'FedData' (https://github.com/ropensci/FedData) or 'nasapower' (https://github.com/ropensci/nasapower)  packages. It is also possible to obtain data from the Iowa Environmental Mesonet (https://mesonet.agron.iastate.edu/). In addition, this package provides the following utilities:
 
 * **read_apsim_met**: read an APSIM met file into R with S3 class 'met'.
 * **write_apsim_met**: write an APSIM met file from an object of class 'met'.
 * **check_apsim_met**: check for reasonable values for met variables.
 * **impute_apsim_met**: impute missing values using linear interpolation, splines or the mean.
+* **compare_apsim_met**: utility for quick comparison of 'met' objects. There is also a plot method.
 * **get_power_apsim_met**: (requires the 'nasapower' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
 * **get_daymet_apsim_met**: (requires the 'FedData' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
+* **get_gsod_apsim_met**: (requires the 'GSODR' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
 * **get_iem_apsim_met**: Fetch data from Iowa Environmental Mesonet
 * **get_iemre_apsim_met**: Fetch data from Iowa Environmental Mesonet Reanalysis
 
-Note that similar utilities are available in the 'APSIM' package (loadMet, prepareMet, checkMet, writeMetFile) for reading, preparing, checking and writing a met file, but not for imputing.
+Note that some utilities are available in the 'APSIM' package (loadMet, prepareMet, checkMet, writeMetFile) for reading, preparing, checking and writing a met file.
 
 ## Obtaining soil data
 
-In the USA, soil data can be obtained through the 'FedData' R package (https://github.com/ropensci/FedData) by using the function 'get_ssurgo'. I have developed helper functions 'ssurgo2sp' for conversion from 'SSURGO' files to a soil profile and 'apsimx_soil_profile' for generating a soil profile that can be used in APSIM-X. Finally, the function 'edit_apsimx_replace_soil_profile' will batch replace the soil profile created by 'apsimx_soil_profile' in a designated '.apsimx' file. Similarly, 'edit_apsim_replace_soil_profile' will batch replace the soil profile in a designated '.apsim' (Classic) file. I will be working on a more concrete tutorial soon.
+In the USA, soil data can be obtained through the 'FedData' R package (https://github.com/ropensci/FedData) by using the function 'get_ssurgo'. I have developed helper functions 'ssurgo2sp' for conversion from 'SSURGO' files to a soil profile and 'apsimx_soil_profile' for generating a soil profile that can be used in APSIM-X. Finally, the function 'edit_apsimx_replace_soil_profile' will batch replace the soil profile created by 'apsimx_soil_profile' in a designated '.apsimx' file. Similarly, 'edit_apsim_replace_soil_profile' will batch replace the soil profile in a designated '.apsim' (Classic) file. I will be working on a more concrete tutorial at some point.
 
 # File Type (or File Format) Details
 
@@ -485,29 +487,29 @@ aiu <- apsim_version(which = "inuse")
 * **inspect_apsimx_replacement** challenge this function with more complex
 examples. It has problems with 'manager' when replacements are present.
 
-* Include a parameter optimization worked example
-
 # Appendix
 
 Files in 'inst/extdata' and how they are used (ordered alphabetically):
 
-* **ames-10-19.met**: not sure if it is used, if it is not, I'll delete it.
 * **Ames.met**: used to run the Soybean.apsimx.
 * **Factorial.apsimx**: This file IS needed for the vignette.
 * **ISUAG** (folder): SSURGO files to test the ssurgo2sp function.
-* **Maize_old.apsimx**: Old-style 'xml' file used by APSIM-X.
-* **maize-factorial.apsim** (file that I might use to test the ability to inspect and edit factorial .apsim files). TODO: low priority
-* **maize-manager-folder.apsimx**: file I will use to test whether I need to modify inspect and edit functions when the management is inside a folder.
+* **maize-factorial.apsim** file used to test the ability to inspect and edit factorial .apsim files (see 'inspect_apsim').
+* **maize-manager-folder.apsimx**: file used to test whether I need to modify inspect and edit functions when the management is inside a folder.
 * **maize-soybean-rotation.apsim**: example file with a maize and soybean rotation used in testing and in the 'inspect_apsim' file.
 * **maize-swim.apsim**: example file with the SWIM module for testing (test_apsim_swim.R).
 * **Maize.apsimx**: This file is needed for the vignette.
 * **Maize.csv**: This file is needed for the vignette.
 * **Maize.db**: This file is needed for the vignette.
-* **Maize.out**: This file is needed for the 'read_apsim' example.
+* **Maize.out/sum**: This file is needed for the 'read_apsim' example.
+* **Maize75.xml**: This file is used in 'inspect_apsim_xml' and optim vignette.
 * **MaizeSoybean.apsimx**: This file is needed for the vignette and for testing in 'test_replacements.R'
 * **Millet.apsim**: Millet example from APSIM 'Classic' for testing 'inspect_apsim' and used in the vignette.
 * **Millet.out/sum**: result from the Millet simulation. Used in the 'read_apsim' example.
 * **Soybean.apsimx**: Soybean example for APSIM-X. Used in 'test_replacements.R'.
+* **Wheat-opt-ex.apsimx**: This file is used in the 'optim-apsim' vignette.
+* **wheat-sim-b4-opt.csv**: This file is used in the 'optim-apsim' vignette.
+* **wheat-sim-opt.csv**: This file is used in the 'optim-apsim' vignette.
 * **Wheat.apsimx**: This file is used in the vignette.
 * **Wheat.csv**: This file is used in the vignette.
 * **Wheat.db**: This file is used in the vignette.

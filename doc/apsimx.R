@@ -139,14 +139,14 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           node.sub3child = "TemperatureResponse") 
+                           node.sub3child = "Response") 
 
 ## ----inspect-replacement-node-subchild-subsubchild-temp-response-parm----
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Maize", node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           node.sub3child = "TemperatureResponse",
+                           node.sub3child = "Response",
                            parm = c("Y", "X")) 
 
 ## ----inspect-replacement-soybean-cultivar-node---------------------------
@@ -166,7 +166,7 @@ edit_apsimx_replacement("MaizeSoybean.apsimx",
                         node = "Maize", node.child = "Phenology",
                         node.subchild = "ThermalTime", 
                         node.subsubchild = "BaseThermalTime",
-                        node.sub3child = "TemperatureResponse",
+                        node.sub3child = "Response",
                         parm = "Y", value = c(0, 12, 20, 28, 0))
 
 ## ----inspect-edit-replacement--------------------------------------------
@@ -176,7 +176,7 @@ inspect_apsimx_replacement("MaizeSoybean-edited.apsimx",
                            node.child = "Phenology",
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
-                           node.sub3child = "TemperatureResponse",
+                           node.sub3child = "Response",
                            parm = "Y") 
 
 ## ----inspect-factorial-0, eval = FALSE-----------------------------------

@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_power_apsim_met.R
 \name{get_power_apsim_met}
 \alias{get_power_apsim_met}
-\title{Get POWER data for an APSIM met file}
+\title{Get NASA-POWER data for an APSIM met file}
 \usage{
 get_power_apsim_met(lonlat, dates, wrt.dir = ".", filename = NULL)
 }

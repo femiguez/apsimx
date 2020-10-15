@@ -2,7 +2,7 @@
 
 [![CRAN](http://www.r-pkg.org/badges/version/apsimx)](https://CRAN.R-project.org/package=apsimx)
 [![CRAN
-downloads total](https://cranlogs.r-pkg.org/badges/grand-total/apsimx)](https://github.com/metacran/cranlogs.app)
+downloads total](https://cranlogs.r-pkg.org/badges/grand-total/apsimx)](https://github.com/r-hub/cranlogs.app)
 [![CRAN downloads](https://cranlogs.r-pkg.org/badges/apsimx)](https://cran.r-project.org/package=apsimx)
 
 
