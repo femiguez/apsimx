@@ -353,15 +353,15 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <p><a href="https://apsimnextgeneration.netlify.com/">APSIM-X</a></p>
 <p><a href="https://www.sciencedirect.com/science/article/pii/S1364815217311921">Holzworth et al. (2018)</a></p>
 <p>This package has been tested on:</p>
-<p><strong>Mac</strong>: ApsimX version (2020-06-05) 5260 (R 3.6.2)</p>
+<p><strong>Mac</strong>: ApsimX version (2020-09-09) 5640 (R 3.6.2)</p>
 <p><strong>Debian</strong>: ApsimX version (2020-01-29) 4007 (R 3.6.1)</p>
-<p><strong>Windows</strong>: ApsimX version 4236 (2020-06-05) 5260 (R 3.6.2)</p>
+<p><strong>Windows</strong>: ApsimX version (2020-09-09) 5260 and APSIM 7.10-r4207 (R 3.6.2)</p>
 </div>
 <div id="installing-apsim-x" class="section level2">
 <h2>Installing APSIM-X</h2>
 <p>For most functions in this pacakge you need to have a version of APSIM-X installed (or APSIM ‘Classic’). For Mac and Linux, first you need to install mono (<a href="https://www.mono-project.com/download/stable/" class="uri">https://www.mono-project.com/download/stable/</a>) and then download and install APSIM-X (<a href="https://www.apsim.info/download-apsim/downloads/" class="uri">https://www.apsim.info/download-apsim/downloads/</a>). The <strong>apsimx</strong> package will try to detect both mono and APSIM-X.</p>
 <p><strong>Mac</strong>: For Mac it is also assumed that APSIM-X has been moved to ‘Applications’.</p>
-<p><strong>Windows</strong>: In Windows the default install location is in ‘Program Files’.</p>
+<p><strong>Windows</strong>: In Windows the default install location is in ‘Program Files’ for APSIM-X and Program Files (x86) for APSIM ‘Classic’.</p>
 <p><strong>Linux (Debian)</strong>: It assumed that APSIM-X is in ‘/usr/local/lib/apsim/’.</p>
 <p>If you have your own flavor of APSIM, then you need to set the path manually using the function ‘apsim_options’ for Classic and ‘apsimx_options’ for Next Generation.</p>
 </div>
@@ -390,6 +390,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <li><strong>apsim_options</strong> set global options: path for executable, examples and warnings.</li>
 <li><strong>edit_apsim_xml</strong> edit an XML file such as Maize.xml or Soil.xml</li>
 </ul>
+<p>See also ‘optim’ vignette for optimization options.</p>
 </div>
 </div>
 <div id="using-apsimx" class="section level1">
@@ -725,7 +726,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <pre><code>## Edited /folder/simulation/area/folder/manager[1]/ui/density 
 ## Edited parameter 
 ## New values  8 
-## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpxJu5Cw/Millet-pp.apsim</code></pre>
+## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpKSWTHO/Millet-pp.apsim</code></pre>
 <p>Verify that it was edited correctly.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet-pp.apsim&quot;</span>, <span class="dt">src.dir =</span> tmp.dir,</a>
 <a class="sourceLine" id="cb39-2" data-line-number="2">              <span class="dt">node =</span> <span class="st">&quot;Manager&quot;</span>,</a>
@@ -872,7 +873,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## ReadOnly : FALSE 
 ##  
 ## missing node.sub3child</code></pre>
-<p>‘BaseThermalTime’ is the only child inside ‘ThermalTime’, but within ‘BaseThermalTime’ there are two Children: ‘TemperatureResponse’ and ‘InterpolationMethod’. There is not much to edit for ‘InterpolationMethod’, so we choose ‘TemperatureResponse’.</p>
+<p>‘BaseThermalTime’ is the only child inside ‘ThermalTime’, but within ‘BaseThermalTime’ there are two Children: ‘Response’ and ‘InterpolationMethod’. There is not much to edit for ‘InterpolationMethod’, so we choose ‘Response’.</p>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb50-1" data-line-number="1"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean.apsimx&quot;</span>, <span class="dt">src.dir =</span> extd.dir,</a>
 <a class="sourceLine" id="cb50-2" data-line-number="2">                           <span class="dt">node =</span> <span class="st">&quot;Maize&quot;</span>, <span class="dt">node.child =</span> <span class="st">&quot;Phenology&quot;</span>,</a>
 <a class="sourceLine" id="cb50-3" data-line-number="3">                           <span class="dt">node.subchild =</span> <span class="st">&quot;ThermalTime&quot;</span>, </a>
@@ -972,7 +973,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## Edit (level):  6 
 ## Edited parameter:  Y 
 ## New values:  0 12 20 28 0 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpxJu5Cw/MaizeSoybean-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpKSWTHO/MaizeSoybean-edited.apsimx</code></pre>
 <p>Let’s inspect the edited file</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean-edited.apsimx&quot;</span>, </a>
 <a class="sourceLine" id="cb62-2" data-line-number="2">                           <span class="dt">src.dir =</span> tmp.dir,</a>
@@ -1072,7 +1073,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 ## Edited (child):  none 
 ## Edited parameters:  
 ## New values:  Ames.met 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpxJu5Cw/Factorial-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpKSWTHO/Factorial-edited.apsimx</code></pre>
 <p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge source.</p>
 </div>
 </div>

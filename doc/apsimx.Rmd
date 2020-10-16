@@ -50,11 +50,11 @@ See the following for details
 
 This package has been tested on:
 
-**Mac**: ApsimX version (2020-06-05) 5260 (R 3.6.2)
+**Mac**: ApsimX version (2020-09-09) 5640 (R 3.6.2)
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
-**Windows**: ApsimX version 4236 (2020-06-05) 5260 (R 3.6.2)
+**Windows**: ApsimX version (2020-09-09) 5260 and APSIM 7.10-r4207 (R 3.6.2)
 
 ## Installing APSIM-X
 
@@ -62,7 +62,7 @@ For most functions in this pacakge you need to have a version of APSIM-X install
 
 **Mac**: For Mac it is also assumed that APSIM-X has been moved to 'Applications'.
 
-**Windows**: In Windows the default install location is in 'Program Files'.
+**Windows**: In Windows the default install location is in 'Program Files' for APSIM-X and Program Files (x86) for APSIM 'Classic'.
 
 **Linux (Debian)**: It assumed that APSIM-X is in '/usr/local/lib/apsim/'.
 
@@ -91,6 +91,8 @@ The main functions relevant for 'Classic' are:
 * **apsim_example** runs (only a few) of the built-in examples.
 * **apsim_options** set global options: path for executable, examples and warnings.
 * **edit_apsim_xml** edit an XML file such as Maize.xml or Soil.xml
+
+See also 'optim' vignette for optimization options.
 
 # Using 'apsimx'
 
@@ -306,7 +308,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            display.available = TRUE) 
 ```
 
-'BaseThermalTime' is the only child inside 'ThermalTime', but within 'BaseThermalTime' there are two Children: 'TemperatureResponse' and 'InterpolationMethod'. There is not much to edit for 'InterpolationMethod', so we choose 'TemperatureResponse'.
+'BaseThermalTime' is the only child inside 'ThermalTime', but within 'BaseThermalTime' there are two Children: 'Response' and 'InterpolationMethod'. There is not much to edit for 'InterpolationMethod', so we choose 'Response'.
 
 ```{r inspect-replacement-node-subchild-subsubchild-temp-response}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,

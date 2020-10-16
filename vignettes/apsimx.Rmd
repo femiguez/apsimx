@@ -44,7 +44,7 @@ See the following for details
 
 [APSIM](https://www.apsim.info)
 
-[APSIM-X](https://apsimnextgeneration.netlify.com/)
+[APSIM-X](https://apsimnextgeneration.netlify.app/)
 
 [Holzworth et al. (2018)](https://www.sciencedirect.com/science/article/pii/S1364815217311921)
 
