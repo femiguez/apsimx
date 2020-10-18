@@ -20,9 +20,6 @@
 #' ## Note that missing data is coded as -99
 #' summary(pwr)
 #' ## Check for reasonable ranges 
-#' check_apsim_met(pwr)
-#' ## replace -99 with NA
-#' pwr$radn <- ifelse(pwr$radn == -99, NA, pwr$radn)
 #' ## Impute using linear interpolation
 #' pwr.imptd <- impute_apsim_met(pwr, verbose = TRUE)
 #' summary(pwr.imptd)
