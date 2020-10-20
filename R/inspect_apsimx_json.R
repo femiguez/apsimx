@@ -32,6 +32,12 @@
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "MicroClimate")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Crop")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Manager")
+#' 
+#' ## Manager folder present
+#' extd.dir <- system.file("extdata", package = "apsimx")
+#' inspect_apsimx("maize-manager-folder.apsimx", node = "Other", src.dir = extd.dir,
+#'                parm = list("Manager", "Fertiliser", "Amount"))
+#'                
 #' }
 #'
 
@@ -101,7 +107,6 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     parent.node <- apsimx_json$Children[[fcsn]]$Children  
     parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[fcsn]]$Name)
   }
-  
   
   if(node == "Clock"){
     wlc <- function(x) grepl("Clock", x$Name, ignore.case = TRUE)
@@ -210,7 +215,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       if(!is.null(soil.d2)){ 
         soil.d2 <- as.data.frame(soil.d2)
         names(soil.d2) <- col.nms
-        print(kable(soil.d2, digits = digits))
+        print(knitr::kable(soil.d2, digits = digits))
       }
     }
   }
@@ -226,7 +231,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     som.d <- data.frame(parm = names(som.node)[2:8],
                         value = as.vector(unlist(som.node)[2:8]))
     
-    print(kable(som.d, digits = digits))
+    print(knitr::kable(som.d, digits = digits))
   }
   
   if(node == "MicroClimate"){
@@ -238,7 +243,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
 
     microclimate.d <- data.frame(parm = names(microclimate.node)[2:9],
                                  value = as.vector(unlist(microclimate.node)[2:9]))
-    print(kable(microclimate.d, digits = digits))
+    print(knitr::kable(microclimate.d, digits = digits))
   }
   
   if(node == "Crop"){
@@ -316,16 +321,50 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         cat("Name: ", selected.manager.node,"\n")
         parm2 <- ms.params[[position]]$Key
         cat("Key:", ms.params[[position]]$Key, "\n")
-        print(kable(as.data.frame(mat), digits = digits))
+        print(knitr::kable(as.data.frame(mat), digits = digits))
         cat("\n")
       }
     }
   }
   
-  if(print.path){
+  if(node == "Other"){
+    
+    tmp <- core.zone.node
+    parm.path.2.1 <- parm.path.2
+    ## Check for parm
+    if(is.null(parm)) stop("'parm' should be provided when node = 'Other'")
+    if(length(parm) == 1L) stop("'parm' should be a list of length 2 or more")
+    ## This extracts a node
+    for(i in 1:(length(parm) - 1)){
+      nms <- sapply(tmp, function(x) x$Name)
+      wcp <- grep(parm[[i]], nms)
+      if(length(wcp) == 0){
+        cat("Names: ", nms, "\n")
+        cat("parm[[i]]", parm[[i]], "\n")
+        stop("Parameter not found")
+      }
+      tmp <- tmp[[wcp]]
+      if(!is.null(tmp$Children)) tmp <- tmp$Children
+      ## Build the parm.path
+      parm.path.2.1 <- paste0(parm.path.2.1, ".", nms[wcp])
+    }
+    
+    if(!is.null(tmp$Parameters)){
+      wp <- grep(parm[[length(parm)]], tmp$Parameters)
+      tmp2 <- tmp$Parameters[[wp]]
+      ## Process parameter path
+      parm.path <- paste0(parm.path.2.1, ".", tmp2$Key)
+      print(knitr::kable(as.data.frame(tmp2)))
+    }else{
+      parm.path <- parm.path.2.1
+      unpack_node(tmp)
+    }
+  }
+  
+  if(print.path && node != "Other"){
     if(!missing(parm)){
       if(length(parm) == 1){
-        parm.path <- paste0(parm.path,".",parm)
+        parm.path <- paste0(parm.path, ".", parm)
       }else{
         if(!is.na(position)){
           parm.path <- paste0(parm.path,".",parm2)
@@ -333,7 +372,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       }
     }
     cat("Parm path:", parm.path,"\n")
+  }else{
+    if(print.path) cat("Parm path:", parm.path,"\n")
   }
+  
   invisible(parm.path)
 }
 

@@ -28,6 +28,12 @@ if(run.apsimx.edit){
   inspect_apsimx("maize-manager.apsimx", src.dir = tmp.dir, 
                  node = "Manager", parm = list("SowingFert",1))
   
+  ## Test the maize manager folder
+  edit_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
+              wrt.dir = tmp.dir, overwrite = TRUE,
+              node = "Manager", manager.child = "SowingFertiliser",
+              parm = "Amount", value = 150)
+  
 }
 
 run.apsim.edit.millet <- get(".run.local.tests", envir = apsimx.options)

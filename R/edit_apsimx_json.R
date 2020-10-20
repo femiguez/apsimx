@@ -339,8 +339,14 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     edited.child <- manager.child
     ## Which child should we edit?
     wmc <- grep(manager.child, manager.node.names)
-    
-    manager.child.node <- manager.node[[wmc]]$Parameters
+    ## Maybe if it is inside a folder try looking inside manager.node?
+    if(length(wmc) == 0){
+      manager.node.names <- sapply(manager.node[[1]]$Children, FUN = function(x) x$Name)
+      wmc2 <- grep(manager.child, manager.node.names)
+      manager.child.node <- manager.node[[1]]$Children[[wmc2]]$Parameters  
+    }else{
+      manager.child.node <- manager.node[[wmc]]$Parameters  
+    }
     
     for(i in 1:length(manager.child.node)){
       if(manager.child.node[[i]]$Key == parm){
@@ -348,7 +354,11 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       }
     }
     
-    manager.node[[wmc]]$Parameters <- manager.child.node
+    if(length(wmc) == 0){
+      manager.node[[1]]$Children[[wmc2]]$Parameters <- manager.child.node 
+    }else{
+      manager.node[[wmc]]$Parameters <- manager.child.node  
+    }
     core.zone.node[wmmn] <- manager.node
   }
   

@@ -9,6 +9,7 @@
 #' \sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
 #' \sQuote{wind_speed} or \sQuote{vp}. 
 #' @param labels labels for plotting and identification of \sQuote{met} objects.
+#' @param check whether to check met files using \sQuote{check_apsim_met}.
 #' @note I have only tested this for 2 or 3 objects. The code is set up to be able to 
 #' compare more, but I'm not sure that would be all that useful.
 #' @export
@@ -43,7 +44,8 @@ compare_apsim_met <- function(...,
                               met.var = c("all", "radn", "maxt", 
                                           "mint", "rain", "rh", 
                                           "wind_speed", "vp"),
-                              labels){
+                              labels,
+                              check = FALSE){
   
   mets <- list(...)
   
@@ -64,6 +66,9 @@ compare_apsim_met <- function(...,
   
   if(!inherits(met1, "met")) stop("object should be of class 'met' ")
   
+  ## Check for any issues
+  if(check) check_apsim_met(met1)
+  
   ## Create the 'date' fir indexing
   nms1 <- names(met1)
   met.mrg <- met1
@@ -77,6 +82,7 @@ compare_apsim_met <- function(...,
     
     if(ncol(met1) != ncol(met.i)) stop("met files should have the same number of columns")
     if(all(!names(met1) %in% names(met.i))) stop("met files should have the same column names")
+    if(check) check_apsim_met(met.i)
     
     yr <- as.character(met.i$year[1])
     met.i$dates <- as.Date(0:c(nrow(met.i) - 1), origin = as.Date(paste0(yr, "-01-01")))

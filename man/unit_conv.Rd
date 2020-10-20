@@ -17,9 +17,12 @@ unit_conv(x, from, to)
 value of the input variable with new units
 }
 \description{
-Function which performs common unit conversions
+It does not do much at the moment, but I will develop it as I have 
+increasing needs for unit conversions.
 }
 \details{
+Function which performs common unit conversions
+
 At the moment possible conversions are:
 \itemize{
 

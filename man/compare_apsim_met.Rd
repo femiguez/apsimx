@@ -8,7 +8,8 @@
 compare_apsim_met(
   ...,
   met.var = c("all", "radn", "maxt", "mint", "rain", "rh", "wind_speed", "vp"),
-  labels
+  labels,
+  check = FALSE
 )
 
 \method{plot}{met_mrg}(
@@ -27,6 +28,8 @@ compare_apsim_met(
 \item{met.var}{meteorological variable to plot}
 
 \item{labels}{labels for plotting and identification of \sQuote{met} objects.}
+
+\item{check}{whether to check met files using \sQuote{check_apsim_met}.}
 
 \item{x}{object of class \sQuote{met_mrg}}
 

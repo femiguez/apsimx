@@ -61,8 +61,12 @@ get_gsod_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
       return(NULL)
     }
     pwr <- get_power_apsim_met(lonlat = lonlat, 
-                               dates = c(paste(min(yrs),"-01-01"), paste(max(yrs), "-12-31")))
-    gsd$RADN <- pwr$radn
+                               dates = c(gsd$YEARMODA[1], gsd$YEARMODA[nrow(gsd)]))
+    pwr$date <- as.Date(1:nrow(pwr), origin = paste0(pwr$year[1],"-01-01"))
+    pwr <- subset(pwr, select = c("date", "radn"))
+    names(pwr) <- c("date", "RADN")
+    gsd$date <- gsd$YEARMODA
+    gsd <- merge(gsd, pwr, by = "date")
   }else{
     gsd$RADN <- NA  
   }

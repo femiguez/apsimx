@@ -63,6 +63,12 @@ inspect_apsimx("Barley", src.dir = ex.dir, node = "SurfaceOrganicMatter")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "MicroClimate")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Crop")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Manager")
+
+## Manager folder present
+extd.dir <- system.file("extdata", package = "apsimx")
+inspect_apsimx("maize-manager-folder.apsimx", node = "Other", src.dir = extd.dir,
+               parm = list("Manager", "Fertiliser", "Amount"))
+               
 }
 
 }

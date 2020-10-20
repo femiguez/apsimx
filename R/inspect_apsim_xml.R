@@ -578,10 +578,12 @@ inspect_apsim_xml <- function(file = "",
                               verbose = TRUE,
                               print.path = TRUE){
   
-  file.names <- dir(path = src.dir, pattern = ".xml$", ignore.case = TRUE)
+  file.names.xml <- dir(path = src.dir, pattern = ".xml$", ignore.case = TRUE)
+  file.names.apsim <- dir(path = src.dir, pattern = ".apsim$", ignore.case = TRUE)
+  file.names <- c(file.names.xml, file.names.apsim)
   
   if(length(file.names) == 0){
-    stop("There are no .xml files in the specified directory to inspect.")
+    stop("There are no .xml or .apsim files in the specified directory to inspect.")
   }
   
   file <- match.arg(file, file.names)

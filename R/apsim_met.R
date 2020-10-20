@@ -210,20 +210,24 @@ print.met <- function(x,...){
 #' @name impute_apsim_met
 #' @description Takes in an object of class \sQuote{met} and imputes values
 #' @param met object of class \sQuote{met}
-#' @param method method for imputation, \code{\link{approx}}, \code{\link{splines}} or \code{\link{mean}}
+#' @param method method for imputation, \code{\link[stats]{approx}}, \code{\link[stat]{spline}} or \code{\link{mean}}
 #' @param verbose whether to print missing data to the console, default = FALSE
+#' @param ... additional arguments to be passed to imputation method
 #' @return an object of class \sQuote{met} with attributes
 #' @export
 #' 
 
-impute_apsim_met <- function(met, method = c("approx","splines","mean"), verbose = FALSE){
+impute_apsim_met <- function(met, method = c("approx","spline","mean"), verbose = FALSE, ...){
   
   if(!inherits(met, "met")) stop("met should be of class 'met'") 
   
   method <- match.arg(method)
   
+  ## Someday I will do this when it is needed
+  args <- list(...)
+  
   ## Which rows have missing data
-  missing.vector <- vector(mode = "numeric",length = length(names(met)))
+  missing.vector <- vector(mode = "numeric", length = length(names(met)))
   
   if(all(sapply(sapply(met, function(x) which(is.na(x))),length) == 0))
     warning("No missing data found")
@@ -234,7 +238,7 @@ impute_apsim_met <- function(met, method = c("approx","splines","mean"), verbose
     for(i in 1:ncol(met)){
       tmp.mr <- missing.rows[[i]]
       if(length(tmp.mr) > 0){
-        cat("Missing values for",names(met)[i],"\n")
+        cat("Missing values for", names(met)[i], "\n")
         print(as.data.frame(met)[tmp.mr,])
       }
     }
@@ -250,7 +254,7 @@ impute_apsim_met <- function(met, method = c("approx","splines","mean"), verbose
                                       y=met[[i]],
                                       xout=missing.rows[[i]])$y
     }
-    if(method == "splines"){
+    if(method == "spline"){
       imputed.values <- stats::spline(x=seq_len(nrow(met)),
                                       y=met[[i]],
                                       xout=missing.rows[[i]])$y
@@ -289,11 +293,11 @@ check_apsim_met <- function(met){
     print(met[is.na(met$year),])
     warning("Missing values found for year")
   }
-  if(any(min(met[["year"]]) < 1500, na.rm = TRUE)){
+  if(any(min(met[["year"]], na.rm = TRUE) < 1500)){
     print(met[met$year < 1500,])
     warning("year is less than 1500")
   }
-  if(any(max(met[["year"]]) > 3000, na.rm = TRUE)){
+  if(any(max(met[["year"]], na.rm = TRUE) > 3000)){
     print(met[met$year > 3000,])
     warning("year is greater than 3000")
   }
@@ -302,24 +306,32 @@ check_apsim_met <- function(met){
     print(met[is.na(met$day),])
     warning("Missing values found for day")
   }
-  if(any(min(met[["day"]]) < 1, na.rm = TRUE)){
+  if(any(min(met[["day"]], na.rm = TRUE) < 1)){
     print(met[met$day < 1,])
     warning("day is less than 1")
   }
-  if(any(max(met[["day"]])> 366, na.rm = TRUE)){
+  if(any(max(met[["day"]], na.rm = TRUE) > 366)){
     print(met[met$day > 366,])
     warning("day is greater than 366")
+  }
+  ## Check for date discontinuities
+  origin <- as.Date(paste0(met$year[1], "-01-01"))
+  first.day <- doy2date(met$day[1], year = met$year[1])
+  last.day <- doy2date(met$day[nrow(met)], year = met$year[nrow(met)])
+  dates <- seq(from = first.day, to = last.day, by = 1)
+  if(nrow(met) < length(dates)){
+    warning(paste(length(dates) - nrow(met), "date discontinuities found. Consider using napad_apsim_met."))
   }
   ## Detect possible errors with minimum temperature
   if(any(is.na(met[["mint"]]))){
     print(met[is.na(met$mint),])
     warning("Missing values found for minimum temperature")
   }
-  if(any(min(met[["mint"]]) < -60, na.rm = TRUE)){
+  if(any(min(met[["mint"]], na.rm = TRUE) < -60)){
     print(met[met$mint < -60,])
     warning("Minimum temperature is less than -60")
   }
-  if(any(max(met[["mint"]]) > 40, na.rm = TRUE)){
+  if(any(max(met[["mint"]], na.rm = TRUE) > 40)){
     print(met[met$mint > 40,])
     warning("Minimum temperature is greater than 40")
   }
@@ -328,11 +340,11 @@ check_apsim_met <- function(met){
     print(met[is.na(met$maxt),])
     warning("Missing values found for maximum temperature")
   }
-  if(any(min(met[["maxt"]]) < -60)){
+  if(any(min(met[["maxt"]], na.rm = TRUE) < -60)){
     print(met[met$maxt < -60,])
-    warning("Maximum temperature less -60")
+    warning("Maximum temperature less than -60")
   }
-  if(any(max(met[["maxt"]])> 60)){
+  if(any(max(met[["maxt"]], na.rm = TRUE) > 60)){
     print(met[met$maxt > 60,])
     warning("Maximum temperature is greater than 60")
   }
@@ -341,11 +353,11 @@ check_apsim_met <- function(met){
     print(met[is.na(met$radn),])
     warning("Missing values found for solar radiation")
   }
-  if(any(min(met[["radn"]]) < 0, na.rm=TRUE)){
+  if(any(min(met[["radn"]], na.rm = TRUE) < 0)){
     print(met[met$radn < 0,])
     warning("Radiation is negative")
   }
-  if(any(max(met[["radn"]])> 40, na.rm = TRUE)){
+  if(any(max(met[["radn"]], na.rm = TRUE) > 40)){
     print(met[met$radn > 40,])
     warning("Radiation is greater than 40 (MJ/m2/day)")
   }
@@ -354,10 +366,10 @@ check_apsim_met <- function(met){
     print(met[is.na(met$rain),])
     warning("Missing values found for precipitation")
   }
-  if(any(min(met[["rain"]]) < 0, na.rm = TRUE)){
+  if(any(min(met[["rain"]], na.rm = TRUE) < 0)){
     warning("Rain is negative")
   }
-  if(any(max(met[["rain"]])> 100, na.rm = TRUE)){
+  if(any(max(met[["rain"]], na.rm = TRUE) > 100)){
     warning("Rain is possibly too high")
   }
   
@@ -366,4 +378,54 @@ check_apsim_met <- function(met){
       warning("Vapor Pressure units might be worng. It should be in hecto Pascals")
     }
   }
+}
+
+#' Fill in with missing data date discontinuities in a met file
+#' 
+#' @title Pad a met file with NAs when there are date discontinuities
+#' @name napad_apsim_met
+#' @description It will fill in or \sQuote{pad} a met object with NAs
+#' @param met object of class \sQuote{met}
+#' @note The purpose of this function is to allow for imputation using \code{\link{impute_apsim_met}}
+#' @export
+
+napad_apsim_met <- function(met){
+ 
+  if(!inherits(met, "met")) stop("object should be of class 'met'")
+  
+  ## First check if there are any discontinuities
+  origin <- as.Date(paste0(met$year[1], "-01-01"))
+  first.day <- doy2date(met$day[1], year = met$year[1])
+  last.day <- doy2date(met$day[nrow(met)], year = met$year[nrow(met)])
+  dates <- seq(from = first.day, to = last.day, by = "day")
+  if(nrow(met) == length(dates)){
+    stop("No discontinuities found")
+  }  
+  
+  ## Create a data.frame with continuous dates
+  namet <- data.frame(date = dates)
+  
+  ## Create date column for merging
+  met$date <- rep(as.Date(NA), length.out = nrow(met))
+  for(i in 1:nrow(met)){
+    met$date[i] <- doy2date(met$day[i], year = met$year[i])
+  }
+  
+  ans <- merge(namet, met, by = "date", all.x = TRUE)
+  ans$year <- as.numeric(format(ans$date, "%Y"))
+  ans$day <- as.numeric(format(ans$date, "%j"))
+  ans$date <- NULL
+ 
+  attr(ans, "filename") <- attr(met, "filename")
+  attr(ans, "site") <- attr(met, "site")
+  attr(ans, "latitude") <- attr(met, "latitude")
+  attr(ans, "longitude") <- attr(met, "longitude")
+  attr(ans, "tav") <- attr(met, "tav")
+  attr(ans, "amp") <- attr(met, "amp")
+  attr(ans, "colnames") <- attr(met, "colnames")
+  attr(ans, "units") <- attr(met, "units")
+  attr(ans, "constants") <- attr(met, "constants")
+  attr(ans, "comments") <- attr(met, "comments")
+  class(ans) <- c("met","data.frame")
+  return(ans) 
 }
