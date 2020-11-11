@@ -8,7 +8,8 @@
 #' @param node.child specific node child component to be inspected.
 #' @param node.subchild specific node sub-child to be inspected.
 #' @param node.subsubchild specific node sub-subchild to be inspected.
-#' @param node.sub3child specific node sub-sub-subchild to be inspected.
+#' @param node.sub3child specific node sub3child to be inspected.
+#' @param node.sub4child specific node sub4child to be inspected.
 #' @param node.string passing of a string instead of the node hierarchy.
 #' Do not use this and also the other node arguments. This argument will
 #' overwrite the other node specifications.
@@ -31,6 +32,16 @@
 #'                            node.subchild = "ThermalTime", 
 #'                            node.subsubchild = "BaseThermalTime",
 #'                            node.sub3child = "Response") 
+#' ## For Wheat
+#' ## In this case, I can't dig deep enough 
+#' ## Would need to add an argument 'node.sub4child'
+#' inspect_apsimx_replacement("WheatRye.apsimx", 
+#'                            src.dir = extd.dir,
+#'                            node = "Wheat",
+#'                            node.child = "Structure",
+#'                            node.subchild = "BranchingRate",
+#'                            node.subsubchild = "PotentialBranchingRate",
+#'                            node.sub3child = "Vegetative")
 #'}
 #'\dontrun{  
 #' ## This function can also be used to inspect more complex APSIM-X files
@@ -44,13 +55,15 @@
 inspect_apsimx_replacement <- function(file = "", src.dir = ".", 
                                        node = NULL, node.child = NULL,
                                        node.subchild = NULL, node.subsubchild = NULL,
-                                       node.sub3child = NULL, node.string = NULL,
+                                       node.sub3child = NULL, node.sub4child = NULL,
+                                       node.string = NULL,
                                        root = list("Models.Core.Replacements", NA),
                                        parm = NULL, display.available = FALSE,
                                        digits = 3, print.path = FALSE,
                                        verbose = TRUE){
   
   .check_apsim_name(file)
+  .check_apsim_name(src.dir)
   
   file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
   
@@ -95,6 +108,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     if(!is.na(nodes[3])) node.subchild <- nodes[3]
     if(!is.na(nodes[4])) node.subsubchild <- nodes[4]
     if(!is.na(nodes[5])) node.sub3child <- nodes[5]
+    if(!is.na(nodes[6])) node.sub4child <- nodes[6]
   }
   ## This handles a missing node 'gracefully'
   if(missing(node)){
@@ -106,12 +120,6 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   
   if(verbose) cat("node:", node, "\n")
 
-  # if(display.available){
-  #   cat("Level: node \n")
-  #   str_list(node)
-  # }
-  
-  ## wrn <- grep(node, replacements.node$Children) old version
   wrn <- grep(node, replacements.node.names)
   if(length(wrn) == 0) stop("node not found")
   if(length(wrn) > 1) stop("More than one node found. Make it unique (see regular expressions)")
@@ -220,15 +228,6 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   if(verbose) cat("Name sub-sub-child: ", rep.node.subsubchild$Name, "\n")
   parm.path.0.1.1.1.1.1 <- paste0(parm.path.0.1.1.1.1,".",rep.node.subsubchild$Name)
   
-##  if(FALSE){
-##    if(length(names(rep.node.subchild$Children)) == 0){
-##        ## For some reason at this level the Children are not named
-##        rep.node.subsubchild <- rep.node.subchild$Children[[1]]
-##      }else{
-##        rep.node.subsubchild <- rep.node.subchild$Children
-##      }
-##  }
-
   rep.node.subsubchild.names <- names(rep.node.subsubchild)
 
   ## I also need to check that parameter is not in 'Command'
@@ -249,11 +248,15 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
       return(invisible(format_parm_path(parm.path,parm)))
   }
     
-  if(is.null(parm)){ 
+  if(is.null(parm) && is.null(node.sub3child)){ 
     if(length(rep.node.subsubchild.names) == 0){
         rep.node.sub3child <- rep.node.subsubchild$Children[[1]]
     }else{
         rep.node.sub3child <- rep.node.subsubchild$Children
+        if(is.null(rep.node.sub3child) && !is.null(rep.node.subsubchild$Children)){
+          rep.node.sub3child <- rep.node.subsubchild$Children[[1]]
+        } 
+        if(is.null(rep.node.sub3child)) stop("Something went wrong: rep.node.sub3child is null")
     }
     if(is.null(node.sub3child)){
       unpack_node(rep.node.sub3child, parm = NULL, display.available = display.available)
@@ -313,13 +316,17 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     return(invisible(format_parm_path(parm.path,parm)))
   }
   
-  if(is.null(parm)){ 
+  if(is.null(parm) && is.null(node.sub4child)){ 
     if(length(rep.node.sub4child.names) == 0){
-      rep.node.sub4child <- rep.node.sub3child$Children[[1]]
+      rep.node.sub5child <- rep.node.sub4child$Children[[1]]
     }else{
-      rep.node.sub4child <- rep.node.sub3child$Children
+      rep.node.sub5child <- rep.node.sub4child$Children  
+      if(is.null(rep.node.sub5child) && !is.null(rep.node.sub5child$Children)){
+        rep.node.sub5child <- rep.node.sub4child$Children[[1]]
+      } 
+      if(is.null(rep.node.sub5child)) stop("Something went wrong: rep.node.sub5child is null")
     }
-    unpack_node(rep.node.sub4child, parm = NULL, display.available = display.available)
+    unpack_node(rep.node.sub5child, parm = NULL, display.available = display.available)
   }
   
   if(!is.null(parm) && any(grepl(parm, rep.node.sub4child.names))){
@@ -334,7 +341,75 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
       if(!is.null(parm)) stop("Parameter not found")
     }
   }
+
+  if(missing(node.sub4child)){
+    parm.path <- parm.path.0.1.1.1.1.1.1
+    if(print.path) cat("Parm path:", parm.path, "\n") 
+    if(verbose) cat("missing node.sub4child \n")
+    return(invisible(parm.path))
+  }
   
+  #### Start of code chunck for node.sub4child ----
+  rep.node.sub4children.names <- vapply(rep.node.sub4child$Children, function(x) x$Name,
+                                        FUN.VALUE = "character")
+  wrnssssc <- grep(node.sub4child, rep.node.sub4children.names)
+  if(length(wrnssssc) == 0) stop("node.sub4child not found")
+  if(length(wrnssssc) > 1) stop("More than one sub4child found. Make it unique (see regular expressions)")
+  rep.node.sub5child <- rep.node.sub4child$Children[[wrnssssc]]
+  
+  if(verbose) cat("Name sub-sub-sub-subchild: ", rep.node.sub5child$Name, "\n")
+  parm.path.0.1.1.1.1.1.1.1 <- paste0(parm.path.0.1.1.1.1.1.1,".",rep.node.sub5child$Name)
+
+  ## Why does this work instead of the extraction through x$Name?
+  rep.node.sub5child.names <- names(rep.node.sub5child)
+
+  ## I also need to check that parameter is not in 'Command'
+  ## ispic: Is Parameter In Command?
+  if(length(rep.node.sub5child$Command) > 0 && !is.null(parm)){
+    ispic <- any(grepl(parm, unlist(rep.node.sub5child$Command)))
+  }else{
+    ispic <- FALSE
+  }
+  
+  if((length(rep.node.sub5child$Children) == 0 || !is.null(parm)) && !ispic){
+    ## unpack_node(rep.node.sub4child, parm = parm, display.available = display.available)
+    cat_parm(rep.node.sub5child, parm = parm)
+    parm.path <- parm.path.0.1.1.1.1.1.1.1
+    if(print.path) cat("Parm path:", format_parm_path(parm.path, parm), "\n") 
+    return(invisible(format_parm_path(parm.path,parm)))
+  }
+
+  node.sub5child <- NULL
+  if(is.null(parm) && is.null(node.sub5child)){ 
+    if(length(rep.node.sub5child.names) == 0){
+      rep.node.sub6child <- rep.node.sub5child$Children[[1]]
+    }else{
+      rep.node.sub6child <- rep.node.sub5child$Children  
+      if(is.null(rep.node.sub6child) && !is.null(rep.node.sub6child$Children)){
+        rep.node.sub6child <- rep.node.sub5child$Children[[1]]
+      } 
+      if(is.null(rep.node.sub6child)) stop("Something went wrong: rep.node.sub6child is null")
+    }
+    unpack_node(rep.node.sub6child, parm = NULL, display.available = display.available)
+  }  
+
+  if(!is.null(parm) && any(grepl(parm, rep.node.sub5child.names))){
+    wrnsssspc <- grep(parm, rep.node.sub5child.names)
+    rep.node.sub5child <- rep.node.sub4child[wrnsssspc]
+    cat_parm(rep.node.sub5child, parm = parm) ## This might be wrong, without parm argument
+  }else{
+    if(!is.null(parm) && any(grepl(parm, unlist(rep.node.sub5child$Command)))){
+      wcp <- grep(parm, unlist(rep.node.sub5child$Command))
+      cat(unlist(rep.node.sub5child$Command)[wcp])
+    }else{
+      if(!is.null(parm)) stop("Parameter not found")
+    }
+  }
+  
+  if(is.null(node.sub5child)) parm.path <- parm.path.0.1.1.1.1.1.1.1
+  
+  #### End of node.sub4child code chunk ----
+      
   if(print.path){
     cat("Parm path:", parm.path, "\n")
     if(is.null(parm)){

@@ -32,7 +32,7 @@
 #' edit_apsimx_replacement("MaizeSoybean.apsimx", 
 #'                         src.dir = extd.dir, wrt.dir = tmp.dir,
 #'                         node = "Maize", node.child = "Phenology",
-#'                         node.subchild = "ThermalTime", parm = c("X","Y"),
+#'                         node.subchild = "ThermalTime", parm = "X",
 #'                         value = c(1,2,3,4,5)) 
 #' }
 #'
@@ -118,7 +118,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     wrnc <- grep(node.child, rep.node.children.names)
     rep.node.child <- rep.node$Children[[wrnc]]
 
-    if(parm %in% names(rep.node.child)){
+    if(any(parm %in% names(rep.node.child))){
       lvl <- 1
       rep.node.child <- edit_node(rep.node.child, parm = parm, value = value)
       rep.node$Children[[wrnc]] <- rep.node.child
@@ -221,7 +221,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     
     if(verbose) cat("Sub-sub-subchild Name: ", rep.node.sub3child$Name,"\n")
     
-    if(parm %in% names(rep.node.sub3child)){
+    if(any(parm %in% names(rep.node.sub3child))){
       rep.node.sub3child <- edit_node(rep.node.sub3child, parm = parm, value = value)
       lvl <- 6
       # node is edited, now put it back in place

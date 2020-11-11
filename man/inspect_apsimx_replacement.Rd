@@ -12,6 +12,7 @@ inspect_apsimx_replacement(
   node.subchild = NULL,
   node.subsubchild = NULL,
   node.sub3child = NULL,
+  node.sub4child = NULL,
   node.string = NULL,
   root = list("Models.Core.Replacements", NA),
   parm = NULL,
@@ -34,7 +35,9 @@ inspect_apsimx_replacement(
 
 \item{node.subsubchild}{specific node sub-subchild to be inspected.}
 
-\item{node.sub3child}{specific node sub-sub-subchild to be inspected.}
+\item{node.sub3child}{specific node sub3child to be inspected.}
+
+\item{node.sub4child}{specific node sub4child to be inspected.}
 
 \item{node.string}{passing of a string instead of the node hierarchy.
 Do not use this and also the other node arguments. This argument will
@@ -73,6 +76,16 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
                            node.sub3child = "Response") 
+## For Wheat
+## In this case, I can't dig deep enough 
+## Would need to add an argument 'node.sub4child'
+inspect_apsimx_replacement("WheatRye.apsimx", 
+                           src.dir = extd.dir,
+                           node = "Wheat",
+                           node.child = "Structure",
+                           node.subchild = "BranchingRate",
+                           node.subsubchild = "PotentialBranchingRate",
+                           node.sub3child = "Vegetative")
 }
 \dontrun{  
 ## This function can also be used to inspect more complex APSIM-X files

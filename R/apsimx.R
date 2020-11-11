@@ -32,6 +32,7 @@ apsimx <- function(file = "", src.dir = ".",
   if(file == "") stop("need to specify file name")
   
   .check_apsim_name(file)
+  .check_apsim_name(src.dir)
   
   ## The might offer suggestions in case there is a typo in 'file'
   file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
@@ -176,7 +177,14 @@ auto_detect_apsimx <- function(){
       if(!is.na(apsimx::apsim.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
         warning("APSIM-X not found, but a custom one is present")
       }else{
-        stop("APSIM-X not found and no 'exe.path' exists.")
+        ## Try using the registry
+        if(apsimx::apsimx.options$warn.find.apsimx) warning("Searching the Windows registry for APSIM-X")
+        regcmd <- utils::readRegistry("APSIMXFile\\shell\\open\\command", "HCR")[[1]]
+        regcmd2 <- gsub("\\\\", "/", strsplit(regcmd, "\"")[[1]][2])
+        apsimx_dir <- gsub("ApsimNG", "Models", regcmd2)
+        if(length(apsimx_dir) == 0) stop("APSIM-X not found and no 'exe.path' exists.")
+        if(grepl("\\s", apsimx_dir)) stop("Found a space in the path. Please provide the path manually to APSIM-X using exe.path in apsimx_options.")
+        return(apsimx_dir)
       }
     }
     
@@ -494,7 +502,7 @@ assign('exe.path', NA, apsimx.options)
 assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
-assign('.run.local.tests', FALSE, apsimx.options)
+assign('.run.local.tests', TRUE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests
 ## which do not require an APSIM install
@@ -504,7 +512,7 @@ assign('.run.local.tests', FALSE, apsimx.options)
 #' @importFrom utils read.table
 #' @importFrom utils write.table
 #' @importFrom tools file_path_sans_ext
-#' @importFrom stats coef cor deviance lm optim qt var sd sigma
+#' @importFrom stats coef cor cov2cor deviance lm optim qt var sd sigma
 NULL
 
 utils::globalVariables(".data")

@@ -1,4 +1,4 @@
-## Testing teh capability of optimizing parameters
+## Testing the capability of optimizing parameters
 require(apsimx)
 library(ggplot2)
 apsimx_options(warn.versions = FALSE)
@@ -143,8 +143,7 @@ if(FALSE){
     geom_point(data = obsWheat, aes(x = Date, y = Wheat.AboveGround.Wt)) +
     geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.AboveGround.Wt)) + 
     ggtitle("Biomass (g/m2)")
-  
-  
+
   ## What about nloptr?
   start <- Sys.time()
   wop.n <- optim_apsimx("Wheat-opt-ex.apsimx", 
@@ -159,6 +158,9 @@ if(FALSE){
   end <- Sys.time()
   
   ## Test BayesianTools??? Would need to embbed it inside optim
+  ## How long does this take in Windows laptop? 500 iter, 9 chains: 3464 seconds ~ 1 hour
+  ## 500 iter, 3 chains: 18 minutes
+  ## 5000 iter, 3 chains: 4 hours, but still not good enough
   start <- Sys.time()
   wop.mcmc <- optim_apsimx("Wheat-opt-ex.apsimx", 
                            src.dir = extd.dir, 
@@ -168,7 +170,8 @@ if(FALSE){
                            replacement = c(TRUE, TRUE),
                            initial.values = c(1.2, 120),
                            type = "mcmc",
-                           settings = list(iterations = 500, nrChains = 3))
+                           parallel = FALSE,
+                           settings = list(iterations = 5000))
   end <- Sys.time()
   
 }

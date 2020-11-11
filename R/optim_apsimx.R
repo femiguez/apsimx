@@ -262,8 +262,9 @@ optim_apsimx <- function(file, src.dir = ".",
     datami.sds <- apply(datami, 2, sd)
     mcmc.args <- list(...)
     if(is.null(mcmc.args$lower)) lower <- rep(0, length(iparms) + ncol(datami))
-    if(is.null(mcmc.args$upper)) upper <- c(rep(2, length(iparms)), datami.sds * 100)
+    if(is.null(mcmc.args$upper)) upper <- c(rep(2, length(iparms)), datami.sds * 10)
     if(is.null(mcmc.args$sampler)) sampler <- "DEzs"
+    if(is.null(mcmc.args$parallel)) mcmc.args$parallel <- FALSE
     if(is.null(mcmc.args$settings)) stop("runMCMC settings are missing with no default")
    
     
@@ -289,7 +290,8 @@ optim_apsimx <- function(file, src.dir = ".",
     bayes.setup <- BayesianTools::createBayesianSetup(log_lik, 
                                                       lower = lower,
                                                       upper = upper,
-                                                      names = nms)
+                                                      names = nms,
+                                                      parallel = mcmc.args$parallel)
     
     op.mcmc <- BayesianTools::runMCMC(bayes.setup, 
                                       sampler = sampler, 

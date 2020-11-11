@@ -34,7 +34,7 @@ tmp.dir <- tempdir()
 Are you a user of APSIM-X ("Next Generation")? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the **apsimx** package, which allows you to inspect, edit, run and read files created by APSIM-X -- .apsim(x) files. New .apsimx files are based on the JSON (JavaScript Object Notation https://www.json.org/) format and it is used to communicate information to the APSIM-X engine. By using the 'jsonlite' R package **apsimx** can read and write ('inspect' and 'edit') files in this format. APSIM 'Classic' used an XML format and this type is now fully supported ('inspect', 'edit', 'run' and 'read').  For 'inspect' and 'edit' in the APSIM 'Classic' version I use the 'xml2' package. To run simulations the *apsimx* function (*apsim* for 'Classic') is available and results from the simulation can be imported as an R object with a dedicated function (*read_apsimx* 'NG' and *read_apsim* for 'Classic'). If you need to write scripts (regardless of whether you use the **apsimx** package or not) the vignette 'writing scripts' might be useful. The package is currently being developed and available at: https://github.com/femiguez/apsimx. 
 If you have any questions write to: femiguez *at* iastate.edu. 
 
-In part this package is inspired by previous work by Bryan Stanfill on the 'apsimr' package (available from CRAN and github: https://github.com/stanfill/apsimr). That package made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using 'GAMS'. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package is 'APSIM', but as with 'apsimr' it has not been updated and it has somewhat of a different functionality. The 'APSIM' package is especially useful for creating weather ('.met') files for APSIM 'Classic' or 'Next Generation'. 
+In part this package is inspired by previous work by Bryan Stanfill on the 'apsimr' package (previously available from CRAN and github: https://github.com/stanfill/apsimr). That package made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using 'GAMS'. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package used to be 'APSIM', but it has been removed from CRAN (2020-1019) but as with 'apsimr' it has not been updated and it has somewhat of a different functionality. The 'APSIM' package was especially useful for creating weather ('.met') files for APSIM 'Classic' or 'Next Generation'. 
 
 ## Background information
 
@@ -44,13 +44,13 @@ See the following for details
 
 [APSIM](https://www.apsim.info)
 
-[APSIM-X](https://apsimnextgeneration.netlify.com/)
+[APSIM-X](https://apsimnextgeneration.netlify.app/)
 
 [Holzworth et al. (2018)](https://www.sciencedirect.com/science/article/pii/S1364815217311921)
 
 This package has been tested on:
 
-**Mac**: ApsimX version (2020-09-09) 5640 (R 3.6.2)
+**Mac**: ApsimX version (2020-11-09) 5842 (R 4.0.3)
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
@@ -454,6 +454,7 @@ One of the easiest ways of generating weather data (".met" files) is by using th
 * **write_apsim_met**: write an APSIM met file from an object of class 'met'.
 * **check_apsim_met**: check for reasonable values for met variables.
 * **impute_apsim_met**: impute missing values using linear interpolation, splines or the mean.
+* **napad_apsim_met**: Fill in date gaps with NAs in a 'met' object. Useful for imputation.
 * **compare_apsim_met**: utility for quick comparison of 'met' objects. There is also a plot method.
 * **get_power_apsim_met**: (requires the 'nasapower' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
 * **get_daymet_apsim_met**: (requires the 'FedData' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
@@ -461,7 +462,7 @@ One of the easiest ways of generating weather data (".met" files) is by using th
 * **get_iem_apsim_met**: Fetch data from Iowa Environmental Mesonet
 * **get_iemre_apsim_met**: Fetch data from Iowa Environmental Mesonet Reanalysis
 
-Note that some utilities are available in the 'APSIM' package (loadMet, prepareMet, checkMet, writeMetFile) for reading, preparing, checking and writing a met file.
+Note that some utilities were available in the 'APSIM' package (loadMet, prepareMet, checkMet, writeMetFile) for reading, preparing, checking and writing a met file. However, that package has been removed from CRAN as of 2020-10-19.
 
 ## Obtaining soil data
 
@@ -484,10 +485,16 @@ aiu <- apsim_version(which = "inuse")
 
 **edit_apsimx_batch**: Uses APSIM-X built-in functionality to edit parameters. In testing, it is slower than the other 'edit_apsimx*' functions.
 
+**doy2date**: Utility function for converting from day of the year (1-366) to 'Date' and performing the inverse conversion.
+
+**compare_apsim**: Utility function for comparing simulations or observed and simulated data.
+
 # To-Do
 
 * **inspect_apsimx_replacement** challenge this function with more complex
-examples. It has problems with 'manager' when replacements are present.
+examples. It can have problems with 'manager' when replacements are present
+and it also has limitations in terms of how deep it can inspect. This also
+limits the ability of doing deep edits.
 
 # Appendix
 

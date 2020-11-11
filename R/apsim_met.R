@@ -132,22 +132,24 @@ read_apsim_met <- function(file, src.dir = ".", verbose = TRUE){
 #' }
 #' 
 
-write_apsim_met <- function(met, wrt.dir=NULL, filename = NULL){
+write_apsim_met <- function(met, wrt.dir = NULL, filename = NULL){
   
-  if(missing(wrt.dir) && missing(filename)){
+  if(attr(met, "filename") != "noname.met") filename <- attr(met, "filename")
+    
+  if(missing(wrt.dir) && is.null(filename)){
     ## This assumes that the full path is in filename
-    file.path <- attr(met,"filename")
+    file.path <- attr(met, "filename")
   }
-  if(!missing(wrt.dir) && missing(filename)){
+  if(!missing(wrt.dir) && is.null(filename)){
     stop("Need to supply filename if 'wrt.dir' is not NULL")
   }
-  if(missing(wrt.dir) && !missing(filename)){
+  if(missing(wrt.dir) && !is.null(filename)){
     stop("Need to supply 'wrt.dir' if filename is not NULL")
   }
-  if(!missing(wrt.dir) && !missing(filename)){
-    file.path <- paste0(wrt.dir,"/",filename)
+  if(!missing(wrt.dir) && !is.null(filename)){
+    file.path <- paste0(wrt.dir, "/", filename)
   }
-  if(!missing(filename)){
+  if(!is.null(filename)){
     if(!grepl(".met", filename, fixed=TRUE)) stop("filename should end in .met")
   }
   ## Open connection
@@ -210,7 +212,7 @@ print.met <- function(x,...){
 #' @name impute_apsim_met
 #' @description Takes in an object of class \sQuote{met} and imputes values
 #' @param met object of class \sQuote{met}
-#' @param method method for imputation, \code{\link[stats]{approx}}, \code{\link[stat]{spline}} or \code{\link{mean}}
+#' @param method method for imputation, \code{\link[stats]{approxfun}}, \code{\link[stats]{spline}} or \code{\link{mean}}
 #' @param verbose whether to print missing data to the console, default = FALSE
 #' @param ... additional arguments to be passed to imputation method
 #' @return an object of class \sQuote{met} with attributes

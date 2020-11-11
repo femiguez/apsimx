@@ -1,4 +1,3 @@
-#' Compare two or more metfiles
 #' 
 #' @title Compare two or more metfiles
 #' @name compare_apsim_met
@@ -69,7 +68,7 @@ compare_apsim_met <- function(...,
   ## Check for any issues
   if(check) check_apsim_met(met1)
   
-  ## Create the 'date' fir indexing
+  ## Create the 'date' for indexing
   nms1 <- names(met1)
   met.mrg <- met1
   yr <- as.character(met1$year[1])
@@ -153,14 +152,15 @@ compare_apsim_met <- function(...,
 #' @param pairs pair of objects to compare, defaults to 1 and 2 but others are possible
 #' @param cummulative whether to plot cummulative values (default FALSE)
 #' @param met.var meteorological variable to plot 
-#' @param id identification ??
+#' @param id identification (not implemented yet)
+#' @param span argument to be passed to \sQuote{geom_smooth}
 #' @export
 #' 
 plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
                          pairs = c(1, 2),
                          cummulative = FALSE,
                          met.var = c("radn", "maxt", "mint", "rain"),
-                         id){
+                         id, span = 0.75){
 
   if(!requireNamespace("ggplot2", quietly = TRUE)){
     warning("ggplot2 is required for this plotting function")
@@ -226,12 +226,12 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
                                                     color = paste(m.nms[pairs[1]], prs0[1]))) +
                                                     
       ggplot2::geom_point() + 
-      ggplot2::geom_smooth(...) + 
+      ggplot2::geom_smooth(span = span, ...) + 
       ggplot2::geom_point(ggplot2::aes(y = eval(parse(text = eval(prs0[2]))),
                                        color = paste(m.nms[pairs[2]], prs0[2]))) + 
       ggplot2::geom_smooth(ggplot2::aes(y = eval(parse(text = eval(prs0[2]))),
                                         color = paste(m.nms[pairs[2]], prs0[2])),
-                           ...) + 
+                           span = span, ...) + 
       ggplot2::xlab("Date") + 
       ggplot2::ylab(met.var) + 
       ggplot2::theme(legend.title = ggplot2::element_blank())

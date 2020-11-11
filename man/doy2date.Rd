@@ -2,23 +2,27 @@
 % Please edit documentation in R/unit_conv.R
 \name{doy2date}
 \alias{doy2date}
+\alias{date2doy}
 \title{Converts from doy to date}
 \usage{
 doy2date(x, year = 2001, inverse = FALSE)
+
+date2doy(x, year = 2001, inverse = FALSE)
 }
 \arguments{
 \item{x}{either an integer 1-366 or a \sQuote{Date}}
 
 \item{year}{year}
 
-\item{inverse}{if TRUE it goes from date to day}
+\item{inverse}{if TRUE it goes from doy to \sQuote{Date}}
 }
 \description{
 Given a day of the year as julian (1-366) it converts to \sQuote{Date}
-}
-\details{
-This function goes from doy to date
+
+Given a \sQuote{Date} it converts to julian day (1-366) or day of the year
 }
 \examples{
 doy2date(120)
+date2doy("04-30")
+
 }

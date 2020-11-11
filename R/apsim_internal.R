@@ -23,7 +23,7 @@
 #' Check the name and disallow white spaces 
 #' These are not allowed as it would not work (easily)
 #' at the command line
-#' @name .check_apsim_met
+#' @name .check_apsim_name
 #' @description Checks whether an APSIM file has spaces in it
 #' @param .file an APSIM file
 #' @noRd
@@ -31,7 +31,7 @@
 .check_apsim_name <- function(.file){
   ## No spaces are allowed, provide informative error
   if(grepl("\\s", .file))
-    stop("White spaces are not allowed in file names")
+    stop("White spaces are not allowed in file names or directories")
 }
 
 #' This is for when a list has only one element

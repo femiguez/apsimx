@@ -3,6 +3,7 @@
 \name{optim_apsim}
 \alias{optim_apsim}
 \alias{print.optim_apsim}
+\alias{vcov.optim_apsim}
 \title{Optimize parameters in an APSIM simulation}
 \usage{
 optim_apsim(
@@ -19,6 +20,8 @@ optim_apsim(
 )
 
 \method{print}{optim_apsim}(x, ..., digits = 3, level = 0.95)
+
+\method{vcov}{optim_apsim}(object, ...)
 }
 \arguments{
 \item{file}{file name to be run (the extension .apsim is optional)}
@@ -50,6 +53,8 @@ elements in the candidate vector for the same parameter.}
 \item{digits}{number of digits to round up the output}
 
 \item{level}{confidence level (default 0.95)}
+
+\item{object}{object of class \sQuote{optim_apsim}}
 }
 \value{
 object of class \sQuote{optim_apsim}, but really just a list with results from optim and additional information.
@@ -58,6 +63,8 @@ object of class \sQuote{optim_apsim}, but really just a list with results from o
 It is a wrapper for running APSIM and optimizing parameters using \code{\link[stats]{optim}}
 
 Friendly printing of optim_apsim
+
+Variance-Covariance for an \sQuote{optim_apsim} object
 }
 \details{
 Simple optimization for APSIM Classic
@@ -87,4 +94,7 @@ a vector only.
 When computing the objective function (residual sum-of-squares) different variables are combined.
 It is common to weight them since they are in different units. If the argument weights is not supplied
 no weighting is applied. It can be \sQuote{mean}, \sQuote{var} or a numeric vector of appropriate length.
+
+This in the scale of the optimized parameters which are
+scaled to be around 1.
 }

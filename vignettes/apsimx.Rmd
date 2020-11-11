@@ -50,7 +50,7 @@ See the following for details
 
 This package has been tested on:
 
-**Mac**: ApsimX version (2020-09-09) 5640 (R 3.6.2)
+**Mac**: ApsimX version (2020-11-09) 5842 (R 4.0.3)
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
@@ -487,10 +487,14 @@ aiu <- apsim_version(which = "inuse")
 
 **doy2date**: Utility function for converting from day of the year (1-366) to 'Date' and performing the inverse conversion.
 
+**compare_apsim**: Utility function for comparing simulations or observed and simulated data.
+
 # To-Do
 
 * **inspect_apsimx_replacement** challenge this function with more complex
-examples. It has problems with 'manager' when replacements are present.
+examples. It can have problems with 'manager' when replacements are present
+and it also has limitations in terms of how deep it can inspect. This also
+limits the ability of doing deep edits.
 
 # Appendix
 

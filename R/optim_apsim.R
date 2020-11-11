@@ -250,6 +250,7 @@ optim_apsim <- function(file, src.dir = ".",
     if(is.null(mcmc.args$lower)) lower <- rep(0, length(iaux.parms) + ncol(datami))
     if(is.null(mcmc.args$upper)) upper <- c(rep(2, length(iaux.parms)), datami.sds * 100)
     if(is.null(mcmc.args$sampler)) sampler <- "DEzs"
+    if(is.null(mcmc.args$parallel)) mcmc.args$parallel <- FALSE
     if(is.null(mcmc.args$settings)) stop("runMCMC settings are missing with no default")
 
     cfs <- c(rep(1, length(iaux.parms)), apply(datami, 2, sd))
@@ -274,7 +275,8 @@ optim_apsim <- function(file, src.dir = ".",
     bayes.setup <- BayesianTools::createBayesianSetup(log_lik2, 
                                                       lower = lower,
                                                       upper = upper,
-                                                      names = nms)
+                                                      names = nms,
+                                                      parallel = mcmc.args$parallel)
     
     op.mcmc <- BayesianTools::runMCMC(bayes.setup, 
                                       sampler = sampler, 
@@ -329,10 +331,10 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
       degf <- x$n - length(x$iaux.parms) ## Degrees of freedom
       par.se <- sqrt((2 * (1 / (x$op$hessian[i,i])) * x$op$value) / degf)
       qTT <- -1 * stats::qt((1 - level) * 0.5, degf) ## t statistic
-      cat("\t CI level: ", level, "\t SE:", par.se)
+      cat("\t CI level: ", level, "t: ", qTT, " SE:", round(par.se * x$iaux.parms[[i]], digits),"\n")
       if(x$parm.vector.index[i] <= 0){
         cat("\t Lower: ", round((x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]], digits))
-        cat("\t Upper: ", round((x$op$par[i] + qTT * par.se) * x$iaux.parms[[i]], digits),"\n")        
+        cat("\t Upper: ", round((x$op$par[i] + qTT * par.se) * x$iaux.parms[[i]], digits),"\n")  
       }else{
         pvi <- x$parm.vector.index[i]
         cat("\t Lower: ", round((x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]][pvi], digits))
@@ -417,6 +419,31 @@ log_lik2 <- function(.cfs){
     lls <- mvtnorm::dmvnorm(diffs, sigma = Sigma, log = TRUE)
     return(sum(lls))    
   }
+}
+
+#' @rdname optim_apsim
+#' @description Variance-Covariance for an \sQuote{optim_apsim} object
+#' @param object object of class \sQuote{optim_apsim}
+#' @param ... additional arguments (none used at the moment)
+#' @note This in the scale of the optimized parameters which are
+#' scaled to be around 1.
+#' @export
+#' 
+vcov.optim_apsim <- function(object, ...){
+  
+  if(is.null(object$op$hessian)) stop("Hessian matrix not found")
+  ## Hessian matrix
+  hess <- object$op$hessian
+  ## Correlation matrix
+  cor.mat <- stats::cov2cor(solve(hess))
+  ## Standard deviation vector
+  sd.vec <- numeric(nrow(hess))
+  degf <- object$n - nrow(hess)
+  for(i in 1:nrow(hess)){
+    sd.vec[i] <- sqrt((2 * 1/(hess[i,i]) * object$op$value) / degf)
+  }
+  ans <- t(sd.vec * cor.mat) * sd.vec
+  return(ans)
 }
 
 #' Create an apsim environment for MCMC

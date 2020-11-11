@@ -76,7 +76,7 @@ tmp.dir <- tempdir()
 edit_apsimx_replacement("MaizeSoybean.apsimx", 
                         src.dir = extd.dir, wrt.dir = tmp.dir,
                         node = "Maize", node.child = "Phenology",
-                        node.subchild = "ThermalTime", parm = c("X","Y"),
+                        node.subchild = "ThermalTime", parm = "X",
                         value = c(1,2,3,4,5)) 
 }
 

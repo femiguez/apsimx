@@ -20,7 +20,7 @@ The reason for running APSIM without the use of the GUI is to be able to perform
 
 Even though this package is meant to simplify writing scripts in R that require the use of APSIM "Next Generation", it is likely that a user might decide not to use this package, but still the information below will be useful in writing scripts. Other users are likely to run into problems when trying to run APSIM-X at the command line and the material below is meant to try to help with this process. 
 
-APSIM-X is an effort at modernizing and improving the previous versions of APSIM 7.x. The program is primarily written in C# and it uses the Mono Framework and GTK# (https://apsimnextgeneration.netlify.com/). Note that in the previous website there is also information about using Cloud Services and Microsoft Azure.
+APSIM-X is an effort at modernizing and improving the previous versions of APSIM 7.x. The program is primarily written in C# and it uses the Mono Framework and GTK# (https://apsimnextgeneration.netlify.app/). Note that in the previous website there is also information about using Cloud Services and Microsoft Azure.
 
 If you are using a previous version of APSIM (7.x) you might be interested in either the 'APSIM' or 'apsimr' R packages. Recently, I added support for APSIM 'Classic' within **apsimx**.
 
