@@ -172,20 +172,19 @@ auto_detect_apsimx <- function(){
     find.apsim <- grep("APSIM", laf)
     
     ## What if length equals zero?
-    if(length(find.apsim) == 0){
-      ## I only throw a warning because maybe the user has a custom version of APSIM-X only
-      if(!is.na(apsimx::apsim.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
-        warning("APSIM-X not found, but a custom one is present")
-      }else{
-        ## Try using the registry
+    if(length(find.apsim) == 0 && is.na(apsimx::apsim.options$exe.path)){
+        ## Try using the registry only if APSIM path has not been set manually
         if(apsimx::apsimx.options$warn.find.apsimx) warning("Searching the Windows registry for APSIM-X")
-        regcmd <- utils::readRegistry("APSIMXFile\\shell\\open\\command", "HCR")[[1]]
+        ## HCR hive is for HKEY_CLASSES_ROOT, HLM is for HKEY_LOCAL_MACHINE and HCU is for HKEY_CURRENT_USER
+        regcmd <- try(utils::readRegistry("APSIMXFile\\shell\\open\\command", "HCR")[[1]], silent = TRUE)
+        if(inherits(regcmd, "try-error")) regcmd <- try(utils::readRegistry("APSIMXFile\\shell\\open\\command", "HCU")[[1]], silent = TRUE)
+        if(inherits(regcmd, "try-error")) regcmd <- try(utils::readRegistry("APSIMXFile\\shell\\open\\command", "HLM")[[1]], silent = TRUE)
+        if(inherits(regcmd, "try-error")) stop("Could not find APSIM-X in the Windows Registry")
         regcmd2 <- gsub("\\\\", "/", strsplit(regcmd, "\"")[[1]][2])
         apsimx_dir <- gsub("ApsimNG", "Models", regcmd2)
         if(length(apsimx_dir) == 0) stop("APSIM-X not found and no 'exe.path' exists.")
         if(grepl("\\s", apsimx_dir)) stop("Found a space in the path. Please provide the path manually to APSIM-X using exe.path in apsimx_options.")
-        return(apsimx_dir)
-      }
+        return(apsimx_dir)        
     }
     
     st3 <- "/Bin/Models.exe" 

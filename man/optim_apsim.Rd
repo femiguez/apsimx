@@ -4,6 +4,7 @@
 \alias{optim_apsim}
 \alias{print.optim_apsim}
 \alias{vcov.optim_apsim}
+\alias{coef.optim_apsim}
 \title{Optimize parameters in an APSIM simulation}
 \usage{
 optim_apsim(
@@ -21,7 +22,9 @@ optim_apsim(
 
 \method{print}{optim_apsim}(x, ..., digits = 3, level = 0.95)
 
-\method{vcov}{optim_apsim}(object, ...)
+\method{vcov}{optim_apsim}(object, ..., scaled = TRUE)
+
+\method{coef}{optim_apsim}(object, ..., scaled = FALSE)
 }
 \arguments{
 \item{file}{file name to be run (the extension .apsim is optional)}
@@ -55,6 +58,9 @@ elements in the candidate vector for the same parameter.}
 \item{level}{confidence level (default 0.95)}
 
 \item{object}{object of class \sQuote{optim_apsim}}
+
+\item{scaled}{whether to return the scaled or unscaled estimates
+(TRUE in the optimized scale, FALSE in the original scale)}
 }
 \value{
 object of class \sQuote{optim_apsim}, but really just a list with results from optim and additional information.
@@ -65,6 +71,8 @@ It is a wrapper for running APSIM and optimizing parameters using \code{\link[st
 Friendly printing of optim_apsim
 
 Variance-Covariance for an \sQuote{optim_apsim} object
+
+Parameter estimates for an \sQuote{optim_apsim} object
 }
 \details{
 Simple optimization for APSIM Classic

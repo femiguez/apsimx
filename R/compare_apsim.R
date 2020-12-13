@@ -5,14 +5,29 @@
 #' @description Function which allows for a simple comparison between APSIM output objects
 #' @param ... data frames with APSIM output. 
 #' @param variable specific variable to compare. By default all common ones are compared.
-#' @param index index for merging objects. Default is 'Date'
+#' @param index index for merging objects. Default is \sQuote{Date}
 #' @param by factor for splitting the comparison, such as a treatment effect.
 #' @param labels labels for plotting and identification of objects.
 #' @export
 #' @return object of class \sQuote{out_mrg}, which can be used for further plotting
 #' @examples 
 #' \donttest{
-#' ## Will include an example with Wheat at some point
+#' ## Directory with files
+#' extd.dir <- system.file("extdata", package = "apsimx")
+#' ## Comparing observed and simulated for Wheat
+#' data(obsWheat)
+#' sim.opt <- read.csv(file.path(extd.dir, "wheat-sim-opt.csv"))
+#' sim.opt$Date <- as.Date(sim.opt$Date)
+#'
+#' cap <- compare_apsim(obsWheat, sim.opt, labels = c("obs", "sim"))
+#'
+#' plot(cap)
+#' plot(cap, plot.type = "diff")
+#' plot(cap, plot.type = "ts")
+#'
+#' plot(cap, variable = "AboveGround")
+#' plot(cap, variable = "AboveGround", plot.type = "diff")
+#' plot(cap, variable = "AboveGround", plot.type = "ts")
 #' }
 #' 
 

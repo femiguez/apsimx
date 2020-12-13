@@ -122,13 +122,21 @@ auto_detect_apsim <- function(){
   
   if(length(find.apsim) == 0 && is.na(apsimx::apsim.options$exe.path)){
     ## Try the registry approach only if there is no 'exe.path'
-    regcmd <- utils::readRegistry("APSIMFile\\shell\\open\\command", "HCR")[[1]]
+    ## HCR hive is for HKEY_CLASSES_ROOT, HLM is for HKEY_LOCAL_MACHINE and HCU is for HKEY_CURRENT_USER
+    regcmd <- try(utils::readRegistry("APSIMFile\\shell\\open\\command", "HCR")[[1]], silent = TRUE)
+    if(inherits(regcmd, "try-error")) regcmd <- try(utils::readRegistry("APSIMFile\\shell\\open\\command", "HCU")[[1]], silent = TRUE)
+    if(inherits(regcmd, "try-error")) regcmd <- try(utils::readRegistry("APSIMFile\\shell\\open\\command", "HLM")[[1]], silent = TRUE)
+    if(inherits(regcmd, "try-error")) stop("Could not find APSIM Classic in the Windows Registry")
     regcmd2 <- gsub("\\\\", "/", strsplit(regcmd, "\"")[[1]][2])
     apsim_dir <- gsub("UI", "Models", regcmd2)
-    if(length(apsim_dir) == 0) stop("APSIM-X not found and no 'exe.path' exists.")
+    if(length(apsim_dir) == 0) stop("APSIM Classic was not found and no 'exe.path' exists.")
     if(grepl("\\s", apsim_dir)) stop("Found a space in the path. Please provide the path manually to APSIM using exe.path in apsim_options.")
     return(apsim_dir)
   } 
+
+  if(length(find.apsim) == 1){
+    apsim.name <- laf[find.apsim]
+  }
   
   if(length(find.apsim) > 1){
     apsim.versions <- laf[find.apsim]
@@ -143,16 +151,11 @@ auto_detect_apsim <- function(){
       }
     ## apsim.name <- grep(newest.version, apsim.versions, value = TRUE)
     apsim.name <- newest.version
-  }else{
-    if(length(find.apsim) == 1){
-      apsim.name <- laf[find.apsim]
-    }else{
-      stop("APSIM-X not found and no 'exe.path' exists.")
-    } 
   }
+  
   ## APSIM executable
   st3 <- "/Model/Apsim.exe" 
-  apsim_dir <- paste0(st1, apsim.name, st3)
+  if(length(apsim.name) >= 1) apsim_dir <- paste0(st1, apsim.name, st3)
   
   if(!is.na(apsimx::apsim.options$exe.path)){
     ## Windows paths can contain white spaces which are

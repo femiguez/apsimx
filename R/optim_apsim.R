@@ -284,6 +284,11 @@ optim_apsim <- function(file, src.dir = ".",
     return(op.mcmc)
 
   }
+  
+  ## rss are the pre-optimized residual sum of squares
+  ## op$value are the optimized residual sum of squares
+  ## The next line is only true when optimizing one single variable
+  ## logLik <- 0.5 * ( - N * (log(2 * pi) + 1 - log(N) + log(op$value))
 
   ans <- structure(list(rss = rss, iaux.parms = iaux.parms, 
                         op = op, n = nrow(data),
@@ -425,11 +430,12 @@ log_lik2 <- function(.cfs){
 #' @description Variance-Covariance for an \sQuote{optim_apsim} object
 #' @param object object of class \sQuote{optim_apsim}
 #' @param ... additional arguments (none used at the moment)
+#' @param scaled for now only return the scaled matrix
 #' @note This in the scale of the optimized parameters which are
 #' scaled to be around 1.
 #' @export
 #' 
-vcov.optim_apsim <- function(object, ...){
+vcov.optim_apsim <- function(object, ..., scaled = TRUE){
   
   if(is.null(object$op$hessian)) stop("Hessian matrix not found")
   ## Hessian matrix
@@ -443,6 +449,34 @@ vcov.optim_apsim <- function(object, ...){
     sd.vec[i] <- sqrt((2 * 1/(hess[i,i]) * object$op$value) / degf)
   }
   ans <- t(sd.vec * cor.mat) * sd.vec
+  return(ans)
+}
+
+#' @rdname optim_apsim
+#' @description Parameter estimates for an \sQuote{optim_apsim} object
+#' @param object object of class \sQuote{optim_apsim}
+#' @param ... additional arguments (none used at the moment)
+#' @param scaled whether to return the scaled or unscaled estimates
+#' (TRUE in the optimized scale, FALSE in the original scale)
+#' @export
+#' 
+coef.optim_apsim <- function(object, ..., scaled = FALSE){
+  
+  ans <- numeric(length(object$op$par))
+  
+  for(i in seq_along(ans)){
+    if(object$parm.vector.index[i] <= 0){
+      ans[i] <- object$op$par[i] * object$iaux.parms[[i]]
+    }else{
+      pvi <- object$parm.vector.index[i]
+      ans[i] <- object$op$par[i] * object$iaux.parms[[i]][pvi]
+    }
+  }
+
+  if(scaled) ans <- object$op$par
+  
+  names(ans) <- names(object$iaux.parms)
+  
   return(ans)
 }
 

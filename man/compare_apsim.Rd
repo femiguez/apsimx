@@ -23,7 +23,7 @@ compare_apsim(..., variable, index = "Date", by, labels)
 
 \item{variable}{variable to plot}
 
-\item{index}{index for merging objects. Default is 'Date'}
+\item{index}{index for merging objects. Default is \sQuote{Date}}
 
 \item{by}{factor for splitting the comparison, such as a treatment effect.}
 
@@ -51,7 +51,22 @@ plotting function for compare_apsim, it requires ggplot2
 }
 \examples{
 \donttest{
-## Will include an example with Wheat at some point
+## Directory with files
+extd.dir <- system.file("extdata", package = "apsimx")
+## Comparing observed and simulated for Wheat
+data(obsWheat)
+sim.opt <- read.csv(file.path(extd.dir, "wheat-sim-opt.csv"))
+sim.opt$Date <- as.Date(sim.opt$Date)
+
+cap <- compare_apsim(obsWheat, sim.opt, labels = c("obs", "sim"))
+
+plot(cap)
+plot(cap, plot.type = "diff")
+plot(cap, plot.type = "ts")
+
+plot(cap, variable = "AboveGround")
+plot(cap, variable = "AboveGround", plot.type = "diff")
+plot(cap, variable = "AboveGround", plot.type = "ts")
 }
 
 }

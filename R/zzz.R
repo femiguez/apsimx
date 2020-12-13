@@ -31,7 +31,7 @@
         if(grepl("Windows", Sys.info()[["sysname"]])){
           laf <- list.files("C:/PROGRA~1")
           laf2 <- list.files("C:/PROGRA~2")
-      }
+        }
   }
   ## Check whether APSIM-X is detected
   if(!grepl("Windows", Sys.info()[["sysname"]])){
@@ -53,7 +53,8 @@
     
     apsim.not.found <- "APSIM(X) not found. \n 
              If APSIM(X) is installed in an alternative location, \n
-            set paths manually using 'apsimx_options' or 'apsim_options'"
+            set paths manually using 'apsimx_options' or 'apsim_options' \n
+            You can still try as the package will look into the registry (under Windows)"
     
     if(!is.null(find.mono)) apsim.not.found <- c(find.mono, apsim.not.found)
     
