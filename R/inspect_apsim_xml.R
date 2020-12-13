@@ -27,7 +27,6 @@
 #' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Clock")
 #' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Weather") 
 #' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "Metadata")
-#' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "Water")
 #' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "OrganicMatter")
 #' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "Analysis")
 #' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
@@ -36,6 +35,19 @@
 #' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Crop", parm = list("sow",NA)) 
 #' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Crop", parm = list("sow",7))
 #' 
+#' ## when soil.child = "Water" there are potentially many crops to chose from 
+#' ## This selects LL, KL and XF for Barley
+#' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", 
+#'               soil.child = "Water", parm = "Barley")
+#' ## This selects LL for all the crops
+#' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", 
+#'               soil.child = "Water", parm = "LL")
+#' ## To print the parm.path the selection needs to be unique
+#' ## but still there will be multiple soil layers
+#' ## 'parm' can be a list or a character vector of length equal to two
+#' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", 
+#'               soil.child = "Water", parm = list("Barley", "LL"),
+#'               print.path = TRUE)
 #' 
 #' ## Testing with maize-soybean-rotation.apsim
 #' inspect_apsim("maize-soybean-rotation.apsim", src.dir = extd.dir, node = "Clock")
@@ -211,20 +223,27 @@ inspect_apsim <- function(file = "", src.dir = ".",
       ## Crop specific
       crop.parms <- c("LL", "KL", "XF")
       
+      ## How many crops are present?
+      number.of.crops <- length(xml2::xml_attrs(xml2::xml_find_all(apsim_xml, ".//Soil/Water/SoilCrop")))
+      crop.names <- as.character(unlist(xml2::xml_attrs(xml2::xml_find_all(apsim_xml, ".//Soil/Water/SoilCrop"))))
+      crop.names.parms <- c(sapply(crop.names, function(x) paste(x, crop.parms)))
+      
       val.mat <- matrix(NA, 
-                        ncol = (length(crop.parms)+1),
+                        ncol = c(length(crop.parms) * number.of.crops)+1,
                         nrow = number.soil.layers)
       
       crop.d <- data.frame(val.mat)
       crop.d[,1] <- soil.depths
-      names(crop.d) <- c("Depth", crop.parms)
+      names(crop.d) <- c("Depth", crop.names.parms)
       j <- 2
-      for(i in crop.parms){
-        parm.path.0 <- ".//Soil/Water/SoilCrop"
-        parm.path.1 <- paste0(parm.path.0, "/", i)
-        soil.water.crop.node <- xml2::xml_find_first(apsim_xml, parm.path.1)
-        crop.d[,j] <- xml2::xml_double(xml2::xml_children(soil.water.crop.node))
-        j <- j + 1
+      for(i in crop.names){
+        for(k in crop.parms){
+          parm.path.0 <- ".//Soil/Water/SoilCrop"
+          parm.path.1 <- paste0(parm.path.0, "[@name='", i, "']", "/", k)
+          soil.water.crop.node <- xml2::xml_find_first(apsim_xml, parm.path.1)
+          crop.d[,j] <- xml2::xml_double(xml2::xml_children(soil.water.crop.node))
+          j <- j + 1          
+        }
       }
       
       soil.parms <- c("Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS")
@@ -266,27 +285,51 @@ inspect_apsim <- function(file = "", src.dir = ".",
         print(knitr::kable(cbind(crop.d,soil.d), digits = digits))  
         print(knitr::kable(soil.water.d, digits = digits))
       }else{
-        ## parm is either in 'crop.parms'
-        if(parm %in% crop.parms){
-          parm.path.0 <- ".//Soil/Water/SoilCrop"
-          print(knitr::kable(subset(crop.d, select = parm), digits = digits))  
+        found.parm <- FALSE
+        ## parm is either a list or a string and it is in crop.parms or crop.names
+        if(length(parm) == 1 && (parm %in% crop.parms || parm %in% crop.names)){
+          sparm <- grep(parm, crop.names.parms, value = TRUE, ignore.case = TRUE)
+          print(knitr::kable(subset(crop.d, select = sparm), digits = digits))
+          if(print.path) stop("parameter should be unique if print.path = TRUE")
+          found.parm <- TRUE
+        }
+        if(length(parm) == 2){
+          if(is.list(parm)){
+            parm.path.0 <- ".//Soil/Water/SoilCrop"
+            parm.path.1 <- paste0(parm.path.0, "[@name='", parm[[1]], "']", "/", parm[[2]])
+            sparm <- paste(parm[[1]], parm[[2]])
+            if(inherits(try(subset(crop.d, select = sparm), silent = TRUE), "try-error")) stop("parm not found")
+            print(knitr::kable(subset(crop.d, select = sparm), digits = digits))
+            found.parm <- TRUE
+          }
+          if(is.character(parm)){
+            parm.path.0 <- ".//Soil/Water/SoilCrop"
+            parm.path.1 <- paste0(parm.path.0, "[@name='", parm[1], "']", "/", parm[2])
+            sparm <- paste(parm[1], parm[2])
+            if(inherits(try(subset(crop.d, select = sparm), silent = TRUE), "try-error")) stop("parm not found")
+            print(knitr::kable(subset(crop.d, select = sparm), digits = digits))
+            found.parm <- TRUE
+          }
         }
         ## parm is in 'soil.parms'
-        if(parm %in% soil.parms){
+        if(length(parm) == 1 && parm %in% soil.parms){
           parm.path.0 <- ".//Soil/Water"
+          parm.path.1 <- paste0(parm.path.0, "/", parm)
           print(knitr::kable(subset(soil.d, select = parm), digits = digits))  
+          found.parm <- TRUE
         }
         ## parm is in 'soil.water.parms'
-        if(parm %in% soil.water.parms){
+        if(length(parm) == 1 %in% soil.water.parms){
           parm.path.0 <- ".//Soil/SoilWater"
+          parm.path.1 <- paste0(parm.path.0, "/", parm)
           print(knitr::kable(soil.water.d[soil.water.d$soil.water == parm,], digits = digits)) 
+          found.parm <- TRUE
         }
+        if(!found.parm) stop("parm not found")
       }
-      parm.path.1 <- paste0(parm.path.0, "/", parm)
     }
     
     if(soil.child == "SWIM"){
-    
       parm.path.0 <- ".//Soil/Swim"
       ## This first set are single values
       swim.parms1 <- c("Salb","CN2Bare","CNRed","CNCov","KDul",
