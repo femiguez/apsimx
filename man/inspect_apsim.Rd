@@ -59,7 +59,6 @@ extd.dir <- system.file("extdata", package = "apsimx")
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Clock")
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Weather") 
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "Metadata")
-inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "Water")
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "OrganicMatter")
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "Analysis")
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
@@ -68,6 +67,19 @@ inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "SurfaceOrganicMatter")
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Crop", parm = list("sow",NA)) 
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Crop", parm = list("sow",7))
 
+## when soil.child = "Water" there are potentially many crops to chose from 
+## This selects LL, KL and XF for Barley
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", 
+              soil.child = "Water", parm = "Barley")
+## This selects LL for all the crops
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", 
+              soil.child = "Water", parm = "LL")
+## To print the parm.path the selection needs to be unique
+## but still there will be multiple soil layers
+## 'parm' can be a list or a character vector of length equal to two
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", 
+              soil.child = "Water", parm = list("Barley", "LL"),
+              print.path = TRUE)
 
 ## Testing with maize-soybean-rotation.apsim
 inspect_apsim("maize-soybean-rotation.apsim", src.dir = extd.dir, node = "Clock")

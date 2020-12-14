@@ -33,8 +33,10 @@ https://www.apsim.info/download-apsim/
 
 If you need other R packages to interact with the previous version(s) of
 APSIM (7.x) try 'APSIM' and 'apsimr'. This package does not fully
-replace the functionality in those packages. It does have similar
-functions as in 'apsimr', but they are completely re-written.
+replace the functionality in those packages. In many ways it goes
+beyond those packages. It does have some similar
+functions as in 'apsimr', but they are completely re-written. However,
+both 'APSIM' and 'apsimr' have been removed from CRAN. 
 
 If you want to install this package from github try in R:
 

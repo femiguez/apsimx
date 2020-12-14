@@ -319,7 +319,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
           found.parm <- TRUE
         }
         ## parm is in 'soil.water.parms'
-        if(length(parm) == 1 %in% soil.water.parms){
+        if(length(parm) == 1 && parm %in% soil.water.parms){
           parm.path.0 <- ".//Soil/SoilWater"
           parm.path.1 <- paste0(parm.path.0, "/", parm)
           print(knitr::kable(soil.water.d[soil.water.d$soil.water == parm,], digits = digits)) 
