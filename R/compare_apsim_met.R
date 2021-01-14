@@ -150,7 +150,7 @@ compare_apsim_met <- function(...,
 #' @param ... additional arguments, can be passed to certain ggplot2 functions
 #' @param plot.type either \sQuote{vs}, \sQuote{diff}, \sQuote{ts} - for time series or \sQuote{density}
 #' @param pairs pair of objects to compare, defaults to 1 and 2 but others are possible
-#' @param cummulative whether to plot cummulative values (default FALSE)
+#' @param cumulative whether to plot cumulative values (default FALSE)
 #' @param met.var meteorological variable to plot 
 #' @param id identification (not implemented yet)
 #' @param span argument to be passed to \sQuote{geom_smooth}
@@ -158,7 +158,7 @@ compare_apsim_met <- function(...,
 #' 
 plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
                          pairs = c(1, 2),
-                         cummulative = FALSE,
+                         cumulative = FALSE,
                          met.var = c("radn", "maxt", "mint", "rain"),
                          id, span = 0.75){
 
@@ -175,10 +175,10 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
   plot.type <- match.arg(plot.type)
   met.var <- match.arg(met.var)
   
-  if(cummulative && plot.type != "ts") 
+  if(cumulative && plot.type != "ts") 
     stop("cummulative is only available for plot.type = 'ts' ")
   
-  if(plot.type == "vs" && met.var != "all" && !cummulative){
+  if(plot.type == "vs" && met.var != "all" && !cumulative){
     tmp <- x[, grep(met.var, names(x))]
     prs <- paste0(met.var, ".", pairs)
     gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs[1]))), 
@@ -193,7 +193,7 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
 
   }
   
-  if(plot.type == "diff" && met.var != "all" && !cummulative){
+  if(plot.type == "diff" && met.var != "all" && !cumulative){
     
     prs0 <- paste0(met.var, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
@@ -214,7 +214,7 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     print(gp1)   
   }
   
-  if(plot.type == "ts" && met.var != "all" && !cummulative){
+  if(plot.type == "ts" && met.var != "all" && !cumulative){
     
     prs0 <- paste0(met.var, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
@@ -239,7 +239,7 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     print(gp1)   
   }
   
-  if(plot.type == "ts" && met.var != "all" && cummulative){
+  if(plot.type == "ts" && met.var != "all" && cumulative){
     
     prs0 <- paste0(met.var, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
@@ -262,7 +262,7 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     print(gp1)   
   }
   
-  if(plot.type == "density" && met.var != "all" && !cummulative){
+  if(plot.type == "density" && met.var != "all" && !cumulative){
     
     prs0 <- paste0(met.var, ".", pairs)
     prs <- paste0(prs0, collapse = "|")

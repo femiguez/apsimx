@@ -212,7 +212,8 @@ print.met <- function(x,...){
 #' @name impute_apsim_met
 #' @description Takes in an object of class \sQuote{met} and imputes values
 #' @param met object of class \sQuote{met}
-#' @param method method for imputation, \code{\link[stats]{approxfun}}, \code{\link[stats]{spline}} or \code{\link{mean}}
+#' @param method method for imputation, \sQuote{approx} (\code{\link[stats]{approxfun}}),
+#' \sQuote{spline} (\code{\link[stats]{splinefun}}) or \sQuote{mean} (\code{\link{mean}}).
 #' @param verbose whether to print missing data to the console, default = FALSE
 #' @param ... additional arguments to be passed to imputation method
 #' @return an object of class \sQuote{met} with attributes

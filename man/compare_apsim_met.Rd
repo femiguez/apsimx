@@ -17,7 +17,7 @@ compare_apsim_met(
   ...,
   plot.type = c("vs", "diff", "ts", "density"),
   pairs = c(1, 2),
-  cummulative = FALSE,
+  cumulative = FALSE,
   met.var = c("radn", "maxt", "mint", "rain"),
   id,
   span = 0.75
@@ -38,7 +38,7 @@ compare_apsim_met(
 
 \item{pairs}{pair of objects to compare, defaults to 1 and 2 but others are possible}
 
-\item{cummulative}{whether to plot cummulative values (default FALSE)}
+\item{cumulative}{whether to plot cumulative values (default FALSE)}
 
 \item{id}{identification (not implemented yet)}
 
