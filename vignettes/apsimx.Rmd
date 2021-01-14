@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{apsimx: An R package for APSIM Next Generation (and Classic)}
+  %\VignetteIndexEntry{apsimx: An R package for APSIM (Next Generation and Classic)}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -34,7 +34,7 @@ tmp.dir <- tempdir()
 Are you a user of APSIM-X ("Next Generation")? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the **apsimx** package, which allows you to inspect, edit, run and read files created by APSIM-X -- .apsim(x) files. New .apsimx files are based on the JSON (JavaScript Object Notation https://www.json.org/) format and it is used to communicate information to the APSIM-X engine. By using the 'jsonlite' R package **apsimx** can read and write ('inspect' and 'edit') files in this format. APSIM 'Classic' used an XML format and this type is now fully supported ('inspect', 'edit', 'run' and 'read').  For 'inspect' and 'edit' in the APSIM 'Classic' version I use the 'xml2' package. To run simulations the *apsimx* function (*apsim* for 'Classic') is available and results from the simulation can be imported as an R object with a dedicated function (*read_apsimx* 'NG' and *read_apsim* for 'Classic'). If you need to write scripts (regardless of whether you use the **apsimx** package or not) the vignette 'writing scripts' might be useful. The package is currently being developed and available at: https://github.com/femiguez/apsimx. 
 If you have any questions write to: femiguez *at* iastate.edu. 
 
-In part this package is inspired by previous work by Bryan Stanfill on the 'apsimr' package (previously available from CRAN and github: https://github.com/stanfill/apsimr). That package made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using 'GAMS'. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package used to be 'APSIM', but it has been removed from CRAN (2020-1019) but as with 'apsimr' it has not been updated and it has somewhat of a different functionality. The 'APSIM' package was especially useful for creating weather ('.met') files for APSIM 'Classic' or 'Next Generation'. 
+In part this package is inspired by previous work by Bryan Stanfill on the 'apsimr' package (previously available from CRAN and github: https://github.com/stanfill/apsimr). That package made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using 'GAMS'. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package used to be 'APSIM', but it has been removed from CRAN (as of 2020-10-19) but as with 'apsimr' it has not been updated and it has somewhat of a different functionality. The 'APSIM' package was especially useful for creating weather ('.met') files. The functionality in *apsimx* goes beyond that in the removed 'APSIM' package. There is also a package 'APSIMBatch', but it has limited functionality.
 
 ## Background information
 
@@ -48,27 +48,27 @@ See the following for details
 
 [Holzworth et al. (2018)](https://www.sciencedirect.com/science/article/pii/S1364815217311921)
 
-This package has been tested on:
+This package has been tested on (latest version):
 
-**Mac**: ApsimX version (2020-11-09) 5842 (R 4.0.3)
+**Mac**: ApsimX version (2021-01-14) 6010 (R 4.0.3)
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
-**Windows**: ApsimX version (2020-09-09) 5260 and APSIM 7.10-r4207 (R 3.6.2)
+**Windows**: ApsimX version (2021-01-14) 6010 and APSIM 7.10-r4207 (R 3.6.2)
 
-## Installing APSIM-X
+## Installing APSIM (Next Generation)
 
-For most functions in this pacakge you need to have a version of APSIM-X installed (or APSIM 'Classic'). For Mac and Linux, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM-X (https://www.apsim.info/download-apsim/downloads/). The **apsimx** package will try to detect both mono and APSIM-X. 
+For most functions in this pacakge you need to have a version of APSIM-X (or 'Next Generation') installed (or APSIM 'Classic'). For Mac and Linux, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM (https://www.apsim.info/download-apsim/downloads/). The **apsimx** package will try to detect both mono and APSIM (Classic and Next Generation). 
 
-**Mac**: For Mac it is also assumed that APSIM-X has been moved to 'Applications'.
+**Mac**: For Mac it is also assumed that APSIM has been moved to 'Applications'.
 
-**Windows**: In Windows the default install location is in 'Program Files' for APSIM-X and Program Files (x86) for APSIM 'Classic'.
+**Windows**: In Windows the default install location is in 'Program Files' for APSIM (Next Generation) and Program Files (x86) for APSIM 'Classic'.
 
-**Linux (Debian)**: It assumed that APSIM-X is in '/usr/local/lib/apsim/'.
+**Linux (Debian)**: It assumed that APSIM is in '/usr/local/lib/apsim/'.
 
 If you have your own flavor of APSIM, then you need to set the path manually using the function 'apsim_options' for Classic and 'apsimx_options' for Next Generation.
 
-## R functions for APSIM-X
+## R functions for APSIM (Next Generation)
 
 The main functions in the package are (for now):
 
@@ -79,6 +79,8 @@ The main functions in the package are (for now):
 * **read_apsimx_all** read all files created by one or more .apsimx simulation runs in a directory (.db files)
 * **inspect_apsimx_replacement** inspect a replacement component of an .apsimx file.
 * **apsimx_options** set global options: path for executable, examples and warnings.
+
+There are many other useful function described below.
 
 ## R functions for APSIM 'Classic' (7.x) - Only for Windows
 

@@ -21,5 +21,10 @@ if(run.replacements.tests){
   }
   end <- Sys.time()
   cat("Total time:", end - start, "\n")
-  cat("APSIM-X version:", apsim_version(which = "inuse"),"\n")
+  if(Sys.info()[["sysname"]] != "Windows"){
+    cat("APSIM-X version:", apsim_version(which = "inuse", verbose = FALSE)[1],"\n")  
+  }else{
+    aiu <- apsim_version(which = "inuse", verbose = FALSE)[2]
+    cat("APSIM-X version:", as.character(aiu[1,1]),"\n")
+  }
 }

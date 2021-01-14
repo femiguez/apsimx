@@ -14,7 +14,8 @@ impute_apsim_met(
 \arguments{
 \item{met}{object of class \sQuote{met}}
 
-\item{method}{method for imputation, \code{\link[stats]{approxfun}}, \code{\link[stats]{spline}} or \code{\link{mean}}}
+\item{method}{method for imputation, \sQuote{approx} (\code{\link[stats]{approxfun}}),
+\sQuote{spline} (\code{\link[stats]{splinefun}}) or \sQuote{mean} (\code{\link{mean}}).}
 
 \item{verbose}{whether to print missing data to the console, default = FALSE}
 
