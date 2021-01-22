@@ -501,7 +501,7 @@ assign('exe.path', NA, apsimx.options)
 assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
-assign('.run.local.tests', TRUE, apsimx.options)
+assign('.run.local.tests', FALSE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests
 ## which do not require an APSIM install

@@ -132,6 +132,10 @@ inspect_apsim <- function(file = "", src.dir = ".",
     apsim_xml0 <- xml2::xml_find_all(apsim_xml, ".//simulation")
     sim.names <- unlist(xml2::xml_attrs(apsim_xml0))
     wsim <- grep(root, sim.names)
+    if(length(wsim) == 0)
+      stop(c("'root' simulation not found. It should be one of: \n", 
+             paste0(sim.names, "\n")),
+           call. = FALSE)
     apsim_xml <- apsim_xml0[[wsim]]
     parm.path.root <- xml2::xml_path(apsim_xml)
   }

@@ -3,7 +3,7 @@
 #' @name compare_apsim
 #' @rdname compare_apsim
 #' @description Function which allows for a simple comparison between APSIM output objects
-#' @param ... data frames with APSIM output. 
+#' @param ... data frames with APSIM output or observed data. 
 #' @param variable specific variable to compare. By default all common ones are compared.
 #' @param index index for merging objects. Default is \sQuote{Date}
 #' @param by factor for splitting the comparison, such as a treatment effect.
@@ -41,9 +41,9 @@ compare_apsim <- function(...,
   
   n.outs <- length(outs)
   
-  if(n.outs < 2) stop("you should provide at least two output files")
+  if(n.outs < 2) stop("you should provide at least two data frames")
   
-  out1 <- outs[[1]]
+  out1 <- as.data.frame(outs[[1]])
   
   o.nms <- NULL
   if(!missing(labels)){
@@ -56,22 +56,39 @@ compare_apsim <- function(...,
 
   ## Process out1
   nms1 <- names(out1)
-  new.nms1 <- paste0(nms1, ".1")
-  out1 <- subset(out1, select = c(index, nms1[-which(nms1 == index)]))
-  names(out1) <- gsub(paste0(index,".1"), index, new.nms1)
-  out.mrg <- out1
+  
+  if(!index %in% nms1) 
+    stop("index not found in data.frame")
+  
+  nms1.i <- intersect(nms1, names(outs[[2]])) ## Variables in common
+  
+  if(length(nms1.i) < 2) 
+    stop("No names in common between the data.frames")
+  
+  ## The line below drops irrelevant columns and brings index to the first column
+  out1 <- subset(out1, select = c(index, nms1.i[-which(nms1 == index)]))
+  new.nms1 <- paste0(names(out1), ".1") ## This simply adds a 1
+  out1.new.names <- gsub(paste0(index, ".1"), index, new.nms1) ## Rename Date.1 to Date
+  out.mrg <- setNames(out1, out1.new.names) 
   
   for(i in 2:n.outs){
-    out.i <- subset(outs[[i]], select = nms1) ## This selects only those columns present in the first object
+    
+    ## This selects only those columns present in the first object
+    out.i <- subset(outs[[i]], 
+                    select = c(index, nms1.i[-which(nms1.i == index)])) 
     nms.i <- names(out.i)
     new.nms.i <- paste0(nms.i, ".", i)
     names(out.i) <- gsub(paste0(index, ".", i), index, new.nms.i)
     out.mrg <- merge(out.mrg, out.i, by = index)
+    
+    if(nrow(out.mrg) < 1){
+      stop("No data in common between data frames")
+    }
   }
   
   ## Calculate bias for all variables
   if(missing(variable)){
-    var.sel <- setdiff(nms1, index) ## All variables except index
+    var.sel <- setdiff(nms1.i, index) ## All variables except index
     gvar.sel <- paste0(var.sel, collapse = "|")
     idx.out.mrg <- grep(gvar.sel, names(out.mrg))
     out.mrg.s <- out.mrg[, idx.out.mrg]
@@ -85,7 +102,7 @@ compare_apsim <- function(...,
       for(j in 2:ncol(tmp)){
         cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
         if(!missing(labels))cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
-        fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
+        fm0 <- lm(tmp[, j] ~ tmp[, j - 1])
         cat(" \t Bias: ", sum(tmp[, j - 1] - tmp[, j]), "\n")
         cat(" \t Intercept: ", coef(fm0)[1], "\n")
         cat(" \t Slope: ", coef(fm0)[2], "\n")
