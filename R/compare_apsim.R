@@ -8,6 +8,8 @@
 #' @param index index for merging objects. Default is \sQuote{Date}
 #' @param by factor for splitting the comparison, such as a treatment effect.
 #' @param labels labels for plotting and identification of objects.
+#' @note \sQuote{Con Corr} is the concordance correlation coefficient (https://en.wikipedia.org/wiki/Concordance_correlation_coefficient);
+#' \sQuote{ME} is the model efficiency (https://en.wikipedia.org/wiki/Nash%E2%80%93Sutcliffe_model_efficiency_coefficient)
 #' @export
 #' @return object of class \sQuote{out_mrg}, which can be used for further plotting
 #' @examples 
@@ -69,7 +71,7 @@ compare_apsim <- function(...,
   out1 <- subset(out1, select = c(index, nms1.i[-which(nms1 == index)]))
   new.nms1 <- paste0(names(out1), ".1") ## This simply adds a 1
   out1.new.names <- gsub(paste0(index, ".1"), index, new.nms1) ## Rename Date.1 to Date
-  out.mrg <- setNames(out1, out1.new.names) 
+  out.mrg <- stats::setNames(out1, out1.new.names) 
   
   for(i in 2:n.outs){
     
@@ -110,6 +112,7 @@ compare_apsim <- function(...,
         cat(" \t RMSE: ", sigma(fm0), "\n")
         cat(" \t R^2: ", summary(fm0)$r.squared, "\n")
         cat(" \t Corr: ", cor(tmp[, j - 1], tmp[, j]), "\n")
+        cat(" \t Con. Corr: ", con_cor(tmp[, j - 1], tmp[, j]), "\n")
         cat(" \t ME: ", mod_eff(tmp[, j - 1], tmp[, j]), "\n")
 
       }
@@ -134,6 +137,7 @@ compare_apsim <- function(...,
       cat(" \t RMSE: ", sigma(fm0), "\n")
       cat(" \t R^2: ", summary(fm0)$r.squared, "\n")
       cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
+      cat(" \t Con. Corr: ", con_cor(tmp[, j - 1], tmp[, j]), "\n")
       cat(" \t ME: ", mod_eff(tmp[, j-1], tmp[, j]), "\n")
     }
   }
@@ -149,10 +153,10 @@ compare_apsim <- function(...,
 #' @rdname compare_apsim
 #' @description plotting function for compare_apsim, it requires ggplot2
 #' @param x object of class \sQuote{out_mrg}
-#' @param ... additional arguments, can be passed to certain ggplot2 functions
+#' @param ... data frames with APSIM output or observed data. 
 #' @param plot.type either \sQuote{vs}, \sQuote{diff}, \sQuote{ts} - for time series or \sQuote{density}
 #' @param pairs pair of objects to compare, defaults to 1 and 2 but others are possible
-#' @param cummulative whether to plot cummulative values (default FALSE)
+#' @param cumulative whether to plot cummulative values (default FALSE)
 #' @param variable variable to plot 
 #' @param id identification (not implemented yet)
 #' @param span argument passed to \sQuote{geom_smooth}
@@ -160,7 +164,7 @@ compare_apsim <- function(...,
 #' 
 plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
                          pairs = c(1, 2),
-                         cummulative = FALSE, ## Might not make sense for these type of graphs...
+                         cumulative = FALSE, ## Might not make sense for these type of graphs...
                          variable,
                          id, span = 0.75){
   
@@ -185,10 +189,10 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
   
   plot.type <- match.arg(plot.type)
   
-  if(cummulative && plot.type != "ts") 
-    stop("cummulative is only available for plot.type = 'ts' ")
+  if(cumulative && plot.type != "ts") 
+    stop("cumulative is only available for plot.type = 'ts' ")
   
-  if(plot.type == "vs" && !cummulative){
+  if(plot.type == "vs" && !cumulative){
     tmp <- x[, grep(variable, names(x))]
     prs <- paste0(variable, ".", pairs)
     gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs[1]))), 
@@ -203,7 +207,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     
   }
   
-  if(plot.type == "diff" && !cummulative){
+  if(plot.type == "diff" && !cumulative){
     
     prs0 <- paste0(variable, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
@@ -224,7 +228,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     print(gp1)   
   }
   
-  if(plot.type == "ts" && !cummulative){
+  if(plot.type == "ts" && !cumulative){
   
     prs0 <- paste0(variable, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
@@ -249,7 +253,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     print(gp1)   
   }
   
-  if(plot.type == "ts" && cummulative){
+  if(plot.type == "ts" && cumulative){
     
     prs0 <- paste0(variable, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
@@ -266,7 +270,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
       ggplot2::geom_line(ggplot2::aes(y = .data[["cum_var2"]],
                                       color = paste(o.nms[pairs[2]], prs0[2]))) + 
       ggplot2::xlab(index) + 
-      ggplot2::ylab(paste("Cummulative ", variable)) + 
+      ggplot2::ylab(paste("Cumulative ", variable)) + 
       ggplot2::theme(legend.title = ggplot2::element_blank())
     
     print(gp1)   
@@ -296,5 +300,14 @@ mod_eff <- function(x, y){
   sse <- sum((x - y)^2)
   ssx <- sum((x - mean(x))^2)
   ans <- 1 - sse / ssx
+  ans
+}
+
+## Concordance correlation
+## https://en.wikipedia.org/wiki/Concordance_correlation_coefficient
+con_cor <- function(x, y){
+  num <- 2 * cor(x, y) * sd(x) * sd(y)
+  den <- var(x) + var(y) + (mean(x) - mean(y))^2
+  ans <- num/den
   ans
 }

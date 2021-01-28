@@ -12,14 +12,14 @@ compare_apsim(..., variable, index = "Date", by, labels)
   ...,
   plot.type = c("vs", "diff", "ts", "density"),
   pairs = c(1, 2),
-  cummulative = FALSE,
+  cumulative = FALSE,
   variable,
   id,
   span = 0.75
 )
 }
 \arguments{
-\item{...}{additional arguments, can be passed to certain ggplot2 functions}
+\item{...}{data frames with APSIM output or observed data.}
 
 \item{variable}{variable to plot}
 
@@ -35,7 +35,7 @@ compare_apsim(..., variable, index = "Date", by, labels)
 
 \item{pairs}{pair of objects to compare, defaults to 1 and 2 but others are possible}
 
-\item{cummulative}{whether to plot cummulative values (default FALSE)}
+\item{cumulative}{whether to plot cummulative values (default FALSE)}
 
 \item{id}{identification (not implemented yet)}
 
@@ -48,6 +48,10 @@ object of class \sQuote{out_mrg}, which can be used for further plotting
 Function which allows for a simple comparison between APSIM output objects
 
 plotting function for compare_apsim, it requires ggplot2
+}
+\note{
+\sQuote{Con Corr} is the concordance correlation coefficient (https://en.wikipedia.org/wiki/Concordance_correlation_coefficient);
+\sQuote{ME} is the model efficiency (https://en.wikipedia.org/wiki/Nash%E2%80%93Sutcliffe_model_efficiency_coefficient)
 }
 \examples{
 \donttest{

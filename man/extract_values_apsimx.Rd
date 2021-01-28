@@ -19,12 +19,12 @@ Extract initial values from a parameter path
 \examples{
 \donttest{
 ## Find examples
-ex.dir <- auto_detect_apsimx_examples()
+extd.dir <- system.file("extdata", package = "apsimx")
 ## Extract parameter path
-pp <- inspect_apsimx("Barley.apsimx", src.dir = ex.dir,
+pp <- inspect_apsimx("Maize.apsimx", src.dir = extd.dir,
                      node = "Manager", parm = list("Fert", 1))
 ppa <- paste0(pp, ".Amount")
 ## Extract value
-extract_values_apsimx("Barley.apsimx", src.dir = ex.dir, parm.path = ppa)
+extract_values_apsimx("Maize.apsimx", src.dir = extd.dir, parm.path = ppa)
 }
 }

@@ -24,7 +24,7 @@ compare_apsim_met(
 )
 }
 \arguments{
-\item{...}{additional arguments, can be passed to certain ggplot2 functions}
+\item{...}{met file objects. Should be of class \sQuote{met}}
 
 \item{met.var}{meteorological variable to plot}
 
@@ -77,8 +77,8 @@ plot(cmet, plot.type = "ts")
 plot(cmet, met.var = "maxt")
 plot(cmet, met.var = "maxt", plot.type = "diff")
 plot(cmet, met.var = "maxt", plot.type = "ts")
-## Cummulative rain
-plot(cmet, met.var = "rain", plot.type = "ts", cummulative = TRUE)
+## Cumulative rain
+plot(cmet, met.var = "rain", plot.type = "ts", cumulative = TRUE)
 }
 
 }

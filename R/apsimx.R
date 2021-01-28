@@ -511,7 +511,7 @@ assign('.run.local.tests', FALSE, apsimx.options)
 #' @importFrom utils read.table
 #' @importFrom utils write.table
 #' @importFrom tools file_path_sans_ext
-#' @importFrom stats coef cor cov2cor deviance lm optim qt var sd sigma
+#' @importFrom stats coef cor cov2cor deviance lm optim qt var sd setNames sigma
 NULL
 
 utils::globalVariables(".data")

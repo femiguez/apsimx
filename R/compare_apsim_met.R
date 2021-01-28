@@ -3,7 +3,7 @@
 #' @name compare_apsim_met
 #' @rdname compare_apsim_met
 #' @description Helper function which allows for a simple comparison among help files
-#' @param ... met file objects. Should be of class 'met'
+#' @param ... met file objects. Should be of class \sQuote{met}
 #' @param met.var meteorological variable to use in the comparison. Either \sQuote{all},
 #' \sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
 #' \sQuote{wind_speed} or \sQuote{vp}. 
@@ -34,8 +34,8 @@
 #' plot(cmet, met.var = "maxt")
 #' plot(cmet, met.var = "maxt", plot.type = "diff")
 #' plot(cmet, met.var = "maxt", plot.type = "ts")
-#' ## Cummulative rain
-#' plot(cmet, met.var = "rain", plot.type = "ts", cummulative = TRUE)
+#' ## Cumulative rain
+#' plot(cmet, met.var = "rain", plot.type = "ts", cumulative = TRUE)
 #' }
 #' 
 
@@ -147,7 +147,7 @@ compare_apsim_met <- function(...,
 #' @rdname compare_apsim_met
 #' @description plotting function for compare_apsim_met, it requires ggplot2
 #' @param x object of class \sQuote{met_mrg}
-#' @param ... additional arguments, can be passed to certain ggplot2 functions
+#' @param ... met file objects. Should be of class \sQuote{met}
 #' @param plot.type either \sQuote{vs}, \sQuote{diff}, \sQuote{ts} - for time series or \sQuote{density}
 #' @param pairs pair of objects to compare, defaults to 1 and 2 but others are possible
 #' @param cumulative whether to plot cumulative values (default FALSE)
@@ -176,7 +176,7 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
   met.var <- match.arg(met.var)
   
   if(cumulative && plot.type != "ts") 
-    stop("cummulative is only available for plot.type = 'ts' ")
+    stop("cumulative is only available for plot.type = 'ts' ")
   
   if(plot.type == "vs" && met.var != "all" && !cumulative){
     tmp <- x[, grep(met.var, names(x))]
@@ -256,7 +256,7 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
       ggplot2::geom_line(ggplot2::aes(y = .data[["cum_var2"]],
                                        color = paste(m.nms[pairs[2]], prs0[2]))) + 
       ggplot2::xlab("Date") + 
-      ggplot2::ylab(paste("Cummulative ", met.var)) + 
+      ggplot2::ylab(paste("Cumulative ", met.var)) + 
       ggplot2::theme(legend.title = ggplot2::element_blank())
     
     print(gp1)   
