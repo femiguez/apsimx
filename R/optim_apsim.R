@@ -184,6 +184,14 @@ optim_apsim <- function(file, src.dir = ".",
     
     if(inherits(sim, "try-error")) return(NA)
     
+    if(!inherits(sim, "data.frame"))
+      stop("the apsim simulation should return an object of class 'data.frame'. \n 
+           Check that the output does simplify to a 'data.frame' instead of a 'list'.")
+    
+    if("outfile" %in% names(sim) && index == "Date")
+      stop("If you have multiple simulations, you should modify the index argument. \n
+           It is possible that 'index = c('outfile', 'Date')' might work.")
+    
     ## Only keep those columns with corresponding names in the data
     ## and only the dates that match those in 'data'
     if(!all(names(data) %in% names(sim))) 
