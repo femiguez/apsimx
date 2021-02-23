@@ -13,12 +13,13 @@ get_daymet_apsim_met(
   years,
   wrt.dir = ".",
   filename = NULL,
-  width.height = c(0.001, 0.001),
+  width.height = c(0.1 * 1.263012, 0.1),
   template,
   label = NULL,
-  elements = NULL,
-  raw.dir = "./RAW/DAYMET",
-  extraction.dir = paste0("./EXTRACTIONS/", label, "/DAYMET"),
+  elements = c("dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"),
+  region = "na",
+  tempo = "day",
+  extraction.dir = paste0(tempdir(), "/FedData/extractions/daymet/", label, "/"),
   force.redo = FALSE,
   cleanup = FALSE
 )
@@ -39,8 +40,6 @@ get_daymet_apsim_met(
 \item{label}{a character string naming the area (see \code{\link[FedData]{get_daymet}})}
 
 \item{elements}{see \code{\link[FedData]{get_daymet}}}
-
-\item{raw.dir}{see \code{\link[FedData]{get_daymet}}}
 
 \item{extraction.dir}{see \code{\link[FedData]{get_daymet}}}
 
@@ -71,9 +70,8 @@ require(FedData)
 ## I write to a temp directory but replace as needed
 tmp.dir <- tempdir()
 dmet12 <- get_daymet_apsim_met(lonlat = c(-93,42),
-                               raw.dir = paste0(tmp.dir,"/RAW/DAYMET"),
-                               extraction.dir = paste0(tmp.dir,"/EXTRACTIONS/CIA/DAYMET"),
-                               years = 2012, label = "CIA")
+                               extraction.dir = paste0(tmp.dir,"/FedData/extractions/daymet/"),
+                               years = 2012)
 summary(dmet12)
 ## Check for reasonable ranges 
 check_apsim_met(dmet12)

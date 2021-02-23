@@ -95,7 +95,7 @@ auto_detect_apsimx <- function(){
       ## custom version is available
       if(length(find.apsim) == 0){
         ## I only throw a warning because maybe the user has a custom version of APSIM-X only
-        if(!is.na(apsimx::apsim.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
+        if(!is.na(apsimx::apsimx.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
           warning("APSIM-X not found, but a custom one is present")
         }else{
           stop("APSIM-X not found and no 'exe.path' exists.")
@@ -121,7 +121,7 @@ auto_detect_apsimx <- function(){
         fa.dt <- as.numeric(sapply(laf[find.apsim], .favd))
         newest.version <- laf[find.apsim][len.fa]
         if(apsimx::apsimx.options$warn.versions &&
-           is.na(apsimx::apsim.options$exe.path)){
+           is.na(apsimx::apsimx.options$exe.path)){
            warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:", newest.version))
         }
@@ -136,7 +136,7 @@ auto_detect_apsimx <- function(){
       ## What if length equals zero?
       if(length(find.apsim) == 0){
         ## I only throw a warning because maybe the user has a custom version of APSIM-X only
-        if(!is.na(apsimx::apsim.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
+        if(!is.na(apsimx::apsimx.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
           warning("APSIM-X not found, but a custom one is present")
         }else{
           stop("APSIM-X not found and no 'exe.path' exists.")
@@ -158,7 +158,7 @@ auto_detect_apsimx <- function(){
         newest.version <- apsimx.versions[find.apsim]
         if(apsimx::apsimx.options$warn.versions){
           warning(paste("Multiple versions of APSIM-X installed. \n
-                    Choosing the newest one:",newest.version))
+                    Choosing the newest one:", newest.version))
         }
         apsimx.name <- newest.version
         apsimx_dir <- paste0(st1,apsimx.name,st3)
@@ -172,7 +172,7 @@ auto_detect_apsimx <- function(){
     find.apsim <- grep("APSIM", laf)
     
     ## What if length equals zero?
-    if(length(find.apsim) == 0 && is.na(apsimx::apsim.options$exe.path)){
+    if(length(find.apsim) == 0 && is.na(apsimx::apsimx.options$exe.path)){
         ## Try using the registry only if APSIM path has not been set manually
         if(apsimx::apsimx.options$warn.find.apsimx) warning("Searching the Windows registry for APSIM-X")
         ## HCR hive is for HKEY_CLASSES_ROOT, HLM is for HKEY_LOCAL_MACHINE and HCU is for HKEY_CURRENT_USER

@@ -12,7 +12,6 @@
 #' @param template A Raster or Spatial object to serve as a template for cropping (see \code{\link[FedData]{get_daymet}}).
 #' @param label a character string naming the area (see \code{\link[FedData]{get_daymet}})
 #' @param elements see \code{\link[FedData]{get_daymet}}
-#' @param raw.dir see \code{\link[FedData]{get_daymet}}
 #' @param extraction.dir see \code{\link[FedData]{get_daymet}}
 #' @param force.redo see \code{\link[FedData]{get_daymet}}
 #' @param cleanup whether to delete download directories (default is FALSE). 
@@ -35,29 +34,33 @@
 #' ## I write to a temp directory but replace as needed
 #' tmp.dir <- tempdir()
 #' dmet12 <- get_daymet_apsim_met(lonlat = c(-93,42),
-#'                                raw.dir = paste0(tmp.dir,"/RAW/DAYMET"),
-#'                                extraction.dir = paste0(tmp.dir,"/EXTRACTIONS/CIA/DAYMET"),
-#'                                years = 2012, label = "CIA")
+#'                                extraction.dir = paste0(tmp.dir,"/FedData/extractions/daymet/"),
+#'                                years = 2012)
 #' summary(dmet12)
 #' ## Check for reasonable ranges 
 #' check_apsim_met(dmet12)
 #' }
 #' 
 
-get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".", 
+get_daymet_apsim_met <- function(lonlat, years, 
+                                 wrt.dir=".", 
                                  filename=NULL, 
-                                 width.height = c(1e-3, 1e-3), 
+                                 width.height = c(1e-1 * 1.263012, 1e-1), 
                                  template, 
                                  label = NULL, 
-                                 elements = NULL, 
-                                 raw.dir = "./RAW/DAYMET", 
-                                 extraction.dir = paste0("./EXTRACTIONS/", label, "/DAYMET"),
+                                 elements = c("dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"), 
+                                 region = "na",
+                                 tempo = "day",
+                                 extraction.dir = paste0(tempdir(), "/FedData/extractions/daymet/", label, "/"),
                                  force.redo = FALSE, cleanup = FALSE){
   
-  if(!requireNamespace("FedData",quietly = TRUE)){
+  if(!requireNamespace("FedData", quietly = TRUE)){
     warning("The FedData is required for this function")
     return(NULL)
   }
+  
+  if(packageVersion("FedData") < "3.0.0.9000")
+    stop("FedData package version should be 3.0.0.9000 or higher")
   
   if(missing(filename)) filename <- "noname.met"
   
@@ -84,6 +87,8 @@ get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".",
     tmplt <- sp::SpatialPolygons(list(sp::Polygons(list(pg), "s1")),
                            proj4string = sp::CRS("+proj=longlat +datum=WGS84"))
   }else{
+    if(missing(template))
+      stop("template and lonlat arguments are both missing")
     tmplt <- template
   }
   
@@ -91,7 +96,8 @@ get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".",
                               label = label,
                               elements = elements,
                               years = years, 
-                              raw.dir = raw.dir,
+                              region = region,
+                              tempo = tempo,
                               extraction.dir = extraction.dir,
                               force.redo = force.redo)
   
@@ -139,7 +145,6 @@ get_daymet_apsim_met <- function(lonlat, years, wrt.dir=".",
   }
   
   if(cleanup){
-    unlink(raw.dir, recursive = TRUE)
     unlink(extraction.dir, recursive = TRUE)
   }
   

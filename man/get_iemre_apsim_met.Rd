@@ -4,7 +4,13 @@
 \alias{get_iemre_apsim_met}
 \title{Get weather data from Iowa Environmental Mesonet Reanalysis}
 \usage{
-get_iemre_apsim_met(lonlat, dates, wrt.dir = ".", filename = NULL)
+get_iemre_apsim_met(
+  lonlat,
+  dates,
+  wrt.dir = ".",
+  filename = NULL,
+  fillin.radn = FALSE
+)
 }
 \arguments{
 \item{lonlat}{Longitude and latitude vector}
@@ -14,6 +20,8 @@ get_iemre_apsim_met(lonlat, dates, wrt.dir = ".", filename = NULL)
 \item{wrt.dir}{write directory}
 
 \item{filename}{file name for writing out to disk}
+
+\item{fillin.radn}{whether to fill in radiation data using the nasapower pacakge. Default is FALSE.}
 }
 \description{
 Retrieves weather data from Iowa Environmental Mesonet Reanalysis into an APSIM met file
@@ -24,6 +32,9 @@ The original data can be obtained from: https://mesonet.agron.iastate.edu/iemre/
 If the filename is not provided it will not write the file to disk, 
 but it will return an object of class \sQuote{met}. This is useful in case manipulation
 is required before writing to disk.
+}
+\note{
+Multi-year query is not supported for this product.
 }
 \examples{
 \dontrun{

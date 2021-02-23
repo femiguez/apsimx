@@ -8,9 +8,11 @@
 #' @param dates date ranges
 #' @param wrt.dir write directory
 #' @param filename file name for writing out to disk
+#' @param fillin.radn whether to fill in radiation data using the nasapower pacakge. Default is FALSE.
 #' @details If the filename is not provided it will not write the file to disk, 
 #' but it will return an object of class \sQuote{met}. This is useful in case manipulation
 #' is required before writing to disk.
+#' @note Multi-year query is not supported for this product.
 #' @export
 #' @examples 
 #' \dontrun{
@@ -21,7 +23,8 @@
 #' }
 #' 
 
-get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
+get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
+                                fillin.radn = FALSE){
   
   if(missing(filename)) filename <- "noname.met"
   
@@ -63,7 +66,21 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL){
                                          "daily_low_c",
                                          "daily_precip_mm"))
   
-
+  if(fillin.radn){
+    if(!requireNamespace("nasapower", quietly = TRUE)){
+      warning("The nasapower package is required for this function")
+      return(NULL)
+    }
+    pwr <- get_power_apsim_met(lonlat = lonlat, dates = c(day1, dayn))
+    pwr$date <- as.Date(1:nrow(pwr), origin = paste0(pwr$year[1],"-01-01"))
+    pwr <- subset(pwr, date >= as.Date(day1) & date <= as.Date(dayn))
+    
+    if(nrow(iem.dat2) != nrow(pwr))
+      stop("Something went wrong. Number of rows do not match.")
+    
+    iem.dat2$radn <- pwr$radn
+  }
+  
   names(iem.dat2) <- c("year","day","radn","maxt","mint","rain")
   units <- c("()","()","(MJ/m2/day)","(oC)","(oC)","(mm)")
   

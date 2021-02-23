@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2020-11-10" />
+<meta name="date" content="2021-02-17" />
 
 <title>apsimx: An R package for APSIM Next Generation (and Classic)</title>
 
@@ -349,15 +349,15 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation (and Classic)</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2020-11-10</h4>
+<h4 class="date">2021-02-17</h4>
 
 
 <div id="TOC">
 <ul>
 <li><a href="#introduction">Introduction</a><ul>
 <li><a href="#background-information">Background information</a></li>
-<li><a href="#installing-apsim-x">Installing APSIM-X</a></li>
-<li><a href="#r-functions-for-apsim-x">R functions for APSIM-X</a></li>
+<li><a href="#installing-apsim-next-generation">Installing APSIM (Next Generation)</a></li>
+<li><a href="#r-functions-for-apsim-next-generation">R functions for APSIM (Next Generation)</a></li>
 <li><a href="#r-functions-for-apsim-classic-7.x---only-for-windows">R functions for APSIM ‘Classic’ (7.x) - Only for Windows</a></li>
 </ul></li>
 <li><a href="#using-apsimx">Using ‘apsimx’</a><ul>
@@ -390,7 +390,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>Are you a user of APSIM-X (“Next Generation”)? Are you a frequent user of R? Are you hoping for APSIM-X and R to interact with each other? Then the answer is the <strong>apsimx</strong> package, which allows you to inspect, edit, run and read files created by APSIM-X – .apsim(x) files. New .apsimx files are based on the JSON (JavaScript Object Notation <a href="https://www.json.org/" class="uri">https://www.json.org/</a>) format and it is used to communicate information to the APSIM-X engine. By using the ‘jsonlite’ R package <strong>apsimx</strong> can read and write (‘inspect’ and ‘edit’) files in this format. APSIM ‘Classic’ used an XML format and this type is now fully supported (‘inspect’, ‘edit’, ‘run’ and ‘read’). For ‘inspect’ and ‘edit’ in the APSIM ‘Classic’ version I use the ‘xml2’ package. To run simulations the <em>apsimx</em> function (<em>apsim</em> for ‘Classic’) is available and results from the simulation can be imported as an R object with a dedicated function (<em>read_apsimx</em> ‘NG’ and <em>read_apsim</em> for ‘Classic’). If you need to write scripts (regardless of whether you use the <strong>apsimx</strong> package or not) the vignette ‘writing scripts’ might be useful. The package is currently being developed and available at: <a href="https://github.com/femiguez/apsimx" class="uri">https://github.com/femiguez/apsimx</a>. If you have any questions write to: femiguez <em>at</em> iastate.edu.</p>
-<p>In part this package is inspired by previous work by Bryan Stanfill on the ‘apsimr’ package (previously available from CRAN and github: <a href="https://github.com/stanfill/apsimr" class="uri">https://github.com/stanfill/apsimr</a>). That package made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using ‘GAMS’. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package used to be ‘APSIM’, but it has been removed from CRAN (2020-1019) but as with ‘apsimr’ it has not been updated and it has somewhat of a different functionality. The ‘APSIM’ package was especially useful for creating weather (‘.met’) files for APSIM ‘Classic’ or ‘Next Generation’.</p>
+<p>In part this package is inspired by previous work by Bryan Stanfill on the ‘apsimr’ package (previously available from CRAN and github: <a href="https://github.com/stanfill/apsimr" class="uri">https://github.com/stanfill/apsimr</a>). That package made it possible to not only run APSIM from R, but also to perform sensitivity analysis and model emulation using ‘GAMS’. However, that package has not been maintained in the last five years and it does not work for the new APSIM-X framework. Another useful R package used to be ‘APSIM’, but it has been removed from CRAN (as of 2020-10-19) but as with ‘apsimr’ it has not been updated and it has somewhat of a different functionality. The ‘APSIM’ package was especially useful for creating weather (‘.met’) files. The functionality in <em>apsimx</em> goes beyond that in the removed ‘APSIM’ package. There is also a package ‘APSIMBatch’, but it has limited functionality.</p>
 <div id="background-information" class="section level2">
 <h2>Background information</h2>
 <p>To run the code in this vignette, you need to have APSIM ‘Next Generation’ installed. However, if you have not used APSIM it is recommended that you become familiar with it before hand.</p>
@@ -398,21 +398,21 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p><a href="https://www.apsim.info">APSIM</a></p>
 <p><a href="https://apsimnextgeneration.netlify.app/">APSIM-X</a></p>
 <p><a href="https://www.sciencedirect.com/science/article/pii/S1364815217311921">Holzworth et al. (2018)</a></p>
-<p>This package has been tested on:</p>
-<p><strong>Mac</strong>: ApsimX version (2020-11-09) 5842 (R 4.0.3)</p>
+<p>This package has been tested on (latest version):</p>
+<p><strong>Mac</strong>: ApsimX version (2021-01-14) 6010 (R 4.0.3)</p>
 <p><strong>Debian</strong>: ApsimX version (2020-01-29) 4007 (R 3.6.1)</p>
-<p><strong>Windows</strong>: ApsimX version (2020-09-09) 5260 and APSIM 7.10-r4207 (R 3.6.2)</p>
+<p><strong>Windows</strong>: ApsimX version (2021-01-14) 6010 and APSIM 7.10-r4207 (R 3.6.2)</p>
 </div>
-<div id="installing-apsim-x" class="section level2">
-<h2>Installing APSIM-X</h2>
-<p>For most functions in this pacakge you need to have a version of APSIM-X installed (or APSIM ‘Classic’). For Mac and Linux, first you need to install mono (<a href="https://www.mono-project.com/download/stable/" class="uri">https://www.mono-project.com/download/stable/</a>) and then download and install APSIM-X (<a href="https://www.apsim.info/download-apsim/downloads/" class="uri">https://www.apsim.info/download-apsim/downloads/</a>). The <strong>apsimx</strong> package will try to detect both mono and APSIM-X.</p>
-<p><strong>Mac</strong>: For Mac it is also assumed that APSIM-X has been moved to ‘Applications’.</p>
-<p><strong>Windows</strong>: In Windows the default install location is in ‘Program Files’ for APSIM-X and Program Files (x86) for APSIM ‘Classic’.</p>
-<p><strong>Linux (Debian)</strong>: It assumed that APSIM-X is in ‘/usr/local/lib/apsim/’.</p>
+<div id="installing-apsim-next-generation" class="section level2">
+<h2>Installing APSIM (Next Generation)</h2>
+<p>For most functions in this pacakge you need to have a version of APSIM-X (or ‘Next Generation’) installed (or APSIM ‘Classic’). For Mac and Linux, first you need to install mono (<a href="https://www.mono-project.com/download/stable/" class="uri">https://www.mono-project.com/download/stable/</a>) and then download and install APSIM (<a href="https://www.apsim.info/download-apsim/downloads/" class="uri">https://www.apsim.info/download-apsim/downloads/</a>). The <strong>apsimx</strong> package will try to detect both mono and APSIM (Classic and Next Generation).</p>
+<p><strong>Mac</strong>: For Mac it is also assumed that APSIM has been moved to ‘Applications’.</p>
+<p><strong>Windows</strong>: In Windows the default install location is in ‘Program Files’ for APSIM (Next Generation) and Program Files (x86) for APSIM ‘Classic’.</p>
+<p><strong>Linux (Debian)</strong>: It assumed that APSIM is in ‘/usr/local/lib/apsim/’.</p>
 <p>If you have your own flavor of APSIM, then you need to set the path manually using the function ‘apsim_options’ for Classic and ‘apsimx_options’ for Next Generation.</p>
 </div>
-<div id="r-functions-for-apsim-x" class="section level2">
-<h2>R functions for APSIM-X</h2>
+<div id="r-functions-for-apsim-next-generation" class="section level2">
+<h2>R functions for APSIM (Next Generation)</h2>
 <p>The main functions in the package are (for now):</p>
 <ul>
 <li><strong>inspect_apsimx</strong> simple inspecting of an .apsimx file. (It does not replace the GUI.)</li>
@@ -423,6 +423,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><strong>inspect_apsimx_replacement</strong> inspect a replacement component of an .apsimx file.</li>
 <li><strong>apsimx_options</strong> set global options: path for executable, examples and warnings.</li>
 </ul>
+<p>There are many other useful function described below.</p>
 </div>
 <div id="r-functions-for-apsim-classic-7.x---only-for-windows" class="section level2">
 <h2>R functions for APSIM ‘Classic’ (7.x) - Only for Windows</h2>
@@ -755,7 +756,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <pre><code>## Edited /folder/simulation/area/folder/manager[1]/ui/density 
 ## Edited parameter 
 ## New values  8 
-## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmphW0zYm/Millet-pp.apsim</code></pre>
+## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpVT4nzQ/Millet-pp.apsim</code></pre>
 <p>Verify that it was edited correctly.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet-pp.apsim&quot;</span>, <span class="dt">src.dir =</span> tmp.dir,</a>
 <a class="sourceLine" id="cb39-2" data-line-number="2">              <span class="dt">node =</span> <span class="st">&quot;Manager&quot;</span>,</a>
@@ -1002,7 +1003,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## Edit (level):  6 
 ## Edited parameter:  Y 
 ## New values:  0 12 20 28 0 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmphW0zYm/MaizeSoybean-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpVT4nzQ/MaizeSoybean-edited.apsimx</code></pre>
 <p>Let’s inspect the edited file</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean-edited.apsimx&quot;</span>, </a>
 <a class="sourceLine" id="cb62-2" data-line-number="2">                           <span class="dt">src.dir =</span> tmp.dir,</a>
@@ -1102,7 +1103,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## Edited (child):  none 
 ## Edited parameters:  
 ## New values:  Ames.met 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmphW0zYm/Factorial-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpVT4nzQ/Factorial-edited.apsimx</code></pre>
 <p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge source.</p>
 </div>
 </div>

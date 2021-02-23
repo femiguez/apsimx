@@ -86,8 +86,9 @@ optim_apsim <- function(file, src.dir = ".",
     }
   }
   
-  datami <- data[,-which(names(data) == index), drop = FALSE]
-  if(index == "Date") data$Date <- as.Date(data$Date)
+  ## Index can now potentially reference two columns
+  datami <- data[,-which(names(data) %in% index), drop = FALSE]
+  if(any(grepl("Date", index))) data$Date <- as.Date(data$Date)
   
   ## Setting up weights
   if(missing(weights)){
@@ -188,12 +189,17 @@ optim_apsim <- function(file, src.dir = ".",
     if(!all(names(data) %in% names(sim))) 
       stop("names in 'data' do not match names in simulation")
     
-    sim.s <- subset(sim, sim$Date %in% data[[index]], select = names(data))
+    if(length(index) == 1 && index == "Date"){
+      sim.s <- subset(sim, sim$Date %in% data[[index]], select = names(data))  
+    }else{
+      sim.s0 <- merge(sim, subset(data, select = index), by = index)  
+      sim.s <- subset(sim.s0, select = names(data))
+    }
     
-    if(nrow(sim.s) == 0L) stop("no rows selected in simulations")
+    if(nrow(sim.s) == 0L) stop("Something went wrong. No rows selected in simulations")
     ## Assuming they are aligned, get rid of the 'index' column
-    sim.s <- sim.s[,-which(names(sim.s) == index)]
-    data <- data[,-which(names(data) == index)]
+    sim.s <- sim.s[,-which(names(sim.s) %in% index)]
+    data <- data[,-which(names(data) %in% index)]
     ## Now I need to calculate the residual sum of squares
     ## For this to work all variables should be numeric
     diffs <- as.matrix(data) - as.matrix(sim.s)
