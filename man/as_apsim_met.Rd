@@ -16,7 +16,7 @@ as_apsim_met(
   units = c("()", "()", "(MJ/m2/day)", "(oC)", "(oC)", "(mm)"),
   constants = "NA",
   comments = "NA",
-  check = FALSE
+  check = TRUE
 )
 }
 \arguments{
@@ -43,6 +43,9 @@ as_apsim_met(
 \item{constants}{default is \dQuote{NA}}
 
 \item{comments}{default is \dQuote{NA}}
+
+\item{check}{whether to check the resulting met file using \code{\link{check_apsim_met}}.
+default is TRUE.}
 }
 \description{
 It makes minimum assumptions about the data so it is recommended to change defaults

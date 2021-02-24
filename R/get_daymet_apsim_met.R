@@ -12,6 +12,8 @@
 #' @param template A Raster or Spatial object to serve as a template for cropping (see \code{\link[FedData]{get_daymet}}).
 #' @param label a character string naming the area (see \code{\link[FedData]{get_daymet}})
 #' @param elements see \code{\link[FedData]{get_daymet}}
+#' @param region see \code{\link[FedData]{get_daymet}}
+#' @param tempo see \code{\link[FedData]{get_daymet}}
 #' @param extraction.dir see \code{\link[FedData]{get_daymet}}
 #' @param force.redo see \code{\link[FedData]{get_daymet}}
 #' @param cleanup whether to delete download directories (default is FALSE). 
@@ -59,7 +61,7 @@ get_daymet_apsim_met <- function(lonlat, years,
     return(NULL)
   }
   
-  if(packageVersion("FedData") < "3.0.0.9000")
+  if(utils::packageVersion("FedData") < "3.0.0.9000")
     stop("FedData package version should be 3.0.0.9000 or higher")
   
   if(missing(filename)) filename <- "noname.met"

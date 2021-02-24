@@ -41,6 +41,10 @@ get_daymet_apsim_met(
 
 \item{elements}{see \code{\link[FedData]{get_daymet}}}
 
+\item{region}{see \code{\link[FedData]{get_daymet}}}
+
+\item{tempo}{see \code{\link[FedData]{get_daymet}}}
+
 \item{extraction.dir}{see \code{\link[FedData]{get_daymet}}}
 
 \item{force.redo}{see \code{\link[FedData]{get_daymet}}}

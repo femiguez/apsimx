@@ -453,7 +453,9 @@ napad_apsim_met <- function(met){
 #' @param units default are \dQuote{()}, \dQuote{()}, \dQuote{(MJ/m2/day)},
 #'              \dQuote{(oC)}, \dQuote{(oC)}, \dQuote{(mm)}
 #' @param constants default is \dQuote{NA}
-#' @param comments default is \dQuote{NA}        
+#' @param comments default is \dQuote{NA}   
+#' @param check whether to check the resulting met file using \code{\link{check_apsim_met}}.
+#' default is TRUE.     
 #' @export
 #' 
 as_apsim_met <- function(x,
@@ -467,7 +469,7 @@ as_apsim_met <- function(x,
                          units = c("()", "()", "(MJ/m2/day)", "(oC)", "(oC)", "(mm)"),
                          constants = "NA",
                          comments = "NA",
-                         check = FALSE){
+                         check = TRUE){
   
   if(!inherits(x, "data.frame"))
     stop("Object should be of class data.frame")

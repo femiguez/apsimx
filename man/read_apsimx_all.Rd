@@ -4,7 +4,7 @@
 \alias{read_apsimx_all}
 \title{Read all APSIM-X generated .db files in a directory}
 \usage{
-read_apsimx_all(src.dir = ".", value = c("report", "all"))
+read_apsimx_all(src.dir = ".", value = "report")
 }
 \arguments{
 \item{src.dir}{source directory where files are located}

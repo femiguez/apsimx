@@ -40,8 +40,13 @@ Multi-year query is not supported for this product.
 \dontrun{
 ## This will not write a file to disk
 iemre <- get_iemre_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"))
-## Note that solar radiation is not available
+## Note that solar radiation is not available, but can be filled in
+## using the nasapower package
+iemre2 <- get_iemre_apsim_met(lonlat = c(-93,42), 
+                             dates = c("2012-01-01","2012-12-31"), 
+                             fillin.radn = TRUE)
 summary(iemre)
+summary(iemre2)
 }
 
 }

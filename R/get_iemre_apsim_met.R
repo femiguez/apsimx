@@ -12,14 +12,19 @@
 #' @details If the filename is not provided it will not write the file to disk, 
 #' but it will return an object of class \sQuote{met}. This is useful in case manipulation
 #' is required before writing to disk.
-#' @note Multi-year query is not supported for this product.
+#' @note Multi-year query is not supported for this product. 
 #' @export
 #' @examples 
 #' \dontrun{
 #' ## This will not write a file to disk
 #' iemre <- get_iemre_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"))
-#' ## Note that solar radiation is not available
+#' ## Note that solar radiation is not available, but can be filled in
+#' ## using the nasapower package
+#' iemre2 <- get_iemre_apsim_met(lonlat = c(-93,42), 
+#'                              dates = c("2012-01-01","2012-12-31"), 
+#'                              fillin.radn = TRUE)
 #' summary(iemre)
+#' summary(iemre2)
 #' }
 #' 
 
@@ -35,6 +40,11 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
   ## Build date
   day1 <- as.character(as.Date(dates[1]))
   dayn <- as.character(as.Date(dates[2]))
+  
+  yr1 <- as.numeric(format(as.Date(dates[1]), "%Y"))
+  yr2 <- as.numeric(format(as.Date(dates[2]), "%Y"))
+  
+  if(yr2 > yr1) stop("Multi-year queries are not supported at the moment. See the source.")
   
   ## Longitude and latitude
   lon <- as.numeric(lonlat[1])
@@ -71,8 +81,9 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
       warning("The nasapower package is required for this function")
       return(NULL)
     }
-    pwr <- get_power_apsim_met(lonlat = lonlat, dates = c(day1, dayn))
-    pwr$date <- as.Date(1:nrow(pwr), origin = paste0(pwr$year[1],"-01-01"))
+    pwr <- get_power_apsim_met(lonlat = lonlat, 
+                               dates = as.Date(c(paste0(yr1, "-01-01"), paste0(yr2, "-01-01"))))
+    pwr$date <- as.Date(c(1:nrow(pwr)-1), origin = paste0(yr1,"-01-01"))
     pwr <- subset(pwr, date >= as.Date(day1) & date <= as.Date(dayn))
     
     if(nrow(iem.dat2) != nrow(pwr))

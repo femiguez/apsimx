@@ -4,18 +4,23 @@
 \alias{read_apsimx}
 \title{Read APSIM-X generated .db files}
 \usage{
-read_apsimx(file = "", src.dir = ".", value = c("report", "all"))
+read_apsimx(file = "", src.dir = ".", value = "report")
 }
 \arguments{
 \item{file}{file name}
 
 \item{src.dir}{source directory where file is located}
 
-\item{value}{either \sQuote{report} (data.frame) or \sQuote{all} (list)}
+\item{value}{either \sQuote{report}, \sQuote{all} (list) or user defined for a specific report}
 }
 \description{
 read SQLite databases created by APSIM-X runs. One file at a time.
 }
 \details{
 Read APSIM-X generated .db files
+}
+\note{
+if there is one single report it will return a data.frame. 
+if there are multiple reports, it will return a list. If you select \sQuote{all} it
+will return all the components in the data base also as a list.
 }
