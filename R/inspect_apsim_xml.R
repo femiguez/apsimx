@@ -163,7 +163,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
     weather.filename.node <- xml2::xml_find_first(apsim_xml, parm.path.0)
     cat("Met file:", (xml2::xml_text(weather.filename.node)), "\n")
     if(!missing(parm)){
-      if(parm != "filename") warning("parm should be 'filname' when 'node = Weather'")
+      if(parm != "filename") warning("parm should be 'filename' when 'node = Weather'")
       parm.path.1 <- parm.path.0
     }
   }

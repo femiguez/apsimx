@@ -422,7 +422,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   
   ## If I use the root method need to use this workaround
   if(!missing(root)){
-    apsimx_xml00[[wsim]] <- apsim_xml
+    apsim_xml00[[wsim]] <- apsim_xml
     apsim_xml <- apsim_xml00
   }
   
