@@ -394,6 +394,8 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report"){
   
   file.name.path <- file.path(src.dir, file)
   
+  tbl0 <- NULL
+  
   con <- DBI::dbConnect(RSQLite::SQLite(), file.name.path)
   ## create data frame for each table
   ## Find table names first
@@ -437,7 +439,7 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report"){
   ## Disconnect
   DBI::dbDisconnect(con)
   
-  if(!is.null(tbl0) && any(grepl("Clock.Today",names(tbl0)))){
+  if(!is.null(tbl0) && any(grepl("Clock.Today", names(tbl0)))){
     tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)
   }
   ## Return a list if there is only one report, whatever the name and value == "all"
@@ -454,7 +456,7 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report"){
     ans <- lst0
   }
   ## Return data.frame if report and length 1 or user defined
-  if(value == "report" && length(report.names) == 1L || !value %in% c("report", "all")){
+  if((value == "report" && length(report.names) == 1L) || (!value %in% c("report", "all"))){
     ans <- tbl0
   }
     
