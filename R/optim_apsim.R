@@ -200,10 +200,23 @@ optim_apsim <- function(file, src.dir = ".",
     if(length(index) == 1 && index == "Date"){
       sim.s <- subset(sim, sim$Date %in% data[[index]], select = names(data))  
     }else{
+      if(!is.null(data$outfile)) data$outfile <- as.factor(data$outfile)
+      if(!is.null(sim$outfile)) sim$outfile <- as.factor(sim$outfile)
       sim.s0 <- merge(sim, subset(data, select = index), by = index)  
       sim.s <- subset(sim.s0, select = names(data))
     }
-    
+
+    if(nrow(sim.s) != nrow(data)){
+      cat("Number of rows in data", nrow(data), "\n")
+      cat("Number of rows in subset simulation", nrow(sim.s), "\n")
+      stop("Number of rows in data does not equal number of rows in simulation")
+    }
+    if(ncol(sim.s) != ncol(data)){
+      cat("Number of columns in data", ncol(data), "\n")
+      cat("Number of columns in subset simulation", ncol(sim.s), "\n")
+      stop("Number of columns in data does not equal number of columns in simulation")
+    }
+        
     if(nrow(sim.s) == 0L) stop("Something went wrong. No rows selected in simulations")
     ## Assuming they are aligned, get rid of the 'index' column
     sim.s <- sim.s[,-which(names(sim.s) %in% index)]
