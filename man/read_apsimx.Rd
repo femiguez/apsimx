@@ -4,14 +4,17 @@
 \alias{read_apsimx}
 \title{Read APSIM-X generated .db files}
 \usage{
-read_apsimx(file = "", src.dir = ".", value = "report")
+read_apsimx(file = "", src.dir = ".", value = "report", simplify = TRUE)
 }
 \arguments{
 \item{file}{file name}
 
 \item{src.dir}{source directory where file is located}
 
-\item{value}{either \sQuote{report}, \sQuote{all} (list) or user defined for a specific report}
+\item{value}{either \sQuote{report}, \sQuote{all} (list) or user-defined for a specific report}
+
+\item{simplify}{if TRUE will attempt to simplify multiple reports into a single data.frame. 
+If FALSE it will return a list.}
 }
 \description{
 read SQLite databases created by APSIM-X runs. One file at a time.
@@ -21,6 +24,10 @@ Read APSIM-X generated .db files
 }
 \note{
 if there is one single report it will return a data.frame. 
-if there are multiple reports, it will return a list. If you select \sQuote{all} it
-will return all the components in the data base also as a list.
+If there are multiple reports, it will attempt to merge them into a data frame. 
+If not possible it will return a list with names corresponding to the 
+table report names. It is also possible to select a specific report from several
+available by selecting \sQuote{value = ReportName}, where \sQuote{ReportName} is the name
+of the specific report that should be returned.
+If you select \sQuote{all} it will return all the components in the data base also as a list.
 }
