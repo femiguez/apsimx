@@ -1,4 +1,4 @@
-**apsimx: R package for APSIM-X**
+**apsimx: R package for APSIM-X (NextGen) and APSIM Classic (7.x)**
 
 [![CRAN](http://www.r-pkg.org/badges/version/apsimx)](https://CRAN.R-project.org/package=apsimx)
 [![CRAN

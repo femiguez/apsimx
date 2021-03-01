@@ -47,7 +47,7 @@ I have been testing them and they work as expected. This means that very often t
 
 * file = .apsim file
 * src.dir = source directory. Should be the current directory for both this file and the crop file.
-* crop.file = typically something like 'Wheat.xml', 'Maize.xml' or similar. You should have also placed an 'ini' under the crop in in the .apsim file and point to this file.
+* crop.file = typically something like 'Wheat.xml', 'Maize.xml' or similar. You should have also placed an 'ini' under the crop in the .apsim file and point to this file.
 * parm.paths = character vector with the full path to the parameters to be optimized. This can be obtained by using **inspect_apsim** or **inspect_apsim_xml**. The length of the parameter vector should be equal to the number of parameters being optimized (sometimes less is more). For example:
 
 ```{r inspect-apsimx-xml-maize}
@@ -65,15 +65,15 @@ Generates the paths for the radiation use efficiency and extinction coefficient 
 
 * weights = weights to apply when multiple variables are being optimized. See help file for more details.
 
-* index = the default is 'Date' this allows the alignment of APSIM output and observed measurements.
+* index = the default is 'Date' this allows the alignment of APSIM output and observed measurements. If you have multiple simulations or 'sites' that you want to optimize, the index might need to be c("outfile", "Date"). In this way both the different simulations and observations for a particular 'Date' can be aligned. However, you need to construct the file with observed data carefully so that they can be aligned. (You need package version 1.975 or newer for this.)
 
 * parm.vector.index = some paths point to a vector of parameters, but sometimes only one element of that vector needs to be optimized. In this case provide the index for which element of the vector needs to be optimized. If some of the parameters need this index while others do not, include a zero for those parameter vectors which are not indexed. 
 
-* ... = additional arguments to be passed to **optim**. For example, you can include lower and upper bounds and change the optimization algorithm (in this case 'L-BFGS-B'). See **optim** help file and documentation. Other options for either **nloptr** or **mcmc**.
+* ... = additional arguments to be passed to **optim**. For example, you can include lower and upper bounds and change the optimization algorithm (in this case 'L-BFGS-B'). Also, with 'hessian = TRUE' you can obtain confidence intervals. See **optim** help file and documentation. Other options for either **nloptr** or **mcmc**.
 
 ## optim_apsimx
 
-This function has a very similar structure to **optim_apsim**. The main difference is that at the moment it is required to supply the initial values for the parameters. It is also required to indicate whether each parameter is present in the 'replacement' component. As expalined before, use **inspect_apsimx** or **inspect_apsimx_replacement**.
+This function has a very similar structure to **optim_apsim**. The main difference is that at the moment it is required to supply the initial values for the parameters. It is also required to indicate whether each parameter is present in the 'replacement' component. As expalined before, use **inspect_apsimx** or **inspect_apsimx_replacement** to find the parameter paths.
 
 # Wheat Example
 

@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2021-02-24" />
+<meta name="date" content="2021-03-01" />
 
 <title>apsimx: An R package for APSIM Next Generation (and Classic)</title>
 
@@ -318,7 +318,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next Generation (and Classic)</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2021-02-24</h4>
+<h4 class="date">2021-03-01</h4>
 
 
 <div id="TOC">
@@ -725,7 +725,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <pre><code>## Edited /folder/simulation/area/folder/manager[1]/ui/density 
 ## Edited parameter 
 ## New values  8 
-## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmp5QRGhA/Millet-pp.apsim</code></pre>
+## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmpz3QkgV/Millet-pp.apsim</code></pre>
 <p>Verify that it was edited correctly.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb39-1" data-line-number="1"><span class="kw">inspect_apsim</span>(<span class="st">&quot;Millet-pp.apsim&quot;</span>, <span class="dt">src.dir =</span> tmp.dir,</a>
 <a class="sourceLine" id="cb39-2" data-line-number="2">              <span class="dt">node =</span> <span class="st">&quot;Manager&quot;</span>,</a>
@@ -972,7 +972,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## Edit (level):  6 
 ## Edited parameter:  Y 
 ## New values:  0 12 20 28 0 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmp5QRGhA/MaizeSoybean-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmpz3QkgV/MaizeSoybean-edited.apsimx</code></pre>
 <p>Let’s inspect the edited file</p>
 <div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb62-1" data-line-number="1"><span class="kw">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean-edited.apsimx&quot;</span>, </a>
 <a class="sourceLine" id="cb62-2" data-line-number="2">                           <span class="dt">src.dir =</span> tmp.dir,</a>
@@ -1072,7 +1072,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## Edited (child):  none 
 ## Edited parameters:  
 ## New values:  Ames.met 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmp5QRGhA/Factorial-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmpz3QkgV/Factorial-edited.apsimx</code></pre>
 <p>I won’t be running the ‘Factorial’ example here, but if you are interested this is done in the folder ‘tests’ in the pacakge source.</p>
 </div>
 </div>

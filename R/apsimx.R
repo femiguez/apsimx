@@ -399,13 +399,11 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
   
   file.name.path <- file.path(src.dir, file)
   
-  tbl0 <- NULL
-  
   con <- DBI::dbConnect(RSQLite::SQLite(), file.name.path)
   ## create data frame for each table
   ## Find table names first
   table.names <- RSQLite::dbListTables(con)
-  other.tables <- c("_Checkpoints", "_InitialConditions", "_Messages", "_Simulations", "_Units", "_Factors")
+  other.tables <- grep("^_", table.names, value = TRUE)
   report.names <- setdiff(table.names, other.tables)
   ### Are there other potential tables starting with "_"?
   
@@ -415,9 +413,12 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
     
   if(length(report.names) == 1L){
     tbl0 <- DBI::dbGetQuery(con, paste("SELECT * FROM ", report.names))  
+    if(any(grepl("Clock.Today", names(tbl0)))){
+      tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)
+    }
   }
     
-  if(length(report.names) > 1L && value == "report"){
+  if(length(report.names) > 1L && value %in% c("report", "all")){
 
     if(simplify){
       lst0 <- NULL
@@ -456,26 +457,21 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
   }
     
   if(value == "all"){
-    tbl1 <- DBI::dbGetQuery(con, "SELECT * FROM _Checkpoints")
-    tbl2 <- DBI::dbGetQuery(con, "SELECT * FROM _InitialConditions")
-    tbl3 <- DBI::dbGetQuery(con, "SELECT * FROM _Messages")
-    tbl4 <- DBI::dbGetQuery(con, "SELECT * FROM _Simulations")
-    tbl5 <- DBI::dbGetQuery(con, "SELECT * FROM _Units")    
+    other.tables.list <- vector("list", length = length(other.tables))
+    for(i in seq_along(other.tables)){
+      other.tables.list[[i]] <- DBI::dbGetQuery(con, paste("SELECT * FROM ", other.tables[i]))
+    }
+    names(other.tables.list) <- gsub("_", "", other.tables, fixed = TRUE)
   }
   ## Disconnect
   DBI::dbDisconnect(con)
   
-  if(!is.null(tbl0) && any(grepl("Clock.Today", names(tbl0)))){
-    tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)
-  }
   ## Return a list if there is only one report, whatever the name and value == "all"
   if(value == "all" && length(report.names) == 1L){
-    ans <- list(Report = tbl0, Checkpoints = tbl1, InitialConditions = tbl2,
-                Messages = tbl3, Simulations = tbl4, Units = tbl5)
+    lst1 <- list(Report = tbl0)
+    ans <- do.call(c, list(lst1, other.tables.list))
   }
   if(value == "all" && length(report.names) > 1L){
-    other.tables.list <- list(Checkpoints = tbl1, InitialConditions = tbl2,
-                Messages = tbl3, Simulations = tbl4, Units = tbl5)
     ans <- do.call(c, list(lst0, other.tables.list))
   }
   if(value == "report" && length(report.names) > 1L){
