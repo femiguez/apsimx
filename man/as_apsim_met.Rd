@@ -14,8 +14,8 @@ as_apsim_met(
   amp = NA,
   colnames = c("year", "day", "radn", "maxt", "mint", "rain"),
   units = c("()", "()", "(MJ/m2/day)", "(oC)", "(oC)", "(mm)"),
-  constants = "NA",
-  comments = "NA",
+  constants = NA,
+  comments = NA,
   check = TRUE
 )
 }

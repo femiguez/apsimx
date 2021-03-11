@@ -63,9 +63,9 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                        verbose = TRUE,
                        check.length = TRUE){
   
-  if(missing(wrt.dir)) wrt.dir <- src.dir
+  if(is.null(wrt.dir)) wrt.dir <- src.dir
   
-  file.names <- dir(path = src.dir, pattern=".apsim$",ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsim$", ignore.case=TRUE)
   
   if(identical(length(file.names),0))
     stop("There are no .apsim files in the specified directory to edit.")
@@ -87,6 +87,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     wsim <- grep(root, sim.names)
     apsim_xml <- apsim_xml0[[wsim]] ## This replaces the node
     parm.path.root <- xml2::xml_path(apsim_xml)
+    apsim_xml_root_node <- xml2::xml_find_first(apsim_xml00, parm.path.root)
   }
   
   ## Edit the 'Clock'
@@ -105,8 +106,8 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   
   ## Editing the weather file name only
   if(node == "Weather"){
-    if(missing(parm)){
-      parm.path <- paste0("//metfile/filename")
+    if(missing(parm) || parm == "filename"){
+      parm.path <- ".//metfile/filename"
       weather.filename.node <- xml2::xml_find_first(apsim_xml, parm.path)
       if(length(grep(".met$", value)) == 0) 
         stop("value should be a .met file")
@@ -422,12 +423,20 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   
   ## If I use the root method need to use this workaround
   if(!missing(root)){
-    apsim_xml00[[wsim]] <- apsim_xml
-    apsim_xml <- apsim_xml00
+    # apsim_xml00[[wsim]] <- apsim_xml
+    # apsim_xml <- apsim_xml00
+    ## Alternative
+    ## Find root node
+    xml2::xml_replace(apsim_xml_root_node, apsim_xml)
+    xml2::write_xml(apsim_xml00, file = wr.path) 
+  }else{
+    xml2::write_xml(apsim_xml, file = wr.path)    
   }
   
-  xml2::write_xml(apsim_xml, file = wr.path)  
-
+  # cat("Class apsim_xml", class(apsim_xml), "\n")
+  # cat("wr.path: ", wr.path, "\n")
+  # cat("Class wr.path:", class(wr.path), "\n")
+  
   if(verbose){
     cat("Edited", parm.path, "\n")
     cat("Edited parameter", parm, "\n")

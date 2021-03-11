@@ -164,8 +164,8 @@ inspect_apsim <- function(file = "", src.dir = ".",
     cat("Met file:", (xml2::xml_text(weather.filename.node)), "\n")
     if(!missing(parm)){
       if(parm != "filename") warning("parm should be 'filename' when 'node = Weather'")
-      parm.path.1 <- parm.path.0
     }
+    parm.path.1 <- parm.path.0
   }
   
   ## Extracting soil Depths

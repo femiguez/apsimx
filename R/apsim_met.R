@@ -134,20 +134,24 @@ read_apsim_met <- function(file, src.dir = ".", verbose = TRUE){
 
 write_apsim_met <- function(met, wrt.dir = NULL, filename = NULL){
   
-  if(attr(met, "filename") != "noname.met") filename <- attr(met, "filename")
+  if(attr(met, "filename") != "noname.met" && is.null(filename)) filename <- attr(met, "filename")
     
-  if(missing(wrt.dir) && is.null(filename)){
+  if(is.null(wrt.dir) && is.null(filename)){
     ## This assumes that the full path is in filename
     file.path <- attr(met, "filename")
   }
-  if(!missing(wrt.dir) && is.null(filename)){
-    stop("Need to supply filename if 'wrt.dir' is not NULL")
+  if(!is.null(wrt.dir) && is.null(filename)){
+    if(attr(met, "noname.met")){
+      stop("Need to supply filename if 'wrt.dir' is not NULL")
+    }else{
+     file.path <- file.path(wrt.dir, attr(met, "filename")) 
+    }
   }
-  if(missing(wrt.dir) && !is.null(filename)){
+  if(is.null(wrt.dir) && !is.null(filename)){
     stop("Need to supply 'wrt.dir' if filename is not NULL")
   }
-  if(!missing(wrt.dir) && !is.null(filename)){
-    file.path <- paste0(wrt.dir, "/", filename)
+  if(!is.null(wrt.dir) && !is.null(filename)){
+    file.path <- file.path(wrt.dir, filename)
   }
   if(!is.null(filename)){
     if(!grepl(".met", filename, fixed=TRUE)) stop("filename should end in .met")
@@ -467,8 +471,8 @@ as_apsim_met <- function(x,
                          amp = NA,
                          colnames = c("year", "day", "radn", "maxt", "mint", "rain"),
                          units = c("()", "()", "(MJ/m2/day)", "(oC)", "(oC)", "(mm)"),
-                         constants = "NA",
-                         comments = "NA",
+                         constants = NA,
+                         comments = NA,
                          check = TRUE){
   
   if(!inherits(x, "data.frame"))
@@ -480,19 +484,19 @@ as_apsim_met <- function(x,
   names(x) <- colnames
   
   attr(x, "filename") <- filename
-  attr(x, "site") <- site
-  attr(x, "latitude") <- latitude
-  attr(x, "longitude") <- longitude
+  attr(x, "site") <- paste("site =", site)
+  attr(x, "latitude") <- paste("latitude =", latitude)
+  attr(x, "longitude") <- paste("longitude =", longitude)
   
   if(is.na(tav)){
     tav <- mean(colMeans(x[,c("maxt","mint")], na.rm=TRUE), na.rm=TRUE)
-    attr(x, "tav") <- paste("tav =", tav)  
+    attr(x, "tav") <- paste("tav =", tav, "(oC) ! annual average ambient temperature")  
   }else{
     attr(x, "tav") <- tav
   }
   
   if(is.na(amp)){
-    attr(x, "amp") <- paste("amp =", mean(x$maxt, na.rm=TRUE) - mean(x$mint, na.rm = TRUE))  
+    attr(x, "amp") <- paste("amp =", mean(x$maxt, na.rm=TRUE) - mean(x$mint, na.rm = TRUE), "(oC) ! annual amplitude in mean monthly temperature")  
   }else{
     attr(x, "amp") <- amp  
   }

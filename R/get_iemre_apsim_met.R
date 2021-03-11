@@ -25,6 +25,10 @@
 #'                              fillin.radn = TRUE)
 #' summary(iemre)
 #' summary(iemre2)
+#' 
+#' ## Still it is important to check this object
+#' ## Since there is one day with missing solar radiation
+#' check_apsim_met(iemre2)
 #' }
 #' 
 
@@ -50,21 +54,20 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
   lon <- as.numeric(lonlat[1])
   lat <- as.numeric(lonlat[2])
   
-  str1 <- paste0(str0,day1,"/",dayn,"/",lat,"/",lon,"/json")
+  str1 <- paste0(str0, day1, "/", dayn, "/", lat, "/", lon, "/json")
   
   iem.json <- jsonlite::fromJSON(str1)
   
   iem.dat <- as.data.frame(iem.json[[1]])
   
-  iem.dat$year <- format(as.Date(iem.dat$date),"%Y")
+  iem.dat$year <- as.numeric(format(as.Date(iem.dat$date),"%Y"))
   
   iem.dat$radn <- NA
   
   ## Dates sequence
-  dates.seq <- seq(from = as.Date(dates[1]), to = as.Date(dates[2]),
-                   length.out = nrow(iem.dat))
+  dates.seq <- seq(from = as.Date(dates[1]), to = as.Date(dates[2]), by = "day")
   
-  iem.dat$day <- format(dates.seq, "%j")
+  iem.dat$day <- as.numeric(format(dates.seq, "%j"))
   
   iem.dat$daily_high_c <- (iem.dat$daily_high_f - 32) * (5/9)
   iem.dat$daily_low_c <- (iem.dat$daily_low_f - 32) * (5/9)
@@ -82,7 +85,7 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
       return(NULL)
     }
     pwr <- get_power_apsim_met(lonlat = lonlat, 
-                               dates = as.Date(c(paste0(yr1, "-01-01"), paste0(yr2, "-01-01"))))
+                               dates = as.Date(c(paste0(yr1, "-01-01"), paste0(yr2, "-12-31"))))
     pwr$date <- as.Date(c(1:nrow(pwr)-1), origin = paste0(yr1,"-01-01"))
     pwr <- subset(pwr, date >= as.Date(day1) & date <= as.Date(dayn))
     
@@ -95,19 +98,19 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
   names(iem.dat2) <- c("year","day","radn","maxt","mint","rain")
   units <- c("()","()","(MJ/m2/day)","(oC)","(oC)","(mm)")
   
-  comments <- paste("!data from IEM Reanalysis. retrieved: ",Sys.time())
+  comments <- paste("!data from IEM Reanalysis. retrieved: ", Sys.time())
   
   attr(iem.dat2, "filename") <- filename
   attr(iem.dat2, "site") <- paste("site = ", sub(".met","", filename, fixed = TRUE))
-  attr(iem.dat2, "latitude") <- paste("latitude =",lonlat[2])
-  attr(iem.dat2, "longitude") <- paste("longitude =",lonlat[1])
-  attr(iem.dat2, "tav") <- paste("tav =",mean(colMeans(iem.dat2[,c("maxt","mint")],na.rm=TRUE),na.rm=TRUE))
+  attr(iem.dat2, "latitude") <- paste("latitude =", lonlat[2])
+  attr(iem.dat2, "longitude") <- paste("longitude =", lonlat[1])
+  attr(iem.dat2, "tav") <- paste("tav =",mean(colMeans(iem.dat2[,c("maxt","mint")], na.rm=TRUE), na.rm=TRUE))
   attr(iem.dat2, "amp") <- paste("amp =",mean(iem.dat2$maxt, na.rm=TRUE) - mean(iem.dat2$mint, na.rm = TRUE))
   attr(iem.dat2, "colnames") <- names(iem.dat2)
   attr(iem.dat2, "units") <- units
   attr(iem.dat2, "comments") <- comments
   ## No constants
-  class(iem.dat2) <- c("met","data.frame")
+  class(iem.dat2) <- c("met", "data.frame")
   
   if(filename != "noname.met"){
     write_apsim_met(iem.dat2, wrt.dir = wrt.dir, filename = filename)

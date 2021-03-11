@@ -63,5 +63,41 @@ if(run.apsim.edit.millet){
              parm = "cultivar",
              value = "smurfs")
   
+  ## Testing with Maize factorial
+  pmf <- inspect_apsim("maize-factorial.apsim", src.dir = extd.dir, 
+                       root = "IA-CC_Canisteo_Cover",
+                       node = "Weather", print.path = TRUE)
+
+  ## Testing with the maize-factorial.apsim file
+  inspect_apsim("maize-factorial.apsim", src.dir = extd.dir, 
+                node = "Weather",
+                root = "IA-CC_Canisteo_Cover")
+
+  inspect_apsim("maize-factorial.apsim", src.dir = extd.dir, 
+                node = "Weather",
+                root = "IA-CC_Canisteo_No-Cover")
+
+  edit_apsim("maize-factorial.apsim", 
+             src.dir = extd.dir,
+             wrt.dir = tmp.dir,
+             node = "Weather", 
+             root = "IA-CC_Canisteo_Cover",
+             value = "Ames.met")
   
+  inspect_apsim("maize-factorial-edited.apsim", 
+                src.dir = tmp.dir, 
+                node = "Weather",
+                root = "IA-CC_Canisteo_Cover")
+  
+  edit_apsim("maize-factorial-edited.apsim", 
+             src.dir = tmp.dir,
+             overwrite = TRUE,
+             node = "Weather", 
+             root = "IA-CC_Canisteo_No-Cover",
+             value = "Boone.met")
+  
+  inspect_apsim("maize-factorial-edited.apsim", 
+                src.dir = tmp.dir, 
+                node = "Weather",
+                root = "IA-CC_Canisteo_No-Cover")
 }

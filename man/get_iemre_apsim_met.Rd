@@ -47,6 +47,10 @@ iemre2 <- get_iemre_apsim_met(lonlat = c(-93,42),
                              fillin.radn = TRUE)
 summary(iemre)
 summary(iemre2)
+
+## Still it is important to check this object
+## Since there is one day with missing solar radiation
+check_apsim_met(iemre2)
 }
 
 }
