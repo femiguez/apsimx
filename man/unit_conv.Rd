@@ -38,6 +38,8 @@ At the moment possible conversions are:
 \item \sQuote{kg/ha} to \sQuote{maize bu/ac}
 \item \sQuote{soy bu/ac} to \sQuote{kg/ha}
 \item \sQuote{kg/ha} to \sQuote{soy bu/ac}
+\item \sQuote{mm} to \sQuote{inches}
+\item \sQuote{inches} to \sQuote{mm}
 
 }
 

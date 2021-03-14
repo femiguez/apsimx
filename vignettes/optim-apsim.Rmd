@@ -241,6 +241,10 @@ sim.opt.s$Date <- as.Date(sim.opt.s$Date)
     ggtitle("Biomass (g/m2)")
 ```
 
+## Multi-simulation optimization
+
+In both APSIM Classic and Next Generation it might be common to perform simulations (for example for different sites or years). In this case the optimization might be done over those multiple simulations. The main considerations when doing this is that for Classic the observations should be organized with 'outfile' for the first column. This column there whould be a string which matches the simulation in APSIM that corresponds to this specific simulation (i.e. site/year). The second column should be the 'Date' and the variables to be optimized should match those names in the APSIM simulation. Also, the argument 'index' in 'optim_apsim' should be c('outfile', 'Date'). For Next Generation, the considerations are very similar except that the observed data should be organized with 'report' as the first column and 'Date' as the second column. Likewise, the 'index' argument in 'optim_apsimx' should be c('report', 'Date'). In this way, for both types of optimizations the simulations in APSIM will be able to be matched with the observations. 
+
 ### Additional considerations and potential issues
 
 The main additional consideration is that it can be a good idea to set up lower and upper bounds on the parameters in terms of how much higher and lower than the default values can be. In a model such as APSIM usually plus or minus 50 percent is enough of a range and even a lower range can often suffice. These can be included as 0.5 and 1.5. With *optim* it is necessary to use method = "L-BFGS-B". There are also similar options when using **nloptr**. This package has many available algorithms to choose from with more modern implementations than the ones available in **optim**. However, one disadvantage of the **nloptr** function is that it does not seem to be able to compute the Hessian numerically. 

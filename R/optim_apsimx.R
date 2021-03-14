@@ -21,7 +21,8 @@
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
 #' @param type Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}} or \sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}.
 #' @param weights Weighting method or values for computing the residual sum of squares. 
-#' @param index Index for filtering APSIM output
+#' @param index Index for filtering APSIM output. Typically, \dQuote{Date}, but it can be c(\dQuote{report}, \dQuote{Date}) for 
+#' multiple simulations
 #' @param parm.vector.index Index to optimize a specific element of a parameter vector.  At the moment it is
 #' possible to only edit one element at a time. This is because there is a conflict when generating multiple
 #' elements in the candidate vector for the same parameter.
@@ -42,7 +43,8 @@
 optim_apsimx <- function(file, src.dir = ".", 
                          parm.paths, data, 
                          type = c("optim", "nloptr", "mcmc"), 
-                         weights, index = "Date",
+                         weights, 
+                         index = "Date",
                          parm.vector.index,
                          replacement,
                          root,
@@ -62,9 +64,6 @@ optim_apsimx <- function(file, src.dir = ".",
   
   file.name.path <- file.path(src.dir, file)
   
-  if(index == "Date") data$Date <- as.Date(data$Date)
-  if(index != "Date") stop("For now Date is the default index")
-  
   type <- match.arg(type)
   
   if(type == "nloptr"){
@@ -82,8 +81,8 @@ optim_apsimx <- function(file, src.dir = ".",
   }
   
   ## Setting up Date
-  datami <- data[,-which(names(data) == index), drop = FALSE]
-  if(index == "Date") data$Date <- as.Date(data$Date)
+  datami <- data[,-which(names(data) %in% index), drop = FALSE]
+  if(any(grepl("Date", index))) data$Date <- as.Date(data$Date)
   
   ## Setting up weights
   if(missing(weights)){
@@ -191,12 +190,27 @@ optim_apsimx <- function(file, src.dir = ".",
     
     if(inherits(sim, "try-error")) return(NA)
     
+    if(!inherits(sim, "data.frame"))
+      stop("the apsimx simulation should return an object of class 'data.frame'. \n 
+           Check that the report does simplify to a 'data.frame' instead of a 'list'.")
+    
+    if("report" %in% names(sim) && index == "Date")
+      stop("If you have multiple simulations, you should modify the index argument. \n
+           It is possible that 'index = c('report', 'Date')' might work.")
+    
     ## Only keep those columns with corresponding names in the data
     ## and only the dates that match those in 'data'
     if(!all(names(data) %in% names(sim))) 
       stop("names in 'data' do not match names in simulation")
     
-    sim.s <- subset(sim, sim$Date %in% data[[index]], select = names(data))
+    if(length(index) == 1 && index == "Date"){
+      sim.s <- subset(sim, sim$Date %in% data[[index]], select = names(data))  
+    }else{
+      if(!is.null(data$report)) data$report <- as.factor(data$report)
+      if(!is.null(sim$report)) sim$report <- as.factor(sim$report)
+      sim.s0 <- merge(sim, subset(data, select = index), by = index)  
+      sim.s <- subset(sim.s0, select = names(data))
+    }
     
     if(nrow(sim.s) == 0L){
       cat("number of rows in sim", nrow(sim),"\n")
@@ -206,8 +220,8 @@ optim_apsimx <- function(file, src.dir = ".",
       stop("no rows selected in simulations")
     } 
     ## Assuming they are aligned, get rid of the 'Date' column
-    sim.s <- sim.s[,-which(names(sim.s) == index)]
-    data <- data[,-which(names(data) == index)]
+    sim.s <- sim.s[,-which(names(sim.s) %in% index)]
+    data <- data[,-which(names(data) %in% index)]
     ## Now I need to calculate the residual sum of squares
     ## For this to work all variables should be numeric
     diffs <- as.matrix(data) - as.matrix(sim.s)

@@ -15,6 +15,8 @@
 #' \item \sQuote{kg/ha} to \sQuote{maize bu/ac}
 #' \item \sQuote{soy bu/ac} to \sQuote{kg/ha}
 #' \item \sQuote{kg/ha} to \sQuote{soy bu/ac}
+#' \item \sQuote{mm} to \sQuote{inches}
+#' \item \sQuote{inches} to \sQuote{mm}
 #' 
 #' }
 #' 
@@ -41,9 +43,9 @@
 unit_conv <- function(x, from, to){
   
   from.table <- c("g/m2","Mg/ha","kg/m2","kg/ha","lb/ac","kg","lb",
-                  "maize bu", "soy bu", "maize bu/ac")
+                  "maize bu", "soy bu", "maize bu/ac", "mm", "inches")
   to.table <- c("g/m2","Mg/ha","kg/m2","kg/ha","lb/ac","kg","lb",
-                "maize bu", "soy bu", "maize bu/ac")
+                "maize bu", "soy bu", "maize bu/ac", "mm", "inches")
   
   from <- match.arg(from, from.table)
   to <- match.arg(to, to.table)
@@ -110,6 +112,16 @@ unit_conv <- function(x, from, to){
   if(from == "kg/ha" && to == "soy bu/ac"){
     ## 1 soy bushel/acre = 60 
     ans <- x / 67.25
+  }
+  
+  if(from == "mm" && to == "inches"){
+    ## 1 inch = 25.4 mm
+    ans <- x / 25.4
+  }
+  
+  if(from == "inches" && to == "mm"){
+    ## 1 inch = 25.4 mm
+    ans <- x * 25.4
   }
   
   return(ans)

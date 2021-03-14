@@ -33,7 +33,8 @@ It is recommended that you use \code{\link{inspect_apsimx}} for this}
 
 \item{weights}{Weighting method or values for computing the residual sum of squares.}
 
-\item{index}{Index for filtering APSIM output}
+\item{index}{Index for filtering APSIM output. Typically, \dQuote{Date}, but it can be c(\dQuote{report}, \dQuote{Date}) for 
+multiple simulations}
 
 \item{parm.vector.index}{Index to optimize a specific element of a parameter vector.  At the moment it is
 possible to only edit one element at a time. This is because there is a conflict when generating multiple
