@@ -99,7 +99,8 @@ auto_detect_apsimx <- function(){
         if(!is.na(apsimx::apsimx.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
           warning("APSIM-X not found, but a custom one is present")
         }else{
-          stop("APSIM-X not found and no 'exe.path' exists.")
+          if(is.na(apsimx::apsimx.options$exe.path))
+            stop("APSIM-X not found and no 'exe.path' exists.")
         }
       }
       ## If only one version of APSIM-X is present
@@ -141,7 +142,8 @@ auto_detect_apsimx <- function(){
         if(!is.na(apsimx::apsimx.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
           warning("APSIM-X not found, but a custom one is present")
         }else{
-          stop("APSIM-X not found and no 'exe.path' exists.")
+          if(is.na(apsimx::apsimx.options$exe.path))
+            stop("APSIM-X not found and no 'exe.path' exists.")  
         }
       }
       ## APSIM executable
