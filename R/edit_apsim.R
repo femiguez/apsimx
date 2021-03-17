@@ -354,7 +354,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.Pools.Pool.node <- xml2::xml_find_first(apsim_xml, parm.path)
       
       if(check.length){
-        if(length(value) != length(soil.Pools.Pool.node))
+        if(length(value) != length(xml2::xml_text(soil.Pools.Pool.node)))
           stop("value vector of incorrect length")
       }
       

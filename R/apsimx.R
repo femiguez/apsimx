@@ -133,6 +133,7 @@ auto_detect_apsimx <- function(){
   
     if(grepl("Linux", Sys.info()[["sysname"]])){
       
+      apsimx.versions <- NULL
       find.apsim <- grep("apsim", list.files("/usr/local/lib"))
       ## What if length equals zero?
       if(length(find.apsim) == 0){

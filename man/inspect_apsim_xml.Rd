@@ -27,7 +27,7 @@ inspect_apsim_xml(
 absolute parameter path
 }
 \description{
-inspect an auxilliary XML apsim file.
+inspect an auxiliary XML apsim file.
 }
 \examples{
  

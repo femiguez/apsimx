@@ -644,7 +644,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
 #'
 #' @title Inspect an APSIM Classic auxiliary (XML) file
 #' @name inspect_apsim_xml
-#' @description inspect an auxilliary XML apsim file. 
+#' @description inspect an auxiliary XML apsim file. 
 #' @param file file ending in .xml to be inspected.
 #' @param src.dir directory containing the .xml file to be inspected; defaults to the current working directory
 #' @param parm parameter to inspect.

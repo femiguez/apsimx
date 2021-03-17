@@ -35,9 +35,13 @@ At the moment possible conversions are:
 \item \sQuote{soy bu} to \sQuote{kg}
 \item \sQuote{kg} to \sQuote{soy bu}
 \item \sQuote{maize bu/ac} to \sQuote{kg/ha}
+\item \sQuote{maize bu/ac} to \sQuote{g/m2}
 \item \sQuote{kg/ha} to \sQuote{maize bu/ac}
+\item \sQuote{g/m2} to \sQuote{maize bu/ac}
 \item \sQuote{soy bu/ac} to \sQuote{kg/ha}
+\item \sQuote{soy bu/ac} to \sQuote{g/m2}
 \item \sQuote{kg/ha} to \sQuote{soy bu/ac}
+\item \sQuote{g/m2} to \sQuote{soy bu/ac}
 \item \sQuote{mm} to \sQuote{inches}
 \item \sQuote{inches} to \sQuote{mm}
 

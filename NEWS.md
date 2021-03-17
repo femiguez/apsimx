@@ -1,6 +1,9 @@
 **NEWS**
 
-* apsimx 1.977
+**apsimx 1.978**
+
+
+**apsimx 1.977**
 
 - Much improved handling of APSIM-X output. However, this led to some default changes. Argument 'value' in function 'apsimx' and 'read_apsimx' is 'report' instead of 'all'. The default for 'apsim' was also changed for consitency. Hopefully, this will not impact too many scripts.
 
