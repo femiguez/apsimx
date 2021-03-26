@@ -350,8 +350,7 @@ read_apsim <- function(file = "", src.dir = ".",
                                                   nrows = 1, 
                                                   skip = skip.out.lines)[1,]), 
                              FUN = function(x) x[[1]]))
-  print(hdr)
-  
+
   out.file <- read.table(file = file.name.path, header = FALSE, sep = "", skip = c(skip.out.lines + 2))
   
   if(length(hdr) != dim(out.file)[2]){
@@ -366,7 +365,14 @@ read_apsim <- function(file = "", src.dir = ".",
   if(inherits(sum.file, "try-error")) stop("Could not find summary file")
   
   if(any(grepl("Date", hdr, ignore.case = TRUE))){
-    out.file$Date <- try(as.Date(out.file$Date, format = date.format), silent=TRUE)
+    wcid <- grep("Date", hdr, ignore.case = TRUE) ## The short name stands for 'which column is date'
+    try.date <- try(as.Date(out.file[,wcid], format = date.format), silent=TRUE)
+    
+    if(inherits(try.date, "try-error")){
+      warning("Could not create Date column")
+    }else{
+      out.file$Date <- try.date   
+    }
   }
   ## Return list
   if(value == "all"){
