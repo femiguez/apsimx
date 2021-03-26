@@ -246,7 +246,7 @@ inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
               parm = list("Sow on a fixed date",5), print.path = TRUE)
 ## Or store it in an object for later editing
 pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Manager",
-              parm = list("Sow on a fixed date",5), print.path = TRUE)
+              parm = list("Sow on a fixed date", 5), print.path = TRUE)
 ```
 
 Once we have identified the parameter we want to edit, we can do so by using the 'edit_apsim' function. When using the 'parm.path' argument, node should be "Other".

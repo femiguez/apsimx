@@ -24,10 +24,15 @@ inspect_apsim_xml(
 \item{print.path}{Whether to print the parameter path}
 }
 \value{
-absolute parameter path
+absolute parameter path(s)
 }
 \description{
 inspect an auxiliary XML apsim file.
+}
+\note{
+the behavior has changed from previous verions (earlier than 1.977). Before,
+if more than match was found it would return an error. Now it returns a list with all
+possible matches. This can be useful when trying to find a parameter.
 }
 \examples{
  

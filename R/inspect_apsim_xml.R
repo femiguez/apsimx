@@ -650,7 +650,10 @@ inspect_apsim <- function(file = "", src.dir = ".",
 #' @param parm parameter to inspect.
 #' @param verbose Whether to print to standard output
 #' @param print.path Whether to print the parameter path
-#' @return absolute parameter path
+#' @note the behavior has changed from previous verions (earlier than 1.977). Before,
+#' if more than match was found it would return an error. Now it returns a list with all
+#' possible matches. This can be useful when trying to find a parameter.
+#' @return absolute parameter path(s)
 #' @export
 #' @examples  
 #' \donttest{
@@ -686,21 +689,38 @@ inspect_apsim_xml <- function(file = "",
   
   find.all <- xml2::xml_find_all(apsim_xml, paste0(".//", parm))
   
-  if(length(find.all) > 1) stop("found multiple matching parameters")
+  if(length(find.all) > 1){
+    parm.path <- character(length = length(find.all))
+    for(i in seq_along(find.all)){
+      if(verbose){
+        cat("attrs:", xml2::xml_attrs(find.all[[i]], "*"), "\n")
+        length.xml.node <- xml2::xml_length(find.all[[i]])
+        if(length.xml.node == 1){
+          cat("text:", xml2::xml_text(find.all[[i]]), "\n")    
+        }else{
+          cat("text:", xml2::xml_text(xml2::xml_children(find.all[[i]])), "\n")    
+        }        
+      }
+      parm.path[i] <- xml2::xml_path(find.all[i])
+    }
+    if(print.path) cat("path:", unlist(parm.path), "\n")
+  } 
     
-  xml_node <- xml2::xml_find_first(apsim_xml, paste0(".//", parm))
-  
-  parm.path <- xml2::xml_path(xml_node)
-  
-  if(verbose){
-    cat("attrs:", xml2::xml_attrs(xml_node, "*"), "\n")
-    cat("text:", xml2::xml_text(xml_node), "\n")  
+  if(length(find.all) == 1){
+    xml_node <- xml2::xml_find_first(apsim_xml, paste0(".//", parm))
+    parm.path <- xml2::xml_path(xml_node)
+    if(verbose){
+      cat("attrs:", xml2::xml_attrs(xml_node, "*"), "\n")
+      length.xml.node <- xml2::xml_length(xml_node)
+      if(length.xml.node == 1){
+        cat("text:", xml2::xml_text(xml_node), "\n")    
+      }else{
+        cat("text:", xml2::xml_text(xml2::xml_children(xml_node)), "\n")    
+      }
+    }
+    if(print.path) cat("path:", parm.path, "\n")
   }
-  
-  if(print.path) cat("path:", parm.path, "\n")
-    
   invisible(parm.path)
-  
 }
 
 #' view APSIM XML file

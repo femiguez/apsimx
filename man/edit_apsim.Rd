@@ -88,6 +88,29 @@ extd.dir <- system.file("extdata", package = "apsimx")
 edit_apsim("Millet", src.dir = extd.dir, wrt.dir = tmp.dir, 
            node = "Clock",
            parm = "start_date", value = "01/02/1940")
+
+## Editing all of the KL values for Millet
+pp.KL <- inspect_apsim_xml("Millet.apsim", src.dir = extd.dir, 
+                  parm = "SoilCrop[8]/KL")
+                 
+kls <- seq(0.08, 0.2, length.out = 11)
+
+edit_apsim("Millet.apsim", 
+           src.dir = extd.dir,
+           wrt.dir = tmp.dir,
+           node = "Other", 
+           parm.path = pp.KL,
+           value = kls)
+           
+## Check that it was properly edited
+
+inspect_apsim("Millet-edited.apsim", 
+              src.dir = tmp.dir,
+              node = "Soil",
+              soil.child = "Water",
+              parm = "KL")
+
+              
 }
 
 }

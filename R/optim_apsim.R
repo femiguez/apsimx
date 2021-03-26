@@ -131,12 +131,22 @@ optim_apsim <- function(file, src.dir = ".",
   ## Retrieve initial value vectors
   aux.xml <- xml2::read_xml(file.path(src.dir, aux.file))
   iaux.parms <- vector("list", length = length(parm.paths))
+  length.aux.parms <- numeric(length(parm.paths))
   names(iaux.parms) <- parm.paths
     
   for(i in seq_along(parm.paths)){
     xml.node <- xml2::xml_find_first(aux.xml, parm.paths[i])
-    aux.parm.text <- xml2::xml_text(xml.node)
-    aux.parm.value <- as.numeric(strsplit(aux.parm.text, "\\s+")[[1]])
+    length.xml.node0 <- xml2::xml_length(xml.node)
+    length.xml.node1 <- length(xml2::xml_text(xml.node))
+    length.xml.node <- max(length.xml.node0, length.xml.node1)
+    length.aux.parms[i] <- length.xml.node 
+    if(length.xml.node == 1){
+      aux.parm.text <- xml2::xml_text(xml.node)
+      aux.parm.value <- as.numeric(strsplit(aux.parm.text, "\\s+")[[1]])      
+    }else{
+      aux.parm.text <- xml2::xml_text(xml2::xml_children(xml.node))
+      aux.parm.value <- as.numeric(aux.parm.text)
+    }
     iaux.parms[[i]] <- aux.parm.value
   }    
   
@@ -149,7 +159,11 @@ optim_apsim <- function(file, src.dir = ".",
     for(i in seq_along(cfs)){
       ## Retrieve the vector of current parameters
       if(parm.vector.index[i] <= 0){
-        mparm <- paste(iaux.parms[[i]] * cfs[i], collapse = " ")  
+        if(length.aux.parms[i] == 1){
+          mparm <- paste(iaux.parms[[i]] * cfs[i], collapse = " ")    
+        }else{
+          mparm <- iaux.parms[[i]] * cfs[i] 
+        }
       }else{
         pvi <- parm.vector.index[i]
         iaux.parms[[i]][pvi] <- iaux.parms[[i]][pvi] * cfs[i]
