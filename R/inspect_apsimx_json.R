@@ -105,7 +105,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }
   }else{
     parent.node <- apsimx_json$Children[[fcsn]]$Children  
-    parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[fcsn]]$Name)
+    parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name)
   }
   
   if(node == "Clock"){
@@ -141,7 +141,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   wcz <- grepl("Models.Core.Zone", parent.node)
   core.zone.node <- parent.node[wcz][[1]]$Children
   
-  parm.path.2 <- paste0(parm.path.1,".",parent.node[wcz][[1]]$Name)
+  parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)
   
   if(node == "Soil"){
     ## Which soils node

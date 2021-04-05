@@ -26,13 +26,13 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("SowingFertiliser",NA))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date",NA))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date",1))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date",2))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date",3))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date",5))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date",6))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("SowingFertiliser", NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 1))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 2))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 3))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 5))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 6))
 
   ## Maize
   i <- "Maize.apsimx"
@@ -49,8 +49,8 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule',NA))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingFertiliser',NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule', NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingFertiliser', NA))
   
   ## Oats
   i <- "Oats"
@@ -65,17 +65,17 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingFert',NA))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',NA))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',1))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',2))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',3))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',4))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',5))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',6))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',7))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',8))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1',9))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingFert', NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 1))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 2))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 3))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 4))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 5))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 6))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 7))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 8))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 9))
 }
 
 run.inspect.print.path.tests <- get(".run.local.tests", envir = apsimx.options)
@@ -221,6 +221,17 @@ if(inspect.replacement.test2){
                              node.subchild = "Photosynthesis",
                              node.subsubchild = "RUE",
                              parm = "FixedValue")
+
+  ## Soybean Cultivars
+  pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                                   src.dir = extd.dir, 
+                                   node = "Soybean",
+                                   node.child = "Stephens_MG40",
+                                   parm = "Vegetative",
+                                   print.path = TRUE)
+  
+  if(pp != ".Simulations.Replacements.Soybean.Stephens_MG40.Vegetative") 
+    stop("Error in inspect_apsimx_replacement, MaizeSoybean, Stephens_MG40, Vegetative, print.path")
   
   ## WheatRye version
   inspect_apsimx_replacement("WheatRye.apsimx", src.dir = extd.dir,

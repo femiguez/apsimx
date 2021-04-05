@@ -34,14 +34,17 @@
 #'                            node.sub3child = "Response") 
 #' ## For Wheat
 #' ## In this case, I can't dig deep enough 
-#' ## Would need to add an argument 'node.sub4child'
+#' ## to get to XYPairs
+#' ## Would need to add an argument 'node.sub5child'
+#' ## but I'm working on an alternative implementation of this function
 #' inspect_apsimx_replacement("WheatRye.apsimx", 
 #'                            src.dir = extd.dir,
 #'                            node = "Wheat",
 #'                            node.child = "Structure",
 #'                            node.subchild = "BranchingRate",
 #'                            node.subsubchild = "PotentialBranchingRate",
-#'                            node.sub3child = "Vegetative")
+#'                            node.sub3child = "Vegetative",
+#'                            node.sub4child = "PotentialBranchingRate")
 #'}
 #'\dontrun{  
 #' ## This function can also be used to inspect more complex APSIM-X files
@@ -170,7 +173,6 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   if((length(rep.node.child$Children) == 0 || !is.null(parm)) && missing(node.subchild)){
     unpack_node(rep.node.child, parm = parm, display.available = display.available)
     parm.path <- parm.path.0.1.1.1
-    if(!is.null(parm)) parm.path <- paste0(parm.path, ".", parm)
     if(print.path) cat("Parm path: ", format_parm_path(parm.path, parm), "\n")
     if(verbose) cat("no node sub-children available or parm not equal to null \n")
     return(invisible(format_parm_path(parm.path, parm)))
@@ -182,10 +184,9 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   ## This is intended to be used to handle a missing node.subchild gracefully
   if(missing(node.subchild)){
     parm.path <- parm.path.0.1.1.1
-    if(!is.null(parm)) parm.path <- paste0(parm.path, ".", parm)
-    if(print.path) cat("Parm path: ", parm.path, "\n") 
+    if(print.path) cat("Parm path: ", format_parm_path(parm.path, parm), "\n") 
     if(verbose) cat("missing node.subchild \n")
-    return(invisible(parm.path))
+    return(invisible(format_parm_path(parm.path, parm)))
   } 
   
   rep.node.subchildren.names <- vapply(rep.node.child$Children, function(x) x$Name,
@@ -195,17 +196,16 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   if(length(wrnsc) > 1) stop("More than one subchild found. Make it unique (see regular expressions)")
   rep.node.subchild <- rep.node.child$Children[[wrnsc]]
   
-  parm.path.0.1.1.1.1 <- paste0(parm.path.0.1.1.1,".",rep.node.subchild$Name)
+  parm.path.0.1.1.1.1 <- paste0(parm.path.0.1.1.1, ".", rep.node.subchild$Name)
   ## Let's just print this information somehow
   if(verbose) cat("Subchild Name: ", rep.node.subchild$Name, "\n")
   
   if((length(rep.node.subchild$Children) == 0 || !is.null(parm)) && missing(node.subsubchild)){
     unpack_node(rep.node.subchild, parm = parm, display.available = display.available)
     parm.path <- parm.path.0.1.1.1.1
-    if(!is.null(parm)) parm.path <- paste0(parm.path, ".", parm)
-    if(print.path) cat("Parm path:", parm.path, "\n")
+    if(print.path) cat("Parm path:", format_parm_path(parm.path, parm), "\n")
     if(verbose) cat("no node sub-sub-children available or parm is not null \n")
-    return(invisible(format_parm_path(parm.path)))
+    return(invisible(format_parm_path(parm.path, parm)))
   }else{
     ## The problem here is that rep.node.subchild can either be
     ## named or nameless
@@ -215,10 +215,9 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   ## This is intended to be used to handle a missing node.subsubchild gracefully
   if(missing(node.subsubchild)){
     parm.path <- parm.path.0.1.1.1.1
-    if(!is.null(parm)) parm.path <- paste0(parm.path, ".", parm)
-    if(print.path) cat("Parm path:", parm.path, "\n") 
+    if(print.path) cat("Parm path:", format_parm_path(parm.path, parm), "\n") 
     if(verbose) cat("missing node.subsubchild \n")
-    return(invisible(parm.path))
+    return(invisible(format_parm_path(parm.path, parm)))
   }
   
   ## The thing here is that I need to be able to handle an object with either
@@ -246,13 +245,11 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   
   if((length(rep.node.subsubchild$Children) == 0 || !is.null(parm)) && !ispic && missing(node.sub3child)){
       unpack_node(rep.node.subsubchild, parm = parm, display.available = display.available)
-      ## It might be that 'unpack' is not always the best choice and simply cat_parm might bbe better
-      ## cat_parm(rep.node.subsubchild, parm = parm)
+      ## It might be that 'unpack' is not always the best choice and simply cat_parm might be better
       parm.path <- parm.path.0.1.1.1.1.1
-      if(!is.null(parm)) parm.path <- paste0(parm.path, ".", parm)
-      if(print.path) cat("Parm path:", format_parm_path(parm.path,parm), "\n") 
+      if(print.path) cat("Parm path:", format_parm_path(parm.path, parm), "\n") 
       if(verbose) cat("no node sub-sub-sub-children available or parm is not null \n")
-      return(invisible(format_parm_path(parm.path,parm)))
+      return(invisible(format_parm_path(parm.path, parm)))
   }
     
   if(is.null(parm) && is.null(node.sub3child)){ 
@@ -288,10 +285,9 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   ## This is intended to be used to handle a missing node.subsubchild gracefully
   if(missing(node.sub3child)){
     parm.path <- parm.path.0.1.1.1.1.1
-    if(!is.null(parm)) parm.path <- paste0(parm.path, ".", parm)
-    if(print.path) cat("Parm path:", parm.path, "\n") 
+    if(print.path) cat("Parm path:", format_parm_path(parm.path, parm), "\n") 
     if(verbose) cat("missing node.sub3child \n")
-    return(invisible(parm.path))
+    return(invisible(format_parm_path(parm.path, parm)))
   }
   
   rep.node.sub3children.names <- vapply(rep.node.subsubchild$Children, function(x) x$Name,
@@ -302,7 +298,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   rep.node.sub4child <- rep.node.subsubchild$Children[[wrnsssc]]
   
   if(verbose) cat("Name sub-sub-sub-child: ", rep.node.sub4child$Name, "\n")
-  parm.path.0.1.1.1.1.1.1 <- paste0(parm.path.0.1.1.1.1.1,".",rep.node.sub4child$Name)
+  parm.path.0.1.1.1.1.1.1 <- paste0(parm.path.0.1.1.1.1.1, ".", rep.node.sub4child$Name)
 
   ## Why does this work instead of the extraction through x$Name?
   rep.node.sub4child.names <- names(rep.node.sub4child)
@@ -319,10 +315,9 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     ## unpack_node(rep.node.sub4child, parm = parm, display.available = display.available)
     cat_parm(rep.node.sub4child, parm = parm)
     parm.path <- parm.path.0.1.1.1.1.1.1
-    if(!is.null(parm)) parm.path <- paste0(parm.path, ".", parm)
-    if(print.path) cat("Parm path:", format_parm_path(parm.path,parm), "\n") 
+    if(print.path) cat("Parm path:", format_parm_path(parm.path, parm), "\n") 
     ## if(verbose) cat("no node sub-sub-sub-sub-children available or parm is not null \n")
-    return(invisible(format_parm_path(parm.path,parm)))
+    return(invisible(format_parm_path(parm.path, parm)))
   }
   
   if(is.null(parm) && is.null(node.sub4child)){ 
@@ -353,10 +348,9 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
 
   if(missing(node.sub4child)){
     parm.path <- parm.path.0.1.1.1.1.1.1
-    if(!is.null(parm)) parm.path <- paste0(parm.path, ".", parm)
-    if(print.path) cat("Parm path:", parm.path, "\n") 
+    if(print.path) cat("Parm path:", format_parm_path(parm.path, parm), "\n") 
     if(verbose) cat("missing node.sub4child \n")
-    return(invisible(parm.path))
+    return(invisible(format_parm_path(parm.path, parm)))
   }
   
   #### Start of code chunck for node.sub4child ----
@@ -385,7 +379,6 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     ## unpack_node(rep.node.sub4child, parm = parm, display.available = display.available)
     cat_parm(rep.node.sub5child, parm = parm)
     parm.path <- parm.path.0.1.1.1.1.1.1.1
-    if(!is.null(parm)) parm.path <- paste0(parm.path, ".", parm)
     if(print.path) cat("Parm path:", format_parm_path(parm.path, parm), "\n") 
     return(invisible(format_parm_path(parm.path, parm)))
   }
@@ -426,9 +419,9 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
       ans <- parm.path
     }else{
       if(length(parm) == 1){
-        ans <- paste0(parm.path,".",parm)
+        ans <- paste0(parm.path, ".", parm)
       }else{
-        ans <- paste0(parm.path,".",parm[[1]])
+        ans <- paste0(parm.path, ".", parm[[1]])
       }
     }
     cat("Parm path:", parm.path, "\n")
