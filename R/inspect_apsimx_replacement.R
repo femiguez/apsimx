@@ -387,7 +387,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     parm.path <- parm.path.0.1.1.1.1.1.1.1
     if(!is.null(parm)) parm.path <- paste0(parm.path, ".", parm)
     if(print.path) cat("Parm path:", format_parm_path(parm.path, parm), "\n") 
-    return(invisible(format_parm_path(parm.path,parm)))
+    return(invisible(format_parm_path(parm.path, parm)))
   }
 
   node.sub5child <- NULL

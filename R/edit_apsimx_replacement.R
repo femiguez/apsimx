@@ -57,7 +57,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   
   if(missing(parm) || missing(value)) stop("'parm' and/or 'value' are missing")
   
-  apsimx_json <- jsonlite::read_json(paste0(src.dir,"/",file))
+  apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
   
   ## Select Replacements node
   frn <- grep(root[[1]], apsimx_json$Children, fixed = TRUE)
@@ -109,7 +109,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   } 
   
   rep.node.children.names <- sapply(rep.node$Children, function(x) x$Name)
-  if(verbose) cat("Available node children: ",rep.node.children.names,"\n")
+  if(verbose) cat("Available node children: ", rep.node.children.names, "\n")
   
   ## Select a specific node.child
   if(missing(node.child) && lvl == -1) return(cat("missing node.child\n"))
@@ -129,6 +129,26 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
         apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
       }
     }
+    
+    ## Cultivar parameters can be in 'Command'
+    if(length(rep.node.child$Command) > 0){
+      if(any(grepl(parm, unlist(rep.node.child$Command)))){
+        lvl <- 5
+        wrnsc <- grep(parm, unlist(rep.node.child$Command))
+        ## Break it up and reassemble
+        cmdstrng <- strsplit(rep.node.child$Command[[wrnsc]], "=")[[1]][1]
+        rep.node.child$Command[[wrnsc]] <- paste0(cmdstrng, "=", value)
+        ## Now write back to list
+        rep.node$Children[[wrnc]] <- rep.node.child
+        replacements.node$Children[[wrn]] <- rep.node
+        if(length(frn) == 1){
+          apsimx_json$Children[[frn]] <- replacements.node
+        }else{
+          apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+        }
+      }
+    }
+    
     rep.node.subchildren.names <- sapply(rep.node.child$Children, function(x) x$Name)
   }
   

@@ -212,13 +212,13 @@ optim_apsimx <- function(file, src.dir = ".",
       sim.s <- subset(sim.s0, select = names(data))
     }
     
-    if(nrow(sim.s) == 0L){
-      cat("number of rows in sim", nrow(sim),"\n")
-      cat("number of rows in data", nrow(data), "\n")
-      print(sim)
-      print(data)
-      stop("no rows selected in simulations")
-    } 
+    if(nrow(sim.s) != nrow(data)){
+      cat("Number of rows in data", nrow(data), "\n")
+      cat("Number of rows in subset simulation", nrow(sim.s), "\n")
+      stop("Number of rows in data does not equal number of rows in simulation")
+    }
+    
+    if(nrow(sim.s) == 0L) stop("Something went wrong. No rows selected in simulations")
     ## Assuming they are aligned, get rid of the 'Date' column
     sim.s <- sim.s[,-which(names(sim.s) %in% index)]
     data <- data[,-which(names(data) %in% index)]

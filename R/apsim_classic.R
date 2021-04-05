@@ -336,7 +336,7 @@ read_apsim <- function(file = "", src.dir = ".",
   file.name.path <- paste0(src.dir, "/", file, ".out")
   
   ## How many rows to skip might be title plus one
-  rdlns <- readLines(con = file.name.path)
+  rdlns <- readLines(con = file.name.path, n = 6)
   for(i in 1:5){
     if(grepl("^Title =", rdlns[i])){
       skip.out.lines <- i

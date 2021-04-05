@@ -220,11 +220,6 @@ optim_apsim <- function(file, src.dir = ".",
       sim.s <- subset(sim.s0, select = names(data))
     }
 
-    if(nrow(sim.s) != nrow(data)){
-      cat("Number of rows in data", nrow(data), "\n")
-      cat("Number of rows in subset simulation", nrow(sim.s), "\n")
-      stop("Number of rows in data does not equal number of rows in simulation")
-    }
     if(ncol(sim.s) != ncol(data)){
       cat("Number of columns in data", ncol(data), "\n")
       cat("Number of columns in subset simulation", ncol(sim.s), "\n")

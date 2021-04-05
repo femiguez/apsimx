@@ -50,5 +50,14 @@ if(run.test.edit.apsimx.replacement){
                              node.subsubchild = "RUE",
                              parm = "FixedValue")
   
+  #### Looking at Soybean
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                             node = "Soybean", 
+                             node.child = "Stephens_MG40",
+                             parm = "Vegetative",
+                             print.path = TRUE)
+  
+  # edit_apsim
+  
 }
 
