@@ -129,6 +129,11 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     if(strsplit(node.string, "")[[1]][1] == "."){
       node.string <- substring(node.string, 2)
     }
+    ## If I want to provide the path returned by inspect_apsimx_replacement
+    ## directly I need to strip the first part which is likely to be '.Simulations.Replacement.'
+    if(grepl(".Replacements.", node.string)){
+      node.string <- strsplit(node.string, ".Replacements.", fixed = TRUE)[[1]][2]
+    }
     nodes <- strsplit(node.string, ".", fixed = TRUE)[[1]]
     node <- nodes[1]
     if(!is.na(nodes[2])) node.child <- nodes[2]

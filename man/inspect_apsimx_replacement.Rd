@@ -80,10 +80,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.subsubchild = "BaseThermalTime",
                            node.sub3child = "Response") 
 ## For Wheat
-## In this case, I can't dig deep enough 
-## to get to XYPairs
-## Would need to add an argument 'node.sub5child'
-## but I'm working on an alternative implementation of this function
+## getting down to 'XYPairs'
 inspect_apsimx_replacement("WheatRye.apsimx", 
                            src.dir = extd.dir,
                            node = "Wheat",
@@ -91,7 +88,8 @@ inspect_apsimx_replacement("WheatRye.apsimx",
                            node.subchild = "BranchingRate",
                            node.subsubchild = "PotentialBranchingRate",
                            node.sub3child = "Vegetative",
-                           node.sub4child = "PotentialBranchingRate")
+                           node.sub4child = "PotentialBranchingRate",
+                           node.sub5child = "XYPairs")
 }
 \dontrun{  
 ## This function can also be used to inspect more complex APSIM-X files

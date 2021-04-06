@@ -112,12 +112,13 @@ inspect_apsimx_replacement("MaizeSoybean-edited.apsimx",
 ## Equivalent to the code to edit above
 
 edit_apsimx_replacement("MaizeSoybean-edited.apsimx", 
-                        src.dir = tmp.dir,
+                        src.dir = tmp.dir, wrt.dir = tmp.dir,
                         node.string = "Maize.Phenology.ThermalTime.BaseThermalTime.Response",
                         parm = "X",
-                        value = c(11, 21, 31, 41, 51)) 
+                        value = c(11, 21, 31, 41, 51),
+                        edit.tag = "-ns") 
                         
-inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", 
+inspect_apsimx_replacement("MaizeSoybean-edited-ns.apsimx", 
                            src.dir = tmp.dir,
                            node = "Maize", 
                            node.child = "Phenology",
