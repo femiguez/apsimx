@@ -13,6 +13,7 @@ inspect_apsimx_replacement(
   node.subsubchild = NULL,
   node.sub3child = NULL,
   node.sub4child = NULL,
+  node.sub5child = NULL,
   node.string = NULL,
   root = list("Models.Core.Replacements", NA),
   parm = NULL,
@@ -38,6 +39,8 @@ inspect_apsimx_replacement(
 \item{node.sub3child}{specific node sub3child to be inspected.}
 
 \item{node.sub4child}{specific node sub4child to be inspected.}
+
+\item{node.sub5child}{specific node sub5child to be inspected.}
 
 \item{node.string}{passing of a string instead of the node hierarchy.
 Do not use this and also the other node arguments. This argument will
@@ -78,21 +81,25 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.sub3child = "Response") 
 ## For Wheat
 ## In this case, I can't dig deep enough 
-## Would need to add an argument 'node.sub4child'
+## to get to XYPairs
+## Would need to add an argument 'node.sub5child'
+## but I'm working on an alternative implementation of this function
 inspect_apsimx_replacement("WheatRye.apsimx", 
                            src.dir = extd.dir,
                            node = "Wheat",
                            node.child = "Structure",
                            node.subchild = "BranchingRate",
                            node.subsubchild = "PotentialBranchingRate",
-                           node.sub3child = "Vegetative")
+                           node.sub3child = "Vegetative",
+                           node.sub4child = "PotentialBranchingRate")
 }
 \dontrun{  
 ## This function can also be used to inspect more complex APSIM-X files
 ## For example the 'Factorial' example
 ex.dir <- auto_detect_apsimx_examples()
 inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
-root = list("Experiment", 1), node = "Base", node.child = "Weather")
+                           root = list("Experiment", 1), 
+                           node = "Base", node.child = "Weather")
 }
 
 }

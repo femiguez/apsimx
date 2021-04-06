@@ -9,8 +9,12 @@
 #' @param node.child specific node child component to edit.
 #' @param node.subchild specific node sub-child to edit.
 #' @param node.subsubchild specific node sub-subchild to edit.
-#' @param node.sub3child specific node sub-sub-subchild to be inspected.
-#' @param node.string passing of a string instead of the node hierarchy.
+#' @param node.sub3child specific node sub-sub-subchild to edit.
+#' @param node.sub4child specific node sub-sub-sub-subchild to edit.
+#' @param node.sub5child specific node sub-sub-sub-sub-subchild to edit.
+#' @param node.string passing of a string instead of the node hierarchy. It can either start with a dot or not.
+#' However, the \sQuote{best} form is not to start with a dot as it should be a more convenient form of passing
+#' the nodes and their childs and not a real \sQuote{jsonpath}.
 #' @param root \sQuote{root} node to explore (default = \dQuote{Models.Core.Replacements})
 #' @param parm specific parameter to edit
 #' @param value new values for the parameter
@@ -29,19 +33,59 @@
 #' ## Writing to a temp directory, but change as needed
 #' tmp.dir <- tempdir()
 #' 
+#' ## Inspect original values
+#' inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+#'                            src.dir = extd.dir,
+#'                            node = "Maize", 
+#'                            node.child = "Phenology",
+#'                            node.subchild = "ThermalTime", 
+#'                            node.subsubchild = "BaseThermalTime",
+#'                            node.sub3child = "Response")
+#' 
 #' edit_apsimx_replacement("MaizeSoybean.apsimx", 
 #'                         src.dir = extd.dir, wrt.dir = tmp.dir,
-#'                         node = "Maize", node.child = "Phenology",
-#'                         node.subchild = "ThermalTime", parm = "X",
-#'                         value = c(1,2,3,4,5)) 
+#'                         node = "Maize", 
+#'                         node.child = "Phenology",
+#'                         node.subchild = "ThermalTime", 
+#'                         node.subsubchild = "BaseThermalTime",
+#'                         node.sub3child = "Response",
+#'                         parm = "X",
+#'                         value = c(10, 20, 30, 40, 50)) 
+#' ## inspect it
+#' inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", 
+#'                            src.dir = tmp.dir,
+#'                            node = "Maize", 
+#'                            node.child = "Phenology",
+#'                            node.subchild = "ThermalTime", 
+#'                            node.subsubchild = "BaseThermalTime",
+#'                            node.sub3child = "Response")
+#' 
+#' ## Illustrating using 'node.string'
+#' ## Equivalent to the code to edit above
+#' 
+#' edit_apsimx_replacement("MaizeSoybean-edited.apsimx", 
+#'                         src.dir = tmp.dir, wrt.dir = tmp.dir,
+#'                         node.string = "Maize.Phenology.ThermalTime.BaseThermalTime.Response",
+#'                         parm = "X",
+#'                         value = c(11, 21, 31, 41, 51),
+#'                         edit.tag = "-ns") 
+#'                         
+#' inspect_apsimx_replacement("MaizeSoybean-edited-ns.apsimx", 
+#'                            src.dir = tmp.dir,
+#'                            node = "Maize", 
+#'                            node.child = "Phenology",
+#'                            node.subchild = "ThermalTime", 
+#'                            node.subsubchild = "BaseThermalTime",
+#'                            node.sub3child = "Response")
 #' }
 #'
 
 edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                     node = NULL, node.child = NULL,
                                     node.subchild = NULL, node.subsubchild = NULL,
-                                    node.sub3child = NULL, node.string = NULL,
-                                    root = list("Models.Core.Replacements",NA),
+                                    node.sub3child = NULL, node.sub4child = NULL, 
+                                    node.sub5child = NULL, node.string = NULL,
+                                    root = list("Models.Core.Replacements", NA),
                                     parm = NULL, value = NULL, overwrite = FALSE,
                                     edit.tag = "-edited", verbose = TRUE){
   
@@ -81,12 +125,18 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   if(verbose) cat("Replacements: ", replacements.node.names, "\n")
   
   if(!missing(node.string)){
+    ## strip the dot automatically if it is included
+    if(strsplit(node.string, "")[[1]][1] == "."){
+      node.string <- substring(node.string, 2)
+    }
     nodes <- strsplit(node.string, ".", fixed = TRUE)[[1]]
     node <- nodes[1]
     if(!is.na(nodes[2])) node.child <- nodes[2]
     if(!is.na(nodes[3])) node.subchild <- nodes[3]
     if(!is.na(nodes[4])) node.subsubchild <- nodes[4]
     if(!is.na(nodes[5])) node.sub3child <- nodes[5]
+    if(!is.na(nodes[6])) node.sub4child <- nodes[6]
+    if(!is.na(nodes[7])) node.sub5child <- nodes[7]
   }
   
   if(missing(node)) return(cat("Please provide a node \n"))
@@ -133,7 +183,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     ## Cultivar parameters can be in 'Command'
     if(length(rep.node.child$Command) > 0){
       if(any(grepl(parm, unlist(rep.node.child$Command)))){
-        lvl <- 5
+        lvl <- 2
         wrnsc <- grep(parm, unlist(rep.node.child$Command))
         ## Break it up and reassemble
         cmdstrng <- strsplit(rep.node.child$Command[[wrnsc]], "=")[[1]][1]
@@ -149,6 +199,9 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
       }
     }
     
+    if(missing(node.subchild) && lvl == -1)
+      stop("Failed to find and edit parameter")
+    
     rep.node.subchildren.names <- sapply(rep.node.child$Children, function(x) x$Name)
   }
   
@@ -163,7 +216,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   
     if(parm %in% names(rep.node.subchild)){
       rep.node.subchild <- edit_node(rep.node.subchild, parm = parm, value = value)
-      lvl <- 2
+      lvl <- 3
       rep.node.child$Children[[wrnsc]] <- rep.node.subchild
       rep.node$Children[[wrnc]] <- rep.node.child
       replacements.node$Children[[wrn]] <- rep.node
@@ -174,6 +227,9 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
       }
       ## apsimx_json is ready to be written back to file
     }
+    
+    if(missing(node.subsubchild) && lvl == -1)
+      stop("Failed to find and edit parameter")
   }
   
   if(missing(node.subsubchild) && verbose && missing(parm)) cat("missing node.subsubchild\n")
@@ -190,11 +246,6 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     if(parm %in% names(rep.node.subsubchild)){
       rep.node.subsubchild <- edit_node(rep.node.subsubchild, parm = parm, value = value)
       lvl <- 4
-      # if(length(names(rep.node.subsubchild$Children)) == 0){
-      #   rep.node.subsubchild$Children[[1]] <- rep.node.sub3child
-      # }else{
-      #   rep.node.subsubchild$Children <- rep.node.sub3child 
-      # }
       rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
       rep.node.child$Children[[wrnsc]] <- rep.node.subchild
       rep.node$Children[[wrnc]] <- rep.node.child
@@ -227,6 +278,9 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
         }
       }
     }
+    
+    if(missing(node.sub3child) && lvl == -1)
+      stop("Failed to find and edit parameter")
   }
 
   ## Inserting deeper level June 15th 2020
@@ -279,6 +333,125 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
         }
       }
     }
+    
+    if(missing(node.sub4child) && lvl == -1)
+      stop("Failed to find and edit parameter")
+  }
+  
+  if(missing(node.sub4child) && verbose && missing(parm)) cat("missing node.sub4child\n")  
+
+  #### Inserting node.sub4child option March 5th 2021
+  if(!missing(node.sub4child)){
+    rep.node.sub4children.names <- vapply(rep.node.sub3child$Children, function(x) x$Name,
+                                          FUN.VALUE = "character")
+    ## Select a specific node.subchild
+    wrnssssc <- grep(node.sub4child, rep.node.sub4children.names)
+    rep.node.sub4child <- rep.node.sub3child$Children[[wrnssssc]]
+    
+    if(verbose) cat("Sub-sub-sub-subchild Name: ", rep.node.sub4child$Name,"\n")
+    
+    if(any(parm %in% names(rep.node.sub4child))){
+      rep.node.sub4child <- edit_node(rep.node.sub4child, parm = parm, value = value)
+      lvl <- 8
+      # node is edited, now put it back in place
+      rep.node.sub3child$Children[[wrnssssc]] <- rep.node.sub4child
+      rep.node.subsubchild$Children[[wrnsssc]] <- rep.node.sub3child
+      rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
+      rep.node.child$Children[[wrnsc]] <- rep.node.subchild
+      rep.node$Children[[wrnc]] <- rep.node.child
+      replacements.node$Children[[wrn]] <- rep.node
+      if(length(frn) == 1){
+        apsimx_json$Children[[frn]] <- replacements.node
+      }else{
+        apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+      }
+      ## apsimx_json is ready to be written back to file
+    }
+    
+    ## Cultivar parameters can be in 'Command'
+    if(length(rep.node.sub4child$Command) > 0){
+      if(any(grepl(parm, unlist(rep.node.sub4child$Command)))){
+        lvl <- 9
+        wrnsssscc <- grep(parm, unlist(rep.node.sub4child$Command))
+        ## Break it up and reassemble
+        cmdstrng <- strsplit(rep.node.sub4child$Command[[wrnsssscc]], "=")[[1]][1]
+        rep.node.sub4child$Command[[wrnsssscc]] <- paste0(cmdstrng, "=", value)
+        ## Now write back to list
+        rep.node.sub3child$Children[[wrnssssc]] <- rep.node.sub4child
+        rep.node.subsubchild$Children[[wrnsssc]] <- rep.node.sub3child
+        rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
+        rep.node.child$Children[[wrnsc]] <- rep.node.subchild
+        rep.node$Children[[wrnc]] <- rep.node.child
+        replacements.node$Children[[wrn]] <- rep.node
+        if(length(frn) == 1){
+          apsimx_json$Children[[frn]] <- replacements.node
+        }else{
+          apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+        }
+      }
+    }
+    
+    if(missing(node.sub5child) && lvl == -1)
+      stop("Failed to find and edit parameter")
+  }  
+  
+  if(missing(node.sub5child) && verbose && missing(parm)) cat("missing node.sub5child\n")  
+  
+  #### Inserting node.sub5child option March 5th 2021
+  if(!missing(node.sub5child)){
+    rep.node.sub5children.names <- vapply(rep.node.sub4child$Children, function(x) x$Name,
+                                          FUN.VALUE = "character")
+    ## Select a specific node.subchild
+    wrnsssssc <- grep(node.sub5child, rep.node.sub5children.names)
+    rep.node.sub5child <- rep.node.sub4child$Children[[wrnsssssc]]
+    
+    if(verbose) cat("Sub-sub-sub-sub-subchild Name: ", rep.node.sub5child$Name,"\n")
+    
+    if(any(parm %in% names(rep.node.sub5child))){
+      rep.node.sub5child <- edit_node(rep.node.sub5child, parm = parm, value = value)
+      lvl <- 10
+      # node is edited, now put it back in place
+      rep.node.sub4child$Children[[wrnsssssc]] <- rep.node.sub5child
+      rep.node.sub3child$Children[[wrnssssc]] <- rep.node.sub4child
+      rep.node.subsubchild$Children[[wrnsssc]] <- rep.node.sub3child
+      rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
+      rep.node.child$Children[[wrnsc]] <- rep.node.subchild
+      rep.node$Children[[wrnc]] <- rep.node.child
+      replacements.node$Children[[wrn]] <- rep.node
+      if(length(frn) == 1){
+        apsimx_json$Children[[frn]] <- replacements.node
+      }else{
+        apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+      }
+      ## apsimx_json is ready to be written back to file
+    }
+    
+    ## Cultivar parameters can be in 'Command'
+    if(length(rep.node.sub5child$Command) > 0){
+      if(any(grepl(parm, unlist(rep.node.sub5child$Command)))){
+        lvl <- 11
+        wrnssssscc <- grep(parm, unlist(rep.node.sub5child$Command))
+        ## Break it up and reassemble
+        cmdstrng <- strsplit(rep.node.sub5child$Command[[wrnssssscc]], "=")[[1]][1]
+        rep.node.sub5child$Command[[wrnssssscc]] <- paste0(cmdstrng, "=", value)
+        ## Now write back to list
+        rep.node.sub4child$Children[[wrnsssssc]] <- rep.node.sub5child
+        rep.node.sub3child$Children[[wrnssssc]] <- rep.node.sub4child
+        rep.node.subsubchild$Children[[wrnsssc]] <- rep.node.sub3child
+        rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
+        rep.node.child$Children[[wrnsc]] <- rep.node.subchild
+        rep.node$Children[[wrnc]] <- rep.node.child
+        replacements.node$Children[[wrn]] <- rep.node
+        if(length(frn) == 1){
+          apsimx_json$Children[[frn]] <- replacements.node
+        }else{
+          apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+        }
+      }
+    }
+    
+    if(lvl == -1)
+      stop("Failed to find and edit parameter")
   }
   
   ## Write back to a file

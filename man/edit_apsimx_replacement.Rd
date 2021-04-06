@@ -13,6 +13,8 @@ edit_apsimx_replacement(
   node.subchild = NULL,
   node.subsubchild = NULL,
   node.sub3child = NULL,
+  node.sub4child = NULL,
+  node.sub5child = NULL,
   node.string = NULL,
   root = list("Models.Core.Replacements", NA),
   parm = NULL,
@@ -37,9 +39,15 @@ edit_apsimx_replacement(
 
 \item{node.subsubchild}{specific node sub-subchild to edit.}
 
-\item{node.sub3child}{specific node sub-sub-subchild to be inspected.}
+\item{node.sub3child}{specific node sub-sub-subchild to edit.}
 
-\item{node.string}{passing of a string instead of the node hierarchy.}
+\item{node.sub4child}{specific node sub-sub-sub-subchild to edit.}
+
+\item{node.sub5child}{specific node sub-sub-sub-sub-subchild to edit.}
+
+\item{node.string}{passing of a string instead of the node hierarchy. It can either start with a dot or not.
+However, the \sQuote{best} form is not to start with a dot as it should be a more convenient form of passing
+the nodes and their childs and not a real \sQuote{jsonpath}.}
 
 \item{root}{\sQuote{root} node to explore (default = \dQuote{Models.Core.Replacements})}
 
@@ -73,11 +81,49 @@ extd.dir <- system.file("extdata", package = "apsimx")
 ## Writing to a temp directory, but change as needed
 tmp.dir <- tempdir()
 
+## Inspect original values
+inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                           src.dir = extd.dir,
+                           node = "Maize", 
+                           node.child = "Phenology",
+                           node.subchild = "ThermalTime", 
+                           node.subsubchild = "BaseThermalTime",
+                           node.sub3child = "Response")
+
 edit_apsimx_replacement("MaizeSoybean.apsimx", 
                         src.dir = extd.dir, wrt.dir = tmp.dir,
-                        node = "Maize", node.child = "Phenology",
-                        node.subchild = "ThermalTime", parm = "X",
-                        value = c(1,2,3,4,5)) 
+                        node = "Maize", 
+                        node.child = "Phenology",
+                        node.subchild = "ThermalTime", 
+                        node.subsubchild = "BaseThermalTime",
+                        node.sub3child = "Response",
+                        parm = "X",
+                        value = c(10, 20, 30, 40, 50)) 
+## inspect it
+inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", 
+                           src.dir = tmp.dir,
+                           node = "Maize", 
+                           node.child = "Phenology",
+                           node.subchild = "ThermalTime", 
+                           node.subsubchild = "BaseThermalTime",
+                           node.sub3child = "Response")
+
+## Illustrating using 'node.string'
+## Equivalent to the code to edit above
+
+edit_apsimx_replacement("MaizeSoybean-edited.apsimx", 
+                        src.dir = tmp.dir,
+                        node.string = "Maize.Phenology.ThermalTime.BaseThermalTime.Response",
+                        parm = "X",
+                        value = c(11, 21, 31, 41, 51)) 
+                        
+inspect_apsimx_replacement("MaizeSoybean-edited.apsimx", 
+                           src.dir = tmp.dir,
+                           node = "Maize", 
+                           node.child = "Phenology",
+                           node.subchild = "ThermalTime", 
+                           node.subsubchild = "BaseThermalTime",
+                           node.sub3child = "Response")
 }
 
 }
