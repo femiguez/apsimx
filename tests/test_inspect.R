@@ -232,6 +232,16 @@ if(inspect.replacement.test2){
   
   if(pp != ".Simulations.Replacements.Soybean.Stephens_MG40.Vegetative") 
     stop("Error in inspect_apsimx_replacement, MaizeSoybean, Stephens_MG40, Vegetative, print.path")
+
+  pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                                   src.dir = extd.dir, 
+                                   node = "Soybean",
+                                   node.child = "Stephens_MG40",
+                                   parm = "EarlyFlowering",
+                                   print.path = TRUE)
+  
+  if(pp != ".Simulations.Replacements.Soybean.Stephens_MG40.EarlyFlowering") 
+    stop("Error in inspect_apsimx_replacement, MaizeSoybean, Stephens_MG40, EarlyFlowering, print.path")
   
   ## WheatRye version
   inspect_apsimx_replacement("WheatRye.apsimx", src.dir = extd.dir,

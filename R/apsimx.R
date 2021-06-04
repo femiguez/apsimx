@@ -347,9 +347,9 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## Several examples are not supported because they do not use
   ## relative paths for the weather file
   ## Examples which do not run: Chicory
-  ex.ch <- c("Barley","ControlledEnvironment","Eucalyptus",
+  ex.ch <- c("Barley", "ControlledEnvironment", "Eucalyptus",
              "EucalyptusRotation",
-             "Maize","Oats","Sugarcane","Wheat")
+             "Maize", "Oats", "Rotation", "Sugarcane", "Wheat")
 
   example <- match.arg(example, choices = ex.ch)
   
@@ -361,7 +361,8 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## Do not transfer permissions?
   file.copy(from = ex, to = tmp.dir, copy.mode = FALSE)
   
-  sim <- apsimx(paste0(example, ".apsimx"), src.dir = tmp.dir, value = "report")
+  sim <- apsimx(paste0(example, ".apsimx"), src.dir = tmp.dir, 
+                value = "report", simplify = FALSE)
 
   ## OS independent cleanup (risky?)
   file.remove(paste0(tmp.dir, "/", example, ".db"))

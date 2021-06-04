@@ -712,7 +712,7 @@ inspect_apsim_xml <- function(file = "",
     if(verbose){
       cat("attrs:", xml2::xml_attrs(xml_node, "*"), "\n")
       length.xml.node <- xml2::xml_length(xml_node)
-      if(length.xml.node == 1){
+      if(length.xml.node <= 1){
         cat("text:", xml2::xml_text(xml_node), "\n")    
       }else{
         cat("text:", xml2::xml_text(xml2::xml_children(xml_node)), "\n")    

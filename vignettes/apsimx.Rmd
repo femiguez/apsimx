@@ -50,7 +50,7 @@ See the following for details
 
 This package has been tested on (latest version):
 
-**Mac**: ApsimX version (2021-01-14) 6010 (R 4.0.3)
+**Mac**: ApsimX version (2021-04-01) 6228 (R 4.0.3)
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
@@ -112,6 +112,7 @@ After we run this example we can treat it as a standard data frame in R.
 extd.dir <- system.file("extdata", package = "apsimx")
 ## maize <- read_apsimx("Maize.db", src.dir = extd.dir)
 maize <- read.csv(paste0(extd.dir, "/Maize.csv"))
+maize$Date <- as.Date(maize$Date)
 ```
 
 ```{r summary-ggplot-maize}
@@ -197,6 +198,7 @@ sim <- apsimx("Wheat.apsimx", src.dir = tmp.dir2, value = "report")
 ```{r apsimx-wheat-read, echo = FALSE}
 ## sim <- read_apsimx("Wheat.db", src.dir = extd.dir)
 sim <- read.csv(paste0(extd.dir, "/Wheat.csv"))
+sim$Date <- as.Date(sim$Date)
 ```
 
 ```{r apsimx-wheat-summary}
@@ -320,7 +322,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.sub3child = "Response") 
 ```
 
-Choose the 'X' and 'Y' parameters within 'Response'.
+Choose the 'Y' parameter within 'Response'.
 
 ```{r inspect-replacement-node-subchild-subsubchild-temp-response-parm}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
@@ -328,7 +330,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
                            node.sub3child = "Response",
-                           parm = c("Y", "X")) 
+                           parm = "Y") 
 ```
 
 The function shows the available replacements ("Maize" and "Soybean"), the 'CropType' if available, the subchild name and the 'Y' vector in this example. If parm is not specified all elements will be displayed.

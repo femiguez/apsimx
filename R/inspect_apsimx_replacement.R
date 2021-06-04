@@ -78,7 +78,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   ## Notice that the .apsimx extension will be added here
   file <- match.arg(file, file.names)
   
-  apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
+  apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
   
   parm.path.0 <- paste0(".", apsimx_json$Name)
   ans <- parm.path.0
@@ -536,7 +536,7 @@ unpack_node <- function(x, parm = NULL, display.available = FALSE){
        length(node.child$Children) == 0 &&
        length(node.child) == 1 && 
        length(node.child[[1]]) == 1){
-      cat_parm(node.child, parm = parm)
+          cat_parm(node.child, parm = parm)
     }else{
       ## Let's assume this is a list with multiple elements
       ## Shouldn't 'cat_parm' be able to handle this?
@@ -573,10 +573,10 @@ cat_parm <- function(x, parm = NULL){
   x.nms <- names(x)
   for(i in seq_len(lx)){
     if(is.null(parm)){
-      cat(x.nms[i], ":",unlist(x[i]),"\n")
+      cat(x.nms[i], ":", unlist(x[i]), "\n")
     }else{
       if(x.nms[i] %in% parm || any(sapply(parm, function(x) grepl(x, unlist(x[i]))))){
-        cat(x.nms[i], ":",unlist(x[i]),"\n")
+        cat(x.nms[i], ":", unlist(x[i]), "\n")
       }
     }
   }

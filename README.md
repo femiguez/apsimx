@@ -31,12 +31,9 @@ https://www.mono-project.com/download/stable/
 **APSIMX download**:
 https://www.apsim.info/download-apsim/
 
-If you need other R packages to interact with the previous version(s) of
-APSIM (7.x) try 'APSIM' and 'apsimr'. This package does not fully
-replace the functionality in those packages. In many ways it goes
-beyond those packages. It does have some similar
-functions as in 'apsimr', but they are completely re-written. However,
-both 'APSIM' and 'apsimr' have been removed from CRAN. 
+Since APSIM Next Gen 2021.04.01 (at least) .NET framework 4.6 or higher is 
+required for Windows and I have had to update the Mono framework to 
+6.12.
 
 If you want to install this package from github try in R:
 

@@ -4,9 +4,9 @@ apsimx_options(warn.versions = FALSE)
 
 run.example.tests <- get(".run.local.tests", envir = apsimx.options)
 
-examples <- c("Barley","ControlledEnvironment","Eucalyptus",
-              "EucalyptusRotation",
-              "Maize","Oats","Sugarcane","Wheat")
+examples <- c("Barley", "ControlledEnvironment", "Eucalyptus",
+              "EucalyptusRotation", "Maize","Oats", "Rotation", 
+              "Sugarcane","Wheat")
 
 tmp.dir <- tempdir()
 
