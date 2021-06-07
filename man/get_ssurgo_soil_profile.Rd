@@ -47,7 +47,11 @@ Generate a synthetic soil profile based on the information in SSURGO database
 Data source is USDA-NRCS Soil Data Access. See package soilDB for more details
 }
 \examples{
-\donttest{
+\dontrun{
+require(soilDB)
+require(sp)
+require(sf)
+require(spData)
 ## Soil inforation for a single point
 sp <- get_ssurgo_soil_profile(lonlat = c(-93, 42))
 plot(sp[[1]])

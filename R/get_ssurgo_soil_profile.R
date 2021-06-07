@@ -17,7 +17,11 @@
 #' be an object of class \sQuote{soil_profile}
 #' @export
 #' @examples 
-#' \donttest{
+#' \dontrun{
+#' require(soilDB)
+#' require(sp)
+#' require(sf)
+#' require(spData)
 #' ## Soil inforation for a single point
 #' sp <- get_ssurgo_soil_profile(lonlat = c(-93, 42))
 #' plot(sp[[1]])
@@ -43,15 +47,15 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
     return(NULL)
   }
   
+  if(!requireNamespace("sf", quietly = TRUE)){
+    warning("The sf package is required for this function")
+    return(NULL)
+  }
+  
   if(!requireNamespace("spData", quietly = TRUE)){
     warning("The spData package is required for this function")
     return(NULL)
   }
-  
-  # if(!requireNamespace("aqp", quietly = TRUE)){
-  #   warning("The aqp package is required for this function")
-  #   return(NULL)
-  # }
   
   lon <- lonlat[1]
   lat <- lonlat[2]
@@ -99,12 +103,15 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
   names(cmpnt) <- gsub("_", ".", names(cmpnt), fixed = TRUE)
   cmpnt$geomdesc <- cmpnt$geompos
   
-  ### retrive the state information ###
-  states <- spData::us_states ## This object contains states and their geometries
-  states <- sf::st_transform(states, crs = 3857)
-  pspg <- sf::st_transform(sf::st_as_sf(spg), crs = 3857)
-  ii <- as.integer(sf::st_intersects(pspg, states))
-  cmpnt$state <- states[["NAME"]][[ii]]
+  ## Retrieve the state from the areasymbol
+  if(shift <= 0 || length(unique(mapunit$areasymbol)) == 1){
+    cmpnt$state <- strtrim(mapunit$areasymbol, 2)
+  }else{
+    cmpnt$state <- NA
+    warning("This area includes more than one state. 
+            I have not though about how to get the state in this case. Please submit an issue 
+            with a reproducible example to https://github.com/femiguez/apsimx/issues")
+  }
   
   ### Chorizon ###
   chrzns <- fSDA@horizons
@@ -119,6 +126,7 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
   if(shift <= 0){
     spg.sf <- sf::st_as_sf(spg)
     spg.sf[["MUKEY"]] <- res$mukey
+    spg.sf[["AREASYMBOL"]] <- mapunit$areasymbol
     mapunit.shp <- spg.sf
   }else{
     mapunit.shp <- sf::st_as_sf(spg)

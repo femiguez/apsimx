@@ -125,7 +125,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
   file <- match.arg(file, file.names)
   
   ## Read the file
-  apsim_xml <- xml2::read_xml(paste0(src.dir, "/", file))
+  apsim_xml <- xml2::read_xml(file.path(src.dir, file))
   
   ## This is my attempt at picking the right node in a factorial
   if(!missing(root)){
@@ -267,8 +267,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
         soil.d[,j] <- xml2::xml_double(xml2::xml_children(soil.water.node))
         j <- j + 1
       }
-      
-      ## Soil Water
+
       soil.water.parms <- c("SummerCona", "SummerU", "SummerDate",
                             "WinterCona", "WinterU", "WinterDate",
                             "DiffusConst","DiffusSlope", "Salb",
@@ -277,33 +276,41 @@ inspect_apsim <- function(file = "", src.dir = ".",
       soil.water.xparms <- c("Slope", "Discharge", "CatchmentArea", "MaximumPond")
       
       soil.water.parms.soilwat <- c("Thickness", "SWCON", "MWCON", "KLAT")
- 
-      soil.water.d <- data.frame(soil.water = soil.water.parms,
-                                 value = NA)
-      j <- 1
-      for(i in soil.water.parms){
-        parm.path.0 <- ".//Soil/SoilWater"
-        parm.path.1 <- paste0(parm.path.0, "/", i)
-        soil.water.node <- xml2::xml_find_first(apsim_xml, parm.path.1)
-        soil.water.d[j,"value"] <- xml2::xml_text(soil.water.node)
-        j <- j + 1
+      
+      soilwat.present <- FALSE
+      ## Soil Water, but only when it is present because of SWIM        
+      if(length(xml2::xml_find_all(apsim_xml, ".//Soil/SoilWater")) > 0){
+        
+        soilwat.present <- TRUE
+        soil.water.d <- data.frame(soil.water = soil.water.parms,
+                                   value = NA)
+        j <- 1
+        for(i in soil.water.parms){
+          parm.path.0 <- ".//Soil/SoilWater"
+          parm.path.1 <- paste0(parm.path.0, "/", i)
+          soil.water.node <- xml2::xml_find_first(apsim_xml, parm.path.1)
+          soil.water.d[j,"value"] <- xml2::xml_text(soil.water.node)
+          j <- j + 1
+        }
+
+        soil.thickness.sw <- as.numeric(xml2::xml_text(xml2::xml_children(xml2::xml_find_first(apsim_xml, ".//Soil/SoilWater/Thickness"))))
+        
+        soil.water.soilwat.d <- data.frame(Thickness = rep(NA, length(soil.thickness.sw)), 
+                                           SWCON = NA, MWCON = NA, KLAT = NA)
+        
+        for(i in soil.water.parms.soilwat){
+          parm.path.0 <- ".//Soil/SoilWater"
+          parm.path.1 <- paste0(parm.path.0, "/", i)
+          soil.water.node.soilwat <- xml2::xml_find_first(apsim_xml, parm.path.1)
+          if(length(soil.water.node.soilwat) == 0) next
+          soil.water.soilwat.d[[i]] <- xml2::xml_double(xml2::xml_children(soil.water.node.soilwat))
+        }
       }
-      
-      soil.water.soilwat.d <- data.frame(Thickness = rep(NA, number.soil.layers), 
-                                         SWCON = NA, MWCON = NA, KLAT = NA)
-      
-      for(i in soil.water.parms.soilwat){
-        parm.path.0 <- ".//Soil/SoilWater"
-        parm.path.1 <- paste0(parm.path.0, "/", i)
-        soil.water.node.soilwat <- xml2::xml_find_first(apsim_xml, parm.path.1)
-        if(length(soil.water.node.soilwat) == 0) next
-        soil.water.soilwat.d[[i]] <- xml2::xml_double(xml2::xml_children(soil.water.node.soilwat))
-      }
-      
+
       if(missing(parm)){
         print(knitr::kable(cbind(crop.d,soil.d), digits = digits))  
-        print(knitr::kable(soil.water.d, digits = digits))
-        print(knitr::kable(soil.water.soilwat.d, digits = digits))
+        if(soilwat.present) print(knitr::kable(soil.water.d, digits = digits))
+        if(soilwat.present) print(knitr::kable(soil.water.soilwat.d, digits = digits))
       }else{
         found.parm <- FALSE
         ## parm is either a list or a string and it is in crop.parms or crop.names
