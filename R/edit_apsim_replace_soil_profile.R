@@ -270,6 +270,11 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
 #' @param CN2Bare see APSIM documentation
 #' @param CNRed see APSIM documentation
 #' @param CNCov see APSIM documentation
+#' @param Slope see APSIM documentation
+#' @param Discharge see APSIM documentation
+#' @param CatchmentArea see APSIM documentation
+#' @param MaxPond see APSIM documentation
+#' @param SWCON see APSIM documentation
 #' @return a \sQuote{list} with class \sQuote{soilwat_parms}
 #' @details current documentation for APSIM 7.10 \url{https://www.apsim.info/documentation/model-documentation/soil-modules-documentation/soilwat/}
 #' @export
@@ -278,20 +283,26 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
 soilwat_parms <- function(SummerCona = NA, SummerU = NA, SummerDate = NA,
                           WinterCona = NA, WinterU = NA, WinterDate = NA,
                           DiffusConst = NA, DiffusSlope = NA, Salb = NA,
-                          CN2Bare = NA, CNRed = NA, CNCov = NA){
+                          CN2Bare = NA, CNRed = NA, CNCov = NA, Slope = NA,
+                          Discharge = NA, CatchmentArea = NA, MaxPond = NA,
+                          SWCON = NA){
   
   ## Could incorporate error checking in the future
   
   sw.lst <- list(SummerCona = SummerCona, SummerU = SummerU, SummerDate = SummerDate,
               WinterCona = WinterCona, WinterU = WinterU, WinterDate = WinterDate,
               DiffusConst = DiffusConst, DiffusSlope = DiffusSlope, Salb = Salb,
-              CN2Bare = CN2Bare, CNRed = CNRed, CNCov = CNCov)
+              CN2Bare = CN2Bare, CNRed = CNRed, CNCov = CNCov, Slope = Slope,
+              Discharge = Discharge, CatchmentArea = CatchmentArea, MaxPond = MaxPond, 
+              SWCON = SWCON)
   
+  if(any(SWCON < 0) || any(SWCON > 1)) stop("SWCON should be between 0 and 1")
+  
+  if(!is.character(SummerCona) && !is.na(SummerCona)) stop("SummerCona should be a date as a character day-month. Ex: 1-Nov")
+  if(!is.character(WinterCona) && !is.na(WinterCona)) stop("WinterCona should be a date as a character day-month. Ex: 1-Apr")
   
   ans <- structure(sw.lst, class = c("soilwat_parms","list"))
-  
   ans
-
 }
 
 #'
@@ -351,7 +362,5 @@ swim_parms <- function(Salb = NA, CN2Bare = NA, CNRed = NA,
                  SwimSubsurfaceDrain_ImpermDepth = SwimSubsurfaceDrain_ImpermDepth)
   
   ans <- structure(swim.lst, class = c("swim_parms","list"))
-  
   ans
-  
 }

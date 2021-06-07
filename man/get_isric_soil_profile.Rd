@@ -20,8 +20,6 @@ Retrieves soil data from the ISRIC global database and converts it to an APSIM s
 Source: https://www.isric.org/ \cr
 Details: https://www.isric.org/explore/soilgrids/faq-soilgrids \cr
 
-conversion between degrees and meters https://www.usna.edu/Users/oceano/pguth/md_help/html/approx_equivalents.htm \cr
-
 Pedotransfer functions: Saxton and Rawls, 2006. Soil Water Characteristic Estimates by Texture and Organic Matter for Hydrologic Solutions.
 Soil Sci. Soc. Am. J. 70:1569–1578.
 
@@ -48,5 +46,13 @@ FBiom does not depend on any soil property at the moment, should it? \cr
 ## Get soil profile properties for a single point
 sp1 <- get_isric_soil_profile(lonlat = c(-93, 42))
 
+## Visualize
+plot(sp1)
+plot(sp1, property = "water")
+
+
 }
+}
+\seealso{
+\code{\link{apsimx_soil_profile}}, \code{\link{edit_apsim_replace_soil_profile}}, \code{\link{edit_apsimx_replace_soil_profile}},
 }

@@ -156,8 +156,12 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
         parm.path <- paste0(".//Soil/Water/SoilCrop", "/", parm)
       }
       ## Second set of parameters are soil specific
-      if(parm %in% c("Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS")){
+      if(parm %in% c("Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", "SWCON", "MWCON", "KLAT")){
         parm.path <- paste0(".//Soil/Water", "/", parm)
+      }
+      
+      if(parm %in% c("SWCON", "MWCON", "KLAT")){
+        parm.path <- paste0(".//Soil/SoilWater", "/", parm)
       }
       
       ## Soil Water
@@ -179,8 +183,13 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       }else{
         soil.water.node <- xml2::xml_find_first(apsim_xml, parm.path)
         if(check.length){
-          if(length(value) != length(xml2::xml_children(soil.water.node)))
-            stop("value vector of incorrect length")
+          if(length(value) != length(xml2::xml_children(soil.water.node))){
+            print(parm.path)
+            cat("Length of value:", length(value), "\n")
+            cat("Length of node: ", length(xml2::xml_children(soil.water.node)), "\n")
+            stop("value vector of incorrect length")            
+          }
+            
         }
         ## With this code it is still possible to provide an incorrect parameter
         ## Not sure...

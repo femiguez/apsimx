@@ -16,7 +16,12 @@ soilwat_parms(
   Salb = NA,
   CN2Bare = NA,
   CNRed = NA,
-  CNCov = NA
+  CNCov = NA,
+  Slope = NA,
+  Discharge = NA,
+  CatchmentArea = NA,
+  MaxPond = NA,
+  SWCON = NA
 )
 }
 \arguments{
@@ -43,6 +48,16 @@ soilwat_parms(
 \item{CNRed}{see APSIM documentation}
 
 \item{CNCov}{see APSIM documentation}
+
+\item{Slope}{see APSIM documentation}
+
+\item{Discharge}{see APSIM documentation}
+
+\item{CatchmentArea}{see APSIM documentation}
+
+\item{MaxPond}{see APSIM documentation}
+
+\item{SWCON}{see APSIM documentation}
 }
 \value{
 a \sQuote{list} with class \sQuote{soilwat_parms}

@@ -117,7 +117,8 @@ component within an object of class \sQuote{soil_profile}.}
 \item{property}{\dQuote{all} for plotting all soil properties, \dQuote{water} for just SAT, DUL and LL15}
 }
 \value{
-a soil profile with class \sQuote{soil_profile} with elements \sQuote{soil} and \sQuote{crops} (for now)
+a soil profile with class \sQuote{soil_profile} with elements \sQuote{soil}, \sQuote{crops}, \sQuote{metadata},
+\sQuote{soilwat} and \sQuote{swim}.
 }
 \description{
 Generates a soil profile that can then replace the existing one in an \sQuote{.apsimx} or \sQuote{.apsim} simulation file

@@ -77,7 +77,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   ## Select important variables from mapunit
   mapunit2 <- subset(mapunit, 
                      select = c("musym", "muname", "muacres", "farmlndcl", 
-                                "iacornsr", "lkey", "mukey"))
+                                "lkey", "mukey"))
   ## Calculate acres percent and number of mapunits to consider
   ## In decreasing order of number of acres
   mapunit2$muacres.percent <- mapunit2$muacres/sum(mapunit2$muacres) * 100
@@ -85,14 +85,16 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   mapunit3 <- mapunit2[seq_len(nmapunit),]
   
   ## Process component
+  
   component2 <- subset(component, 
                        select = c("compname", "comppct.r",
                                   "slope.r", "drainagecl",
                                   "elev.r", "taxsubgrp", 
-                                  "taxpartsize", "taxclname",
-                                  "drainagecl","elev.r",
-                                  "slope.r","geomdesc",
+                                  "taxpartsize", "taxclname", "geomdesc",
                                   "mukey", "cokey"))
+  
+  if(any(grepl("state", names(component)))) component2$state <- component$state
+    
   component5 <- NULL
   for(i in mapunit3$mukey){
     component3 <- component2[component2$mukey == i,]
@@ -100,9 +102,17 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     ## This calculates the percent of the total acres in the area of interest
     component4$acres.proportion <- mapunit3[mapunit3$mukey == i,]$muacres.percent/100 * component4$comppct.r/100
     component4$compname.mukey <- as.factor(component4$compname):as.factor(component4$mukey)
-    lonlat <- colMeans(sf::st_coordinates(mapunit.shp["MUKEY" == i]))
-    mapunit.shp.d <- as.data.frame(mapunit.shp)
-    component4$state <- rep(unique(strtrim(as.character(mapunit.shp.d[mapunit.shp.d$MUKEY == i,"AREASYMBOL"]),2)),nrow(component4))
+    
+    if(inherits(mapunit.shp, "sf")){
+      lonlat <- colMeans(sf::st_coordinates(mapunit.shp["MUKEY" == i]))  
+      mapunit.shp.d <- as.data.frame(mapunit.shp)
+      if(any(grepl("AREASYMBOL", names(mapunit.shp.d)))){
+        component4$state <- rep(unique(strtrim(as.character(mapunit.shp.d[mapunit.shp.d$MUKEY == i,"AREASYMBOL"]),2)),nrow(component4))
+      }
+    }else{
+      stop("mapunit.shp should be of class sf")
+    }
+
     component4$longitude <- lonlat[1]
     component4$latitude <- lonlat[2]
     component5 <- rbind(component5, component4[seq_len(nsoil),])
@@ -117,7 +127,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
                       select = c("hzname", "hzdept.r", "hzdepb.r", 
                                  "hzthk.r", "sandtotal.r", "silttotal.r",
                                  "claytotal.r", "om.r", "partdensity", 
-                                 "ksat.r", "awc.r", "wtenthbar.r", 
+                                 "ksat.r", "awc.r", 
                                  "wthirdbar.r", "wfifteenbar.r",
                                  "wsatiated.r", "ph1to1h2o.r",
                                  "cokey", "chkey"))
@@ -133,18 +143,35 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     chorizon3$Thickness <- chorizon3$hzthk.r  
   }
   
-  chorizon3$LL15 <- chorizon3$wfifteenbar.r * 1e-2 ## convert to fraction
-  chorizon3$DUL <- chorizon3$wthirdbar.r * 1e-2 ## convert to fraction
-  chorizon3$SAT <- chorizon3$wsatiated.r * 1e-2 ## convert to fraction
+  ## Use Saxton and Rawls to generate these based on texture
+  if(any(is.na(chorizon3$wthirdbar.r))){
+    chorizon3$DUL <- sr_dul(chorizon3$claytotal.r, chorizon3$sandtotal.r, chorizon3$om.r)
+  }else{
+    chorizon3$DUL <- chorizon3$wthirdbar.r * 1e-2 ## convert to fraction  
+  }
+  
+  if(any(is.na(chorizon3$wfifteenbar.r))){
+    chorizon3$LL15 <- sr_ll(chorizon3$claytotal.r, chorizon3$sandtotal.r, chorizon3$om.r)
+  }else{
+    chorizon3$LL15 <- chorizon3$wfifteenbar.r * 1e-2 ## convert to fraction  
+  }
+  
+  if(any(is.na(chorizon3$wsatiated.r))){
+    DUL_S <- sr_dul_s(chorizon3$claytotal.r, chorizon3$sandtotal.r, chorizon3$om.r)
+    chorizon3$SAT <- sr_sat(chorizon3$sandtotal.r, chorizon3$DUL, DUL_S)
+  }else{
+    chorizon3$SAT <- chorizon3$wsatiated.r * 1e-2 ## convert to fraction  
+  }
+  
   ## Convert micro meters per second to mm/day
   chorizon3$KS <- chorizon3$ksat.r * 1e-6 * (60 * 60 * 24) * 1e3 
   chorizon3$PH <- chorizon3$ph1to1h2o.r
   
   ## From Saxton and Rawls
-  chorizon3$BD <- (1 - chorizon3$wsatiated.r/100) * ifelse(is.na(chorizon3$partdensity),2.65,chorizon3$partdensity)
+  chorizon3$BD <- (1 - chorizon3$SAT) * ifelse(is.na(chorizon3$partdensity),2.65,chorizon3$partdensity)
   
   ## Convert to fraction
-  chorizon3$AirDry <- chorizon3$wfifteenbar.r * ifelse(chorizon3$hzdept.r == 0, 0.5, 1) * 1e-2
+  chorizon3$AirDry <- chorizon3$LL15 * ifelse(chorizon3$hzdept.r == 0, 0.5, 1)
   
   ## Soil Carbon
   ## SOM contains approximately 58% C; therefore, a factor of

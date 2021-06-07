@@ -273,6 +273,10 @@ inspect_apsim <- function(file = "", src.dir = ".",
                             "WinterCona", "WinterU", "WinterDate",
                             "DiffusConst","DiffusSlope", "Salb",
                             "CN2Bare","CNRed","CNCov")
+      
+      soil.water.xparms <- c("Slope", "Discharge", "CatchmentArea", "MaximumPond")
+      
+      soil.water.parms.soilwat <- c("Thickness", "SWCON", "MWCON", "KLAT")
  
       soil.water.d <- data.frame(soil.water = soil.water.parms,
                                  value = NA)
@@ -285,9 +289,21 @@ inspect_apsim <- function(file = "", src.dir = ".",
         j <- j + 1
       }
       
+      soil.water.soilwat.d <- data.frame(Thickness = rep(NA, number.soil.layers), 
+                                         SWCON = NA, MWCON = NA, KLAT = NA)
+      
+      for(i in soil.water.parms.soilwat){
+        parm.path.0 <- ".//Soil/SoilWater"
+        parm.path.1 <- paste0(parm.path.0, "/", i)
+        soil.water.node.soilwat <- xml2::xml_find_first(apsim_xml, parm.path.1)
+        if(length(soil.water.node.soilwat) == 0) next
+        soil.water.soilwat.d[[i]] <- xml2::xml_double(xml2::xml_children(soil.water.node.soilwat))
+      }
+      
       if(missing(parm)){
         print(knitr::kable(cbind(crop.d,soil.d), digits = digits))  
         print(knitr::kable(soil.water.d, digits = digits))
+        print(knitr::kable(soil.water.soilwat.d, digits = digits))
       }else{
         found.parm <- FALSE
         ## parm is either a list or a string and it is in crop.parms or crop.names
@@ -327,6 +343,13 @@ inspect_apsim <- function(file = "", src.dir = ".",
           parm.path.0 <- ".//Soil/SoilWater"
           parm.path.1 <- paste0(parm.path.0, "/", parm)
           print(knitr::kable(soil.water.d[soil.water.d$soil.water == parm,], digits = digits)) 
+          found.parm <- TRUE
+        }
+        ## parm is in 'soil.water.parms.soilwat'
+        if(length(parm) == 1 && parm %in% soil.water.parms.soilwat){
+          parm.path.0 <- ".//Soil/SoilWater"
+          parm.path.1 <- paste0(parm.path.0, "/", parm)
+          print(knitr::kable(subset(soil.water.soilwat.d, select = parm), digits = digits)) 
           found.parm <- TRUE
         }
         if(!found.parm) stop("parm not found")

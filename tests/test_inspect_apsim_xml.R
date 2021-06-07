@@ -35,6 +35,12 @@ if(run.inspect.tests){
   pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil",
                       soil.child = "Water", parm = c("Barley", "KL"), print.path = TRUE)
   if(pp != ".//Soil/Water/SoilCrop[@name='Barley']/KL") stop("Soil Water KL path is incorrect")
+  
+  inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "Water",
+                parm = "SWCON")
+  pp <-   inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", soil.child = "Water",
+                        parm = "SWCON", print.path = TRUE)
+  if(pp != ".//Soil/SoilWater/SWCON") stop("Soil Water SWCON path is incorrect")
   ## In this case there are multiple elements for KL, so the path needs to be different
   ## If we want to identify a single value. There are many KLs, one for each crop, and there 
   ## are 8 crops here

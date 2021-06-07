@@ -45,7 +45,8 @@
 #' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
 #' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
 #' If a != 0 and b != 0 then the equation is \code{a*soil.layer*exp(-b*soil.layer)}.  
-#' @return a soil profile with class \sQuote{soil_profile} with elements \sQuote{soil} and \sQuote{crops} (for now)
+#' @return a soil profile with class \sQuote{soil_profile} with elements \sQuote{soil}, \sQuote{crops}, \sQuote{metadata},
+#' \sQuote{soilwat} and \sQuote{swim}.
 #' @export
 #' @examples 
 #' \dontrun{

@@ -103,9 +103,9 @@ get_isric_soil_profile <- function(lonlat,
   soil_profile$soil$Silt <- 100 - (soil_profile$soil$Clay + soil_profile$soil$Sand)
   
   ## Populating DUL and LL. These are equations from Table 1 in Saxton and Rawls 2006
-  soil_profile$soil$DUL <- sr_dul(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2.22)
-  soil_profile$soil$LL15 <- sr_ll(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2.22)
-  DUL_S <- sr_dul_s(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2.22)
+  soil_profile$soil$DUL <- sr_dul(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2)
+  soil_profile$soil$LL15 <- sr_ll(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2)
+  DUL_S <- sr_dul_s(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2)
   soil_profile$soil$SAT <- sr_sat(soil_profile$soil$Sand, soil_profile$soil$DUL, DUL_S)
   
   B <- (log(1500) - log(33))/(log(soil_profile$soil$DUL) - log(soil_profile$soil$LL15))
@@ -115,9 +115,13 @@ get_isric_soil_profile <- function(lonlat,
   soil_profile$soil$AirDry <- soil_profile$soil$LL15
   soil_profile$soil$AirDry[1] <- soil_profile$soil$LL15[1] * 0.5 ## AirDry is half of LL for the first layer
   
-  #### Attributes ####
-  ## The soil type will be based on the first layer only
+  #### Passing parameters from soilwat
+  ## The soil texture class will be based on the first layer only
   txt_clss <- texture_class(soil_profile$soil$Clay[1] * 1e-2, soil_profile$soil$Silt[1] * 1e-2)
+  t2sp <- texture2soilParms(txt_clss)
+  soil_profile$soilwat <- soilwat_parms(Salb = t2sp$Albedo, CN2Bare = t2sp$CN2, SWCON = rep(t2sp$SWCON, 6))
+  
+  #### Attributes ####
   alist <- list()
   alist$SoilType <- paste("SoilType = ", txt_clss)
   alist$State <- "State"
@@ -185,6 +189,10 @@ texture2soilParms <- function(texture.class = "NO DATA"){
   Albedo <- c(0.12, 0.12, 0.13, 0.13, 0.12, 0.13, 0.13, 0.14, 0.13, 0.13, 0.16, 0.19, 0.13)
   CN2 <- c(73.0, 73.0, 73.0, 73.0, 73.0, 73.0, 73.0, 73.0, 68.0, 73.0, 68.0, 68.0, 73.0)
   SWCON <- c(0.25, 0.3, 0.3, 0.4, 0.5, 0.5, 0.5, 0.5, 0.6, 0.5, 0.6, 0.75, 0.5)
+  
+  wtc <- which(textureClasses == texture.class)
+  ans <- list(textureClasses = textureClasses[wtc], Albedo = Albedo[wtc], CN2 = CN2[wtc], SWCON = SWCON[wtc])
+  ans
 }
 
 ## Potentially useful function provided by Eric Zurcher
