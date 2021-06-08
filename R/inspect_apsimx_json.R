@@ -170,7 +170,14 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         if(!is.na(val) && nchar(val) > options()$width-30) val <- paste(strtrim(val, options()$width-30),"...")
         metadata <- rbind(metadata, data.frame(parm = i, value = val))
       }
-      print(knitr::kable(metadata, longtable = FALSE))
+      
+      if(missing(parm)){
+        print(knitr::kable(metadata, longtable = FALSE))  
+      }else{
+        if(!(parm %in% metadata[["parm"]])) stop("parm does not match a parameter in metadata")
+        print(knitr::kable(metadata[metadata$parm == parm,]))  
+      }
+      
     }else{
       ## Pick which soil component we want to look at
       ## Which is not 'Metadata"

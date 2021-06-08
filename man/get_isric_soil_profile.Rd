@@ -4,7 +4,12 @@
 \alias{get_isric_soil_profile}
 \title{Generate a synthetic APSIM soil profile from the ISRIC soil database}
 \usage{
-get_isric_soil_profile(lonlat, statistic = c("mean", "Q0.5"), soil.profile)
+get_isric_soil_profile(
+  lonlat,
+  statistic = c("mean", "Q0.5"),
+  soil.profile,
+  find.location.name = TRUE
+)
 }
 \arguments{
 \item{lonlat}{Longitude and latitude vector (e.g. c(-93, 42)).}
@@ -12,6 +17,9 @@ get_isric_soil_profile(lonlat, statistic = c("mean", "Q0.5"), soil.profile)
 \item{statistic}{default is the mean}
 
 \item{soil.profile}{a soil profile to fill in in case the default one is not appropriate}
+
+\item{find.location.name}{default is TRUE. Use either maps package or photon API to find Country/State.
+If you are running this function many times it might be better to set this to FALSE.}
 }
 \description{
 Retrieves soil data from the ISRIC global database and converts it to an APSIM soil_profile object

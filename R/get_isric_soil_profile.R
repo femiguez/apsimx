@@ -13,6 +13,8 @@
 #' @param lonlat Longitude and latitude vector (e.g. c(-93, 42)).
 #' @param statistic default is the mean
 #' @param soil.profile a soil profile to fill in in case the default one is not appropriate
+#' @param find.location.name default is TRUE. Use either maps package or photon API to find Country/State.
+#' If you are running this function many times it might be better to set this to FALSE.
 #' @details Variable which are directly retrieved and a simple unit conversion is performed: \cr
 #' * Bulk density - bdod \cr
 #' * Carbon - soc \cr
@@ -43,7 +45,8 @@
 
 get_isric_soil_profile <- function(lonlat, 
                                    statistic = c("mean", "Q0.5"),
-                                   soil.profile){
+                                   soil.profile,
+                                   find.location.name = TRUE){
 
   statistic <- match.arg(statistic)
 
@@ -75,7 +78,7 @@ get_isric_soil_profile <- function(lonlat,
   if(!identical(sp.nms, c("bdod", "cec", "clay", "nitrogen", "phh2o", "sand", "soc"))){
     cat("Found these properties", sp.nms, "\n")
     cat("Expected these properties", c("bdod", "cec", "clay", "nitrogen", "phh2o", "sand", "soc"), "\n")
-    stop("soil property names do not match")
+    stop("soil properties names do not match")
   }
     
   bdod <- rest.data$properties$layers[1,3][[1]][,3]
@@ -132,11 +135,27 @@ get_isric_soil_profile <- function(lonlat,
   t2sp <- texture2soilParms(txt_clss)
   soil_profile$soilwat <- soilwat_parms(Salb = t2sp$Albedo, CN2Bare = t2sp$CN2, SWCON = rep(t2sp$SWCON, 6))
   
+  if(requireNamespace("maps")){
+    country <- maps::map.where(x = lon, y = lat)
+    if(country == "USA"){
+      state <- toupper(maps::map.where(database = "county", x = lon, y = lat)) 
+    }else{
+      url <- paste0("https://photon.komoot.io/reverse?lon=", lon, "&lat=", lat)
+      fgeo <- jsonlite::fromJSON(url)
+      state <- fgeo$feature$properties$state
+    }
+  }else{
+    url <- paste0("https://photon.komoot.io/reverse?lon=", lon, "&lat=", lat)
+    fgeo <- jsonlite::fromJSON(url)
+    state <- fgeo$feature$properties$state
+    country <- fgeo$features$properties$country
+  }
+  
   #### Attributes ####
   alist <- list()
   alist$SoilType <- paste("SoilType = ", txt_clss)
-  alist$State <- "State"
-  alist$Country <- "Country"
+  alist$State <- state
+  alist$Country <- country
   alist$Longitude <- lon
   alist$Latitude <- lat
   alist$DataSource <- paste("Original source is www.isric.org. See: https://www.isric.org/explore/soilgrids/faq-soilgrids ",Sys.time())
@@ -264,5 +283,6 @@ texture_class <- function (usda_clay, usda_silt ) {
   
   return( class )
 }
+
 
 

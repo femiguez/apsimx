@@ -193,7 +193,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                           "Latitude", "Longitude", "LocationAccuracy", "DataSource",
                           "Comments")
       if(!all(parm %in% metadata.parms)) stop("parm name(s) might be wrong")
-      for(i in parm){
+      for(i in seq_along(parm)){
         soil.node[[1]][[parm[i]]] <- value[i]
       }
     }

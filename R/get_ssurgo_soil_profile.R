@@ -38,22 +38,22 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
                                     verbose = FALSE){
   
   if(!requireNamespace("soilDB", quietly = TRUE)){
-    warning("The soilDB package is required for this function")
+    stop("The soilDB package is required for this function")
     return(NULL)
   }
   
   if(!requireNamespace("sp", quietly = TRUE)){
-    warning("The sp package is required for this function")
+    stop("The sp package is required for this function")
     return(NULL)
   }
   
   if(!requireNamespace("sf", quietly = TRUE)){
-    warning("The sf package is required for this function")
+    stop("The sf package is required for this function")
     return(NULL)
   }
   
   if(!requireNamespace("spData", quietly = TRUE)){
-    warning("The spData package is required for this function")
+    stop("The spData package is required for this function")
     return(NULL)
   }
   
