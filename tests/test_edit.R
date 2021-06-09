@@ -118,3 +118,18 @@ if(run.apsimx.edit.maize.soil){
                  node = "Soil")
   
 }
+
+run.apsimx.edit.soil.soilwat <- get(".run.local.tests", envir = apsimx.options)
+
+if(run.apsimx.edit.soil.soilwat){
+  
+  edit_apsimx("Wheat.apsimx", 
+              src.dir = extd.dir, wrt.dir = tmp.dir,
+              node = "Soil", soil.child = "SoilWater", 
+              parm = "SummerCona", value = 6)
+  
+  inspect_apsimx("Wheat-edited.apsimx", src.dir = tmp.dir, 
+                 node = "Soil", soil.child = "SoilWater", 
+                 parm = "SummerCona")
+  
+}

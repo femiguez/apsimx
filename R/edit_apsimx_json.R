@@ -71,7 +71,7 @@
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Other"),
-                        soil.child = c("Metadata", "Water", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample"),
+                        soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample"),
                         manager.child = NULL,
                         parm = NULL, value = NULL, 
                         overwrite = FALSE,
@@ -200,10 +200,10 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   
     if(soil.child == "Water" || soil.child == "Physical"){
       edited.child <- soil.child
-      soil.water.node <- soil.node[[1]]$Children[[1]]
-      ## I select this one based on position, so problems
-      ## can arise
       
+      wwn <- grep("^Water|Physical", sapply(soil.node[[1]]$Children, function(x) x$Name)) 
+      soil.water.node <- soil.node[[1]]$Children[[wwn]]
+
       if(soil.water.node$Name != "Water" || soil.water.node$Name != "Physical"){
         stop("Wrong node (Soil Water)")
       }
@@ -219,7 +219,32 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
           soil.water.node[[parm]][[i]] <- value[i]
         }
       }
-      soil.node[[1]]$Children[[1]] <- soil.water.node
+      soil.node[[1]]$Children[[wwn]] <- soil.water.node
+    }
+    
+    if(soil.child == "SoilWater"){
+      edited.child <- soil.child
+      wswn <- grep("^SoilWater", sapply(soil.node[[1]]$Children, function(x) x$Name)) 
+      soil.soilwater.node <- soil.node[[1]]$Children[[wswn]]
+      
+      soilwat.parms <- c("SummerDate", "SummerU", "SummerCona", "WinterDate",
+                         "WinterU", "WinterCona", "DiffusConst", "DiffusSlope",
+                         "Salb", "CN2Bare", "CNRed", "CNCov", "Slope", "DischargeWidth",
+                         "CatchmentArea")
+      
+      if(parm %in% soilwat.parms){
+        ## This allows for editing multiple parameters and values
+        for(i in seq_along(parm)){
+          soil.soilwater.node[[parm[i]]] <- value[i]
+        }
+      }else{
+        ## This case is most likely SWCON
+        if(!parm %in% c("SWCON", "KLAT")) stop("parameter is likely incorrect")
+        for(i in 1:length(soil.soilwater.node[[parm]])){
+          soil.soilwater.node[[parm]][[i]] <- value[i]
+        }
+      }
+      soil.node[[1]]$Children[[wswn]] <- soil.soilwater.node
     }
     
     if(soil.child == "Nitrogen"){

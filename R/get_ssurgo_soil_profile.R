@@ -142,7 +142,7 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
   
   for(i in seq_along(sp0)){
     metadata <- attributes(sp0[[i]])
-    metadata$DataSource <- paste("R package soilDB, R package apsimx function ssurgo2sp. Timestamp",Sys.time())
+    metadata$DataSource <- paste("SSURGO (https://sdmdataaccess.nrcs.usda.gov/) through R package soilDB, R package apsimx function ssurgo2sp. Timestamp",Sys.time())
     metadata$names <- NULL; metadata$class <- NULL; metadata$row.names <- NULL;
     
     asp <- apsimx_soil_profile(nlayers = nlayers,

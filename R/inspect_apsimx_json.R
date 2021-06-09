@@ -43,10 +43,10 @@
 
 inspect_apsimx <- function(file = "", src.dir = ".", 
                            node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager", "Other"),
-                           soil.child = c("Metadata","Water","InitialWater",
-                                          "Chemical","Physical","Analysis","SoilWater",
-                                          "InitialN", "CERESSoilTemperature","Sample",
-                                          "Nutrient","Organic"),
+                           soil.child = c("Metadata", "Water", "InitialWater",
+                                          "Chemical", "Physical", "Analysis", "SoilWater",
+                                          "InitialN", "CERESSoilTemperature", "Sample",
+                                          "Nutrient", "Organic"),
                            parm = NULL,
                            digits = 3,
                            print.path = FALSE,
@@ -190,10 +190,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       ## For some variables now it is the time to print
       ## The code below is not strictly needed but it is here
       ## in case I need a second level of soil in the future
-    first.level.soil <- c("Water","Physical",
-                          "Chemical","Analysis","InitialWater",
-                          "InitialN","SoilWater","Analysis",
-                          "CERESSoilTemperature","Organic")
+    first.level.soil <- c("Water", "Physical",
+                          "Chemical", "Analysis", "InitialWater",
+                          "InitialN", "SoilWater", "Analysis",
+                          "CERESSoilTemperature", "Organic")
     if(soil.child %in% first.level.soil){
       ## Assuming there is only one 'relevant' level here
       ## This parameter level would be 2.1.1
@@ -216,13 +216,25 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           soil.d2 <- cbind(soil.d2, vals)
         }
       }
-      ## Print first set of soil parameters
-      if(!is.null(soil.d1)) print(kable(soil.d1, digits = digits))
-      ## Print second set of soil parameters
-      if(!is.null(soil.d2)){ 
-        soil.d2 <- as.data.frame(soil.d2)
-        names(soil.d2) <- col.nms
-        print(knitr::kable(soil.d2, digits = digits))
+      
+      if(missing(parm)){
+        ## Print first set of soil parameters
+        if(!is.null(soil.d1)) print(knitr::kable(soil.d1, digits = digits))  
+        ## Print second set of soil parameters
+        if(!is.null(soil.d2)){ 
+          soil.d2 <- as.data.frame(soil.d2)
+          names(soil.d2) <- col.nms
+          print(knitr::kable(soil.d2, digits = digits))
+        }
+      }else{
+        ## Print first set of soil parameters
+        if(!is.null(soil.d1)) print(knitr::kable(soil.d1[soil.d1$parm == parm,], digits = digits))  
+        ## Print second set of soil parameters
+        if(!is.null(soil.d2)){ 
+          soil.d2 <- as.data.frame(soil.d2)
+          names(soil.d2) <- col.nms
+          print(knitr::kable(soil.d2[soil.d2$parm == parm,], digits = digits))
+        }
       }
     }
   }
