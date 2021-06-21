@@ -17,6 +17,7 @@ optim_apsim(
   weights,
   index = "Date",
   parm.vector.index,
+  xml.parm,
   ...
 )
 
@@ -48,6 +49,11 @@ It is recommended that you use \code{\link{inspect_apsim}} or \code{\link{inspec
 \item{parm.vector.index}{Index to optimize a specific element of a parameter vector. At the moment it is
 possible to only edit one element at a time. This is because there is a conflict when generating multiple
 elements in the candidate vector for the same parameter.}
+
+\item{xml.parm}{optional logical vector used when optimizing parameters which are both in the .apsim file and in the \sQuote{crop.file}.
+If \sQuote{crop.file} is missing it is assumed that the paramters to be optimized are in the .apsim file. If \sQuote{crop.file} is
+not missing it is assumed that they are in the \sQuote{crop.file}. If the parameters are in both, this needs to be specified in 
+this argument.}
 
 \item{...}{additional arguments (none used at the moment)}
 

@@ -39,6 +39,10 @@
 #' @param parm.vector.index Index to optimize a specific element of a parameter vector. At the moment it is
 #' possible to only edit one element at a time. This is because there is a conflict when generating multiple
 #' elements in the candidate vector for the same parameter.
+#' @param xml.parm optional logical vector used when optimizing parameters which are both in the .apsim file and in the \sQuote{crop.file}.
+#' If \sQuote{crop.file} is missing it is assumed that the paramters to be optimized are in the .apsim file. If \sQuote{crop.file} is
+#' not missing it is assumed that they are in the \sQuote{crop.file}. If the parameters are in both, this needs to be specified in 
+#' this argument.
 #' @param ... additional arguments to be passed to the optimization algorithm. If you want confidence intervals, then include \sQuote{hessian = TRUE}.
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
@@ -52,6 +56,7 @@ optim_apsim <- function(file, src.dir = ".",
                         type = c("optim", "nloptr","mcmc"), 
                         weights, index = "Date",
                         parm.vector.index,
+                        xml.parm,
                         ...){
   .check_apsim_name(file)
   
@@ -122,11 +127,14 @@ optim_apsim <- function(file, src.dir = ".",
   ## What this does, is pick the crop.file to be edited when it is not missing
   if(!missing(crop.file)){
     aux.file <- crop.file
-    cfile <- TRUE
+    if(missing(xml.parm)) cfile <- rep(TRUE, length(parm.paths))
   }else{
     aux.file <- file
-    cfile <- FALSE
+    if(missing(xml.parm)) cfile <- rep(FALSE, length(parm.paths))
   }
+  
+  if(!is.logical(xml.parm) || length(xml.parm) != length(parm.paths))
+    stop("xml.parm should be a logical of length equal to parm.paths")
   
   ## Retrieve initial value vectors
   aux.xml <- xml2::read_xml(file.path(src.dir, aux.file))
@@ -153,7 +161,7 @@ optim_apsim <- function(file, src.dir = ".",
   obj_fun <- function(cfs, parm.paths, data, aux.file, 
                       iaux.parms, weights, index, 
                       parm.vector.index,
-                      cfile = TRUE){
+                      xml.parm){
     
     ## Need to edit the parameters in the crop file or the main simulation
     for(i in seq_along(cfs)){
@@ -171,7 +179,7 @@ optim_apsim <- function(file, src.dir = ".",
       }
       
       ## Edit the specific parameters with the corresponding values
-      if(cfile){
+      if(xml.parm[i]){
         ## Here I'm editing an auxiliary file ending in .xml
         edit_apsim_xml(file = aux.file, 
                        src.dir = src.dir,
@@ -246,7 +254,7 @@ optim_apsim <- function(file, src.dir = ".",
                  weights = weights,
                  index = index,
                  parm.vector.index = parm.vector.index,
-                 cfile = cfile)
+                 xml.parm = cfile)
   ## optimization
   if(type == "optim"){
     op <- stats::optim(par = rep(1, length(parm.paths)), 
@@ -258,7 +266,7 @@ optim_apsim <- function(file, src.dir = ".",
                        weights = weights,
                        index = index,
                        parm.vector.index = parm.vector.index,
-                       cfile = cfile,
+                       xml.parm = cfile,
                        ...)    
   }
   
@@ -272,7 +280,7 @@ optim_apsim <- function(file, src.dir = ".",
                          weights = weights,
                          index = index,
                          parm.vector.index = parm.vector.index,
-                         cfile = cfile,
+                         xml.parm = cfile,
                          ...)
     op$par <- op$solution
     op$value <- op$objective 
@@ -300,7 +308,7 @@ optim_apsim <- function(file, src.dir = ".",
     assign('.iaux.parms', iaux.parms, mcmc.apsim.env)
     assign('.index', index, mcmc.apsim.env)
     assign('.parm.vector.index', parm.vector.index, mcmc.apsim.env)
-    assign('.cfile', cfile, mcmc.apsim.env)
+    assign('.xml.parm', xml.parm, mcmc.apsim.env)
     
     ## Pre-optimized log-likelihood
     pll <- log_lik2(cfs)
@@ -398,7 +406,7 @@ log_lik2 <- function(.cfs){
   .iaux.parms <- get('.iaux.parms', envir = mcmc.apsimx.env)
   .index <- get('.index', envir = mcmc.apsim.env)
   .parm.vector.index <- get('.parm.vector.index', envir = mcmc.apsim.env)
-  .cfile <- get('.cfile', envir = mcmc.apsim.env)
+  .xml.parm <- get('.xml.parm', envir = mcmc.apsim.env)
   
   for(i in seq_along(.cfs)){
     ## Retrieve the vector of current parameters
@@ -411,7 +419,7 @@ log_lik2 <- function(.cfs){
     }
     
     ## Edit the specific parameters with the corresponding values
-    if(.cfile){
+    if(.xml.parm[i]){
       ## Here I'm editing an auxiliary file ending in .xml
       edit_apsim_xml(file = .aux.file, 
                      src.dir = .src.dir,

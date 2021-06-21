@@ -101,7 +101,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     stop("This function only edits JSON files")
   
   ## Parse apsimx file (JSON)
-  apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
+  apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
   
   ## Where is the 'Core' simulation?
   wcore <- grep("Core.Simulation", apsimx_json$Children)
@@ -441,42 +441,42 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     ## Handling level 7
     if(upp.lngth == 7){
       n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
-      wl5 <- grep(upp[5], n4$Children)
+      wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
       n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
-      wl6 <- grep(upp[6], n4$Children)
+      wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
       apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]][[upp[7]]] <- value
     }
     if(upp.lngth == 8){
       n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
-      wl5 <- grep(upp[5], n4$Children)
+      wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
       n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
-      wl6 <- grep(upp[6], n5$Children)
+      wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
       n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
-      wl7 <- grep(upp[7], n6$Children)
+      wl7 <- which(upp[7] == sapply(n6$Children, function(x) x$Name))
       apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]][[upp[8]]] <- value
     }
     if(upp.lngth == 9){
       n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
-      wl5 <- grep(upp[5], n4$Children)
+      wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
       n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
-      wl6 <- grep(upp[6], n5$Children)
+      wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
       n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
-      wl7 <- grep(upp[7], n6$Children)
+      wl7 <- which(upp[7] == sapply(n6$Children, function(x) x$Name))
       n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
-      wl8 <- grep(upp[8], n7$Children)
+      wl8 <- which(upp[8] == sapply(n7$Children, function(x) x$Name))
       apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]][[upp[9]]] <- value
     }
     if(upp.lngth == 10){
       n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
-      wl5 <- grep(upp[5], n4$Children)
+      wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
       n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
-      wl6 <- grep(upp[6], n5$Children)
+      wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
       n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
-      wl7 <- grep(upp[7], n6$Children)
+      wl7 <- which(upp[7] == sapply(n6$Children, function(x) x$Name))
       n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
-      wl8 <- grep(upp[8], n7$Children)
+      wl8 <- which(upp[8] == sapply(n7$Children, function(x) x$Name))
       n8 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]
-      wl9 <- grep(upp[9], n8$Children)
+      wl9 <- which(upp[9] == sapply(n8$Children, function(x) x$Name))
       apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]$Children[[wl9]][[upp[10]]] <- value
     }
   }
