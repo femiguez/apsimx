@@ -141,7 +141,7 @@ optim_apsim <- function(file, src.dir = ".",
     } 
   }
   
-  if(!is.logical(xml.parm) || length(xml.parm) != length(parm.paths))
+  if(!is.logical(cfile) || length(cfile) != length(parm.paths))
     stop("xml.parm should be a logical of length equal to parm.paths")
   
   ## Retrieve initial value vectors
