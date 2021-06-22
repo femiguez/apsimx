@@ -23,6 +23,7 @@ Imports:
 Suggests:
         BayesianTools,
         datasets,
+        daymetr,
         FedData,
 	      ggplot2,
 	      GSODR,

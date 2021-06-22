@@ -22,7 +22,7 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Organic")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialN")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialN") 
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "CERESSoilTemperature")
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
   inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")
@@ -257,6 +257,11 @@ if(inspect.replacement.test2){
                              node = "Wheat", node.child = "Cultivars",
                              node.subchild = "USA", node.subsubchild = "Yecora",
                              parm = "MinimumLeafNumber")
+  ## This only works for the first one
+  inspect_apsimx_replacement("WheatRye.apsimx", src.dir = extd.dir,
+                             node = "Wheat", node.child = "Cultivars",
+                             node.subchild = "USA", node.subsubchild = "Yecora",
+                             parm = "Vrn")
                              
 }
  
@@ -293,5 +298,6 @@ if(inspect.replacement.test.parm.path){
                                    node.child = "Leaf",
                                    parm = "Gxmax350",
                                    print.path = TRUE)
+  ## I don't think this one worked quite as expected
   
 }

@@ -1,7 +1,7 @@
 #' Get APSIM-X Model Replacement from github
 #' 
 #' @title fetches the json file for a specific model from APSIMX github
-#' @name wget_apsimx_json
+#' @name get_apsimx_json
 #' @description Retreives the json replacement file for a specific model
 #' @param model a model (e.g. \sQuote{Wheat} or \sQuote{Maize})
 #' @param wrt.dir directory to save the JSON file (default is the current directory)
@@ -11,11 +11,11 @@
 #' @examples 
 #' \donttest{
 #' tmp.dir <- tempdir()
-#' wheat <- wget_apsimx_json(model = "Wheat", wrt.dir = tmp.dir)
+#' wheat <- get_apsimx_json(model = "Wheat", wrt.dir = tmp.dir)
 #' }
 #' 
 
-wget_apsimx_json <- function(model = "Wheat", wrt.dir = ".", cleanup = FALSE){
+get_apsimx_json <- function(model = "Wheat", wrt.dir = ".", cleanup = FALSE){
   ### Construct the string
   st0 <- "https://raw.githubusercontent.com/APSIMInitiative/ApsimX/master/Models/Resources"
   str <- paste0(st0, "/", model, ".json")

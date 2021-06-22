@@ -512,6 +512,23 @@ as_apsim_met <- function(x,
   return(x) 
 }
   
+#' Calculating Thermal Time as APSIM
+#' 
+#' 
+#' 
+#' 
+
+# tt_apsim_met <- function(met, min, max, method = c("ATT", "TT", "CERES"),
+#                          x_temp = c(0, 26, 34),
+#                          y_tt = c(0, 26, 0)){
+#   
+#   if(!missing(met) && !inherits(met, "met"))
+#     stop("Object met should be of class met")
+#   
+#   ## How does APSIM calculate TT?
+#   tcmax <- function()
+#   
+# }
   
   
   

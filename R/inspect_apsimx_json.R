@@ -22,7 +22,7 @@
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Clock") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Weather")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Metadata") 
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Water") 
+#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Physical") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilWater") 
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Organic")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
@@ -69,7 +69,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## Notice that the .apsimx extension will be added here
   file <- match.arg(file, file.names)
   
-  apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
+  apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
   
   parm.path.0 <- paste0(".", apsimx_json$Name) ## Root
   ## I think that everything I might want to look at 
@@ -200,20 +200,43 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       parm.path <- paste0(parm.path.2.1,".",selected.soil.node.child[[1]]$Name) 
       enms <- c("IncludeInDocumentation", "Enabled", "ReadOnly", "Children", "Name")
       cnms <- setdiff(names(selected.soil.node.child[[1]]), enms)
+      
+      if(soil.child == "Physical" || soil.child == "Water")
+        cnms <- c(cnms, "Crop LL", "Crop KL", "Crop XF")
+        
       soil.d1 <- NULL
       soil.d2 <- NULL
+      soil.d3 <- NULL
       col.nms <- NULL
+      d3.col.nms <- NULL
+      
       for(ii in cnms){
+        
         tmp <- selected.soil.node.child[[1]][ii][[1]]
+        
+        if(ii %in% c("Crop LL", "Crop KL", "Crop XF")){
+          for(j in seq_along(selected.soil.node.child[[1]]$Children)){
+            crop.name <- gsub("Soil", "", selected.soil.node.child[[1]]$Children[[j]]$Name) 
+            if(ii == "Crop LL") tmp <- selected.soil.node.child[[1]]$Children[[j]]$LL
+            if(ii == "Crop KL") tmp <- selected.soil.node.child[[1]]$Children[[j]]$KL
+            if(ii == "Crop XF") tmp <- selected.soil.node.child[[1]]$Children[[j]]$XF
+            d3.col.nms <- c(d3.col.nms, gsub("Crop", crop.name, ii))
+            vals <- as.vector(unlist(tmp))
+            soil.d3 <- cbind(soil.d3, vals) 
+          }
+        }        
+        
         if(length(tmp) == 0) next
         if(length(tmp) == 1){
           soil.d1 <- rbind(soil.d1, 
                            data.frame(parm = ii, value = as.character(tmp)))
         }
         if(length(tmp) > 1){
-          col.nms <- c(col.nms, ii)
-          vals <- as.vector(unlist(tmp))
-          soil.d2 <- cbind(soil.d2, vals)
+          if(!ii %in% c("Crop LL", "Crop KL", "Crop XF")){
+            col.nms <- c(col.nms, ii)
+            vals <- as.vector(unlist(tmp))
+            soil.d2 <- cbind(soil.d2, vals)                        
+          }
         }
       }
       
@@ -226,6 +249,13 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           names(soil.d2) <- col.nms
           print(knitr::kable(soil.d2, digits = digits))
         }
+        ## Print third set of crop-soil parameters
+        if(!is.null(soil.d3)){ 
+          soil.d3 <- as.data.frame(soil.d3)
+          names(soil.d3) <- d3.col.nms
+          soil.d3 <- subset(soil.d3, select = sort(names(soil.d3)))
+          print(knitr::kable(soil.d3, digits = digits))
+        }
       }else{
         ## Print first set of soil parameters
         if(!is.null(soil.d1)) print(knitr::kable(soil.d1[soil.d1$parm == parm,], digits = digits))  
@@ -234,6 +264,13 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           soil.d2 <- as.data.frame(soil.d2)
           names(soil.d2) <- col.nms
           print(knitr::kable(soil.d2[soil.d2$parm == parm,], digits = digits))
+        }
+        ## Print third set of crop-soil parameters
+        if(!is.null(soil.d3)){ 
+          soil.d3 <- as.data.frame(soil.d3)
+          names(soil.d3) <- d3.col.nms
+          soil.d3 <- subset(soil.d3, select = sort(names(soil.d3)))
+          print(knitr::kable(soil.d3[soil.d3$parm == parm,], digits = digits))
         }
       }
     }

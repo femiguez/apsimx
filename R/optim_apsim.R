@@ -127,10 +127,18 @@ optim_apsim <- function(file, src.dir = ".",
   ## What this does, is pick the crop.file to be edited when it is not missing
   if(!missing(crop.file)){
     aux.file <- crop.file
-    if(missing(xml.parm)) cfile <- rep(TRUE, length(parm.paths))
+    if(missing(xml.parm)){
+      cfile <- rep(TRUE, length(parm.paths))  
+    }else{
+      cfile <- xml.parm
+    } 
   }else{
     aux.file <- file
-    if(missing(xml.parm)) cfile <- rep(FALSE, length(parm.paths))
+    if(missing(xml.parm)){
+      cfile <- rep(FALSE, length(parm.paths))
+    }else{
+      cfile <- xml.parm
+    } 
   }
   
   if(!is.logical(xml.parm) || length(xml.parm) != length(parm.paths))

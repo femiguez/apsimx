@@ -583,5 +583,22 @@ check_apsimx_soil_profile <- function(x){
   if(min(soil$PH) <= 0) warning("PH is zero or negative")
   if(max(soil$PH) > 14) warning("PH is too high")
   
+  SATminusDUL <- soil$SAT - soil$DUL
+  DULminusLL <- soil$DUL - soil$LL
+  DULminuscrop.LL <- soil$DUL - soil$crop.LL
+  SATminusLL <- soil$SAT - soil$LL
+  
+  if(any(SATminusDUL <= 0))
+    warning("DUL cannot be greater than SAT")
+  
+  if(any(DULminusLL <= 0))
+    warning("LL cannot be greater than DUL")
+  
+  if(any(DULminuscrop.LL <= 0))
+    warning("crop.LL cannot be greater than DUL")
+
+  if(any(SATminusLL <= 0))
+    warning("LL cannot be greater than SAT")
+
   return(invisible(x))
 }

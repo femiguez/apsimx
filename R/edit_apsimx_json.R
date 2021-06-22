@@ -204,15 +204,29 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       wwn <- grep("^Water|Physical", sapply(soil.node[[1]]$Children, function(x) x$Name)) 
       soil.water.node <- soil.node[[1]]$Children[[wwn]]
 
-      if(soil.water.node$Name != "Water" || soil.water.node$Name != "Physical"){
-        stop("Wrong node (Soil Water)")
+      if(soil.water.node$Name != "Water" && soil.water.node$Name != "Physical"){
+        cat("Found: ", soil.water.node$Name, "instead of Physical or Water \n")
+        stop("Wrong node (Physical or Water)")
       }
       
       crop.parms <- c("XF", "KL", "LL")
       
-      if(parm %in% crop.parms ){
-        for(i in 1:length(soil.water.node$Children[[1]][[parm]])){
-          soil.water.node$Children[[1]][[parm]][[i]] <- value[i]
+      if(parm %in% crop.parms || any(sapply(crop.parms, function(x) grepl(x, parm)))){
+        ## Maybe we are trying to edit the parameter for a specific crop
+        ## The first options matches the parameter exactly 
+        if(parm %in% crop.parms){
+          for(i in seq_along(soil.water.node$Children[[1]][[parm]])){
+            soil.water.node$Children[[1]][[parm]][[i]] <- value[i]
+          }          
+        }else{
+         ## This assumes that the parameter to be edited is "Wheat LL" for example
+          parm0 <- strsplit(parm, " ")[[1]]
+          crop.name <- parm0[1]
+          sparm <- parm0[2]
+          wcnp <- which(gsub("Soil", "", sapply(soil.water.node$Children, function(x) x$Name)) == crop.name)
+          for(i in seq_along(soil.water.node$Children[[1]][[sparm]])){
+            soil.water.node$Children[[wcnp]][[sparm]][[i]] <- value[i]  
+          }
         }
       }else{
         for(i in 1:length(soil.water.node[[parm]])){
