@@ -1,0 +1,1003 @@
+<folder version="37" creator="Apsim 7.10-r4207" name="simulations">
+  <simulation name="Maize">
+    <metfile name="met">
+      <filename name="filename" input="yes">%apsim%/Examples/MetFiles/Goond.met</filename>
+    </metfile>
+    <clock>
+      <start_date name="start_date" description="Enter the start date of the simulation" type="date">1/06/1985</start_date>
+      <end_date name="end_date" description="Enter the end date of the simulation" type="date">1/05/1989</end_date>
+    </clock>
+    <summaryfile />
+    <area name="paddock">
+      <Soil>
+        <InitialWater name="Initial water">
+          <FractionFull>0.00</FractionFull>
+          <PercentMethod>FilledFromTop</PercentMethod>
+        </InitialWater>
+        <Water>
+          <SoilCrop name="sorg">
+            <Thickness>
+              <double>100</double>
+              <double>100</double>
+              <double>100</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+            </Thickness>
+            <LL>
+              <double>0.11</double>
+              <double>0.14</double>
+              <double>0.16</double>
+              <double>0.17</double>
+              <double>0.19</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+            </LL>
+            <KL>
+              <double>0.07</double>
+              <double>0.07</double>
+              <double>0.07</double>
+              <double>0.07</double>
+              <double>0.07</double>
+              <double>0.07</double>
+              <double>0.04</double>
+              <double>0.04</double>
+              <double>0.04</double>
+              <double>0.04</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="cowpea">
+            <Thickness>
+              <double>100</double>
+              <double>100</double>
+              <double>100</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+            </Thickness>
+            <LL>
+              <double>0.11</double>
+              <double>0.14</double>
+              <double>0.16</double>
+              <double>0.17</double>
+              <double>0.19</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.06</double>
+              <double>0.04</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="maize">
+            <Thickness>
+              <double>100</double>
+              <double>100</double>
+              <double>100</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+            </Thickness>
+            <LL>
+              <double>0.11</double>
+              <double>0.14</double>
+              <double>0.16</double>
+              <double>0.17</double>
+              <double>0.19</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.06</double>
+              <double>0.04</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="mucuna">
+            <Thickness>
+              <double>100</double>
+              <double>100</double>
+              <double>100</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+            </Thickness>
+            <LL>
+              <double>0.11</double>
+              <double>0.14</double>
+              <double>0.16</double>
+              <double>0.17</double>
+              <double>0.19</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.06</double>
+              <double>0.04</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="peanut">
+            <Thickness>
+              <double>100</double>
+              <double>100</double>
+              <double>100</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+            </Thickness>
+            <LL>
+              <double>0.11</double>
+              <double>0.14</double>
+              <double>0.16</double>
+              <double>0.17</double>
+              <double>0.19</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.06</double>
+              <double>0.04</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="pigeonp">
+            <Thickness>
+              <double>100</double>
+              <double>100</double>
+              <double>100</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+            </Thickness>
+            <LL>
+              <double>0.11</double>
+              <double>0.14</double>
+              <double>0.16</double>
+              <double>0.17</double>
+              <double>0.19</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.06</double>
+              <double>0.04</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <SoilCrop name="soybean">
+            <Thickness>
+              <double>100</double>
+              <double>100</double>
+              <double>100</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+              <double>200</double>
+            </Thickness>
+            <LL>
+              <double>0.11</double>
+              <double>0.14</double>
+              <double>0.16</double>
+              <double>0.17</double>
+              <double>0.19</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+              <double>0.2</double>
+            </LL>
+            <KL>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.08</double>
+              <double>0.06</double>
+              <double>0.04</double>
+              <double>0.03</double>
+              <double>0.02</double>
+              <double>0.01</double>
+              <double>0.01</double>
+            </KL>
+            <XF>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+              <double>1</double>
+            </XF>
+          </SoilCrop>
+          <Thickness>
+            <double>100</double>
+            <double>100</double>
+            <double>100</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+          </Thickness>
+          <BD>
+            <double>1.35</double>
+            <double>1.35</double>
+            <double>1.35</double>
+            <double>1.4</double>
+            <double>1.4</double>
+            <double>1.4</double>
+            <double>1.4</double>
+            <double>1.4</double>
+            <double>1.4</double>
+            <double>1.4</double>
+          </BD>
+          <AirDry>
+            <double>0.04</double>
+            <double>0.14</double>
+            <double>0.15</double>
+            <double>0.16</double>
+            <double>0.18</double>
+            <double>0.18</double>
+            <double>0.18</double>
+            <double>0.18</double>
+            <double>0.18</double>
+            <double>0.18</double>
+          </AirDry>
+          <LL15>
+            <double>0.11</double>
+            <double>0.14</double>
+            <double>0.16</double>
+            <double>0.17</double>
+            <double>0.19</double>
+            <double>0.2</double>
+            <double>0.2</double>
+            <double>0.2</double>
+            <double>0.2</double>
+            <double>0.2</double>
+          </LL15>
+          <DUL>
+            <double>0.22</double>
+            <double>0.25</double>
+            <double>0.27</double>
+            <double>0.28</double>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.31</double>
+            <double>0.32</double>
+            <double>0.31</double>
+            <double>0.31</double>
+          </DUL>
+          <SAT>
+            <double>0.3</double>
+            <double>0.3</double>
+            <double>0.32</double>
+            <double>0.33</double>
+            <double>0.34</double>
+            <double>0.35</double>
+            <double>0.36</double>
+            <double>0.37</double>
+            <double>0.37</double>
+            <double>0.37</double>
+          </SAT>
+        </Water>
+        <SoilWater>
+          <SummerCona>2.5</SummerCona>
+          <SummerU>9</SummerU>
+          <SummerDate>1-Nov</SummerDate>
+          <WinterCona>2.5</WinterCona>
+          <WinterU>9</WinterU>
+          <WinterDate>1-Apr</WinterDate>
+          <DiffusConst>88</DiffusConst>
+          <DiffusSlope>35.4</DiffusSlope>
+          <Salb>0.13</Salb>
+          <CN2Bare>75</CN2Bare>
+          <CNRed>20</CNRed>
+          <CNCov>0.8</CNCov>
+          <Thickness>
+            <double>100</double>
+            <double>100</double>
+            <double>100</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+          </Thickness>
+          <SWCON>
+            <double>0.5</double>
+            <double>0.5</double>
+            <double>0.5</double>
+            <double>0.5</double>
+            <double>0.5</double>
+            <double>0.5</double>
+            <double>0.5</double>
+            <double>0.5</double>
+            <double>0.5</double>
+            <double>0.5</double>
+          </SWCON>
+        </SoilWater>
+        <SoilOrganicMatter>
+          <RootCN>45</RootCN>
+          <RootWt>1000</RootWt>
+          <SoilCN>14.5</SoilCN>
+          <EnrACoeff>7.4</EnrACoeff>
+          <EnrBCoeff>0.2</EnrBCoeff>
+          <Thickness>
+            <double>100</double>
+            <double>100</double>
+            <double>100</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+          </Thickness>
+          <OC>
+            <double>1.2</double>
+            <double>1</double>
+            <double>0.86</double>
+            <double>0.83</double>
+            <double>0.58</double>
+            <double>0.54</double>
+            <double>0.47</double>
+            <double>0.5</double>
+            <double>0.5</double>
+            <double>0.5</double>
+          </OC>
+          <FBiom>
+            <double>0.02</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+            <double>0.01</double>
+          </FBiom>
+          <FInert>
+            <double>0.6</double>
+            <double>0.65</double>
+            <double>0.7</double>
+            <double>0.75</double>
+            <double>0.8</double>
+            <double>0.85</double>
+            <double>0.93</double>
+            <double>0.93</double>
+            <double>0.93</double>
+            <double>0.93</double>
+          </FInert>
+        </SoilOrganicMatter>
+        <Analysis>
+          <Thickness>
+            <double>100</double>
+            <double>100</double>
+            <double>100</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+          </Thickness>
+          <PH>
+            <double>6</double>
+            <double>6</double>
+            <double>6</double>
+            <double>6.2</double>
+            <double>6.5</double>
+            <double>6.7</double>
+            <double>6.8</double>
+            <double>6.8</double>
+            <double>6.8</double>
+            <double>6.8</double>
+          </PH>
+        </Analysis>
+        <Sample name="Initial nitrogen">
+          <Date type="date" description="Sample date:" />
+          <Thickness>
+            <double>100</double>
+            <double>100</double>
+            <double>100</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+            <double>200</double>
+          </Thickness>
+          <NO3>
+            <double>0.237</double>
+            <double>0.712</double>
+            <double>0.712</double>
+            <double>0.554</double>
+            <double>0.395</double>
+            <double>0.395</double>
+            <double>0.237</double>
+            <double>0.237</double>
+            <double>0.158</double>
+            <double>0.079</double>
+          </NO3>
+          <NH4>
+            <double>0.194</double>
+            <double>0.484</double>
+            <double>0.290</double>
+            <double>0.290</double>
+            <double>0.290</double>
+            <double>0.290</double>
+            <double>0.290</double>
+            <double>0.290</double>
+            <double>0.290</double>
+            <double>0.290</double>
+          </NH4>
+        </Sample>
+      </Soil>
+      <surfaceom name="SurfaceOrganicMatter">
+        <PoolName description="Organic Matter pool name">wheat</PoolName>
+        <type description="Organic Matter type">wheat</type>
+        <mass description="Initial surface residue (kg/ha)">0</mass>
+        <cnr description="C:N ratio of initial residue">80.0</cnr>
+        <standing_fraction description="Fraction of residue standing">0.0</standing_fraction>
+      </surfaceom>
+      <fertiliser />
+      <maize>
+        <ini>
+          <filename input="yes">Maize.xml</filename>
+        </ini>
+      </maize>
+      <folder name="Manager folder">
+        <manager name="Sow using a variable rule with intercropping">
+          <ui>
+            <category description="Crop properties" type="category" />
+            <crop type="crop" description="Name of this crop">maize</crop>
+            <cultivar1 type="cultivars" description="Enter cultivar : ">sc401</cultivar1>
+            <cropmethod type="list" listvalues="sole,intercrop" description="Method of cropping">sole</cropmethod>
+            <rotation_exclude type="yesno" description="Exclude from rotation sequence">no</rotation_exclude>
+            <category description="Sowing criteria" type="category" />
+            <date1 type="ddmmmdate" description="Enter sowing window START date (dd-mmm)">1-nov</date1>
+            <date2 type="ddmmmdate" description="Enter sowing window END date (dd-mmm)">30-dec</date2>
+            <must_sow type="yesno" description="Must Sow">no</must_sow>
+            <rain_amount type="text" description="Enter amount of cumulative rainfall (mm)">20</rain_amount>
+            <rain_days type="text" description="Enter number of days to accumulate rainfall (days)">5</rain_days>
+            <esw_amount type="text" description="Enter amount of soil water (mm)">30</esw_amount>
+            <sow_opp type="text" description="Enter sowing opportunity number to sow on (1..n)">1</sow_opp>
+            <surface_up type="text" description="Enter upper limit of sw in top layer (0-2) (mm esw/mm soil)">2</surface_up>
+            <surface_low type="text" description="Enter lower limit of sw in top layer (0-1) (mm esw/mm soil)">0</surface_low>
+            <category description="Sowing specs" type="category" />
+            <density type="text" description="Enter sowing density  (plants/m2)">2.2</density>
+            <depth type="text" description="Enter sowing depth  (mm)">100</depth>
+            <row_spacing type="text" description="Enter row spacing  (mm) (m for maize and sorghum)">0.9</row_spacing>
+            <category description="Sorghum specs" type="category" />
+            <ftn type="text" description="Enter Fertile Tiller No. : ">1</ftn>
+            <skiprow type="list" listvalues="solid, single, double" description="Skip row : ">solid</skiprow>
+            <category description="Starter fertiliser application" type="category" />
+            <fert_amount_sow type="text" description="Amount of starter fertiliser at sowing (kg/ha)">0</fert_amount_sow>
+            <fert_type_sow type="list" listvalues="NO3_N, NH4_N, NH4NO3, UAN_N, urea_N, urea_no3, urea" description="Type">urea_N</fert_type_sow>
+            <category description="TopDress fertiliser application" type="category" />
+            <fert_days_TopDress type="text" description="Enter number of days after sowing to apply top-dress fertiliser (days)">35</fert_days_TopDress>
+            <fert_amount_TopDress type="text" description="Amount of TopDress fertiliser (kg/ha)">27</fert_amount_TopDress>
+            <fert_type_TopDress type="list" listvalues="NO3_N, NH4_N, NH4NO3, UAN_N, urea_N, urea_no3, urea" description="Type"> NH4NO3</fert_type_TopDress>
+            <category description="Pre-sowing manure application" type="category" />
+            <surfaceommodule_pre_sow type="modulename" description="Module used to apply the manure : ">SurfaceOrganicMatter</surfaceommodule_pre_sow>
+            <manure_days_pre_sow type="text" description="Enter number of days before window to apply pre-crop manure (days)">30</manure_days_pre_sow>
+            <manure_amount_pre_sow type="text" description="Amount of manure to apply (kg/ha) : ">0</manure_amount_pre_sow>
+            <manure_type_pre_sow type="list" listvalues="manure,fym,heap_uncov,heap_cov,pit,communal" description="manure type : ">manure</manure_type_pre_sow>
+            <manure_cnr_pre_sow type="text" description="manure CNR : ">25</manure_cnr_pre_sow>
+            <manure_cpr_pre_sow type="text" description="manure CPR : ">50</manure_cpr_pre_sow>
+            <category description="Pre-sowing fertiliser application" type="category" />
+            <fert_days_pre_sow type="text" description="Enter number of days before window to apply pre-crop fertiliser (days)">25</fert_days_pre_sow>
+            <fert_amount_pre_sow type="text" description="Amount of pre-crop fertiliser (kg/ha)">50</fert_amount_pre_sow>
+            <fert_criteria_pre_sow type="text" description="Don't add fertiliser if pre-crop N in top 2 layers exceeds (kg/ha)">1000</fert_criteria_pre_sow>
+            <totn_pre_sow type="text" description=" OR  Amount of pre-crop N required in top 3 layers (kg/ha)">0</totn_pre_sow>
+            <fert_type_pre_sow type="text" description="Type (NO3_N, NH4_N, NH4NO3, UAN_N, urea_N, urea_no3, urea)">urea_N</fert_type_pre_sow>
+            <category description="Tillage components" type="category" />
+            <surfaceommodule type="modulename" description="Name of your surface organic matter module : ">SurfaceOrganicMatter</surfaceommodule>
+            <soilmodule type="modulename" description="Name of your soil module : ">Soil</soilmodule>
+            <category description="Planter Tillage" type="category" />
+            <planter_type type="list" listvalues="user_defined, planter" description="Planter type">user_defined</planter_type>
+            <planter_depth type="text" description="User_defined depth of seedbed preparation (mm)">150</planter_depth>
+            <thin_fraction type="text" description="Enter fraction of weed population killed (0-1)">1</thin_fraction>
+            <planter_f_incorp type="text" description="User_defined fraction of surface residues to incorporate (0-1)">1</planter_f_incorp>
+            <planter_cn_red type="text" description="cn reduction after tillage () : ">0</planter_cn_red>
+            <planter_cn_rain type="text" description="amount of cummulative rain to dissipate tillage effects on cn () : ">0</planter_cn_rain>
+            <category description="Seed-bed Tillage Preparation" type="category" />
+            <till_days_pre_sow type="text" description="Enter number of days before window to prepare seed-bed (days)">0</till_days_pre_sow>
+            <must_till type="yesno" description="Must Till (yes/no)">no</must_till>
+            <tillage_type type="list" listvalues="user_defined,chisel,disc,planter,burn,burn_90,graze,scarifier,rip,blade,tine" description="Tillage type (user_defined, chisel, disc, planter)">disc</tillage_type>
+            <tillage_depth type="text" description="User_defined depth of seedbed preparation (mm)">100</tillage_depth>
+            <tillage_f_incorp type="text" description="User_defined fraction of surface residues to incorporate (0-1)">1</tillage_f_incorp>
+            <fraction type="text" description="Enter biomass removal fraction of growing weeds from field (0-1)">0</fraction>
+            <tillage_cn_red type="text" description="cn reduction after tillage () : ">0</tillage_cn_red>
+            <tillage_cn_rain type="text" description="amount of cummulative rain to dissipate tillage effects on cn () : ">0</tillage_cn_rain>
+          </ui>
+          <script name="init">
+            <text>
+         next = 1
+         crop_in = 0
+         blank = 'fallow'
+         next_crop = blank
+         crop_current = blank
+         crop_current1 = blank
+         crop_current2 = blank
+         crop_sow = blank
+         ready_for_next = 1
+         ready_to_manure_pre_sow = 0
+         days_last_year = 365
+         manure_day_pre_sow = 0
+         ready_to_till_pre_sow = 0
+         till_day_pre_sow = 0
+         days_after_weed_kill = 0
+         ready_to_fert_pre_sow = 0
+         wht_sow_opp_num = 0
+         wht_sow_opp_days = 0
+         days_this_year = 0
+        </text>
+            <event>init</event>
+          </script>
+          <script name="end_of_day">
+            <text>
+
+         if (date_within('[date1], [date2]') = 1) THEN
+         else
+            wht_sow_opp_num = 0
+            wht_sow_opp_days = 0
+         endif
+         </text>
+            <event>end_of_day</event>
+          </script>
+          <script name="process">
+            <text><![CDATA[
+
+         days_this_year = 364 + (date('1-mar') - date('28-feb'))
+         if (next_crop = '[crop]' OR next_crop = blank OR '[rotation_exclude]' = 'yes') then
+               !  Presowing  manure application
+
+            if ([manure_amount_pre_sow] > 0) then
+               !  calculate day to fertilise
+               manure_day_pre_sow = date('[date1]') - [manure_days_pre_sow]
+               ! Need to correct for possible year boundary condition
+               if (manure_day_pre_sow < today) then
+                  manure_day_pre_sow = days_this_year + manure_day_pre_sow
+               endif
+               if (today = manure_day_pre_sow) then
+                  ready_to_manure_pre_sow = 1
+               endif
+               if (crop_in = 0 and ready_to_manure_pre_sow = 1) then
+                        ! just put on a fixed amount of manure
+                  '[surfaceommodule_pre_sow]' add_surfaceom type=[manure_type_pre_sow], name=[manure_type_pre_sow], mass=[manure_amount_pre_sow], cnr=[manure_cnr_pre_sow], cpr=[manure_cpr_pre_sow]
+                  ready_to_manure_pre_sow = 0
+                  manure_day_pre_sow = 0
+               endif
+            endif
+
+               !  Presowing  fertiliser application
+
+            if ([fert_amount_pre_sow] > 0 OR [totn_pre_sow] > 0 ) then
+               !  calculate day to fertilise
+               fert_day_pre_sow = date('[date1]') - [fert_days_pre_sow]
+               ! Need to correct for possible year boundary condition
+               if (fert_day_pre_sow < today) then
+                  fert_day_pre_sow = days_this_year + fert_day_pre_sow
+               endif
+               if (today = fert_day_pre_sow) then
+                  ready_to_fert_pre_sow = 1
+               endif
+               if (crop_in = 0 and ready_to_fert_pre_sow = 1) then
+                  if ([totn_pre_sow] > 0) then
+                     !   Top up soil N of top 3 layers
+                     N_deficit = [totn_pre_sow] - (no3(1) + nh4(1) + no3(2) + nh4(2) + no3(3) + nh4(3))
+                     if (N_deficit < 0) then
+                        ! do nothing
+                        N_deficit = 0
+                     else
+                        fertiliser apply amount = N_deficit (kg/ha), depth = 50 (mm), type = [fert_type_pre_sow] ()
+                     endif
+                  else
+                     N_topsoil = no3(1) + nh4(1) + no3(2) + nh4(2)
+                     if (N_topsoil > [fert_criteria_pre_sow]) then
+                        ! enough N already in topsoil
+                     else
+                        ! just put on a fixed amount of N
+                        fertiliser apply amount = [fert_amount_pre_sow] (kg/ha), depth = 50 (mm), type = [fert_type_pre_sow] ()
+                     endif
+                  endif
+                  ready_to_fert_pre_sow = 0
+                  fert_day_pre_sow = 0
+               endif
+            endif
+
+            !   Tillage - presowing seedbed preparation
+            if ( [till_days_pre_sow] > 0) then
+               ! calculate presowing tillage date
+               till_day_pre_sow = date('[date1]') - [till_days_pre_sow]
+               ! Need to correct for possible year boundary condition
+               if (till_day_pre_sow < today) then
+                  till_day_pre_sow = days_this_year + till_day_pre_sow
+               endif
+               if (today = till_day_pre_sow) then
+                  ready_to_till_pre_sow = 1
+               endif
+               if ((crop_in = 0 OR '[must_till]' = 'yes') AND (ready_to_till_pre_sow = 1)) then
+                  ! tillage
+                if (crop_current = 'weed' or crop_current1 = 'weed' or crop_current2 = 'weed') then
+                  if (weed.plant_status <> 'out') then
+                        weed harvest  remove=[fraction]
+                        weed kill_crop
+                        weed end_crop
+                        days_after_weed_kill = 0
+                       crop_in = crop_in - 1
+                       if (crop_current = 'weed') then
+                           crop_current = crop_current1
+                           crop_current1 = crop_current2
+                           crop_current2 = blank
+                        elseif (crop_current1 = 'weed') then
+                           crop_current1 = crop_current2
+                           crop_current2 = blank
+                        elseif (crop_current2 = 'weed') then
+                           crop_current2 = blank
+                        endif
+                  endif
+                 endif
+                  if ('[tillage_type]' = 'user_defined') then
+                      '[surfaceommodule]' tillage type = [tillage_type], f_incorp = [tillage_f_incorp] (), tillage_depth = [tillage_depth]
+                      '[soilmodule] Water' tillage type = [tillage_type], cn_red = [tillage_cn_red], cn_rain = [tillage_cn_rain]
+                  else
+                      '[surfaceommodule]' tillage type = [tillage_type] ()
+                      '[soilmodule] Water' tillage type = [planter_type]
+                  endif
+                  ready_to_till_pre_sow = 0
+                  till_day_pre_sow = 0
+               endif
+            endif
+
+            if (today = date('[date2]')) then
+               if ('[rotation_exclude]' = 'no') then
+                  ready_for_next = 1
+               endif
+            endif
+
+            if (wht_sow_opp_num > 0) then
+               wht_sow_opp_days = wht_sow_opp_days + 1
+            else
+            endif
+
+         if (crop_in = 0 OR ('[cropmethod]' = 'intercrop'
+             AND [crop].plant_status = 'out')) then
+               if (date_within('[date1], [date2]') = 1) then
+                  crop_sow = 'waiting'
+                  surface_moist = (sw(1) - ll15(1)) / (dul(1)- ll15(1))
+                  if ((rain[[rain_days]] >= [rain_amount]  AND  esw >= [esw_amount] AND
+                        (surface_moist <= [surface_up] and surface_moist >= [surface_low])) OR
+                      ('[must_sow]' = 'yes' AND today = date('[date2]'))) THEN
+
+
+                     if (wht_sow_opp_days >= [rain_days] OR wht_sow_opp_num = 0) then
+                        wht_sow_opp_num = wht_sow_opp_num + 1
+                        wht_sow_opp_days = 0
+                     endif
+
+                     if ((wht_sow_opp_num >= [sow_opp]) OR ('[must_sow]' = 'yes' AND today = date('[date2]')) then
+                        if ('[crop]' = 'sorghum') then
+                           [crop] sow plants =[density], sowing_depth = [depth], cultivar = [cultivar1], row_spacing = [row_spacing], tiller_no_fertile = [ftn] (), skip = [skiprow]
+                        else
+                          [crop] sow cultivar = [cultivar1], plants = [density] (plants/m2), sowing_depth = [depth], row_spacing = [row_spacing]
+                        endif
+                        crop_in = crop_in + 1
+                        if ('[rotation_exclude]' = 'no') then
+                           ready_for_next = 1
+                        endif
+                        crop_current2 = crop_current1
+                        crop_current1 = crop_current
+                        crop_current = '[crop]'
+                        crop_sow = '[crop]'
+                        ready_to_manure_pre_sow = 0
+                        if ([fert_amount_sow] > 0) then
+                           fertiliser apply amount = [fert_amount_sow] (kg/ha), depth = 50 (mm), type = [fert_type_sow] ()
+                        endif
+                        !   Planter -
+                        ! Planting
+                        if (crop_current = 'weed' or crop_current1 = 'weed' or crop_current2 = 'weed') then
+                           if (weed.plant_status <> 'out' AND [thin_fraction] > 0) then
+                              weed kill_crop plants_kill_fraction = [thin_fraction]
+                              if ([thin_fraction] = 1.0) then
+                                 weed end_crop
+                                 days_after_weed_kill = 0
+                              else
+                              endif
+                              if ([thin_fraction] = 1.0) then
+                                    crop_in = crop_in - 1
+                                   if (crop_current = 'weed') then
+                                       crop_current = crop_current1
+                                       crop_current1 = crop_current2
+                                       crop_current2 = blank
+                                    elseif (crop_current1 = 'weed') then
+                                       crop_current1 = crop_current2
+                                       crop_current2 = blank
+                                    elseif (crop_current2 = 'weed') then
+                                       crop_current2 = blank
+                                    endif
+                              endif
+                           endif
+                        endif
+                        if ('[planter_type]' = 'user_defined') then
+                            '[surfaceommodule]' tillage type = [planter_type], f_incorp = [planter_f_incorp] (), tillage_depth = [planter_depth]
+                            '[soilmodule] Water' tillage type = [planter_type], cn_red = [planter_cn_red], cn_rain = [planter_cn_rain]
+                        else
+                            '[surfaceommodule]' tillage type = [planter_type] ()
+                            '[soilmodule] Water' tillage type = [planter_type]
+                        endif
+
+
+                     else
+                        !not this opportunity
+                     endif
+                  endif
+               endif
+            endif
+         endif
+         ! apply topdress fertiliser
+         if ([fert_amount_TopDress] > 0.0) then
+            if ([crop].DaysAfterSowing = [fert_days_TopDress]) then
+               fertiliser apply amount = [fert_amount_TopDress] (kg/ha), depth = 50 (mm), type = [fert_type_TopDress] ()
+            else
+            endif
+         else
+         endif
+         ]]></text>
+            <event>process</event>
+          </script>
+        </manager>
+        <manager name="Output at harvesting for intercropping">
+          <ui>
+            <category description="Output criteria" type="category" />
+            <crop type="crop" description="Enter name of crop to output at harvest : ">maize</crop>
+            <outputfile type="modulename" description="Name of outputfile component : ">outputfile</outputfile>
+          </ui>
+          <script name="end_of_day">
+            <text>
+         if ([crop]_to_harvest = 1) then
+            '[outputfile]' do_output
+         endif
+            </text>
+            <event>end_of_day</event>
+          </script>
+        </manager>
+        <manager name="Harvesting rule for intercropping">
+          <ui>
+            <category description="Harvesting criteria" type="category" />
+            <crop type="crop" description="Enter name of crop to harvest when ripe : ">maize</crop>
+            <fraction_to_remove type="text" description="Enter fraction of stover to remove: ">0.0</fraction_to_remove>
+          </ui>
+          <script name="init">
+            <text>
+          [crop]_to_harvest = 0
+            </text>
+            <event>init</event>
+          </script>
+          <script name="end_of_day">
+            <text>
+         if ([crop]_to_harvest = 1) then
+            [crop] harvest remove=[fraction_to_remove]
+            [crop] kill_crop
+            [crop] end_crop
+                  crop_in = crop_in - 1
+            [crop]_to_harvest = 0
+            fert_tot = 0
+            sow_year = 0
+            if (crop_current = '[crop]') then
+               crop_current = crop_current1
+               crop_current1 = crop_current2
+               crop_current2 = blank
+            elseif (crop_current1 = '[crop]') then
+               crop_current1 = crop_current2
+               crop_current2 = blank
+            elseif (crop_current2 = '[crop]') then
+               crop_current2 = blank
+            endif
+         endif
+
+         if ([crop].StageName = 'harvest_ripe' OR [crop].plant_status = 'dead') then
+            [crop]_to_harvest = 1
+         endif
+            </text>
+            <event>end_of_day</event>
+          </script>
+        </manager>
+        <manager name="Remove all residues on a fixed date">
+          <ui>
+            <category description="Removal criteria" type="category" />
+            <date type="ddmmmdate" description="Date to remove residues (dd-mmm) :">1-may</date>
+            <surfaceommodule type="modulename" description="Name of your surface organic matter module : ">SurfaceOrganicMatter</surfaceommodule>
+          </ui>
+          <script name="start_of_day">
+            <text>
+         if today = date('[date]') then
+            '[surfaceommodule]' tillage type = user_defined, f_incorp = 1.0 (), tillage_depth = 0.0 ()
+         endif
+            </text>
+            <event>start_of_day</event>
+          </script>
+        </manager>
+      </folder>
+      <outputfile>
+        <filename name="filename" output="yes">Maize.out</filename>
+        <title>Maize</title>
+        <variables name="My Variables">
+          <variable array="?" description="Date (dd/mm/yyyy)">dd/mm/yyyy as Date</variable>
+          <variable array="?" description="Extractable Soil Water (mm)">esw</variable>
+          <variable array="?" description="Day">day</variable>
+          <variable array="?" description="Year">year</variable>
+          <variable array="?" description="Yield (kg/ha)">yield</variable>
+          <variable array="?" description="Stover (kg/ha)">stover</variable>
+          <variable array="?" description="Total Above Ground Biomass (kg/ha)">biomass</variable>
+        </variables>
+        <events name="My Variables Events" />
+      </outputfile>
+    </area>
+  </simulation>
+</folder>

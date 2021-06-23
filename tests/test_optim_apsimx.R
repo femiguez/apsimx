@@ -175,3 +175,89 @@ if(FALSE){
   end <- Sys.time()
   
 }
+
+if(FALSE){
+
+  apsim_options(warn.versions = FALSE)
+  
+  ## Testing optimization for an APSIM Classic example
+  ## Millet
+  if(file.exists("Maize.apsim")) file.remove("Maize.apsim")
+  if(file.exists("Maize.xml")) file.remove("Maize.xml")
+  if(file.exists("Maize.out")) file.remove("Maize.out")
+  if(file.exists("Maize.sum")) file.remove("Maize.sum")
+  
+  extd.dir <- system.file("extdata", package = "apsimx")
+  file.copy(file.path(extd.dir, "Maize-op.apsim"), "./Maize.apsim")
+  file.copy("C:/Program Files (x86)/APSIM710-r4207/Model/Maize.xml", ".")
+
+  inspect_apsim("Maize.apsim")
+  
+  inspect_apsim("Maize.apsim", node = "Crop",
+                parm = list("Sow", 3))
+  
+  edit_apsim("Maize.apsim", node = "Clock",
+             parm = "start_date", value = "01/01/1987",
+             overwrite = TRUE)
+  
+  sim0 <- apsim("Maize.apsim")
+  
+  obsMaize <- data.frame(Date = as.Date(c("1988-02-23", "1989-02-25")),
+                         biomass = c(4600, 5000),
+                         yield = c(350, 570))
+  
+  pp1 <- inspect_apsim_xml("Maize.xml", parm = "sc401/rue")
+  pp2 <- inspect_apsim_xml("Maize.xml", parm = "sc401/GNmaxCoef")
+    
+  op1 <- optim_apsim("Maize.apsim", 
+                     crop.file = "Maize.xml",
+                     parm.paths = c(pp1, pp2),
+                     data = obsMaize,
+                     weights = "mean")
+
+  file.remove("Maize.xml")
+  file.copy("C:/Program Files (x86)/APSIM710-r4207/Model/Maize.xml", ".")
+  
+  op2 <- optim_apsim("Maize.apsim", 
+                     crop.file = "Maize.xml",
+                     parm.paths = c(pp1, pp2),
+                     data = obsMaize,
+                     hessian = TRUE,
+                     weights = "mean")
+  
+  sim2 <- apsim("Maize.apsim")
+  
+  ## Can I also optimize management?
+  pp3 <- inspect_apsim("Maize.apsim", node = "Crop",
+                       parm = list("Sow", 17),
+                       print.path = TRUE)
+
+  pp4 <- inspect_apsim("Maize.apsim", node = "Crop",
+                       parm = list("Sow", 28),
+                       print.path = TRUE)
+
+  ## The goal of this is to show that you 
+  ## can try to optimize parameters which are in the
+  ## .apsim and .xml file
+  op3 <- optim_apsim("Maize.apsim", 
+                     crop.file = "Maize.xml",
+                     parm.paths = c(pp2, pp4),
+                     xml.parm = c(TRUE, FALSE),
+                     data = obsMaize,
+                     weights = "mean",
+                     hessian = TRUE)
+
+  inspect_apsim("Maize.apsim", node = "Crop",
+                parm = list("Sow", 17),
+                print.path = TRUE)
+  
+  inspect_apsim("Maize.apsim", node = "Crop",
+                 parm = list("Sow", 28),
+                 print.path = TRUE)
+
+  
+  if(file.exists("Maize.apsim")) file.remove("Maize.apsim")
+  if(file.exists("Maize.xml")) file.remove("Maize.xml")
+  if(file.exists("Maize.out")) file.remove("Maize.out")
+  if(file.exists("Maize.sum")) file.remove("Maize.sum")
+}

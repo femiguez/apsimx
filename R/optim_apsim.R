@@ -144,13 +144,19 @@ optim_apsim <- function(file, src.dir = ".",
   if(!is.logical(cfile) || length(cfile) != length(parm.paths))
     stop("xml.parm should be a logical of length equal to parm.paths")
   
-  ## Retrieve initial value vectors
-  aux.xml <- xml2::read_xml(file.path(src.dir, aux.file))
+  ## Retrieve initial value vectors for the auxiliary file
   iaux.parms <- vector("list", length = length(parm.paths))
   length.aux.parms <- numeric(length(parm.paths))
   names(iaux.parms) <- parm.paths
     
   for(i in seq_along(parm.paths)){
+    
+    if(cfile[i]){
+      aux.xml <- xml2::read_xml(file.path(src.dir, aux.file))    
+    }else{
+      aux.xml <- xml2::read_xml(file.path(src.dir, file))
+    }
+    
     xml.node <- xml2::xml_find_first(aux.xml, parm.paths[i])
     length.xml.node0 <- xml2::xml_length(xml.node)
     length.xml.node1 <- length(xml2::xml_text(xml.node))
@@ -166,7 +172,7 @@ optim_apsim <- function(file, src.dir = ".",
     iaux.parms[[i]] <- aux.parm.value
   }    
   
-  obj_fun <- function(cfs, parm.paths, data, aux.file, 
+  obj_fun <- function(cfs, parm.paths, data, file, aux.file, 
                       iaux.parms, weights, index, 
                       parm.vector.index,
                       xml.parm){
@@ -197,7 +203,7 @@ optim_apsim <- function(file, src.dir = ".",
                        verbose = FALSE)        
       }else{
         ## Here I'm editing the main simulation file .apsim
-        edit_apsim(file = aux.file, 
+        edit_apsim(file = file, 
                    node = "Other",
                    src.dir = src.dir,
                    parm.path = parm.paths[i],
@@ -257,6 +263,7 @@ optim_apsim <- function(file, src.dir = ".",
   rss <- obj_fun(cfs = rep(1, length(parm.paths)),
                  parm.paths = parm.paths,
                  data = data,
+                 file = file,
                  aux.file = aux.file,
                  iaux.parms = iaux.parms,
                  weights = weights,
@@ -269,6 +276,7 @@ optim_apsim <- function(file, src.dir = ".",
                        fn = obj_fun, 
                        parm.paths = parm.paths, 
                        data = data, 
+                       file = file,
                        aux.file = aux.file, 
                        iaux.parms = iaux.parms,
                        weights = weights,
@@ -283,6 +291,7 @@ optim_apsim <- function(file, src.dir = ".",
                          eval_f = obj_fun,
                          parm.paths = parm.paths, 
                          data = data, 
+                         file = file, 
                          aux.file = aux.file, 
                          iaux.parms = iaux.parms,
                          weights = weights,
