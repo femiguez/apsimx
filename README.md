@@ -16,7 +16,7 @@ for 'Classic'.
 * Imported R packages: DBI, jsonlite, knitr, RSQLite, tools, utils, xml2
 
 * Suggested R packages: BayesianTools, datasets, FedData, ggplot2,
-  GSODR, listviewer,mvtnorm, nasapower, nloptr, raster, reactR, rmarkdown, sp, spData, sf
+  GSODR, listviewer, maps, mvtnorm, nasapower, nloptr, raster, reactR, rmarkdown, soilDB, sp, spData, sf
 
 * APSIMX:
 

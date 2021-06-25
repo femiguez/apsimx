@@ -208,7 +208,16 @@ if(FALSE){
   
   pp1 <- inspect_apsim_xml("Maize.xml", parm = "sc401/rue")
   pp2 <- inspect_apsim_xml("Maize.xml", parm = "sc401/GNmaxCoef")
-    
+  
+  ## Optimize a single parameter
+  op01 <- optim_apsim("Maize.apsim", 
+                     crop.file = "Maize.xml",
+                     parm.paths = pp2,
+                     data = obsMaize,
+                     hessian = TRUE,
+                     weights = "mean")
+  
+  
   op1 <- optim_apsim("Maize.apsim", 
                      crop.file = "Maize.xml",
                      parm.paths = c(pp1, pp2),
@@ -224,6 +233,14 @@ if(FALSE){
                      data = obsMaize,
                      hessian = TRUE,
                      weights = "mean")
+  
+  op2nl <- optim_apsim("Maize.apsim", 
+                     crop.file = "Maize.xml",
+                     parm.paths = c(pp1, pp2),
+                     data = obsMaize,
+                     type = "nloptr",
+                     weights = "mean",
+                     opts = list("algorithm" = "NLOPT_LN_NELDERMEAD"))
   
   sim2 <- apsim("Maize.apsim")
   
