@@ -512,23 +512,148 @@ as_apsim_met <- function(x,
   return(x) 
 }
   
-#' Calculating Thermal Time as APSIM
+#' Calculating Thermal Time using a variety of methods
 #' 
+#' @title Calculates Thermal Time taking a \sQuote{met} object
+#' @name tt_apsim_met
+#' @description Calculates Thermal Time using the \sQuote{Classic} formula, 
+#' Heat Stress, Crop Heat Unit and other methods
+#' @param met object of class \sQuote{met}
+#' @param dates when the calculation starts and when it ends. At the moment
+#' it needs to be a character vector (e.g. c(\sQuote{01-05}, \sQuote{10-10})). It will
+#' use the same dates every year for multiple years.
+#' @param method one of \sQuote{Classic_TT}, \sQuote{HeatStress_TT}, \sQuote{ASPIM_TT},
+#' \sQuote{CERES_TT} and \sQuote{all}
+#' @param x_temp cardinal temperatures (base, optimal and maximum)
+#' @param y_temp thermal time accumulation for cardinal temperatures
+#' @param base_temp base temperature for Classic TT calculation
+#' @param max_temp maximum temperature for Classic TT calculation
+#' @param dates.format default is \sQuote{%d-%m} which means day and month
+#' @return it returns an object of class \sQuote{met} with additional columns
+#' \sQuote{Date} and the corresponding TT calculation
+#' @export
+#' @references  Abendroth, L.J., Miguez, F.E., Castellano, M.J. and Hatfield, J.L. (2019),
+#'  Climate Warming Trends in the U.S. Midwest Using Four Thermal Models. 
+#'  Agron. J., 111: 3230-3243. (doi:10.2134/agronj2019.02.0118)
+#' @examples 
+#' \donttest{
+#' require(nasapower)
+#' require(ggplot2)
 #' 
+#' pwr <- get_power_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2015-12-31"))
+#' check_apsim_met(pwr)
+#' pwr <- impute_apsim_met(pwr)
 #' 
+#' pwr2 <- tt_apsim_met(pwr, dates = c("01-05", "30-10"), method = c("Classic", "Heat"))
 #' 
+#' ggplot(data = pwr2, aes(x = Date, y = Classic_TT)) + geom_point()
+#' 
+#' ggplot(data = pwr2, aes(x = Date, y = HeatStress_TT)) + geom_point()
+#' 
+#' }
 
-# tt_apsim_met <- function(met, min, max, method = c("ATT", "TT", "CERES"),
-#                          x_temp = c(0, 26, 34),
-#                          y_tt = c(0, 26, 0)){
-#   
-#   if(!missing(met) && !inherits(met, "met"))
-#     stop("Object met should be of class met")
-#   
-#   ## How does APSIM calculate TT?
-#   tcmax <- function()
-#   
-# }
+tt_apsim_met <- function(met, dates, 
+                         method = c("Classic_TT", "HeatStress_TT", "CropHeatUnit_TT",
+                                    "APSIM_TT", "CERES_TT", "all"),
+                         x_temp = c(0, 26, 34),
+                         y_tt = c(0, 26, 0),
+                         base_temp = 0,
+                         max_temp = 30,
+                         dates.format = c("%d-%m")){
+
+  if(!missing(met) && !inherits(met, "met"))
+    stop("Object met should be of class met")
+
+  method <- match.arg(method, several.ok = TRUE)
+  
+  if(method == "all") method <- c("Classic_TT", "HeatStress_TT", "CropHeatUnit_TT")
+  
+  if("APSIM_TT" %in% method) stop("not implemented yet.")
+  if("CERES_TT" %in% method) stop("not implemented yet.")
+  
+  if(is.na(as.Date(dates[1], format = dates.format))) stop("first date might be in the wrong format")
+  if(is.na(as.Date(dates[2], format = dates.format))) stop("second date might be in the wrong format")
+  
+  start.date <- as.Date(paste0("01-01", "-", min(met$year)), format = paste0(dates.format, "-%Y"))
+  end.date <- as.Date(paste0("31-12", "-", max(met$year)), format = paste0(dates.format, "-%Y"))
+  
+  tmpd <- data.frame(Dates = seq(from = start.date, 
+                                 to = end.date, 
+                                 by = "day"), index = 0)
+  
+  if("Classic_TT" %in% method) met$Classic_TT <- 0
+  if("HeatStress_TT" %in% method) met$HeatStress_TT <- 0
+  if("CropHeatUnit_TT" %in% method) met$CropHeatUnit_TT <- 0
+  
+  if(nrow(met) != nrow(tmpd))
+    warning("Days for each year should be complete")
+  
+  ## This first instance will result in calculating TT for every year
+  if(inherits(dates, "character")){
+    doy1m <- format(as.Date(dates[1], format = dates.format), "%m-%d")
+    doynm <- format(as.Date(dates[2], format = dates.format), "%m-%d")
+    doy1 <- date2doy(doy1m)
+    doyn <- date2doy(doynm)
+    if(doy1 > doyn){
+      ## We are in the southern hemisphere
+      d1 <- as.Date(paste0(doy1m, "-", 2020), format = "%m-%d-%Y")
+      dn <- as.Date(paste0(doynm, "-", 2021), format = "%m-%d-%Y")
+      doy.seq <- as.numeric(format(seq(from = d1, to = dn, by = "day"), "%j")) 
+      ## Writing it in this way will always include 366
+      tmpd$index <- ifelse(!is.na(match(met$day, doy.seq)), 1, 0)
+    }else{
+      doy.seq <- doy1:doyn
+      tmpd$index <- ifelse(!is.na(match(met$day, doy.seq)), 1, 0)
+    }
+  }
+
+  cum.classic.tt <- 0
+  cum.heatstress.tt <- 0
+  cum.cropheatunit.tt <- 0
+  k <- 0
+  
+  for(i in 1:nrow(met)){
+    
+    ## In the Southern hemisphere we start at k = 1
+    if(tmpd$index[i] > 0.5 && i == 1) k <- 1
+    ## In the Northern hemisphere we should just skip the first days until doy1
+    if(tmpd$index[i] < 0.5 && k == 0) next
+    
+    if(tmpd$index[i] > 0.5 && met$day[i] == doy1) k <- k + 1  
+    
+    if(tmpd$index[i] > 0.5){
+      if("Classic_TT" %in% method){
+        mint.m <- max(met$mint[i], base_temp)
+        maxt.m <- min(met$maxt[i], max_temp)
+        classic.tt <- (maxt.m + mint.m)/2 - base_temp
+        classic.tt <- ifelse(classic.tt >= 0, classic.tt, 0)
+        cum.classic.tt <- cum.classic.tt + classic.tt
+        met$Classic_TT[i] <- cum.classic.tt
+      }
+      if("HeatStress_TT" %in% method){
+        heatstress.tt <- met$maxt[i] - max_temp
+        heatstress.tt <- ifelse(heatstress.tt >= 0, heatstress.tt, 0)
+        cum.heatstress.tt <- cum.heatstress.tt + heatstress.tt
+        met$HeatStress_TT[i] <- cum.heatstress.tt
+      }
+      if("CropHeatUnit_TT" %in% method){
+        mint.m <- 1.8 * met$mint[i] - 4.4
+        maxt.m <- 3.33 * (met$maxt[i] - 10) - 0.084 * (met$maxt[i] - 10)^2
+        cropheatunit.tt <- (maxt.m + mint.m)/2 
+        cropheatunit.tt <- ifelse(cropheatunit.tt >= 0, cropheatunit.tt, 0)
+        cum.cropheatunit.tt <- cum.cropheatunit.tt + cropheatunit.tt
+        met$CropHeatUnit_TT[i] <- cum.cropheatunit.tt
+      }
+    }else{
+      cum.classic.tt <- 0
+      cum.heatstress.tt <- 0
+      cum.cropheatunit.tt <- 0
+    }
+  }
+
+  met$Date <- tmpd$Dates
+  return(met)
+}
   
   
   

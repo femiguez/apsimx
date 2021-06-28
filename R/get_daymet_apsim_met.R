@@ -189,9 +189,7 @@ get_daymet_apsim_met <- function(lonlat, years,
 #' }
 #' 
 
-get_daymet2_apsim_met <- function(lonlat, years, 
-                                  wrt.dir = ".", filename,
-                                  silent = TRUE){
+get_daymet2_apsim_met <- function(lonlat, years, wrt.dir = ".", filename, silent = TRUE){
   
   if(!requireNamespace("daymetr", quietly = TRUE)){
     warning("The daymetr is required for this function")

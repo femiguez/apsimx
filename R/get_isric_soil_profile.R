@@ -2,10 +2,14 @@
 #' Details: https://www.isric.org/explore/soilgrids/faq-soilgrids \cr
 #' 
 #' Pedotransfer functions: Saxton and Rawls, 2006. Soil Water Characteristic Estimates by Texture and Organic Matter for Hydrologic Solutions.
-#' Soil Sci. Soc. Am. J. 70:1569–1578.
+#' Soil Sci. Soc. Am. J. 70:1569–1578. \cr
 #' 
 #' TODO: need to look into how this is done in APSIM NG
-#' https://github.com/APSIMInitiative/ApsimX/pull/3994/files
+#' https://github.com/APSIMInitiative/ApsimX/pull/3994/files \cr
+#' 
+#' NOTE: Eric Zurcher provided help by sending me an R file originally written by
+#' Andrew Moore. It provides a bit of context for how some of the decisions
+#' were made for constructing the synthetic soil profiles in APSIM. (email from june 3 2021).
 #' 
 #' @title Generate a synthetic APSIM soil profile from the ISRIC soil database
 #' @description Retrieves soil data from the ISRIC global database and converts it to an APSIM soil_profile object
@@ -31,6 +35,7 @@
 #' FBiom does not depend on any soil property at the moment, should it? \cr
 #' @seealso \code{\link{apsimx_soil_profile}}, \code{\link{edit_apsim_replace_soil_profile}}, \code{\link{edit_apsimx_replace_soil_profile}},
 #' @export
+#' @author Fernando E. Miguez, Eric Zurcher (CSIRO) and Andrew Moore (CSIRO)
 #' @examples 
 #' \donttest{
 #' ## Get soil profile properties for a single point
@@ -88,6 +93,8 @@ get_isric_soil_profile <- function(lonlat,
   phh2o <- rest.data$properties$layers[5,3][[1]][,3]
   sand <- rest.data$properties$layers[6,3][[1]][,3]
   soc <- rest.data$properties$layers[7,3][[1]][,3]
+  
+  if(any(is.na(soc))) stop("No soil data available for this location. Did you specify the coordinates correctly?")
 
   ## Create the empty soil profile
   if(missing(soil.profile)){
@@ -150,7 +157,7 @@ get_isric_soil_profile <- function(lonlat,
     state <- fgeo$feature$properties$state
     country <- fgeo$features$properties$country
   }
-  
+
   #### Attributes ####
   alist <- list()
   alist$SoilType <- paste("SoilType = ", txt_clss)

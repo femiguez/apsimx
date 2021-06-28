@@ -57,8 +57,18 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
     return(NULL)
   }
   
+  if(length(lonlat) != 2 || !is.numeric(lonlat)) 
+    stop("lonlat should be a vector with length equal to 2")
+
   lon <- lonlat[1]
   lat <- lonlat[2]
+  
+  ## Determine if the location is in the US
+  if(requireNamespace("maps")){
+    country <- maps::map.where(x = lon, y = lat)
+    if(country != "USA" || is.na(country))
+      stop("These coordinates do not correspond to a location in the USA. \n Did you specify the coordinates correctly?")
+  }
   
   if(shift <= 0){
     spg <- sp::SpatialPoints(cbind(x = lon, y = lat), 
