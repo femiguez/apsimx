@@ -29,10 +29,14 @@ Source: https://www.isric.org/ \cr
 Details: https://www.isric.org/explore/soilgrids/faq-soilgrids \cr
 
 Pedotransfer functions: Saxton and Rawls, 2006. Soil Water Characteristic Estimates by Texture and Organic Matter for Hydrologic Solutions.
-Soil Sci. Soc. Am. J. 70:1569–1578.
+Soil Sci. Soc. Am. J. 70:1569–1578. \cr
 
 TODO: need to look into how this is done in APSIM NG
-https://github.com/APSIMInitiative/ApsimX/pull/3994/files
+https://github.com/APSIMInitiative/ApsimX/pull/3994/files \cr
+
+NOTE: Eric Zurcher provided help by sending me an R file originally written by
+Andrew Moore. It provides a bit of context for how some of the decisions
+were made for constructing the synthetic soil profiles in APSIM. (email from june 3 2021).
 
 Variable which are directly retrieved and a simple unit conversion is performed: \cr
 * Bulk density - bdod \cr
@@ -63,4 +67,7 @@ plot(sp1, property = "water")
 }
 \seealso{
 \code{\link{apsimx_soil_profile}}, \code{\link{edit_apsim_replace_soil_profile}}, \code{\link{edit_apsimx_replace_soil_profile}},
+}
+\author{
+Fernando E. Miguez, Eric Zurcher (CSIRO) and Andrew Moore (CSIRO)
 }

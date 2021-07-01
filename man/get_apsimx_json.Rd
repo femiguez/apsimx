@@ -29,3 +29,6 @@ wheat <- get_apsimx_json(model = "Wheat", wrt.dir = tmp.dir)
 }
 
 }
+\seealso{
+\code{\link{insert_replacement_node}}
+}

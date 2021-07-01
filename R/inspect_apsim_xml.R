@@ -5,9 +5,9 @@
 #' @param file file ending in .apsim (Classic) to be inspected (XML)
 #' @param src.dir directory containing the .apsim file to be inspected; defaults to the current working directory
 #' @param node either \sQuote{Weather}, \sQuote{Soil}, \sQuote{SurfaceOrganicMatter}, 
-#' \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other}
+#' \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Outputfile} or \sQuote{Other}
 #' @param soil.child specific soil component to be inspected
-#' @param parm parameter to inspect when node = \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other}
+#' @param parm parameter to inspect when node = \sQuote{Crop}, \sQuote{Manager}, \sQuote{Outputfile} or \sQuote{Other}
 #' @param digits number of decimals to print (default 3)
 #' @param print.path whether to print the parameter path (default = FALSE)
 #' @param root root node label. In simulation structures such as factorials there will be multiple possible nodes. This can be specified by supplying an appropriate character.
@@ -48,6 +48,13 @@
 #' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", 
 #'               soil.child = "Water", parm = list("Barley", "LL"),
 #'               print.path = TRUE)
+#' 
+#' ## Inspect outputfile
+#' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Outputfile",
+#'               parm = "filename")
+#'  
+#' inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Outputfile",
+#'               parm = "variables")
 #' 
 #' ## Testing with maize-soybean-rotation.apsim
 #' inspect_apsim("maize-soybean-rotation.apsim", src.dir = extd.dir, node = "Clock")
@@ -101,7 +108,7 @@
 #' 
 
 inspect_apsim <- function(file = "", src.dir = ".", 
-                          node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "Crop", "Manager", "Other"),
+                          node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "Crop", "Manager", "Outputfile", "Other"),
                           soil.child = c("Metadata", "Water", "OrganicMatter", "Nitrogen", "Analysis", "InitialWater", "Sample", "SWIM"),
                           parm = NULL,
                           digits = 3,
@@ -627,6 +634,27 @@ inspect_apsim <- function(file = "", src.dir = ".",
       crop.d <- data.frame(parm = descr, value = vals)[position,]
       print(knitr::kable(crop.d, digits = digits))
     }
+  }
+  
+  if(node == "Outputfile"){
+    outputfile.node <- xml2::xml_find_all(apsim_xml, ".//outputfile")
+    outputfile.parms <- c("filename", "title", "variables", "events")
+    parm <- match.arg(parm, outputfile.parms)
+    
+    if(parm == "filename" || parm == "title"){
+      output.node <- xml2::xml_find_first(outputfile.node, parm)
+      output.name <- xml2::xml_text(output.node)
+      tmpdat <- data.frame(tmp = output.name)
+    }
+    
+    if(parm == "variables" || parm == "events"){
+      variables.node <- xml2::xml_find_all(outputfile.node, parm)
+      variables.names <- xml2::xml_text(xml2::xml_children(variables.node))
+      tmpdat <- data.frame(tmp = variables.names)
+    }
+    
+    names(tmpdat) <- parm
+    print(knitr::kable(tmpdat))
   }
   
   if(node == 'Other'){

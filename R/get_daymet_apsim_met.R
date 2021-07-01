@@ -62,7 +62,6 @@ get_daymet_apsim_met <- function(lonlat, years,
   }
   
   message("Function get_daymet2_apsim_met is preferred from now on. This function will be deprecated.")
-  .Deprecated("get_daymet2_apsim_met")
   
   if(utils::packageVersion("FedData") < "3.0.0.9000")
     stop("FedData package version should be 3.0.0.9000 or higher")
@@ -162,12 +161,13 @@ get_daymet_apsim_met <- function(lonlat, years,
 #' the \code{\link{get_daymet_apsim_met}} function.
 #'
 #' @title Get DAYMET data for an APSIM met file
-#' @description Uses \code{\link[FedData]{download_daymet}} from the \CRANpkg{daymetr} package to download data to create an APSIM met file.
+#' @description Uses \code{\link[daymetr]{download_daymet}} from the \CRANpkg{daymetr} package to download data to create an APSIM met file.
 #' @name get_daymet2_apsim_met
 #' @param lonlat Longitude and latitude vector
 #' @param years a numeric vector of years to extract
 #' @param wrt.dir write directory (default is the current directory)
 #' @param filename file name for writing out to disk
+#' @param silent argument passed to \code{\link[daymetr]{download_daymet}}
 #' @details If the filename is not provided it will not write the file to disk, 
 #' but it will return an object of class \sQuote{met}. This is useful in case manipulation
 #' is required before writing to disk. The variable \sQuote{srad} as downloaded from
@@ -189,7 +189,7 @@ get_daymet_apsim_met <- function(lonlat, years,
 #' }
 #' 
 
-get_daymet2_apsim_met <- function(lonlat, years, wrt.dir = ".", filename, silent = TRUE){
+get_daymet2_apsim_met <- function(lonlat, years, wrt.dir = ".", filename, silent = FALSE){
   
   if(!requireNamespace("daymetr", quietly = TRUE)){
     warning("The daymetr is required for this function")

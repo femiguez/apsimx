@@ -37,7 +37,9 @@ get_apsimx_json <- function(model = "Wheat", wrt.dir = ".", cleanup = FALSE){
 #' @param src.dir directory containing the .apsimx file to be edited; defaults to the current working directory
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
 #' @param rep.node replacement node as obtained by the \code{\link{get_apsimx_json}} function
-#' @param postion position where the replacement node will be inserted, default is 1
+#' @param rep.node.position position where the replacement node will be inserted, default is 1
+#' @param new.core.position this by default will place the core simulation below the replacement node position. 
+#' With this option, this can be modified.
 #' @param edit.tag if the file is edited a different tag from the default \sQuote{-edited} can be used.
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
 #' @param verbose whether to print information about successful edit

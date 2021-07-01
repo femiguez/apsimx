@@ -5,13 +5,13 @@ require(ggplot2)
 
 apsimx_options(warn.versions = FALSE)
 
-ex.dir <- auto_detect_apsimx_examples()
-
 run.soil <- get(".run.local.tests", envir = apsimx.options)
 
 tmp.dir <- tempdir()
 
 if(run.soil){
+  
+  ex.dir <- auto_detect_apsimx_examples()
 
   wheat <- apsimx("Wheat.apsimx", src.dir = ex.dir)  
   

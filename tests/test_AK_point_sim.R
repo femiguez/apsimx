@@ -2,18 +2,17 @@
 ## Author: Fernando E. Miguez
 ## Date: 2021-06-08
 ##
-## Required: R package apsimx 1.987
-
-library(apsimx)
-library(ggplot2)
+## Required: R package apsimx 1.992
+require(apsimx)
+require(ggplot2)
 
 apsimx_options(warn.versions = FALSE)
 
 run.apsimx.point.sim <- get(".run.local.tests", envir = apsimx.options)
 
 tmpd <- tempdir()
-tmpd <- "../tests"
-setwd(tmpd)
+## tmpd <- "../tests"
+## setwd(tmpd)
 
 if(run.apsimx.point.sim && FALSE){
 

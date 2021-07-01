@@ -525,10 +525,10 @@ as_apsim_met <- function(x,
 #' @param method one of \sQuote{Classic_TT}, \sQuote{HeatStress_TT}, \sQuote{ASPIM_TT},
 #' \sQuote{CERES_TT} and \sQuote{all}
 #' @param x_temp cardinal temperatures (base, optimal and maximum)
-#' @param y_temp thermal time accumulation for cardinal temperatures
+#' @param y_tt thermal time accumulation for cardinal temperatures
 #' @param base_temp base temperature for Classic TT calculation
 #' @param max_temp maximum temperature for Classic TT calculation
-#' @param dates.format default is \sQuote{%d-%m} which means day and month
+#' @param dates.format default is \sQuote{\%d-\%m} which means day and month
 #' @return it returns an object of class \sQuote{met} with additional columns
 #' \sQuote{Date} and the corresponding TT calculation
 #' @export
@@ -566,7 +566,7 @@ tt_apsim_met <- function(met, dates,
 
   method <- match.arg(method, several.ok = TRUE)
   
-  if(method == "all") method <- c("Classic_TT", "HeatStress_TT", "CropHeatUnit_TT")
+  if("all" %in% method) method <- c("Classic_TT", "HeatStress_TT", "CropHeatUnit_TT")
   
   if("APSIM_TT" %in% method) stop("not implemented yet.")
   if("CERES_TT" %in% method) stop("not implemented yet.")
