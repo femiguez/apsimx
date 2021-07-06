@@ -233,6 +233,14 @@ impute_apsim_met <- function(met, method = c("approx","spline","mean"), verbose 
   ## Someday I will do this when it is needed
   args <- list(...)
   
+  ## If there is a missing value in the first row it won't be imputed
+  if(any(is.na(met[1,]))){
+    wn1r <- which(is.na(met[1,]))
+    for(i in seq_along(wn1r)){
+      met[1, wn1r[i]] <- mean(met[1:5, wn1r[i]], na.rm = TRUE)
+    }
+  }
+  
   ## Which rows have missing data
   missing.vector <- vector(mode = "numeric", length = length(names(met)))
   

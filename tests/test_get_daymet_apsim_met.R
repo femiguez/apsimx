@@ -7,9 +7,7 @@
 ## the difference is 171.1547 g per meter squared
 ## with higher values for power over daymet
 ## Note (2020-06-15): This takes for ever, I'm not running it for a while
-library(FedData)
-library(nasapower)
-library(apsimx)
+require(apsimx)
 apsimx_options(warn.versions = FALSE)
 
 run.test.daymet0 <- FALSE
@@ -32,6 +30,8 @@ if(run.test.daymet && username == "fernandomiguez"){
                                label = "CIA",
                                filename = "cia-daymet.met",
                                cleanup = FALSE)  
+  
+  dmet2 <- get_daymet2_apsim_met(lonlat = lonlat, years = 2015:2016)
   
   cia.daymet <- read_apsim_met("/cia-daymet.met", src.dir = tmp.dir)
   

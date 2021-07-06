@@ -18,7 +18,7 @@
 #' @param src.dir directory containing the .apsim file to be edited; defaults to the current working directory
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
 #' @param node either \sQuote{Clock}, \sQuote{Weather}, \sQuote{Soil}, 
-#' \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other} 
+#' \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Outputfile} or \sQuote{Other} 
 #' @param soil.child specific soil component to be edited
 #' @param manager.child specific manager component to be edited (not implemented yet)
 #' @param parm parameter to be edited
@@ -74,8 +74,8 @@
 
 edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                        node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter",
-                                "MicroClimate", "Crop", "Manager", "Other"),
-                       soil.child = c("Metadata", "Water", "OrganicMatter", "Chemical",
+                                "MicroClimate", "Crop", "Manager", "Outputfile", "Other"),
+                       soil.child = c("Metadata", "Water", "Physical", "OrganicMatter", "Chemical",
                                       "Analysis", "InitialWater", "Sample", "SWIM"),
                        manager.child = NULL,
                        parm = NULL, value = NULL, 
@@ -100,7 +100,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   file <- match.arg(file, file.names)
   
   ## Parse apsim file (XML)
-  apsim_xml <- xml2::read_xml(paste0(src.dir, "/", file))
+  apsim_xml <- xml2::read_xml(file.path(src.dir, file))
   
   ## This is my attempt at picking the right node in a factorial
   if(!missing(root)){
@@ -150,7 +150,7 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
       xml2::xml_set_text(soil.metadata.node, as.character(value))
     }
     
-    if(soil.child == "Water"){
+    if(soil.child == "Water" || soil.child == "Physical"){
       ## First set of parameters are crop specific
       if(parm %in% c("LL", "KL", "XF")){
         parm.path <- paste0(".//Soil/Water/SoilCrop", "/", parm)
@@ -437,6 +437,32 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     }
   }
   
+  if(node == "Outputfile"){
+    outputfile.node <- xml2::xml_find_all(apsim_xml, ".//outputfile")
+    outputfile.parms <- c("filename", "title", "variables", "events")
+    parm <- match.arg(parm, outputfile.parms)
+    
+    if(parm == "filename" || parm == "title" || parm == "events"){
+      output.node <- xml2::xml_find_first(outputfile.node, parm)
+      xml2::xml_set_text(output.node, as.character(value))
+    }
+    
+    if(parm == "variables"){
+      variables.node <- xml2::xml_find_first(outputfile.node, parm)
+      len.variables.node <- length(xml2::xml_children(variables.node))
+      if(substr(value[1], 1, 1) == "-"){
+        stop("Have not implemented this yet.")
+        ## Here I remove a variable        
+      }else{
+        for(i in seq_along(value)){
+          xml2::xml_add_child(variables.node, xml2::xml_children(variables.node)[[len.variables.node]])
+          last.child <- xml2::xml_children(variables.node)[[len.variables.node+i]]
+          xml2::xml_set_text(last.child, value[i])          
+        }
+      }
+    }
+  }
+  
   if(node == "Other"){
     other.node <- xml2::xml_find_first(apsim_xml, parm.path)
     
@@ -489,5 +515,4 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
     cat("Created ", wr.path, "\n")
   }
 }
-
 

@@ -9,9 +9,9 @@ edit_apsim(
   src.dir = ".",
   wrt.dir = NULL,
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-    "Manager", "Other"),
-  soil.child = c("Metadata", "Water", "OrganicMatter", "Chemical", "Analysis",
-    "InitialWater", "Sample", "SWIM"),
+    "Manager", "Outputfile", "Other"),
+  soil.child = c("Metadata", "Water", "Physical", "OrganicMatter", "Chemical",
+    "Analysis", "InitialWater", "Sample", "SWIM"),
   manager.child = NULL,
   parm = NULL,
   value = NULL,
@@ -31,7 +31,7 @@ edit_apsim(
 \item{wrt.dir}{should be used if the destination directory is different from the src.dir}
 
 \item{node}{either \sQuote{Clock}, \sQuote{Weather}, \sQuote{Soil}, 
-\sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other}}
+\sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Outputfile} or \sQuote{Other}}
 
 \item{soil.child}{specific soil component to be edited}
 

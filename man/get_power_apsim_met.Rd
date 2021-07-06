@@ -30,12 +30,10 @@ is required before writing to disk.
 require(nasapower)
 ## This will not write a file to disk
 pwr <- get_power_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"))
-## Note that missing data is coded as -99
+## There are some missing values
 summary(pwr)
-## Check for reasonable ranges 
+## Check the met file 
 check_apsim_met(pwr)
-## replace -99 with NA
-pwr$radn <- ifelse(pwr$radn == -99, NA, pwr$radn)
 ## Impute using linear interpolation
 pwr.imptd <- impute_apsim_met(pwr, verbose = TRUE)
 summary(pwr.imptd)

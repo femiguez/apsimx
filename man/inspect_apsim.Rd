@@ -8,7 +8,7 @@ inspect_apsim(
   file = "",
   src.dir = ".",
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "Crop", "Manager",
-    "Other"),
+    "Outputfile", "Other"),
   soil.child = c("Metadata", "Water", "OrganicMatter", "Nitrogen", "Analysis",
     "InitialWater", "Sample", "SWIM"),
   parm = NULL,
@@ -23,11 +23,11 @@ inspect_apsim(
 \item{src.dir}{directory containing the .apsim file to be inspected; defaults to the current working directory}
 
 \item{node}{either \sQuote{Weather}, \sQuote{Soil}, \sQuote{SurfaceOrganicMatter}, 
-\sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other}}
+\sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Outputfile} or \sQuote{Other}}
 
 \item{soil.child}{specific soil component to be inspected}
 
-\item{parm}{parameter to inspect when node = \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other}}
+\item{parm}{parameter to inspect when node = \sQuote{Crop}, \sQuote{Manager}, \sQuote{Outputfile} or \sQuote{Other}}
 
 \item{digits}{number of decimals to print (default 3)}
 
@@ -80,6 +80,13 @@ inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil",
 inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Soil", 
               soil.child = "Water", parm = list("Barley", "LL"),
               print.path = TRUE)
+
+## Inspect outputfile
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Outputfile",
+              parm = "filename")
+ 
+inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Outputfile",
+              parm = "variables")
 
 ## Testing with maize-soybean-rotation.apsim
 inspect_apsim("maize-soybean-rotation.apsim", src.dir = extd.dir, node = "Clock")

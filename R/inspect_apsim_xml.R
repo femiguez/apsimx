@@ -637,9 +637,17 @@ inspect_apsim <- function(file = "", src.dir = ".",
   }
   
   if(node == "Outputfile"){
+    parm.path.0 <- ".//outputfile"
     outputfile.node <- xml2::xml_find_all(apsim_xml, ".//outputfile")
     outputfile.parms <- c("filename", "title", "variables", "events")
-    parm <- match.arg(parm, outputfile.parms)
+    
+    if(missing(parm)){
+      parm <- "filename"
+    }else{
+      parm <- match.arg(parm, outputfile.parms)
+    } 
+    
+    parm.path.1 <- paste0(parm.path.0, "/", parm)
     
     if(parm == "filename" || parm == "title"){
       output.node <- xml2::xml_find_first(outputfile.node, parm)

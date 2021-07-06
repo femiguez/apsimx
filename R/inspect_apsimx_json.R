@@ -436,6 +436,183 @@ inspect_apsimx <- function(file = "", src.dir = ".",
 }
 
 
+## These versions of grep will be exposed someday
+
+grep_json_list1 <- function(pattern, x, ...){
+  
+  tmp <- rapply(x, function(x,...) grep(pattern = pattern, x = x, value = TRUE, ...), ...)
+  
+  ans <- vector("list", length = length(tmp))
+  
+  for(i in seq_along(tmp)){
+    ans[[i]] <- tmp[[i]]
+  }
+  
+  return(ans)
+}
+
+## The idea of this function is that it will return the position where the 
+## pattern is found and also the node
+## The trick is that the previous function does not quite give me what I want
+grep_json_list <- function(pattern, x, ignore.case = FALSE, search.depth = 10){
+  
+  ## Check first
+  rar <- rapply(x, function(x) grep(pattern, x, ignore.case = ignore.case))
+  
+  if(length(rar) == 0L)
+    stop("pattern not found")
+  
+  positions <- ""
+  jsonpath <- ""
+  
+  for(i in 1:search.depth){
+    
+    if(is.list(x) && length(x) == 1) x <- x[[1]]
+    wgnp <- grep(pattern, x, ignore.case = ignore.case)
+    
+    if(length(wgnp) < 0.5) break
+    
+    if(!is.atomic(x) && !is.null(x$Name))
+      jsonpath <- paste0(jsonpath, ".", x$Name)
+
+    if(!is.atomic(x) && length(wgnp) > 0)
+      positions <- paste0(positions, ".", wgnp)
+    
+    if(length(wgnp) == 1){
+      x <- x[[wgnp]]  
+    }else{
+      xn <- list()
+      for(i in seq_along(wgnp)){
+        xn[[i]] <- x[[i]]
+      }
+      x <- xn
+    }
+  }
+  
+  return(list(x = x, jsonpath = jsonpath, positions = positions))
+}
+
+
+## Work in progress
+inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
+                                search.depth = 15, 
+                                verbose = FALSE){
+  
+  .check_apsim_name(file)
+  .check_apsim_name(src.dir)
+  
+  if(missing(parm))
+    stop("You need to specify the parm argument")
+  
+  file.names.apsimx <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
+  file.names.json <- dir(path = src.dir, pattern = ".json$", ignore.case = TRUE)
+  
+  if(length(file.names.apsimx) == 0 && length(file.names.json) == 0){
+    stop("There are no .json or .apsimx files in the specified directory to inspect.")
+  }
+  
+  apsimx_json <- jsonlite::read_json(file.path(src.dir, file)) ### This is a list
+  
+  jsonpath <- "$"
+  
+  x <- apsimx_json
+  
+  ## This handles parameters at the first level
+  if(any(grepl(parm, names(x)))){
+    wpi <- grep(parm, names(x))
+    jsonpath <- paste0(jsonpath, ".", names(x)[wpi])
+    print(knitr::kable(as.data.frame(x[wpi])))
+    return(invisible(jsonpath))
+  }
+
+  jsonpath <- paste0(jsonpath, ".", x$Name)
+  
+  for(i in 1:search.depth){
+    
+    ## First try to see if parameter is in names
+    nms <- names(x)
+    
+    if(!is.null(nms) && any(grepl(parm, nms))){
+      wpi <- grep(parm, nms)
+      jsonpath <- paste0(jsonpath, ".", names(x)[wpi])
+      xd0 <- x[wpi]
+      winn <- !sapply(xd0, function(x) is.null(x))
+      xd <- unlist(xd0[winn]) ## Fix bug here for DUL
+      xd1 <- as.data.frame(xd)
+      names(xd1) <- names(x)[wpi][winn]
+      print(knitr::kable(as.data.frame(xd1)))
+      return(invisible(jsonpath))
+    }
+
+    ## It is possible for parm to be in Name
+    if(!is.atomic(x)) nm <- x$Name
+      
+    if(!is.null(nm)){
+      if(grepl(parm, nm)){
+        wpn <- grep(parm, nm)  
+        jsonpath <- paste0(jsonpath, ".", nm)
+        break
+      }        
+    }
+
+    if(any(grepl(parm, x))){
+      
+      wgpx <- grep(parm, x)
+      
+      nms <- try(sapply(x[[wgpx]], function(x) x$Name), silent = TRUE)
+      
+      if(verbose){
+        print(i)
+        print(wgpx)
+        print(jsonpath)
+        print(nms)
+      }
+      
+      if(inherits(nms, "try-error")) nms <- NULL
+      
+      if(any(sapply(nms, is.null))) nms <- NULL
+      
+      if(!is.null(nms)){
+        if(any(grepl(parm, nms))){
+          wpn <- grep(parm, nms)  
+          jsonpath <- paste0(jsonpath, ".", nms[wpn])
+          break
+        }        
+      }
+      wgpx2 <- grep(parm, x[[wgpx]])
+      
+      if(!is.null(nms)){
+        
+        if(!is.null(nms[wgpx2]))
+          jsonpath <- paste0(jsonpath, ".", nms[wgpx2])
+
+        if(wgpx2 <= length(x[[wgpx]])){
+          x <- x[[wgpx]][[wgpx2]]
+        }else{
+          if(verbose){
+            cat("x length:", length(x), "\n")
+            cat("wgpx2", wgpx2, "\n")
+            cat("length x[[wgpx]]", length(x[[wgpx]]), "\n")
+          }
+        }
+        
+      }else{
+
+        gjl <- grep_json_list(parm, x)
+        ## Need to bring back the code I wrote before to extract the right stuff
+        if(!is.null(x$Key))
+          jsonpath <- paste0(jsonpath, ".", x$Key)
+          
+        print(knitr::kable(as.data.frame(x)))
+        break
+      }
+    }
+  }
+  
+  if(i == search.depth) stop("Parameter not found")
+  
+  invisible(jsonpath)
+}
 
 
 
