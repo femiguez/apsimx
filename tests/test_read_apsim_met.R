@@ -41,10 +41,11 @@ if(run.test.impute.apsim.met && username == "fernandomiguez"){
   summary(pwr)
   ## Check for reasonable ranges 
   check_apsim_met(pwr)
-  ## replace -99 with NA
-  pwr$radn <- ifelse(pwr$radn == -99, NA, pwr$radn)
   ## Impute using linear interpolation
+  pwr[1, "radn"] <- NA
+  pwr[nrow(pwr), "radn"] <- NA
+  check_apsim_met(pwr)
   pwr.imptd <- impute_apsim_met(pwr, verbose = TRUE)
   summary(pwr.imptd)
-  
+  check_apsim_met(pwr.imptd)
 }

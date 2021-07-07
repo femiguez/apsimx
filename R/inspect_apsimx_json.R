@@ -435,67 +435,43 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   invisible(parm.path)
 }
 
+#' 
+#'  This function is a work in progress. There are many instances for which it will not work.
+#'  
+#'  It will probably only find the first instance that matches.
+#'  
+#'  A future feature will be to search for a jspath instead of simply a regular expression
+#'  
+#' @title Inspect an .apsimx or .json (JSON) file
+#' @name inspect_apsimx_json
+#' @description inspect an .apsimx or .json (JSON) file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
+#' @param file file ending in .apsimx or .json to be inspected (JSON)
+#' @param src.dir directory containing the .apsimx or .json file to be inspected; defaults to the current working directory
+#' @param parm string or regular expression for partial matching.
+#' @param search.depth default is 15. How deep should the algorithm explore the structure of the list.
+#' @param print.path whether to print the parameter path (default is FALSE)
+#' @param verbose whether to print additional information (mostly used for debugging)
+#' @return prints a table with inspected parameters and values (and the path when \sQuote{print.path} = TRUE).
+#' @export
+#' @examples 
+#' \donttest{
+#' 
+#' ex.dir <- auto_detect_apsimx_examples()
+#' ## It seems to work for simple search
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Version")
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Simulations")
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Clock")
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Weather")
+#' ## Does return soil components
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "DUL")
+#' ## Or cultivar
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Hartog")
+#' 
+#' }
 
-## These versions of grep will be exposed someday
-
-grep_json_list1 <- function(pattern, x, ...){
-  
-  tmp <- rapply(x, function(x,...) grep(pattern = pattern, x = x, value = TRUE, ...), ...)
-  
-  ans <- vector("list", length = length(tmp))
-  
-  for(i in seq_along(tmp)){
-    ans[[i]] <- tmp[[i]]
-  }
-  
-  return(ans)
-}
-
-## The idea of this function is that it will return the position where the 
-## pattern is found and also the node
-## The trick is that the previous function does not quite give me what I want
-grep_json_list <- function(pattern, x, ignore.case = FALSE, search.depth = 10){
-  
-  ## Check first
-  rar <- rapply(x, function(x) grep(pattern, x, ignore.case = ignore.case))
-  
-  if(length(rar) == 0L)
-    stop("pattern not found")
-  
-  positions <- ""
-  jsonpath <- ""
-  
-  for(i in 1:search.depth){
-    
-    if(is.list(x) && length(x) == 1) x <- x[[1]]
-    wgnp <- grep(pattern, x, ignore.case = ignore.case)
-    
-    if(length(wgnp) < 0.5) break
-    
-    if(!is.atomic(x) && !is.null(x$Name))
-      jsonpath <- paste0(jsonpath, ".", x$Name)
-
-    if(!is.atomic(x) && length(wgnp) > 0)
-      positions <- paste0(positions, ".", wgnp)
-    
-    if(length(wgnp) == 1){
-      x <- x[[wgnp]]  
-    }else{
-      xn <- list()
-      for(i in seq_along(wgnp)){
-        xn[[i]] <- x[[i]]
-      }
-      x <- xn
-    }
-  }
-  
-  return(list(x = x, jsonpath = jsonpath, positions = positions))
-}
-
-
-## Work in progress
 inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
-                                search.depth = 15, 
+                                search.depth = 15,
+                                print.path = FALSE,
                                 verbose = FALSE){
   
   .check_apsim_name(file)
@@ -522,6 +498,8 @@ inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
     wpi <- grep(parm, names(x))
     jsonpath <- paste0(jsonpath, ".", names(x)[wpi])
     print(knitr::kable(as.data.frame(x[wpi])))
+    if(print.path) print(jsonpath)
+    if(verbose) cat("Level: 0 \n")
     return(invisible(jsonpath))
   }
 
@@ -536,11 +514,11 @@ inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
       wpi <- grep(parm, nms)
       jsonpath <- paste0(jsonpath, ".", names(x)[wpi])
       xd0 <- x[wpi]
-      winn <- !sapply(xd0, function(x) is.null(x))
-      xd <- unlist(xd0[winn]) ## Fix bug here for DUL
-      xd1 <- as.data.frame(xd)
-      names(xd1) <- names(x)[wpi][winn]
-      print(knitr::kable(as.data.frame(xd1)))
+      xd1 <- jsonlist2dataframe(xd0)
+      
+      print(knitr::kable(xd1))
+      if(print.path) print(jsonpath)
+      if(verbose) cat("Level: 1 \n")
       return(invisible(jsonpath))
     }
 
@@ -551,7 +529,12 @@ inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
       if(grepl(parm, nm)){
         wpn <- grep(parm, nm)  
         jsonpath <- paste0(jsonpath, ".", nm)
-        break
+        xd0 <- x[wpn]
+        xd1 <- jsonlist2dataframe(xd0)
+        names(xd1) <- nm
+        print(knitr::kable(xd1))
+        if(print.path) print(jsonpath)
+        return(invisible(jsonpath))
       }        
     }
 
@@ -576,9 +559,14 @@ inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
         if(any(grepl(parm, nms))){
           wpn <- grep(parm, nms)  
           jsonpath <- paste0(jsonpath, ".", nms[wpn])
-          break
+          xd0 <- x[[wgpx]][wpn]
+          xd1 <- jsonlist2dataframe(xd0)
+          print(knitr::kable(xd1))
+          if(print.path) print(jsonpath)
+          return(invisible(jsonpath))
         }        
       }
+      
       wgpx2 <- grep(parm, x[[wgpx]])
       
       if(!is.null(nms)){
@@ -599,20 +587,149 @@ inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
       }else{
 
         gjl <- grep_json_list(parm, x)
+        gjlm <- strsplit(gjl$positions, ".", fixed = TRUE)[[1]]
+        gjlms <- as.numeric(gjlm[2:(length(gjlm) - 1)])
+
+        for(i in gjlms) x <- x[[i]]
+        
         ## Need to bring back the code I wrote before to extract the right stuff
         if(!is.null(x$Key))
           jsonpath <- paste0(jsonpath, ".", x$Key)
           
         print(knitr::kable(as.data.frame(x)))
-        break
+        if(print.path) print(jsonpath)
+        return(invisible(jsonpath))
       }
     }
   }
   
   if(i == search.depth) stop("Parameter not found")
-  
+
   invisible(jsonpath)
 }
 
+## Convert a json list to a data.frame
+## This needs to handle a variety of cases
+## 1. Simple approach (unlist and data.frame return no error)
+##    In this case all the list elements have equal length
+## 2. 
+jsonlist2dataframe <- function(x){
+  
+  nms0 <- names(x)
+  if(is.list(x) && length(x) == 1) x <- x[[1]]
+  
+  if(length(unique(sapply(x, length))) == 1){
+    dt0 <- try(as.data.frame(unlist(x)), silent = TRUE)
+    if(!inherits(dt0, "try-error")){
+      if(!is.null(nms0)) names(dt0) <- nms0
+      return(dt0)    
+    }else{
+      print(str_list(x))
+      stop("Can't convert list to data.frame")
+    } 
+  }
+
+  ## The problem is that some elements might be null
+  winn <- !sapply(x, function(x) is.null(x)) ## which is not null
+  x0 <- x[winn]
+  tmp <- NULL
+  for(i in seq_along(x0)){
+    nms.x0 <- names(x0)[i]
+    if(!names(x0)[i] %in% c("Children", "Code", "Parameters")){
+      tmp <- rbind(tmp, as.data.frame(unlist(x0[i])))
+    }
+    
+    if(names(x0)[i] == "Children"){
+      lchildren <- length(x0$Children)
+      tmp <- rbind(tmp, paste0("List of length: ", lchildren))
+      rnms <- row.names(tmp)
+      rnms[i] <- "Children"
+      row.names(tmp) <- rnms
+    }
+    
+    if(names(x0)[i] == "Code"){
+      tmp <- rbind(tmp, paste0("C# code..."))
+      rnms <- row.names(tmp)
+      rnms[i] <- "C# code"
+      row.names(tmp) <- rnms
+    }
+    
+    if(names(x0)[i] == "Parameters"){
+      tmp <- rbind(tmp, paste0("Parameters..."))
+      rnms <- row.names(tmp)
+      rnms[i] <- "Parameters"
+      row.names(tmp) <- rnms
+    }
+  }
+  
+  if(!is.null(x0$Name)){
+    names(tmp) <- x$Name
+  }else{
+    if(!is.null(names(x)[winn])) names(tmp) <- names(x)[winn]
+  } 
+  tmp
+}
 
 
+## The idea of this function is that it will return the position where the 
+## pattern is found and also the node
+## The trick is that the previous function does not quite give me what I want
+#' @title grep but for json list
+#' @name grep_json_list
+#' @description recursive grep adapted for a json list
+#' @param pattern as in grep
+#' @param x object (a list)
+#' @param ignore.case as in grep
+#' @param search.depth search depth for the list (to prevent endless search)
+#' @export
+grep_json_list <- function(pattern, x, ignore.case = FALSE, search.depth = 10){
+  
+  ## Check first
+  rar <- rapply(x, function(x) grep(pattern, x, ignore.case = ignore.case))
+  
+  if(length(rar) == 0L)
+    stop("pattern not found")
+  
+  positions <- ""
+  jsonpath <- ""
+  
+  for(i in 1:search.depth){
+    
+    if(is.list(x) && length(x) == 1) x <- x[[1]]
+    wgnp <- grep(pattern, x, ignore.case = ignore.case)
+    
+    if(length(wgnp) < 0.5) break
+    
+    if(!is.atomic(x) && !is.null(x$Name))
+      jsonpath <- paste0(jsonpath, ".", x$Name)
+    
+    if(!is.atomic(x) && length(wgnp) > 0)
+      positions <- paste0(positions, ".", wgnp)
+    
+    if(length(wgnp) == 1){
+      x <- x[[wgnp]]  
+    }else{
+      xn <- list()
+      for(i in seq_along(wgnp)){
+        xn[[i]] <- x[[i]]
+      }
+      x <- xn
+    }
+  }
+  
+  return(list(x = x, jsonpath = jsonpath, positions = positions))
+}
+
+## This version of grep is not expose at the moment
+grep_json_list1 <- function(pattern, x, ...){
+  
+  tmp <- rapply(x, function(x,...) grep(pattern = pattern, x = x, value = TRUE, ...), ...)
+  
+  ans <- vector("list", length = length(tmp))
+  
+  for(i in seq_along(tmp)){
+    ans[[i]] <- tmp[[i]]
+  }
+  
+  return(ans)
+}

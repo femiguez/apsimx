@@ -238,7 +238,19 @@ impute_apsim_met <- function(met, method = c("approx","spline","mean"), verbose 
     wn1r <- which(is.na(met[1,]))
     for(i in seq_along(wn1r)){
       met[1, wn1r[i]] <- mean(met[1:5, wn1r[i]], na.rm = TRUE)
+      cat("Imputed first row for:", names(met)[wn1r[i]], "\n")
     }
+    print(as.data.frame(met[1,]))
+  }
+  
+  ## If there is a missing value in the last row it won't be imputed
+  if(any(is.na(met[nrow(met),]))){
+    wn1r <- which(is.na(met[nrow(met),]))
+    for(i in seq_along(wn1r)){
+      met[nrow(met), wn1r[i]] <- mean(met[(nrow(met) - 5):nrow(met), wn1r[i]], na.rm = TRUE)
+      cat("Imputed last row for:", names(met)[wn1r[i]], "\n")
+    }
+    print(as.data.frame(met[nrow(met),]))
   }
   
   ## Which rows have missing data
