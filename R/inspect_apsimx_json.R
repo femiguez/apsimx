@@ -32,6 +32,7 @@
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "MicroClimate")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Crop")
 #' inspect_apsimx("Barley", src.dir = ex.dir, node = "Manager")
+#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Report")
 #' 
 #' ## Manager folder present
 #' extd.dir <- system.file("extdata", package = "apsimx")
@@ -42,7 +43,7 @@
 #'
 
 inspect_apsimx <- function(file = "", src.dir = ".", 
-                           node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager", "Other"),
+                           node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Report", "Other"),
                            soil.child = c("Metadata", "Water", "InitialWater",
                                           "Chemical", "Physical", "Analysis", "SoilWater",
                                           "InitialN", "CERESSoilTemperature", "Sample",
@@ -380,6 +381,61 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         print(knitr::kable(as.data.frame(mat), digits = digits))
         cat("\n")
       }
+    }
+  }
+  
+  if(node == "Report"){
+    wrn <- grepl("Models.Report", core.zone.node)
+    report.node <- core.zone.node[wrn]
+    parm.path <- parm.path.2
+    ## Print available Manager components
+    report.node.names <- sapply(report.node, FUN = function(x) x$Name)
+
+    tmp <- vector("list", length = length(report.node.names))
+    for(i in 1:length(report.node)){
+      ## Variable Names
+      vn <- as.data.frame(unlist(report.node[[i]]$VariableNames))
+      names(vn) <- "VariableNames"
+      en <- as.data.frame(unlist(report.node[[i]]$EventNames))
+      names(en) <- "EventNames"
+      tmp[[i]] <- list(vn = vn, en = en)
+    }
+    
+    if(missing(parm)){
+      for(i in 1:length(tmp)){
+        cat("Report name:", report.node[[i]]$Name, "\n")
+        print(knitr::kable(tmp[[i]]$vn))
+        print(knitr::kable(tmp[[i]]$en))   
+        cat("\n")
+      }
+      parm.path <- paste0(parm.path.2,".", report.node.names)
+    }else{
+        if(!is.list(parm)){
+          if(length(report.node.names) > 1)
+            stop("More than one Report is present. Use a list to choose one.")
+          if(!grepl("VariableName", parm) && !grepl("EventNames", parm))
+            stop("parm should contain either VariableNames or EventNames")
+          if(parm == "VariableNames") print(knitr::kable(tmp[[i]]$vn))
+          if(parm == "EventNames") print(knitr::kable(tmp[[i]]$en))
+          parm.path <- paste0(parm.path.2,".", report.node.names)
+       }else{
+          if(!any(grepl(parm[[1]], report.node.names)))
+            stop("the first element of parm should match a report name")
+          wr2p <- grep(parm[[1]], report.node.names)
+          if(is.na(parm[[2]])){
+            print(knitr::kable(tmp[[wr2p]]$vn))
+            print(knitr::kable(tmp[[wr2p]]$en))
+            parm.path <- paste0(parm.path.2,".", report.node.names[wr2p])
+            position <- NA
+          }else{
+            if(grepl(parm[[2]],"VariableNames")) print(knitr::kable(tmp[[wr2p]]$vn))
+            if(grepl(parm[[2]], "EventNames")) print(knitr::kable(tmp[[wr2p]]$en)) 
+            parm.path <- paste0(parm.path.2,".", report.node.names[wr2p])
+            parm1 <- grep(parm[[1]], report.node.names, value = TRUE)
+            parm2 <- grep(parm[[2]], c("VariableNames", "EventNames"), value = TRUE)
+            position <- wr2p
+          }
+       }
     }
   }
   
