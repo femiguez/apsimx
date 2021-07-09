@@ -78,7 +78,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## It looks like I need to 'find' the "Models.Core.Simulation" node
   fcsn <- grep("Models.Core.Simulation", apsimx_json$Children, fixed = TRUE)
   
-  if(length(fcsn) > 1){
+  if(length(fcsn) > 1 || !missing(root)){
     if(missing(root)){
       cat("Simulation structure: \n")
       str_list(apsimx_json)
@@ -112,6 +112,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   if(node == "Clock"){
     wlc <- function(x) grepl("Clock", x$Name, ignore.case = TRUE)
     wlcl <- sapply(parent.node, FUN = wlc)
+    if(all(wlcl == FALSE)){
+      stop("Clock not found")
+    } 
     clock.node <- as.list(parent.node[wlcl])[[1]]
     start.name <- grep("start", names(clock.node), ignore.case = TRUE, value = TRUE)
     end.name <- grep("end", names(clock.node), ignore.case = TRUE, value = TRUE)
@@ -130,6 +133,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     ## Extract the list which has a component Name == "Weather"
     wlw <- function(x) grepl("Weather", x$Name)
     wlwl <- sapply(parent.node, FUN = wlw)
+    if(all(wlwl == FALSE)){
+      stop("Weather not found")
+    }
     weather.node <- parent.node[wlwl]
     ## Select the string which has a met file
     gf1 <- function(x) grep(".met$", x, value = TRUE)
@@ -147,6 +153,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   if(node == "Soil"){
     ## Which soils node
     wsn <- grepl("Models.Soils.Soil", core.zone.node)
+    if(all(wsn == FALSE)){
+      stop("Soil not found")
+    }
     soil.node <- core.zone.node[wsn]
     
     parm.path.2.1 <- paste0(parm.path.2, ".", soil.node[[1]]$Name)
@@ -280,6 +289,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   if(node == "SurfaceOrganicMatter"){
     ## Which is 'SurfaceOrganicMatter'
     wsomn <- grepl("Models.Surface.SurfaceOrganicMatter", core.zone.node)
+    if(all(wsomn == FALSE)){
+      stop("SurfaceOrganicMatter not found")
+    }
     som.node <- core.zone.node[wsomn][[1]]
     
     parm.path <- paste0(parm.path.2,".",som.node$Name)
@@ -294,6 +306,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   if(node == "MicroClimate"){
     ## Which is 'MicroClimate'
     wmcn <- grepl("Models.MicroClimate", core.zone.node)
+    if(all(wmcn == FALSE)){
+      stop("MicroClimate not found")
+    }
     microclimate.node <- core.zone.node[wmcn][[1]]
     
     parm.path <- paste0(parm.path.2,".",microclimate.node$Name)
@@ -306,6 +321,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   if(node == "Crop"){
     ## Which is 'Crop'
     wmmn <- grepl("Models.Manager", core.zone.node)
+    if(all(wmmn == FALSE)){
+      stop("Crop not found")
+    }
     manager.node <- core.zone.node[wmmn]
     
     #cat("Manager Name:",names(manager.node[[1]]),"\n")
@@ -330,6 +348,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   
   if(node == "Manager"){
     wmmn <- grepl("Models.Manager", core.zone.node)
+    if(all(wmmn == FALSE)){
+      stop("Manager not found")
+    }
     manager.node <- core.zone.node[wmmn]
     parm.path <- parm.path.2
     ## Print available Manager components
@@ -341,7 +362,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       position <- parm[[2]]
       find.manager <- grep(parm1, manager.node.names, ignore.case = TRUE)
       selected.manager.node <- manager.node.names[find.manager]
-      parm.path <- paste0(parm.path.2,".",selected.manager.node)
+      parm.path <- paste0(parm.path.2, ".", selected.manager.node)
       
       if(is.na(position)){
         ms.params <- manager.node[[find.manager]]$Parameters
@@ -386,6 +407,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   
   if(node == "Report"){
     wrn <- grepl("Models.Report", core.zone.node)
+    if(all(wrn == FALSE)){
+      stop("Report not found")
+    }
     report.node <- core.zone.node[wrn]
     parm.path <- parm.path.2
     ## Print available Manager components
@@ -413,7 +437,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         if(!is.list(parm)){
           if(length(report.node.names) > 1)
             stop("More than one Report is present. Use a list to choose one.")
-          if(!grepl("VariableName", parm) && !grepl("EventNames", parm))
+          if(!grepl(parm, "VariableNames") && !grepl(parm, "EventNames"))
             stop("parm should contain either VariableNames or EventNames")
           if(parm == "VariableNames") print(knitr::kable(tmp[[i]]$vn))
           if(parm == "EventNames") print(knitr::kable(tmp[[i]]$en))

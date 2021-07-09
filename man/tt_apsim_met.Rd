@@ -48,7 +48,7 @@ Heat Stress, Crop Heat Unit and other methods
 Calculating Thermal Time using a variety of methods
 }
 \examples{
-\donttest{
+\dontrun{
 require(nasapower)
 require(ggplot2)
 

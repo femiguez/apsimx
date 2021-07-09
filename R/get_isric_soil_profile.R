@@ -37,7 +37,7 @@
 #' @export
 #' @author Fernando E. Miguez, Eric Zurcher (CSIRO) and Andrew Moore (CSIRO)
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' ## Get soil profile properties for a single point
 #' sp1 <- get_isric_soil_profile(lonlat = c(-93, 42))
 #' 

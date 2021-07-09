@@ -7,11 +7,9 @@
 #' is a list that has the same number of elements as the length of the vector \code{parm}.  The current
 #' .apsim file will be overwritten if \code{overwrite} is set to \code{TRUE}; otherwise the file
 #' \sQuote{file} \emph{-edited.apsim} will be created.  If (verbose = TRUE) then the name
-#'  of the written file is returned. The function is similar to the edit_apsim functin in the \sQuote{apsimr}
-#'  package, but with the difference that only some variables (parameters) can be modified.
+#'  of the written file is returned. 
 #'  
-#'  The function inspect_apsim is for a quick look from within R. The APSIM GUI provides a more
-#'  complete examination of the .apsim file
+#'  When node equals Outputfile, the editing allows to add variables, but not to remove them at the moment.
 #' 
 #' @name edit_apsim
 #' @param file file ending in .apsim to be edited

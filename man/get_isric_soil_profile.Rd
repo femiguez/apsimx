@@ -54,7 +54,7 @@ How can I have a guess at FBiom and Finert? \cr
 FBiom does not depend on any soil property at the moment, should it? \cr
 }
 \examples{
-\donttest{
+\dontrun{
 ## Get soil profile properties for a single point
 sp1 <- get_isric_soil_profile(lonlat = c(-93, 42))
 

@@ -124,7 +124,7 @@ ggplot(data = maize , aes(x = Date, y = Maize.AboveGround.Wt)) +
 
 ## Inspecting a file with 'inspect_apsimx': Why?
 
-Being able to inspect a file from within R is a functionality which was not considered in previous R packages. My first motivation for doing this was to be able to verify from within R that if I edited an APSIM(X) file, the editing worked as expected. The second use of 'inspect' is to be able to understand the structure of 'apsim' files better. A third useful aspect of 'inspect' is that it can be used to supply the path for a parameter that will be later edited. In addition, having this functionality within R allows to make these tasks repeatable. For complex inspections and manipulations of an .apsim(x) file the GUI is recommended. However, this package is designed to work with relatively simple .apsim(x) files.
+Being able to inspect a file from within R is a functionality which was not considered in previous R packages. My first motivation for doing this was to be able to verify from within R that if I edited an APSIM(X) file, the editing worked as expected. The second use of 'inspect' is to be able to understand the structure of 'apsim' files better. A third useful aspect of 'inspect' is that it can be used to supply the path for a parameter that will be later edited. Another benefit of the inpspect functions is that if you are running APSIM in a cluster, you do not have access to the GUI, so these functions allow you to inspect your files in that environment. In addition, having this functionality within R allows to make these tasks repeatable. For complex inspections and manipulations of an .apsim(x) file the GUI is recommended. However, this package is designed to work with relatively simple .apsim(x) files.
 
 ## Inspecting and Editing the 'Maize' example
 
@@ -162,6 +162,8 @@ Let's make sure that we have changed the values successfully.
 inspect_apsimx("Maize-edited.apsimx", src.dir = ".", 
                node = "Soil", soil.child = "Organic")
 ```
+
+There is another function that might be useful **inspect_apsimx_json** which can be more flexible and a variation of grep **grep_json_list**.
 
 # Proposed workflow
 
@@ -452,7 +454,8 @@ I won't be running the 'Factorial' example here, but if you are interested this 
 
 ## Obtaining weather data
 
-One of the easiest ways of generating weather data (".met" files) is by using the 'GSODR' (https://github.com/ropensci/GSODR), 'FedData' (https://github.com/ropensci/FedData) or 'nasapower' (https://github.com/ropensci/nasapower)  packages. It is also possible to obtain data from the Iowa Environmental Mesonet (https://mesonet.agron.iastate.edu/). In addition, this package provides the following utilities:
+One of the easiest ways of generating weather data (".met" files) is by using the  'nasapower' (https://github.com/ropensci/nasapower) or 'GSODR' (https://github.com/ropensci/GSODR) packages. For the US, some options are 'daymetr' (https://github.com/bluegreen-labs/daymetr) or through the Iowa
+Environmental Mesonet (https://mesonet.agron.iastate.edu/). In addition, this package provides the following utilities:
 
 * **read_apsim_met**: read an APSIM met file into R with S3 class 'met'.
 * **write_apsim_met**: write an APSIM met file from an object of class 'met'.
@@ -461,7 +464,7 @@ One of the easiest ways of generating weather data (".met" files) is by using th
 * **napad_apsim_met**: Fill in date gaps with NAs in a 'met' object. Useful for imputation.
 * **compare_apsim_met**: utility for quick comparison of 'met' objects. There is also a plot method.
 * **get_power_apsim_met**: (requires the 'nasapower' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
-* **get_daymet_apsim_met**: (requires the 'FedData' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
+* **get_daymet2_apsim_met**: (requires the 'daymetr' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
 * **get_gsod_apsim_met**: (requires the 'GSODR' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
 * **get_iem_apsim_met**: Fetch data from Iowa Environmental Mesonet
 * **get_iemre_apsim_met**: Fetch data from Iowa Environmental Mesonet Reanalysis
@@ -472,7 +475,7 @@ Note that some utilities were available in the 'APSIM' package (loadMet, prepare
 
 The function **get_isric_soil_profile** will retrieve data from the ISRIC Soil Grid global dataset (https://www.isric.org/) and return an object of class *soil_profile* (see also *apsimx_soil_profile*). To derive some of the properties needed by APSIM pedotransfer functions from Saxton and Rawls (2006) were used. This is a work in progress and improvements and suggestions are welcome.
 
-In the USA, the function **get_ssurgo_soil_profile** will retrieve data from the SSURGO database through the **soilDB** R pacakge and will always return a list with objects of class *soil_profile*. Internally, it uses the **ssurgo2sp** function, which can be used to create an APSIM soil profile in two steps. The first step would be to obtain soil data through the 'FedData' R package (https://github.com/ropensci/FedData) by using the function **get_ssurgo**. The function **ssurgo2sp** can be used for conversion from **SSURGO** csv files to an object of class **soil_profile** and **apsimx_soil_profile** for generating a soil profile that can be used in APSIM-X. Finally, the function **edit_apsimx_replace_soil_profile** will batch replace the soil profile created by **apsimx_soil_profile** in a designated '.apsimx' file. Similarly, 'edit_apsim_replace_soil_profile' will batch replace the soil profile in a designated '.apsim' (Classic) file. I will be working on a more concrete tutorial at some point.
+In the USA, the function **get_ssurgo_soil_profile** will retrieve data from the SSURGO database through the **soilDB** R pacakge and will always return a list with objects of class *soil_profile*. Internally, it uses the **ssurgo2sp** function, which can be used to create an APSIM soil profile in two steps. The first step would be to obtain soil data through the 'FedData' R package by using the function **get_ssurgo** or use the **get_ssurgo_tables** in apsimx. The function **ssurgo2sp** can be used for conversion from **SSURGO** csv files to an object of class **soil_profile** and **apsimx_soil_profile** for generating a soil profile that can be used in APSIM-X. Finally, the function **edit_apsimx_replace_soil_profile** will batch replace the soil profile created by **apsimx_soil_profile** in a designated '.apsimx' file. Similarly, 'edit_apsim_replace_soil_profile' will batch replace the soil profile in a designated '.apsim' (Classic) file. I will be working on a more concrete tutorial at some point.
 
 # File Type (or File Format) Details
 
@@ -494,6 +497,8 @@ aiu <- apsim_version(which = "inuse")
 **doy2date**: Utility function for converting from day of the year (1-366) to 'Date' and performing the inverse conversion.
 
 **compare_apsim**: Utility function for comparing simulations or observed and simulated data.
+
+**unit_conv**: Unit conversion utility
 
 # To-Do
 

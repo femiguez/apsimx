@@ -238,12 +238,14 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   }
   
   if(missing(node.subsubchild) && verbose && missing(parm)) cat("missing node.subsubchild\n")
-  
+
   if(!missing(node.subsubchild)){
     rep.node.subsubchildren.names <- vapply(rep.node.subchild$Children, function(x) x$Name,
                                             FUN.VALUE = "character")
     ## Select a specific node.subsubchild
     wrnssc <- grep(node.subsubchild, rep.node.subsubchildren.names)
+    if(length(wrnssc) == 0) stop("node.subsubchild not found")
+    if(length(wrnssc) > 1) stop("More than one subsubchild found. Make it unique (see regular expressions)")
     rep.node.subsubchild <- rep.node.subchild$Children[[wrnssc]]
   
     if(verbose) cat("Subsubchild Name: ", rep.node.subsubchild$Name,"\n")
@@ -268,6 +270,8 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
       if(any(grepl(parm, unlist(rep.node.subsubchild$Command)))){
         lvl <- 5
         wrnsscc <- grep(parm, unlist(rep.node.subsubchild$Command))
+        if(length(wrnsscc) == 0) stop("node.subsubchild Command not found")
+        if(length(wrnsscc) > 1) stop("More than one subsubchild Command found. Make it unique (see regular expressions)")
         ## Break it up and reassemble
         cmdstrng <- strsplit(rep.node.subsubchild$Command[[wrnsscc]],"=")[[1]][1]
         rep.node.subsubchild$Command[[wrnsscc]] <- paste0(cmdstrng,"=",value)
@@ -296,6 +300,9 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                             FUN.VALUE = "character")
     ## Select a specific node.subchild
     wrnsssc <- grep(node.sub3child, rep.node.sub3children.names)
+    if(length(wrnsssc) == 0) stop("node.sub4child not found")
+    if(length(wrnsssc) > 1) stop("More than one sub3child found. Make it unique (see regular expressions)")
+    
     rep.node.sub3child <- rep.node.subsubchild$Children[[wrnsssc]]
     
     if(verbose) cat("Sub-sub-subchild Name: ", rep.node.sub3child$Name,"\n")
@@ -322,6 +329,8 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
       if(any(grepl(parm, unlist(rep.node.sub3child$Command)))){
         lvl <- 7
         wrnssscc <- grep(parm, unlist(rep.node.sub3child$Command))
+        if(length(wrnssscc) == 0) stop("node.sub3child Command not found")
+        if(length(wrnssscc) > 1) stop("More than one sub3child Command found. Make it unique (see regular expressions)")
         ## Break it up and reassemble
         cmdstrng <- strsplit(rep.node.sub3child$Command[[wrnssscc]],"=")[[1]][1]
         rep.node.sub3child$Command[[wrnssscc]] <- paste0(cmdstrng,"=",value)
@@ -351,6 +360,9 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                           FUN.VALUE = "character")
     ## Select a specific node.subchild
     wrnssssc <- grep(node.sub4child, rep.node.sub4children.names)
+    if(length(wrnssssc) == 0) stop("node.sub4child not found")
+    if(length(wrnssssc) > 1) stop("More than one sub4child found. Make it unique (see regular expressions)")
+    
     rep.node.sub4child <- rep.node.sub3child$Children[[wrnssssc]]
     
     if(verbose) cat("Sub-sub-sub-subchild Name: ", rep.node.sub4child$Name,"\n")
@@ -378,6 +390,8 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
       if(any(grepl(parm, unlist(rep.node.sub4child$Command)))){
         lvl <- 9
         wrnsssscc <- grep(parm, unlist(rep.node.sub4child$Command))
+        if(length(wrnsssscc) == 0) stop("node.sub4child Command not found")
+        if(length(wrnsssscc) > 1) stop("More than one sub4child Command found. Make it unique (see regular expressions)")
         ## Break it up and reassemble
         cmdstrng <- strsplit(rep.node.sub4child$Command[[wrnsssscc]], "=")[[1]][1]
         rep.node.sub4child$Command[[wrnsssscc]] <- paste0(cmdstrng, "=", value)
@@ -408,6 +422,8 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                           FUN.VALUE = "character")
     ## Select a specific node.subchild
     wrnsssssc <- grep(node.sub5child, rep.node.sub5children.names)
+    if(length(wrnsssssc) == 0) stop("node.subs5child not found")
+    if(length(wrnsssssc) > 1) stop("More than one sub5child found. Make it unique (see regular expressions)")
     rep.node.sub5child <- rep.node.sub4child$Children[[wrnsssssc]]
     
     if(verbose) cat("Sub-sub-sub-sub-subchild Name: ", rep.node.sub5child$Name,"\n")
@@ -436,6 +452,8 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
       if(any(grepl(parm, unlist(rep.node.sub5child$Command)))){
         lvl <- 11
         wrnssssscc <- grep(parm, unlist(rep.node.sub5child$Command))
+        if(length(wrnssssscc) == 0) stop("node.subs5child Command not found")
+        if(length(wrnssssscc) > 1) stop("More than one sub5child Command found. Make it unique (see regular expressions)")
         ## Break it up and reassemble
         cmdstrng <- strsplit(rep.node.sub5child$Command[[wrnssssscc]], "=")[[1]][1]
         rep.node.sub5child$Command[[wrnssssscc]] <- paste0(cmdstrng, "=", value)

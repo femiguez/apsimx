@@ -7,18 +7,16 @@
 #' is a list that has the same number of elements as the length of the vector \code{parm}.  The current
 #' .apsimx file will be overwritten if \code{overwrite} is set to \code{TRUE}; otherwise the file
 #' \sQuote{file} \emph{-edited.apsimx} will be created.  If (verbose = TRUE) then the name
-#'  of the written file is returned. The function is similar to the edit_apsim functin in the \sQuote{apsimr}
-#'  package, but with the difference that only some variables (parameters) can be modified.
+#'  of the written file is returned. 
 #'  
-#'  The function inspect_apsimx is for a quick look from within R. The APSIM GUI provides a more
-#'  complete examination of the .apsimx file
+#'  When node equals Report, the editing allows to add variables, but not to remove them at the moment.
 #' 
 #' @name edit_apsimx
 #' @param file file ending in .apsimx to be edited (JSON)
 #' @param src.dir directory containing the .apsimx file to be edited; defaults to the current working directory
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
 #' @param node either \sQuote{Clock}, \sQuote{Weather}, \sQuote{Soil}, 
-#' \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other} 
+#' \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Report} or \sQuote{Other} 
 #' @param soil.child specific soil component to be edited
 #' @param manager.child specific manager component to be edited
 #' @param parm parameter to be edited
@@ -30,9 +28,6 @@
 #' @param verbose whether to print information about successful edit
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
 #' As a side effect this function creates a new (JSON) .apsimx file.
-#' @note The components that can be edited are restricted becuase this is better in preventing
-#' errors of editing unintended parts of the file. The disadvantage is that there is less flexibility
-#' compared to the similar function in the \sQuote{apsimr} package. 
 #' @export
 #' @examples 
 #' \dontrun{
@@ -70,7 +65,7 @@
 #' 
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
-                        node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Other"),
+                        node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager", "Report", "Other"),
                         soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample"),
                         manager.child = NULL,
                         parm = NULL, value = NULL, 
@@ -399,6 +394,57 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       manager.node[[wmc]]$Parameters <- manager.child.node  
     }
     core.zone.node[wmmn] <- manager.node
+  }
+  
+  if(node == "Report"){
+    wrn <- grepl("Models.Report", core.zone.node)
+    report.node <- core.zone.node[wrn]
+    report.node.names <- sapply(report.node, FUN = function(x) x$Name)
+    
+    if(missing(parm))
+      stop("parm argument is missing")
+    ## There is only one report in this case
+    if(!is.list(parm)){
+      if(length(report.node.names) > 1)
+        stop("More than one Report is present. Use a list to choose one.")
+      if(!grepl(parm, "VariableNames") && !grepl(parm, "EventNames"))
+        stop("parm should contain either VariableNames or EventNames")
+      if(grepl(parm, "VariableNames")){
+        lvn <- length(report.node[[1]]$VariableNames)
+        for(i in seq_along(value)){
+          vnindx <- lvn + i
+          report.node[[1]]$VariableNames[[vnindx]] <- value[i]
+        }
+      }else{
+        evn <- length(report.node[[1]]$EventNames)
+        for(i in seq_along(value)){
+          evnindx <- evn + i
+          report.node[[1]]$EventNames[[evnindx]] <- value[i]
+        }
+      }  
+    }else{
+      if(length(parm) < 2)
+        stop("parm should be a list of length greater than 1")
+      wrn <- grep(parm[[1]], report.node.names)  
+      if(length(wrn) == 0L)
+        stop("Report Name not found")
+      if(!grepl(parm[[2]], "VariableNames") && !grepl(parm[[2]], "EventNames"))
+        stop("parm should contain either VariableNames or EventNames")
+      if(grepl(parm[[2]], "VariableNames")){
+        lvn <- length(report.node[[wrn]]$VariableNames)
+        for(i in seq_along(value)){
+          vnindx <- lvn + i
+          report.node[[wrn]]$VariableNames[[vnindx]] <- value[i]
+        }
+      }else{
+        evn <- length(report.node[[wrn]]$EventNames)
+        for(i in seq_along(value)){
+          evnindx <- evn + i
+          report.node[[wrn]]$EventNames[[evnindx]] <- value[i]
+        }
+      }
+    }
+    core.zone.node[wrn] <- report.node 
   }
   
   if(node == "Other"){

@@ -12,7 +12,7 @@ if(run.grep.test){
   apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
   
   ## This function sort of works, but it is not quite what we want
-  ans1 <- grep_json_list1("Cultivar", apsimx_json)
+  ## ans1 <- grep_json_list1("Cultivar", apsimx_json)
   
   ## A better function?
   ans <- grep_json_list("Cultivar", apsimx_json)

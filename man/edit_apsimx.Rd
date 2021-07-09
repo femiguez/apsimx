@@ -9,7 +9,7 @@ edit_apsimx(
   src.dir = ".",
   wrt.dir = NULL,
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-    "Manager", "Other"),
+    "Manager", "Report", "Other"),
   soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis",
     "Chemical", "InitialWater", "Sample"),
   manager.child = NULL,
@@ -30,7 +30,7 @@ edit_apsimx(
 \item{wrt.dir}{should be used if the destination directory is different from the src.dir}
 
 \item{node}{either \sQuote{Clock}, \sQuote{Weather}, \sQuote{Soil}, 
-\sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager} or \sQuote{Other}}
+\sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Report} or \sQuote{Other}}
 
 \item{soil.child}{specific soil component to be edited}
 
@@ -63,16 +63,9 @@ in the source directory \code{src.dir} are edited. The old values are replaced w
 is a list that has the same number of elements as the length of the vector \code{parm}.  The current
 .apsimx file will be overwritten if \code{overwrite} is set to \code{TRUE}; otherwise the file
 \sQuote{file} \emph{-edited.apsimx} will be created.  If (verbose = TRUE) then the name
- of the written file is returned. The function is similar to the edit_apsim functin in the \sQuote{apsimr}
- package, but with the difference that only some variables (parameters) can be modified.
+ of the written file is returned. 
  
- The function inspect_apsimx is for a quick look from within R. The APSIM GUI provides a more
- complete examination of the .apsimx file
-}
-\note{
-The components that can be edited are restricted becuase this is better in preventing
-errors of editing unintended parts of the file. The disadvantage is that there is less flexibility
-compared to the similar function in the \sQuote{apsimr} package.
+ When node equals Report, the editing allows to add variables, but not to remove them at the moment.
 }
 \examples{
 \dontrun{

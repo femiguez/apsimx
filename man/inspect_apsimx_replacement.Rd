@@ -20,7 +20,8 @@ inspect_apsimx_replacement(
   display.available = FALSE,
   digits = 3,
   print.path = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  grep.options
 )
 }
 \arguments{
@@ -57,6 +58,8 @@ overwrite the other node specifications.}
 \item{print.path}{print the path to the inspected parameter (default FALSE)}
 
 \item{verbose}{whether to print additional information, default: TRUE}
+
+\item{grep.options}{Additional options for grep. To be passed as a list.}
 }
 \value{
 table with inspected parameters and values

@@ -150,3 +150,26 @@ if(run.apsimx.edit.soil.soilwat){
                  parm = "SummerCona")
   
 }
+
+## TEsting Report feature
+if(run.apsimx.edit){
+  
+ ex.dir <- auto_detect_apsimx_examples()
+ 
+ inspect_apsimx("Wheat.apsimx", src.dir = ex.dir, node = "Report")
+ 
+ edit_apsimx("Wheat.apsimx", src.dir = ex.dir,
+             node = "Report", wrt.dir = tmp.dir,
+             parm = "VariableNames",
+             value = "[Soil].esw")
+ 
+ inspect_apsimx("Wheat-edited.apsimx", src.dir = tmp.dir, node = "Report")
+ 
+ edit_apsimx("Wheat.apsimx", src.dir = ex.dir,
+             node = "Report", wrt.dir = tmp.dir,
+             parm = "EventNames",
+             value = "[Wheat].EndOfDay")
+ 
+ inspect_apsimx("Wheat-edited.apsimx", src.dir = tmp.dir, node = "Report")
+  
+}

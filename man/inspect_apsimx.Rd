@@ -8,7 +8,7 @@ inspect_apsimx(
   file = "",
   src.dir = ".",
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-    "Manager", "Other"),
+    "Manager", "Report", "Other"),
   soil.child = c("Metadata", "Water", "InitialWater", "Chemical", "Physical",
     "Analysis", "SoilWater", "InitialN", "CERESSoilTemperature", "Sample", "Nutrient",
     "Organic"),
@@ -63,6 +63,7 @@ inspect_apsimx("Barley", src.dir = ex.dir, node = "SurfaceOrganicMatter")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "MicroClimate")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Crop")
 inspect_apsimx("Barley", src.dir = ex.dir, node = "Manager")
+inspect_apsimx("Barley", src.dir = ex.dir, node = "Report")
 
 ## Manager folder present
 extd.dir <- system.file("extdata", package = "apsimx")

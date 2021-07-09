@@ -20,6 +20,7 @@
 #' @param digits number of decimals to print (default 3)
 #' @param print.path print the path to the inspected parameter (default FALSE)
 #' @param verbose whether to print additional information, default: TRUE
+#' @param grep.options Additional options for grep. To be passed as a list.
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 #' @note I need to make some changes in order to be able to handle multiple parameters. At this point, it
 #' might work but it will generate warnings.
@@ -63,7 +64,8 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
                                        root = list("Models.Core.Replacements", NA),
                                        parm = NULL, display.available = FALSE,
                                        digits = 3, print.path = FALSE,
-                                       verbose = TRUE){
+                                       verbose = TRUE,
+                                       grep.options){
   
   .check_apsim_name(file)
   .check_apsim_name(src.dir)
@@ -85,9 +87,18 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   ## Select Replacements node
   frn <- grep(root[[1]], apsimx_json$Children, fixed = TRUE)
   
+  if(!missing(grep.options)){
+    gfixed <- grep.options$fixed
+    gignore.case <- grep.options$ignore.case
+  }else{
+    gfixed <- FALSE
+    gignore.case <- FALSE
+  }
+    
+  
   if(length(frn) == 0) stop(paste0(root," not found"))
   
-  if(length(frn) > 1){
+  if(length(frn) > 1 || !missing(root)){
     if(is.na(root[[2]])){
       cat("These positions matched ", root[[1]], " ", frn, "\n")
       stop("Multiple root nodes found. Please provide a position")
@@ -344,7 +355,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     cat_parm(rep.node.sub4child, parm = parm) ## This might be wrong, without parm argument
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.sub4child$Command)))){
-      wcp <- grep(parm, unlist(rep.node.sub4child$Command))
+      wcp <- grep(parm, unlist(rep.node.sub4child$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.sub4child$Command)[wcp])
     }else{
       if(!is.null(parm)) stop("Parameter not found")
@@ -361,7 +372,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   #### Start of code chunck for node.sub4child ----
   rep.node.sub4children.names <- vapply(rep.node.sub4child$Children, function(x) x$Name,
                                         FUN.VALUE = "character")
-  wrnssssc <- grep(node.sub4child, rep.node.sub4children.names)
+  wrnssssc <- grep(node.sub4child, rep.node.sub4children.names, fixed = gfixed, ignore.case = gignore.case)
   if(length(wrnssssc) == 0) stop("node.sub4child not found")
   if(length(wrnssssc) > 1) stop("More than one sub4child found. Make it unique (see regular expressions)")
   rep.node.sub5child <- rep.node.sub4child$Children[[wrnssssc]]
@@ -375,7 +386,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   ## I also need to check that parameter is not in 'Command'
   ## ispic: Is Parameter In Command?
   if(length(rep.node.sub5child$Command) > 0 && !is.null(parm)){
-    ispic <- any(grepl(parm, unlist(rep.node.sub5child$Command)))
+    ispic <- any(grepl(parm, unlist(rep.node.sub5child$Command), fixed = gfixed, ignore.case = gignore.case))
   }else{
     ispic <- FALSE
   }
@@ -402,12 +413,12 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   }  
 
   if(!is.null(parm) && any(grepl(parm, rep.node.sub5child.names))){
-    wrnsssspc <- grep(parm, rep.node.sub5child.names)
+    wrnsssspc <- grep(parm, rep.node.sub5child.names, fixed = gfixed, ignore.case = gignore.case)
     rep.node.sub5child <- rep.node.sub4child[wrnsssspc]
     cat_parm(rep.node.sub5child, parm = parm) ## This might be wrong, without parm argument
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.sub5child$Command)))){
-      wcp <- grep(parm, unlist(rep.node.sub5child$Command))
+      wcp <- grep(parm, unlist(rep.node.sub5child$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.sub5child$Command)[wcp])
     }else{
       if(!is.null(parm)) stop("Parameter not found")
@@ -426,7 +437,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   #### Start of code chunck for node.sub5child ----
   rep.node.sub5children.names <- vapply(rep.node.sub5child$Children, function(x) x$Name,
                                         FUN.VALUE = "character")
-  wrnsssssc <- grep(node.sub5child, rep.node.sub5children.names)
+  wrnsssssc <- grep(node.sub5child, rep.node.sub5children.names, fixed = gfixed, ignore.case = gignore.case)
   if(length(wrnsssssc) == 0) stop("node.sub5child not found")
   if(length(wrnsssssc) > 1) stop("More than one sub5child found. Make it unique (see regular expressions)")
   rep.node.sub6child <- rep.node.sub5child$Children[[wrnsssssc]]
@@ -440,7 +451,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   ## I also need to check that parameter is not in 'Command'
   ## ispic: Is Parameter In Command?
   if(length(rep.node.sub6child$Command) > 0 && !is.null(parm)){
-    ispic <- any(grepl(parm, unlist(rep.node.sub6child$Command)))
+    ispic <- any(grepl(parm, unlist(rep.node.sub6child$Command), fixed = gfixed, ignore.case = gignore.case))
   }else{
     ispic <- FALSE
   }
@@ -473,7 +484,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     cat_parm(rep.node.sub6child, parm = parm) ## This might be wrong, without parm argument
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.sub6child$Command)))){
-      wcp <- grep(parm, unlist(rep.node.sub6child$Command))
+      wcp <- grep(parm, unlist(rep.node.sub6child$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.sub6child$Command)[wcp])
     }else{
       if(!is.null(parm)) stop("Parameter not found")

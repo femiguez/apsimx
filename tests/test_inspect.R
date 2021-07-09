@@ -35,6 +35,9 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 3))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 5))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 6))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = "VariableNames")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = "EventNames")
 
   ## Maize
   i <- "Maize.apsimx"
@@ -53,6 +56,8 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule', NA))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingFertiliser', NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = "VariableNames")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = "EventNames")
   
   ## Oats
   i <- "Oats"
@@ -80,6 +85,31 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 7))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 8))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 9))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = "VariableNames")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = "EventNames")
+  
+  ## OilPalm is good for testing Report
+  i <- "OilPalm.apsimx"
+  inspect_apsimx(i, src.dir = ex.dir, node = "Clock")        
+  inspect_apsimx(i, src.dir = ex.dir, node = "Weather")        
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Physical")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater", parm = "SummerDate")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Organic")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
+  inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Palm Management", NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Palm Management", 3))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = list("Annual", NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = list("Monthly", NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = list("Annual", "Variable"))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = list("Monthly", "Event"))
+  
+  
 }
 
 run.inspect.print.path.tests <- get(".run.local.tests", envir = apsimx.options)

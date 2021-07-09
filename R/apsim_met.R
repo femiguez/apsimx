@@ -556,7 +556,7 @@ as_apsim_met <- function(x,
 #'  Climate Warming Trends in the U.S. Midwest Using Four Thermal Models. 
 #'  Agron. J., 111: 3230-3243. (doi:10.2134/agronj2019.02.0118)
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' require(nasapower)
 #' require(ggplot2)
 #' 

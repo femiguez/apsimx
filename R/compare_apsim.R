@@ -60,10 +60,13 @@ compare_apsim <- function(...,
   nms1 <- names(out1)
   
   if(!index %in% nms1) 
-    stop("index not found in data.frame")
+    stop("index not found in first data.frame")
+  
+  if(!index %in% names(outs[[2]])) 
+    stop("index not found in second data.frame")
   
   nms1.i <- intersect(nms1, names(outs[[2]])) ## Variables in common
-  
+
   if(length(nms1.i) < 2) 
     stop("No names in common between the data.frames")
   
