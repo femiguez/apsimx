@@ -498,7 +498,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
         }
       }
     }
-    ## Handling level 7
+    ## Handling level 7, I don't think this works. Need to test.
     if(upp.lngth == 7){
       n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
       wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
@@ -578,3 +578,146 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   }
 }
 
+
+edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
+                             parm.path = NULL, value = NULL, 
+                             overwrite = FALSE, edit.tag = "-edited",
+                             verbose = TRUE){
+  
+  .check_apsim_name(file)
+  
+  if(missing(wrt.dir)) wrt.dir <- src.dir
+  
+  file.names.apsimx <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
+  file.names.json <- dir(path = src.dir, pattern=".json$", ignore.case=TRUE)
+  file.names <- c(file.names.apsimx, file.names.json)
+  
+  if(length(file.names) == 0){
+    stop("There are no .apsimx or.json files in the specified directory to edit.")
+  }
+  
+  file <- match.arg(file, file.names)
+  
+  ## Parse apsimx file (JSON)
+  apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
+  
+  ## Should add code to deal with scoped paths
+  if(substr(parm.path, 1, 1) == "$") 
+    parm.path <- substr(parm.path, 2, nchar(parm.path))
+    
+  upp <- strsplit(parm.path, ".", fixed = TRUE)[[1]]
+  upp.lngth <- length(upp)
+  keep.going <- TRUE
+  
+  if(upp.lngth == 2){
+    wp2p <- which(names(apsimx_json) == upp[2])
+    if(length(wp2p) == 0)
+      stop("Parameter not found")
+    apsimx_json[[wp2p]] <- value
+  }
+  
+  if(upp.lngth >= 3 && keep.going){
+    if(apsimx_json$Name != upp[2])
+      stop("First position name does not match")    
+    wl3 <- which(upp[3] == sapply(apsimx_json$Children, function(x) x$Name))
+    if(length(wl3) == 0) stop("Could not find parameter at level 3")
+    if(upp.lngth == 3){
+      apsimx_json$Children[[wl3]] <- value
+      keep.going <- FALSE
+    }
+  }
+  
+  if(upp.lngth >= 4 && keep.going){
+    n3 <- apsimx_json$Children[[wl3]]
+    ## Look for the first reasonable parameter
+    wl4 <- which(upp[4] == sapply(n3$Children, function(x) x$Name))
+    if(length(wl4) == 0) stop("Could not find parameter at level 4")
+    if(upp.lngth == 4){
+      apsimx_json$Children[[wl3]]$Children[[wl4]] <- value
+      keep.going <- FALSE
+    }
+  }
+  
+  if(upp.lngth >= 5 && keep.going){
+    
+    if(upp[5] %in% names(n3$Children[[wl4]])){
+      apsimx_json$Children[[wl3]]$Children[[wl4]][[upp[5]]] <- value
+      keep.going <- FALSE
+    }else{
+      wl5 <- which(upp[5] == sapply(n3$Children[[wl4]]$Children, function(x) x$Name))
+      if(length(wl5) == 0) stop("Could not find parameter at level 5")
+      if(upp.lngth == 5){
+        apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]][[upp[5]]] <- value
+        keep.going <- FALSE
+      }
+    }
+  }
+  ## Handling level 6
+  if(upp.lngth >= 6 && keep.going){
+    n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+    if(upp[6] %in% names(n4$Children[[wl5]])){
+      apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]][[upp[6]]] <- value
+      keep.going <- FALSE
+    }else{
+      if("Parameters" %in% names(n4$Children[[wl5]])){
+        wp <- grep(upp[6], n4$Children[[wl5]]$Parameters)
+        if(length(wp) == 0) stop("Could not find parameter at level 6 (Parameter)")
+        apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Parameters[[wp]]$Value <- value
+        keep.going <- FALSE
+      }else{
+        wl6 <- which(upp[6] == sapply(n4$Children[[wl5]]$Children, function(x) x$Name))
+        if(length(wl6) == 0) stop("Could not find parameter at level 6")
+        if(upp.lngth == 6){
+          apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]][[upp[6]]] <- value         
+          keep.going <- FALSE
+        }
+      }
+    }
+  }
+  
+  ## Handling level 7
+  if(upp.lngth >= 7 && keep.going){
+    n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
+    if(upp[7] %in% names(n5$Children[[wl6]])){
+      apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]][[upp[7]]] <- value
+      keep.going <- FALSE
+    }else{
+      if("Parameters" %in% names(n5$Children[[wl6]])){
+        wp <- grep(upp[7], n5$Children[[wl6]]$Parameters)
+        if(length(wp) == 0) stop("Could not find parameter at level 7 (Parameter)")
+        apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Parameters[[wp]]$Value <- value
+        keep.going <- FALSE
+      }else{
+        wl7 <- which(upp[7] == sapply(n5$Children[[wl6]]$Children, function(x) x$Name))
+        if(length(wl6) == 0) stop("Could not find parameter at level 7")
+        if(upp.lngth == 7){
+          apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]][[upp[7]]] <- value
+          keep.going <- FALSE
+        }
+      }
+    }
+  }
+
+  if(overwrite == FALSE){
+    wr.path <- paste0(wrt.dir, "/",
+                      tools::file_path_sans_ext(file),
+                      edit.tag, ".apsimx")
+  }else{
+    wr.path <- paste0(wrt.dir, "/", file)
+  }
+  
+  jsonlite::write_json(apsimx_json, path = wr.path, 
+                       pretty = TRUE, digits = NA, 
+                       auto_unbox = TRUE, null = "null")
+  
+  if(verbose){
+    cat("Edited parameters: ", parm, "\n")
+    cat("New values: ", value, "\n")
+    cat("Created: ", wr.path,"\n")
+  }
+}
+  
+  
+  
+  
+  

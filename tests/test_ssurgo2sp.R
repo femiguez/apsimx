@@ -17,11 +17,18 @@ if(run.test.ssurgo.workflow){
   mapunit <- read.csv(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_mapunit.csv"))
   mapunit.shp <- sf::st_read(paste0(extd.dir,"/ISUAG/SSURGO/ISUAG_SSURGO_Mapunits.shp"), quiet = TRUE)
   
+  ## Get tables from SSURGO
+  srgtbls <- get_ssurgo_tables(lonlat = c(-93, 42))
+  chorizon <- srgtbls$chorizon
+  component <- srgtbls$component
+  mapunit <- srgtbls$mapunit
+  mapunit.shp <- srgtbls$mapunit.shp
+  
   sp <- ssurgo2sp(mapunit = mapunit, 
                   component = component, 
                   chorizon = chorizon,
                   mapunit.shp = mapunit.shp,
-                  nlayers = 20, nmapunit = 2)
+                  nlayers = 20)
   
   ## For first soil
   metadata <- attributes(sp[[1]])

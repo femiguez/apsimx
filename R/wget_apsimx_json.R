@@ -47,12 +47,12 @@ get_apsimx_json <- function(model = "Wheat", wrt.dir = ".", cleanup = FALSE){
 #' @return it does not return an R object but it writes an apsimx file to disk
 #' @export
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' tmp.dir <- tempdir()
 #' wheat <- get_apsimx_json(model = "Wheat", wrt.dir = tmp.dir)
-#' ex.dir <- auto_detect_apsimx_examples()
+#' extd.dir <- system.file("extdata", package = "apsimx")
 #' insert_replacement_node("Wheat.apsimx", 
-#'                         src.dir = ex.dir, wrt.dir = tmp.dir,
+#'                         src.dir = extd.dir, wrt.dir = tmp.dir,
 #'                         rep.node = wheat)
 #' }
 #' 
@@ -85,6 +85,18 @@ insert_replacement_node <- function(file, src.dir, wrt.dir, rep.node,
   apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
   
   wcore <- grep("Core.Simulation", apsimx_json$Children)
+  wdatastore <- grep("Models.Storage.DataStore", apsimx_json$Children)
+  
+  if(verbose){
+    cat("Simulation(s) is/are in node(s)", wcore, "\n")
+    cat("Datastore(s) is/are in node(s)", wdatastore, "\n")
+  }
+  
+  if(rep.node.position == wdatastore)
+    warning("Replacement node will overwrite DataStore")
+  
+  if(new.core.position == wdatastore)
+    warning("Simulations node will overwrite DataStore")
 
   ## Need to modify the replacement node?
   rep.node$ExplorerWidth <- NULL
