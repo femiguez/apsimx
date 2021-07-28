@@ -41,17 +41,16 @@ This function is a work in progress. There are many instances for which it will 
 }
 \examples{
 \donttest{
-
-ex.dir <- auto_detect_apsimx_examples()
+extd.dir <- system.file("extdata", package = "apsimx")
 ## It seems to work for simple search
-inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Version")
-inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Simulations")
-inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Clock")
-inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Weather")
+inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Version")
+inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Simulations")
+inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Clock")
+inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Weather")
 ## Does return soil components
-inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "DUL")
+inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "DUL")
 ## Or cultivar
-inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Hartog")
+inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Hartog")
 
 }
 }

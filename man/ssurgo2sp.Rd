@@ -92,6 +92,42 @@ geom_point() +
   geom_path() + 
   ylab("Soil Depth (cm)") + xlab("Organic Matter (percent)") +
   ggtitle("Method linear")
-  
+}
+
+\dontrun{
+## Method using get_ssurgo_tables
+
+require(soilDB)
+require(sp)
+require(sf)
+require(spData)
+## retrieve data from lon -93, lat = 42
+stbls <- get_ssurgo_tables(lonlat = c(-93, 42))
+
+sp2.c <- ssurgo2sp(mapunit = stbls$mapunit, 
+                 component = stbls$component, 
+                 chorizon = stbls$chorizon, 
+                 mapunit.shp = stbls$mapunit.shp)  
+names(sp2.c)
+
+metadata <- attributes(sp2.c[[1]])
+metadata$names <- NULL; metadata$class <- NULL; metadata$row.names <- NULL
+
+## Convert to an APSIM soil profile
+asp2.c <- apsimx_soil_profile(nlayers = 10,
+                              Thickness = sp2.c[[1]]$Thickness,
+                              BD = sp2.c[[1]]$BD,
+                              AirDry = sp2.c[[1]]$AirDry,
+                              LL15 = sp2.c[[1]]$LL15,
+                              DUL = sp2.c[[1]]$DUL,
+                              SAT = sp2.c[[1]]$SAT,
+                              KS = sp2.c[[1]]$KS,
+                              Carbon = sp2.c[[1]]$Carbon,
+                              PH = sp2.c[[1]]$PH,
+                              metadata = metadata)
+                              
+plot(asp2.c)
+plot(asp2.c, property = "water")
+
 }
 }

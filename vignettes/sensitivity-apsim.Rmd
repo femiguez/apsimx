@@ -1,0 +1,274 @@
+---
+title: "Sensitivity Analysis"
+author: "Fernando Miguez"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Sensitivity Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(apsimx)
+library(ggplot2)
+apsimx_options(warn.versions = FALSE)
+tmp.dir <- tempdir()
+```
+
+# Introduction
+
+Sensitivity analysis of crop models such as APSIM is a valuable task which
+allows us to develop an intuition of the model response to changing a variety
+of inputs. These inputs can generally be included in the following categories:
+
+* weather 
+* soil profiles
+* crop/genetics 
+* management
+
+The weather component can depend on different sources of data or manipulations
+to simulate different conditions and stresses. The soil profiles can be from different
+locations or specifically manipulated to understand the impact of particular soil properties.
+Crop properties or cultivar specific parameters can also be investigated as a source of 
+model behavior. Finally, examples of management usually include planting date, fertilizer application,
+tillage or residue management and irrigation. All of these components can be sources of uncertainty
+and can be evaluated in a sensitivity analysis.
+
+When multiple parameters are evaluated performing model runs for all combinations can become prohibitive.
+For this reason, there are some combinations which can be more efficient and provide nearly the same 
+amount of information. The suggestion here is to build complexity in the sensitivity analysis task 
+gradually. For example, first choose one parameter and select 5-10 reasonable values, run the model
+and evaluate the model output. This is a one parameter at a time approach and it can be of great value
+in developing an intuition for the model behavior.
+
+For a general introduction to sensitivity analysis see Saltelli et al. 2008. Global sensitivity analysis. The Primer.
+Here they define sensitivity analysis as
+
+\begin{quote}
+The study of how uncertainty in the output of a model (numerical or otherwise) can be
+apportioned to different sources of uncertainty in the model input
+\end{quote}
+
+
+
+
+Earlier examples of sensitivity analysis are work by Bryan Stanfill which used the
+(now removed from CRAN) apsimr R package (still at https://github.com/stanfill/apsimr).
+
+* Background on sensitivity analysis
+* Sensitivity analysis as a preliminary step for parameter optimization
+* Simple sensitivity analysis using for loops
+* 
+
+## Sensitivity Analysis using for loops
+
+
+
+## sens_apsim
+
+* file = .apsim file
+* src.dir = source directory. Should be the current directory for both this file and the crop file.
+* crop.file = typically something like 'Wheat.xml', 'Maize.xml' or similar. You should have also placed an 'ini' under the crop in the .apsim file and point to this file.
+* parm.paths = character vector with the full path to the parameters to be evaluated. This can be obtained by using **inspect_apsim** or **inspect_apsim_xml**. The length of the parameter vector should be equal to the number of parameters being evaluated (sometimes less is more). For example:
+
+```{r inspect-apsimx-xml-maize}
+extd.dir <- system.file("extdata", package = "apsimx")
+rue.pth <- inspect_apsim_xml("Maize75.xml", src.dir = extd.dir, parm = "rue")
+ext.pth <- inspect_apsim_xml("Maize75.xml", src.dir = extd.dir, parm = "y_extinct_coef")
+## To pass them to optim_apsim, combine them
+pp <- c(rue.pth, ext.pth)
+```
+Generates the paths for the radiation use efficiency and extinction coefficient paths. 
+
+* parm.vector.index = some paths point to a vector of parameters, but sometimes only one element of that vector needs to be optimized. In this case provide the index for which element of the vector needs to be optimized. If some of the parameters need this index while others do not, include a zero for those parameter vectors which are not indexed. 
+
+* grid = data frame with combinations of parameters to be evaluated.
+
+* summary = optional summary function to apply if the APSIM output returns multiple rows. The mean is used by default.
+
+
+## optim_apsimx
+
+This function has a very similar structure to **optim_apsim**. The main difference is that at the moment it is required to supply the initial values for the parameters. It is also required to indicate whether each parameter is present in the 'replacement' component. As expalined before, use **inspect_apsimx** or **inspect_apsimx_replacement** to find the parameter paths.
+
+# Wheat Example
+
+As a simple example, let's imagine we have collected some data on phenology, LAI and biomass of wheat. The data are already in the package and we just need to load it. These data were actually simulated with known parameter values.
+
+## Observed data
+
+```{r obsWheat}
+data(obsWheat)
+## See the structure
+head(obsWheat)
+## Only 10 observations
+dim(obsWheat)
+## Visualize the data
+ggplot(obsWheat, aes(Date, Wheat.AboveGround.Wt)) + 
+  geom_line() + 
+  ggtitle("Biomass (g/m2)")
+  
+ggplot(obsWheat, aes(Date, Wheat.Leaf.LAI)) + 
+  geom_line() +
+  ggtitle("LAI")
+  
+ggplot(obsWheat, aes(Date, Wheat.Phenology.Stage)) + 
+  geom_line() +
+  ggtitle("Phenology Stages")
+```
+
+Notice that the names in the *obsWheat* data frame are identical to the names from the APSIM-X output and this is important later in the optimization so that we can match the variables.
+
+## Before optimization
+
+```{r wheat-sim-b4-opt, echo = FALSE}
+sim0 <- read.csv(file.path(extd.dir, "wheat-sim-b4-opt.csv"))
+sim0$Date <- as.Date(sim0$Date)
+```
+
+```{r sim0-wheat-sim, eval = FALSE}
+sim0 <- apsimx("Wheat-opt-ex.apsimx", src.dir = extd.dir, value = "report")
+```
+
+```{r sim0-viz}
+## Select 
+sim0.s <- subset(sim0, 
+                 Date > as.Date("2016-09-30") & Date < as.Date("2017-07-01"))
+## Visualize before optimization
+## phenology
+ggplot() + 
+  geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Stage)) +
+  geom_line(data = sim0.s, aes(x = Date, y = Wheat.Phenology.Stage)) + 
+  ggtitle("Phenology")
+## LAI
+ggplot() + 
+  geom_point(data = obsWheat, aes(x = Date, y = Wheat.Leaf.LAI)) +
+  geom_line(data = sim0.s, aes(x = Date, y = Wheat.Leaf.LAI)) + 
+  ggtitle("LAI")
+## Biomass
+ggplot() + 
+  geom_point(data = obsWheat, aes(x = Date, y = Wheat.AboveGround.Wt)) +
+  geom_line(data = sim0.s, aes(x = Date, y = Wheat.AboveGround.Wt)) + 
+    ggtitle("Biomass (g/m2)")
+```
+
+## Setting up the optimization
+
+We have observed data and we have ran the model. We notice that the agreement between observed and simulated could be better. For this example we will only be optimizing two parameters: RUE and phyllochron. We could use the function **inspect_apsimx_replacement** to find them. Then we construct the paths.
+
+```{r inspect}
+## Finding RUE
+inspect_apsimx_replacement("Wheat-opt-ex.apsimx", src.dir = extd.dir,
+                           node = "Wheat", 
+                           node.child = "Leaf",
+                           node.subchild = "Photosynthesis",
+                           node.subsubchild = "RUE", 
+                           parm = "FixedValue",
+                           verbose = FALSE)
+## Finding BasePhyllochron
+inspect_apsimx_replacement("Wheat-opt-ex.apsimx", src.dir = extd.dir,
+                           node = "Wheat", 
+                           node.child = "Cultivars",
+                           node.subchild = "USA",
+                           node.subsubchild = "Yecora", 
+                           verbose = FALSE)
+## Constructing the paths is straight-forward
+pp1 <- "Wheat.Leaf.Photosynthesis.RUE.FixedValue"
+pp2 <- "Wheat.Cultivars.USA.Yecora.BasePhyllochron"
+```
+
+## Running the optimization
+
+Once we have set up these pieces we can run the optimization. Here, the first argument is the name of the file, the second the directory where it is (*src.dir*), then the paths indicating the parameters to optimize, the observed data (*data*), the weighting method (here = *mean*), whether the parameters are in the replacement part of the simulation and the initial values.
+
+```{r optim-apsimx, eval = FALSE}
+## wop is for wheat optimization
+wop <- optim_apsimx("Wheat-opt-ex.apsimx", 
+                    src.dir = extd.dir, 
+                    parm.paths = c(pp1, pp2),
+                    data = obsWheat, 
+                    weights = "mean",
+                    replacement = c(TRUE, TRUE),
+                    initial.values = c(1.2, 120))
+```
+
+This optimization ran for about 7 minutes (on my laptop). This is the result:
+
+```{r load-wop, echo = FALSE}
+data("wheat-opt-ex", package = "apsimx")
+```
+
+```{r wop-result}
+wop
+```
+
+We can see that the optimized values are very close to the known values which were used to simulate the data. The known value for RUE was 1.5 $g \; MJ^{-1}$ and for BasePhyllochron it was 90 GDD.
+
+In addition, it is good practice to compute the Hessian matrix, since it provides information about standard errors and confidence intervals.
+
+```{r optim-apsimx-hessian, eval = FALSE}
+## wop is for wheat optimization
+wop.h <- optim_apsimx("Wheat-opt-ex.apsimx", 
+                      src.dir = extd.dir, 
+                      parm.paths = c(pp1, pp2),
+                      data = obsWheat, 
+                      weights = "mean",
+                      replacement = c(TRUE, TRUE),
+                      initial.values = c(1.2, 120),
+                      hessian = TRUE)
+```
+
+This ran for about 8 minutes and it allows for calculation of confidence intervals and standard errors.
+
+```{r wop-result-hessian}
+wop.h
+```
+
+After optimization there is good agreement between observed and simulated.
+
+```{r wop-result-opt, eval = FALSE}
+## We re-run the model because the Wheat-opt-ex.apsimx file 
+## is already edited
+sim.opt <- apsimx("Wheat-opt-ex.apsimx", src.dir = extd.dir, value = "report")  
+sim.opt.s <- subset(sim.opt, 
+                    Date > as.Date("2016-09-30") & Date < as.Date("2017-07-01"))
+```
+
+```{r import-wop-result, echo = FALSE}
+sim.opt.s <- read.csv(file.path(extd.dir, "wheat-sim-opt.csv"))
+sim.opt.s$Date <- as.Date(sim.opt.s$Date)
+```
+
+```{r wop-result-opt-visualize}
+  ## phenology
+  ggplot() + 
+    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Stage)) +
+    geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.Phenology.Stage)) + 
+    ggtitle("Phenology")
+  ## LAI
+  ggplot() + 
+    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Leaf.LAI)) +
+    geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.Leaf.LAI)) + 
+    ggtitle("LAI")
+  ## Biomass
+  ggplot() + 
+    geom_point(data = obsWheat, aes(x = Date, y = Wheat.AboveGround.Wt)) +
+    geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.AboveGround.Wt)) + 
+    ggtitle("Biomass (g/m2)")
+```
+
+## Multi-simulation optimization
+
+In both APSIM Classic and Next Generation it might be common to perform simulations (for example for different sites or years). In this case the optimization might be done over those multiple simulations. The main considerations when doing this is that for Classic the observations should be organized with 'outfile' for the first column. This column there whould be a string which matches the simulation in APSIM that corresponds to this specific simulation (i.e. site/year). The second column should be the 'Date' and the variables to be optimized should match those names in the APSIM simulation. Also, the argument 'index' in 'optim_apsim' should be c('outfile', 'Date'). For Next Generation, the considerations are very similar except that the observed data should be organized with 'report' as the first column and 'Date' as the second column. Likewise, the 'index' argument in 'optim_apsimx' should be c('report', 'Date'). In this way, for both types of optimizations the simulations in APSIM will be able to be matched with the observations. 
+
+### Additional considerations and potential issues
+
+The main additional consideration is that it can be a good idea to set up lower and upper bounds on the parameters in terms of how much higher and lower than the default values can be. In a model such as APSIM usually plus or minus 50 percent is enough of a range and even a lower range can often suffice. These can be included as 0.5 and 1.5. With *optim* it is necessary to use method = "L-BFGS-B". There are also similar options when using **nloptr**. This package has many available algorithms to choose from with more modern implementations than the ones available in **optim**. However, one disadvantage of the **nloptr** function is that it does not seem to be able to compute the Hessian numerically. 
+
+* One issue which I have not fully tracked down is an error which appears which indicates a conflict with disk I/O. Again, I need to check but this may be when trying to read and/or write an apsimx file which is also opened in the APSIM GUI application. It is possible that this issue goes away when the APSIM GUI is closed.
+
+* I'm not convinced that using the Hessian (in the way I'm doing it) produces accurate standard errors. It seems to work just fine when there is one variable and perhaps when there is no weighting applied, but it seems that it breaks down with multiple variables and weighting. The **mcmc** method should not have this problem, but it takes a long time to run.

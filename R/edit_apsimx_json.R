@@ -711,7 +711,7 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
                        auto_unbox = TRUE, null = "null")
   
   if(verbose){
-    cat("Edited parameters: ", parm, "\n")
+    cat("Edited parameters: ", parm.path, "\n")
     cat("New values: ", value, "\n")
     cat("Created: ", wr.path,"\n")
   }

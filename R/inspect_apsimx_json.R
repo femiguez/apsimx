@@ -535,17 +535,16 @@ inspect_apsimx <- function(file = "", src.dir = ".",
 #' @export
 #' @examples 
 #' \donttest{
-#' 
-#' ex.dir <- auto_detect_apsimx_examples()
+#' extd.dir <- system.file("extdata", package = "apsimx")
 #' ## It seems to work for simple search
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Version")
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Simulations")
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Clock")
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Weather")
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Version")
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Simulations")
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Clock")
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Weather")
 #' ## Does return soil components
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "DUL")
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "DUL")
 #' ## Or cultivar
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = ex.dir, parm = "Hartog")
+#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Hartog")
 #' 
 #' }
 
@@ -622,6 +621,16 @@ inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
       
       wgpx <- grep(parm, x)
       
+      if(length(wgpx) > 1){
+        cat("Parameter found in more than one postion\n")
+        for(i in wgpx){
+          cat("Position:", i, "\n")
+          print(names(x)[i])
+        }
+        stop("Parameter is not unique", call. = FALSE)
+      }
+        
+      
       nms <- try(sapply(x[[wgpx]], function(x) x$Name), silent = TRUE)
       
       if(verbose){
@@ -648,6 +657,15 @@ inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
       }
       
       wgpx2 <- grep(parm, x[[wgpx]])
+      
+      if(length(wgpx2) > 1){
+        cat("Parameter found in more than one postion\n")
+        for(i in wgpx2){
+          cat("Position:", i, "\n")
+          print(names(x)[i])
+        }
+        stop("Parameter is not unique", call. = FALSE)
+      }
       
       if(!is.null(nms)){
         

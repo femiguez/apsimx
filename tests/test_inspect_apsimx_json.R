@@ -9,11 +9,17 @@ if(run.inspect.apsimx.json){
   
   inspect_apsimx_json("Maize.apsimx", src.dir = extd.dir, parm = "^Version")
   
-  ## This returns an error as expected
-  ## inspect_apsimx_json("Maize.apsimx", src.dir = extd.dir, parm = "Version")
+  inspect_apsimx_json("Maize.apsimx", src.dir = extd.dir, parm = "Version")
   
   inspect_apsimx_json("Maize.apsimx", src.dir = extd.dir, parm = "ApsimVersion")
   
-  ## Next level is Simulation
   inspect_apsimx_json("Maize.apsimx", src.dir = extd.dir, parm = "Clock")
+  
+  inspect_apsimx_json("Maize.apsimx", src.dir = extd.dir, parm = "Soil") 
+
+  ## These parameters do not return a single path
+  ## Ideally, I would be able to either return multiple paths or use
+  ## a jsonpath for the search instead of a single keyword
+  inspect_apsimx_json("Maize.apsimx", src.dir = extd.dir, parm = "Water") 
+  inspect_apsimx_json("Maize.apsimx", src.dir = extd.dir, parm = "Cultivar") 
 }

@@ -46,12 +46,12 @@ it does not return an R object but it writes an apsimx file to disk
 Inserts a replacement node in a simple apsimx simulation file
 }
 \examples{
-\donttest{
+\dontrun{
 tmp.dir <- tempdir()
 wheat <- get_apsimx_json(model = "Wheat", wrt.dir = tmp.dir)
-ex.dir <- auto_detect_apsimx_examples()
+extd.dir <- system.file("extdata", package = "apsimx")
 insert_replacement_node("Wheat.apsimx", 
-                        src.dir = ex.dir, wrt.dir = tmp.dir,
+                        src.dir = extd.dir, wrt.dir = tmp.dir,
                         rep.node = wheat)
 }
 
