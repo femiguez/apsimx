@@ -43,7 +43,7 @@
 #' As a side effect this function creates a new (JSON) .apsimx file.
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' ## This example will read one of the examples distributed with APSIM-X
 #' ## but write to a temporary directory
 #' 

@@ -34,7 +34,7 @@ option \sQuote{user-defined} should be the name of a specific table}
 \item{xargs}{extra arguments to be passed to the APSIM-X run. Use function xargs_apsimx.}
 }
 \value{
-a data frame with the \sQuote{Report} from the APSIM-X simulation. To change the variables being reported use the GUI.
+a data frame with the \sQuote{Report} from the APSIM-X simulation. The return value depends on the argument \sQuote{value} above.
 }
 \description{
 Run apsimx from R. It uses \sQuote{system} (unix) or \sQuote{shell} (windows) and it attempts to be platform independent.
@@ -46,7 +46,7 @@ A valid apsimx file can be run from within R. The main goal is to make running A
 simple, especially for large scale simulations or parameter optimization
 }
 \examples{
-\dontrun{
+\donttest{
 ## See function 'apsimx_example' and vignette 'apsimx'
 }
 

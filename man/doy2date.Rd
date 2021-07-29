@@ -16,6 +16,11 @@ date2doy(x, year = 2001, inverse = FALSE)
 
 \item{inverse}{if TRUE it goes from doy to \sQuote{Date}}
 }
+\value{
+an object of class \sQuote{Date} or a numeric if inverse equals TRUE.
+
+an numeric or an object of class \sQuote{Date} if inverse equals TRUE.
+}
 \description{
 Given a day of the year as julian (1-366) it converts to \sQuote{Date}
 

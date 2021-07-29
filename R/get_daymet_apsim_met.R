@@ -27,6 +27,7 @@
 #' Daily total radiation (MJ/m2/day) can be calculated as 
 #' follows: ((srad (W/m2) * dayl (s/day)) / 1,000,000) \cr
 #' Vapor Pressure Deficit (vp) should be in hecto Pascals
+#' @return It returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
 #' @source The data is retrieved using the \CRANpkg{FedData} package. For the original
 #' source see: https://daymet.ornl.gov/
 #' @export
@@ -177,6 +178,7 @@ get_daymet_apsim_met <- function(lonlat, years,
 #' Vapor Pressure Deficit (vp) should be in hecto Pascals
 #' @source The data is retrieved using the \CRANpkg{daymetr} package. For the original
 #' source see: https://daymet.ornl.gov/
+#' @return It returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
 #' @export
 #' @examples 
 #' \dontrun{

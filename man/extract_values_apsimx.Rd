@@ -13,6 +13,9 @@ extract_values_apsimx(file, src.dir, parm.path)
 
 \item{parm.path}{parameter path either use inspect_apsimx or see example below}
 }
+\value{
+a vector with extracted parameter values from an APSIM file.
+}
 \description{
 Extract initial values from a parameter path
 }

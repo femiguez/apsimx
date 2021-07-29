@@ -68,28 +68,28 @@ is a list that has the same number of elements as the length of the vector \code
  When node equals Report, the editing allows to add variables, but not to remove them at the moment.
 }
 \examples{
-\dontrun{
+\donttest{
 ## This example will read one of the examples distributed with APSIM-X
 ## but write to a temporary directory
 tmp.dir <- tempdir()
 
 ## Edit Bulk density
-ex.dir <- auto_detect_apsimx_examples()
+extd.dir <- system.file("extdata", package = "apsimx")
 bds <- c(1.02, 1.03, 1.09, 1.16, 1.18, 1.19, 1.20)
-edit_apsimx("Barley.apsimx", src.dir = ex.dir,
+edit_apsimx("Wheat.apsimx", src.dir = extd.dir,
             wrt.dir = tmp.dir,
             node = "Soil",
             soil.child = "Water", 
             parm = "BD", value = bds,
             verbose = FALSE)
 ## Inspect file
-inspect_apsimx("Barley-edited.apsimx", src.dir = tmp.dir,
+inspect_apsimx("Wheat-edited.apsimx", src.dir = tmp.dir,
                 node = "Soil", soil.child = "Water")
 ## To delete the file...
-file.remove(paste0(tmp.dir, "/Barley-edited.apsimx"))
+file.remove(file.path(tmp.dir, "Wheat-edited.apsimx"))
 
 ## Edit the fertilizer amount in 'Maize.apsimx'
-edit_apsimx("Maize.apsimx", src.dir = ex.dir,
+edit_apsimx("Maize.apsimx", src.dir = extd.dir,
              wrt.dir = tmp.dir, node = "Manager",
              manager.child = "SowingFertiliser",
              parm = "Amount", value = 200, verbose = TRUE)
@@ -98,7 +98,7 @@ edit_apsimx("Maize.apsimx", src.dir = ex.dir,
 inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, node = "Manager")
 
 ## Remove the file
-file.remove(paste0(tmp.dir, "/Maize-edited.apsimx"))
+file.remove(file.path(tmp.dir, "Maize-edited.apsimx"))
 }
 
 }

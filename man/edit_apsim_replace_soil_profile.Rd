@@ -36,7 +36,7 @@ edit_apsim_replace_soil_profile(
 \item{verbose}{default TRUE. Will print messages indicating what was done.}
 }
 \value{
-writes a file to disk with the supplied soil profile
+writes an APSIM file to disk with the supplied soil profile
 }
 \description{
 Edits an APSIM Classic simulation by replacing the soil profile

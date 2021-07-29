@@ -294,6 +294,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
 #' @param soil.bottom bottom of the soil layer in cm
 #' @param method either 'constant' or 'linear' as used in 'stats::approx'
 #' @param nlayers number of soil layers
+#' @return interpolated numeric vector as a data frame.
 #' @noRd
 #' 
 approx_soil_variable <- function(x, xout = NULL, soil.bottom = 200, 

@@ -65,7 +65,7 @@ The file will be upgraded to the latest file version as part of this
 process.
 }
 \examples{
-\dontrun{
+\donttest{
 ## This example will read one of the examples distributed with APSIM-X
 ## but write to a temporary directory
 

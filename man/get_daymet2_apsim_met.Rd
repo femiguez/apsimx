@@ -21,6 +21,9 @@ get_daymet2_apsim_met(lonlat, years, wrt.dir = ".", filename, silent = FALSE)
 
 \item{silent}{argument passed to \code{\link[daymetr]{download_daymet}}}
 }
+\value{
+It returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
+}
 \description{
 Uses \code{\link[daymetr]{download_daymet}} from the \CRANpkg{daymetr} package to download data to create an APSIM met file.
 }

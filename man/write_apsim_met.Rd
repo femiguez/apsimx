@@ -25,7 +25,7 @@ Write a met file to disk. It takes an object of class \sQuote{met}
 at the moment the read-write cycle will strip comments
 }
 \examples{
-\dontrun{
+\donttest{
 extd.dir <- system.file("extdata", package = "apsimx")
 ames.met <- read_apsim_met("Ames.met", src.dir = extd.dir)
 ames.met

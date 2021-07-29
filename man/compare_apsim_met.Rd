@@ -46,6 +46,8 @@ compare_apsim_met(
 }
 \value{
 object of class \sQuote{cmet}, which can be used for further plotting
+
+it produces a plot
 }
 \description{
 Helper function which allows for a simple comparison among help files

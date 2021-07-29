@@ -157,6 +157,7 @@ unit_conv <- function(x, from, to){
 #' @param x either an integer 1-366 or a \sQuote{Date}
 #' @param year year
 #' @param inverse if TRUE it goes from date to day
+#' @return an object of class \sQuote{Date} or a numeric if inverse equals TRUE.
 #' @export
 #' @examples 
 #' doy2date(120)
@@ -192,6 +193,7 @@ doy2date <- function(x, year = 2001, inverse = FALSE){
 #' @param x either an integer 1-366 or a \sQuote{Date}
 #' @param year year
 #' @param inverse if TRUE it goes from doy to \sQuote{Date}
+#' @return an numeric or an object of class \sQuote{Date} if inverse equals TRUE.
 #' @export
 #' @examples 
 #' date2doy("04-30")

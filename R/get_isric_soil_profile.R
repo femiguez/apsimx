@@ -19,6 +19,7 @@
 #' @param soil.profile a soil profile to fill in in case the default one is not appropriate
 #' @param find.location.name default is TRUE. Use either maps package or photon API to find Country/State.
 #' If you are running this function many times it might be better to set this to FALSE.
+#' @return it generates an object of class \sQuote{soil_profile}.
 #' @details Variable which are directly retrieved and a simple unit conversion is performed: \cr
 #' * Bulk density - bdod \cr
 #' * Carbon - soc \cr
@@ -33,7 +34,7 @@
 #' Can I use CEC? \cr
 #' How can I have a guess at FBiom and Finert? \cr
 #' FBiom does not depend on any soil property at the moment, should it? \cr
-#' @seealso \code{\link{apsimx_soil_profile}}, \code{\link{edit_apsim_replace_soil_profile}}, \code{\link{edit_apsimx_replace_soil_profile}},
+#' @seealso \code{\link{apsimx_soil_profile}}, \code{\link{edit_apsim_replace_soil_profile}}, \code{\link{edit_apsimx_replace_soil_profile}}.
 #' @export
 #' @author Fernando E. Miguez, Eric Zurcher (CSIRO) and Andrew Moore (CSIRO)
 #' @examples 

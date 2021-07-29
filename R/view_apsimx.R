@@ -7,10 +7,11 @@
 #' @param viewer either \dQuote{json} or \dQuote{react}.
 #' @param ... additional arguments passed to either \sQuote{jsonedit} or \sQuote{reactjson}.
 #' These are functions in package \CRANpkg{listviewer}.
+#' @return a display with the APSIM file structure.
 #' @note I do not know how to edit an APSIM-X file using this method yet.
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' ## View the structure of the APSIM-X simulation file
 #' view_apsimx("Wheat.apsimx", src.dir = extd.dir)
@@ -72,10 +73,11 @@ view_apsimx <- function(file, src.dir, viewer = c("json","react"), ...){
 #' @param viewer either \dQuote{json} or \dQuote{react}.
 #' @param ... additional arguments passed to either \sQuote{jsonedit} or \sQuote{reactjson}.
 #' These are functions in package \CRANpkg{listviewer}.
+#' @return a display with the APSIM file structure.
 #' @note I do not know how to edit an APSIM file using this method yet.
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' ## View the structure of the APSIM-X simulation file
 #' view_apsim("Millet.apsim", src.dir = extd.dir)

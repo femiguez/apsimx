@@ -26,12 +26,15 @@
 #' @name .check_apsim_name
 #' @description Checks whether an APSIM file has spaces in it
 #' @param .file an APSIM file
+#' @return It only returns an error if there is a space in the file
 #' @noRd
 #' 
 .check_apsim_name <- function(.file){
   ## No spaces are allowed, provide informative error
+  if(missing(.file))
+    stop("argument .file is missing", call. = FALSE)
   if(grepl("\\s", .file))
-    stop("White spaces are not allowed in file names or directories")
+    stop("White spaces are not allowed in file names or directories", call. = FALSE)
 }
 
 #' This is for when a list has only one element
@@ -40,6 +43,7 @@
 #' @name .extract_bad_children
 #' @description Possibly extract unnamed children more robustlly
 #' @param x a list with (potentially) a \sQuote{Children} object
+#' @return it returns a subset of a json list
 #' @noRd
 #' 
 .extract_bad_children <- function(x){
@@ -60,6 +64,7 @@
 #' @name .favd
 #' @description Extract the date from an APSIM binary name being used
 #' @param x an APISM binary name such as 'APSIM2020.06.05.5260.app'
+#' @return it returns a string for the APSIM date version
 #' @noRd
 #' 
 .favd <- function(x){

@@ -13,6 +13,7 @@
 #' but it will return an object of class \sQuote{met}. This is useful in case manipulation
 #' is required before writing to disk.
 #' @note Multi-year query is not supported for this product. 
+#' @return returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
 #' @export
 #' @examples 
 #' \dontrun{
@@ -136,6 +137,7 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
 #' is required before writing to disk. For this function either provide the longitude 
 #' and latitude or the state and station, but not both. In fact, \sQuote{state} and
 #' \sQuote{station} will be ignored if \sQuote{lonlat} is supplied.
+#' @return returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
 #' @export
 #' @examples 
 #' \dontrun{

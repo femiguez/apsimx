@@ -47,6 +47,9 @@ as_apsim_met(
 \item{check}{whether to check the resulting met file using \code{\link{check_apsim_met}}.
 default is TRUE.}
 }
+\value{
+it returns an object of class \sQuote{met}.
+}
 \description{
 It makes minimum assumptions about the data so it is recommended to change defaults
 }

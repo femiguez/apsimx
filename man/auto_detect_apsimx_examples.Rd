@@ -7,7 +7,7 @@
 auto_detect_apsimx_examples()
 }
 \value{
-will create a directory pointing to APSIM-X distributed examples
+will create a directory (character string) pointing to APSIM-X distributed examples
 }
 \description{
 simple function to detect where APSIM-X examples are located

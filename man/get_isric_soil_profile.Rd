@@ -21,6 +21,9 @@ get_isric_soil_profile(
 \item{find.location.name}{default is TRUE. Use either maps package or photon API to find Country/State.
 If you are running this function many times it might be better to set this to FALSE.}
 }
+\value{
+it generates an object of class \sQuote{soil_profile}.
+}
 \description{
 Retrieves soil data from the ISRIC global database and converts it to an APSIM soil_profile object
 }
@@ -66,7 +69,7 @@ plot(sp1, property = "water")
 }
 }
 \seealso{
-\code{\link{apsimx_soil_profile}}, \code{\link{edit_apsim_replace_soil_profile}}, \code{\link{edit_apsimx_replace_soil_profile}},
+\code{\link{apsimx_soil_profile}}, \code{\link{edit_apsim_replace_soil_profile}}, \code{\link{edit_apsimx_replace_soil_profile}}.
 }
 \author{
 Fernando E. Miguez, Eric Zurcher (CSIRO) and Andrew Moore (CSIRO)

@@ -15,6 +15,7 @@
 #' is required before writing to disk.
 #' @note This source of data does not provide solar radiation. If \sQuote{fillin.radn} is
 #' TRUE it fill in radiation data using the nasapower package.
+#' @return returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
 #' @export
 #' @examples 
 #' \dontrun{

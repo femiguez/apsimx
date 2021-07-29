@@ -34,10 +34,12 @@
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
 #' no weighting is applied. It can be 'mean', 'variance' or a numeric vector of appropriate length.
-#' @return vector of optimized coefficients
+#' @return object of class \sQuote{optim_apsim}, but really just a list with results from optim and additional information.
 #' @export
-#' 
-#' 
+#' @examples 
+#' \donttest{
+#' ## See the vignette for examples
+#' }
 #' 
 
 optim_apsimx <- function(file, src.dir = ".", 
@@ -326,6 +328,7 @@ optim_apsimx <- function(file, src.dir = ".",
 #' @param file file name to be run (the extension .apsimx is optional)
 #' @param src.dir directory containing the .apsimx file to be run (defaults to the current directory)
 #' @param parm.path parameter path either use inspect_apsimx or see example below
+#' @return a vector with extracted parameter values from an APSIM file.
 #' @export
 #' @examples 
 #' \donttest{
@@ -555,6 +558,7 @@ log_lik <- function(.cfs){
 #' 
 #' @title Environment to store data for apsimx MCMC
 #' @description Environment which stores data for MCMC
+#' @return This is an environment, so nothing to return.
 #' @export
 #' 
 mcmc.apsimx.env <- new.env(parent = emptyenv())

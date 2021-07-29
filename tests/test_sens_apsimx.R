@@ -96,8 +96,6 @@ if(run.sens.apsimx){
   inspect_apsimx("MaizeSoybean.apsimx", node = "Report",
                  root = "SimulationMaize")
   
-  inspect_apsimx_json("MaizeSoybean.apsimx", parm = "ApsimVersion")
-  
   edit_apsimx("MaizeSoybean.apsimx",
               root = "SimulationMaize",
               node = "Report",
@@ -145,12 +143,58 @@ if(run.sens.apsimx){
     geom_point() + 
     geom_smooth(se = FALSE)
   
-  ggplot(data = res.dat, aes(x = rue, y = wheat.leaf.lai)) + 
+  ggplot(data = res.dat, aes(x = rue, y = maize.leaf.lai)) + 
     geom_point() + 
     geom_smooth(se = FALSE)
   
-  ggplot(data = res.dat, aes(x = rue, y = wheat.leaf.transpiration)) + 
+  ggplot(data = res.dat, aes(x = rue, y = maize.leaf.transpiration)) + 
     geom_point() + 
     geom_smooth(se = FALSE) 
+  
+  ## For the specific simulation
+  ggplot(data = sim1, aes(x = Date, y = Maize.AboveGround.Wt)) + 
+    geom_point()
+  
+  ggplot(data = sim1, aes(x = Date, y = Maize.Leaf.LAI)) + 
+    geom_point()
+
+  ggplot(data = sim1, aes(x = Date, y = Maize.Leaf.Transpiration)) + 
+    geom_point()
+  
     
+}
+
+if(run.sens.apsimx){
+  
+  tmp.dir <- tempdir()
+  extd.dir <- system.file("extdata", package = "apsimx")
+  file.copy(file.path(extd.dir, "Wheat.apsimx"), tmp.dir)
+  ## Identify a parameter of interest
+  ## In this case we want to know the impact of varying the fertilizer amount
+  pp <- inspect_apsimx("Wheat.apsimx", src.dir = tmp.dir, 
+                       node = "Manager", parm = list("SowingFertiliser", 1))
+  ## Do we need to edit the Report?
+  edit_apsimx("Wheat.apsimx", src.dir = tmp.dir, node = "Report",
+              parm = "VariableNames", value = c("[Wheat].Leaf.LAI", "[Wheat].Leaf.Transpiration"),
+              overwrite = TRUE)
+  ## For simplicity, we create a vector of fertilizer amounts (instead of sampling)
+  start <- Sys.time()
+  ferts <- seq(5, 300, length.out = 10)
+  col.res <- NULL
+  for(i in 1:10){
+    
+    edit_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+                node = "Other",
+                parm.path = pp, parm = "Amount",
+                value = ferts[i],
+                overwrite = TRUE)
+    
+    sim <- apsimx("Wheat.apsimx", src.dir = tmp.dir)
+    col.res <- rbind(col.res, data.frame(fertilizer.amount = ferts[i], 
+                                         wheat.aboveground.wt = mean(sim$Wheat.AboveGround.Wt, na.rm = TRUE),
+                                         wheat.leaf.lai = mean(sim$Wheat.Leaf.LAI, na.rm = TRUE),
+                                         wheat.leaf.transpiration = mean(sim$Wheat.Leaf.Transpiration, na.rm = TRUE)))
+  }
+  end <- Sys.time()
+  elapsed.time <- end - start
 }

@@ -11,6 +11,9 @@
 
 \item{...}{additional printing arguments}
 }
+\value{
+It prints to console. Not used to return an R object.
+}
 \description{
 Print a met file in a friendly way
 }

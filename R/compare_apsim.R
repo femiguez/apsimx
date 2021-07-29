@@ -163,6 +163,7 @@ compare_apsim <- function(...,
 #' @param variable variable to plot 
 #' @param id identification (not implemented yet)
 #' @param span argument passed to \sQuote{geom_smooth}
+#' @return it produces a plot
 #' @export
 #' 
 plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),

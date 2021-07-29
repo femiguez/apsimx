@@ -9,6 +9,9 @@ napad_apsim_met(met)
 \arguments{
 \item{met}{object of class \sQuote{met}}
 }
+\value{
+It returns an object of class \sQuote{met} with padded NAs.
+}
 \description{
 It will fill in or \sQuote{pad} a met object with NAs
 }

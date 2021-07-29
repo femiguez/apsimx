@@ -13,6 +13,9 @@ apsim_options(exe.path = NA, examples.path = NA, warn.versions = TRUE)
 
 \item{warn.versions}{logical. warning if multiple versions of APSIM are detected.}
 }
+\value{
+It modifies the \sQuote{apsim.options} environment as a side effect.
+}
 \description{
 Set the path to the APSIM executable, examples and warning suppression.
 }

@@ -10,6 +10,9 @@ An object of class \code{environment} of length 0.
 \usage{
 mcmc.apsimx.env
 }
+\value{
+This is an environment, so nothing to return.
+}
 \description{
 Environment which stores data for MCMC
 }

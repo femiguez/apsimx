@@ -70,6 +70,12 @@ this argument.}
 }
 \value{
 object of class \sQuote{optim_apsim}, but really just a list with results from optim and additional information.
+
+prints to console
+
+it returns the variance-covariance matrix for an object of class \sQuote{optim_apsim}.
+
+a numeric vector with the value of the parameter estimates.
 }
 \description{
 It is a wrapper for running APSIM and optimizing parameters using \code{\link[stats]{optim}}

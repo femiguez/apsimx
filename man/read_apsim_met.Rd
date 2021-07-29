@@ -29,7 +29,7 @@ the process of read and write unless they are added back in manually. \cr
 Also, empty lines are ignored so these will be lost as well in the read and write process.
 }
 \examples{
-\dontrun{
+\donttest{
 extd.dir <- system.file("extdata", package = "apsimx")
 ames.met <- read_apsim_met("Ames.met", src.dir = extd.dir)
 ames.met

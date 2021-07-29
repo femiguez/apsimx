@@ -13,6 +13,9 @@ apsim_example(example = "Millet", silent = FALSE, tmp.dir = NULL)
 
 \item{tmp.dir}{temporary directory where to write files}
 }
+\value{
+This function returns a data frame with APSIM output
+}
 \description{
 simple function to run some of the built-in APSIM examples
 }

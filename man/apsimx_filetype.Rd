@@ -22,13 +22,9 @@ Minimal function which reads only the first line in a file and tries to guess wh
       an \sQuote{xml} or \sQuote{json} file type.
 }
 \examples{
-\dontrun{
-ex.dir <- auto_detect_apsimx_examples()
-apsimx_filetype("Barley", src.dir = ex.dir) 
-apsimx_filetype("Chicory", src.dir = ex.dir) 
-apsimx_filetype("Oats", src.dir = ex.dir)                               
-apsimx_filetype("Maize", src.dir = ex.dir)
-apsimx_filetype("Sugarcane", src.dir = ex.dir)
+\donttest{
+extd.dir <- system.file("extdata", package = "apsimx")
+apsimx_filetype("Wheat.apsimx", src.dir = extd.dir) 
 }
 
 }

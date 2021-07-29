@@ -26,6 +26,9 @@ get_gsod_apsim_met(
 
 \item{fillin.radn}{whether to fill in radiation data using the nasapower pacakge. Default is FALSE.}
 }
+\value{
+returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
+}
 \description{
 Uses \code{\link[GSODR]{get_GSOD}} from the \CRANpkg{GSODR} package to download data to create an APSIM met file.
 }

@@ -18,7 +18,7 @@
 #'       the instance in the first folder unless 'root' is supplied. By providing the name of the folder to root
 #'       (or a regular expression), the appropriate node can be selected. In this case the printed path will
 #'       be absolute instead of relative.
-#' @return table with inspected parameters and values
+#' @return It returns the parameter path (when print.path equals TRUE) and table with inspected parameters and values
 #' @export
 #' @examples 
 #' \donttest{
@@ -719,7 +719,7 @@ inspect_apsim <- function(file = "", src.dir = ".",
 #' @note the behavior has changed from previous verions (earlier than 1.977). Before,
 #' if more than match was found it would return an error. Now it returns a list with all
 #' possible matches. This can be useful when trying to find a parameter.
-#' @return absolute parameter path(s)
+#' @return it returns an absolute parameter path(s)
 #' @export
 #' @examples  
 #' \donttest{
@@ -797,10 +797,10 @@ inspect_apsim_xml <- function(file = "",
 #' @param src.dir directory containing the .xml file to be viewed; defaults to the current working directory
 #' @param viewer either \dQuote{json} or \dQuote{react}.
 #' @param ... additional arguments passed to either \sQuote{jsonedit} or \sQuote{reactjson}.
-#' @return nothing
+#' @return It does not return an object but it produces a tree display of the APSIM file.
 #' @export
 #' @examples  
-#' \dontrun{
+#' \donttest{
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' view_apsim_xml("Maize75.xml", src.dir = extd.dir)
 #' }

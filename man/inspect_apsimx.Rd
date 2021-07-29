@@ -48,22 +48,22 @@ This is simply a script that prints the relevant parameters which are likely to 
          To investigate the available \sQuote{soil.childs} specify \sQuote{Soil} for \sQuote{node} and do not specify the \sQuote{soil.child}.
 }
 \examples{
-\dontrun{
-ex.dir <- auto_detect_apsimx_examples()
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Clock") 
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Weather")
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Metadata") 
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Physical") 
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilWater") 
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Organic")
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialN")
-inspect_apsimx("Barley", src.dir = ex.dir, node = "SurfaceOrganicMatter")
-inspect_apsimx("Barley", src.dir = ex.dir, node = "MicroClimate")
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Crop")
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Manager")
-inspect_apsimx("Barley", src.dir = ex.dir, node = "Report")
+\donttest{
+extd.dir <- system.file("extdata", package = "apsimx")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Clock") 
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Weather")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Metadata") 
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Physical") 
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "SoilWater") 
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Organic")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Chemical")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialN")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "SurfaceOrganicMatter")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "MicroClimate")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Report")
 
 ## Manager folder present
 extd.dir <- system.file("extdata", package = "apsimx")

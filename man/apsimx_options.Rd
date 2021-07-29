@@ -21,6 +21,9 @@ apsimx_options(
 \item{warn.find.apsimx}{logical. By default a warning will be thrown if APSIM-X is not found. 
 If \sQuote{exe.path} is \sQuote{NA} an error will be thrown instead.}
 }
+\value{
+as a side effect it modifies the \sQuote{apsimx.options} environment.
+}
 \description{
 Set the path to the APSIM-X executable, examples and warning suppression.
 }
@@ -34,7 +37,7 @@ It is possible that APSIM-X is installed in some alternative location other than
       one but it will issue a warning. Suppress the warning by setting warn.versions = FLASE.
 }
 \examples{
-\dontrun{
+\donttest{
 names(apsimx.options)
 apsimx_options(exe.path = "some-new-path-to-executable")
 apsimx.options$exe.path

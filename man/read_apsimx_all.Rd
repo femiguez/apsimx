@@ -11,6 +11,9 @@ read_apsimx_all(src.dir = ".", value = "report")
 
 \item{value}{either \sQuote{report} or \sQuote{all} (only \sQuote{report} implemented at the moment)}
 }
+\value{
+it returns a data frame or a list if \sQuote{value} equals \sQuote{all}.
+}
 \description{
 Like \code{\link{read_apsimx}}, but it reads all .db files in a directory.
 }

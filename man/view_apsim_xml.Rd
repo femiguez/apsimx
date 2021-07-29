@@ -16,7 +16,7 @@ view_apsim_xml(file, src.dir, viewer = c("json", "react"), ...)
 \item{...}{additional arguments passed to either \sQuote{jsonedit} or \sQuote{reactjson}.}
 }
 \value{
-nothing
+It does not return an object but it produces a tree display of the APSIM file.
 }
 \description{
 view an auxilliary XML apsim file.
@@ -26,7 +26,7 @@ view APSIM XML file
 }
 \examples{
  
-\dontrun{
+\donttest{
 extd.dir <- system.file("extdata", package = "apsimx")
 view_apsim_xml("Maize75.xml", src.dir = extd.dir)
 }

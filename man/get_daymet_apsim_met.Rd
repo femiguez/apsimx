@@ -54,6 +54,9 @@ If the intention is for cleanup to delete all the files, \sQuote{raw.dir}
 and \sQuote{extraction.dir} should be supplied, supplying a sinlge name, 
 such as \sQuote{RAW} and \sQuote{EXTRACTION}.}
 }
+\value{
+It returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
+}
 \description{
 Uses \code{\link[FedData]{get_daymet}} from the \CRANpkg{FedData} package to download data to create an APSIM met file.
 }

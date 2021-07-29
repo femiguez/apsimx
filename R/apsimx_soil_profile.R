@@ -49,7 +49,7 @@
 #' \sQuote{soilwat} and \sQuote{swim}.
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #'  sp <- apsimx_soil_profile()
 #'  require(ggplot2)
 #'  plot(sp)
@@ -386,6 +386,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
 #' @param nlayers number of soil layers
 #' @param a parameter in a function
 #' @param b parameter in a function
+#' @return It returns a numeric vector
 #' @noRd
 #' 
 soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
@@ -418,6 +419,7 @@ soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
 #' @param x object of class \sQuote{soil_profile}.
 #' @param ... additional plotting arguments (none use at the moment).
 #' @param property \dQuote{all} for plotting all soil properties, \dQuote{water} for just SAT, DUL and LL15
+#' @return it produces a plot
 #' @export 
 plot.soil_profile <- function(x,..., property = c("all", "water","BD",
                                               "AirDry","LL15","DUL","SAT",
@@ -508,6 +510,8 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
 #' @description checking an apsimx soil profile for reasonable values
 #' @param x object of class \sQuote{soil_profile} or the \sQuote{soil} 
 #' component within an object of class \sQuote{soil_profile}.
+#' @return It does not produce output unless potential issues are found. Only warnings
+#' are produced and it returns an object of class \sQuote{soil_profile}.
 #' @export 
 #' 
 

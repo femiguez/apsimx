@@ -119,6 +119,11 @@ component within an object of class \sQuote{soil_profile}.}
 \value{
 a soil profile with class \sQuote{soil_profile} with elements \sQuote{soil}, \sQuote{crops}, \sQuote{metadata},
 \sQuote{soilwat} and \sQuote{swim}.
+
+it produces a plot
+
+It does not produce output unless potential issues are found. Only warnings
+are produced and it returns an object of class \sQuote{soil_profile}.
 }
 \description{
 Generates a soil profile that can then replace the existing one in an \sQuote{.apsimx} or \sQuote{.apsim} simulation file
@@ -141,7 +146,7 @@ distribution of soil physical and chemical properties. Steps:
  4. If an increase and then a decay is needed the Ricker function can be used. See \sQuote{SSricker} in the \sQuote{nlraa} package. \cr
 }
 \examples{
-\dontrun{
+\donttest{
  sp <- apsimx_soil_profile()
  require(ggplot2)
  plot(sp)

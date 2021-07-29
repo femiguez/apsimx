@@ -11,6 +11,9 @@ apsimx_example(example = "Wheat", silent = FALSE)
 
 \item{silent}{whether to print standard output from the APSIM-X execution}
 }
+\value{
+It returns a data frame
+}
 \description{
 simple function to run some of the built-in APSIM-X examples
 }

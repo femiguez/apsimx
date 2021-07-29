@@ -43,6 +43,8 @@ compare_apsim(..., variable, index = "Date", by, labels)
 }
 \value{
 object of class \sQuote{out_mrg}, which can be used for further plotting
+
+it produces a plot
 }
 \description{
 Function which allows for a simple comparison between APSIM output objects

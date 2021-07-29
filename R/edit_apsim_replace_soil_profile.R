@@ -11,7 +11,7 @@
 #' @param edit.tag default edit tag \sQuote{-edited}
 #' @param overwrite default FALSE
 #' @param verbose default TRUE. Will print messages indicating what was done.
-#' @return writes a file to disk with the supplied soil profile
+#' @return writes an APSIM file to disk with the supplied soil profile
 #' @details This function is designed to batch replace the whole soil in an APSIM simulation. 
 #' @note There is no such thing as a default soil, carefully build the profile for each simulation.
 #' This function replaces values and it can grow an XML node, but it cannot edit a property

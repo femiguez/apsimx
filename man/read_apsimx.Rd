@@ -16,6 +16,9 @@ read_apsimx(file = "", src.dir = ".", value = "report", simplify = TRUE)
 \item{simplify}{if TRUE will attempt to simplify multiple reports into a single data.frame. 
 If FALSE it will return a list.}
 }
+\value{
+normally it returns a data frame, but it depends on the argument \sQuote{value} above
+}
 \description{
 read SQLite databases created by APSIM-X runs. One file at a time.
 }

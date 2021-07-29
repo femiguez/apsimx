@@ -23,6 +23,9 @@ read_apsim_all(
 
 \item{simplify}{whether to return a single data frame or a list.}
 }
+\value{
+returns a data frame or a list depending on the argument \sQuote{simplify} above.
+}
 \description{
 Like \code{\link{read_apsim}}, but it reads all .out files in a directory.
 }

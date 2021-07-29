@@ -154,6 +154,7 @@ compare_apsim_met <- function(...,
 #' @param met.var meteorological variable to plot 
 #' @param id identification (not implemented yet)
 #' @param span argument to be passed to \sQuote{geom_smooth}
+#' @return it produces a plot
 #' @export
 #' 
 plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),

@@ -16,6 +16,9 @@ view_apsimx(file, src.dir, viewer = c("json", "react"), ...)
 \item{...}{additional arguments passed to either \sQuote{jsonedit} or \sQuote{reactjson}.
 These are functions in package \CRANpkg{listviewer}.}
 }
+\value{
+a display with the APSIM file structure.
+}
 \description{
 Generate an interactive viewer for an APSIM-X file
 }
@@ -23,7 +26,7 @@ Generate an interactive viewer for an APSIM-X file
 I do not know how to edit an APSIM-X file using this method yet.
 }
 \examples{
-\dontrun{
+\donttest{
 extd.dir <- system.file("extdata", package = "apsimx")
 ## View the structure of the APSIM-X simulation file
 view_apsimx("Wheat.apsimx", src.dir = extd.dir)

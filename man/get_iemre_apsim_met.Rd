@@ -23,6 +23,9 @@ get_iemre_apsim_met(
 
 \item{fillin.radn}{whether to fill in radiation data using the nasapower pacakge. Default is FALSE.}
 }
+\value{
+returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
+}
 \description{
 Retrieves weather data from Iowa Environmental Mesonet Reanalysis into an APSIM met file
 }

@@ -15,7 +15,7 @@
 #' @return an object of class \sQuote{met} with attributes
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' ames.met <- read_apsim_met("Ames.met", src.dir = extd.dir)
 #' ames.met
@@ -121,7 +121,7 @@ read_apsim_met <- function(file, src.dir = ".", verbose = TRUE){
 #' @details at the moment the read-write cycle will strip comments
 #' @export
 #' @examples 
-#' \dontrun{
+#' \donttest{
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' ames.met <- read_apsim_met("Ames.met", src.dir = extd.dir)
 #' ames.met
@@ -194,6 +194,7 @@ write_apsim_met <- function(met, wrt.dir = NULL, filename = NULL){
 #' @description Print a met file in a friendly way
 #' @param x an R object of class \sQuote{met}
 #' @param ... additional printing arguments
+#' @return It prints to console. Not used to return an R object.
 #' @export
 #' 
 print.met <- function(x,...){
@@ -414,6 +415,7 @@ check_apsim_met <- function(met){
 #' @description It will fill in or \sQuote{pad} a met object with NAs
 #' @param met object of class \sQuote{met}
 #' @note The purpose of this function is to allow for imputation using \code{\link{impute_apsim_met}}
+#' @return It returns an object of class \sQuote{met} with padded NAs.
 #' @export
 
 napad_apsim_met <- function(met){
@@ -457,9 +459,6 @@ napad_apsim_met <- function(met){
   return(ans) 
 }
 
-
-
-
 #' Simple utility for converting a data frame to an object of class met
 #' 
 #' @title Conversion from data frame to met object
@@ -479,7 +478,8 @@ napad_apsim_met <- function(met){
 #' @param constants default is \dQuote{NA}
 #' @param comments default is \dQuote{NA}   
 #' @param check whether to check the resulting met file using \code{\link{check_apsim_met}}.
-#' default is TRUE.     
+#' default is TRUE.  
+#' @return it returns an object of class \sQuote{met}.   
 #' @export
 #' 
 as_apsim_met <- function(x,

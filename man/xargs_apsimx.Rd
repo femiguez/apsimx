@@ -32,6 +32,9 @@ xargs_apsimx(
 
 \item{simulation.names}{Only run simulations if their names match this regular expression.}
 }
+\value{
+it returns a character vector with the extra arguments.
+}
 \description{
 This provides additinoal command line arguments when running the model
 }

@@ -15,6 +15,9 @@ grep_json_list(pattern, x, ignore.case = FALSE, search.depth = 10)
 
 \item{search.depth}{search depth for the list (to prevent endless search)}
 }
+\value{
+It returns a list with the found object, the json path and the positions in the list.
+}
 \description{
 recursive grep adapted for a json list
 }

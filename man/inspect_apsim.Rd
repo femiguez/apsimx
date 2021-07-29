@@ -36,7 +36,7 @@ inspect_apsim(
 \item{root}{root node label. In simulation structures such as factorials there will be multiple possible nodes. This can be specified by supplying an appropriate character.}
 }
 \value{
-table with inspected parameters and values
+It returns the parameter path (when print.path equals TRUE) and table with inspected parameters and values
 }
 \description{
 inspect an XML apsim file. It does not replace the GUI, but it can save time by quickly checking parameters and values.

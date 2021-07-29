@@ -10,6 +10,9 @@ An object of class \code{environment} of length 5.
 \usage{
 apsimx.options
 }
+\value{
+This is an environment, not a function, so nothing is returned.
+}
 \description{
 Environment which can store the path to the executable, warning settings and 
              where examples are located.
@@ -20,7 +23,7 @@ Environment which can store the path to the executable, warning settings and
 Environment which stores APSIM-X options
 }
 \examples{
-\dontrun{
+\donttest{
 names(apsimx.options)
 apsimx_options(exe.path = "some-new-path-to-executable")
 apsimx.options$exe.path

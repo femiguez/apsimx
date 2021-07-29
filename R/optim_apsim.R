@@ -364,6 +364,7 @@ optim_apsim <- function(file, src.dir = ".",
 #' @param ... additional arguments (none used at the moment)
 #' @param digits number of digits to round up the output
 #' @param level confidence level (default 0.95)
+#' @return prints to console
 #' @export
 #' 
 print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
@@ -494,6 +495,7 @@ log_lik2 <- function(.cfs){
 #' @param scaled for now only return the scaled matrix
 #' @note This in the scale of the optimized parameters which are
 #' scaled to be around 1.
+#' @return it returns the variance-covariance matrix for an object of class \sQuote{optim_apsim}.
 #' @export
 #' 
 vcov.optim_apsim <- function(object, ..., scaled = TRUE){
@@ -519,6 +521,7 @@ vcov.optim_apsim <- function(object, ..., scaled = TRUE){
 #' @param ... additional arguments (none used at the moment)
 #' @param scaled whether to return the scaled or unscaled estimates
 #' (TRUE in the optimized scale, FALSE in the original scale)
+#' @return a numeric vector with the value of the parameter estimates.
 #' @export
 #' 
 coef.optim_apsim <- function(object, ..., scaled = FALSE){
@@ -545,6 +548,7 @@ coef.optim_apsim <- function(object, ..., scaled = FALSE){
 #' 
 #' @title Environment to store data for apsim MCMC
 #' @description Environment which stores data for MCMC
+#' @return This is an environment, so nothing to return.
 #' @export
 #' 
 mcmc.apsim.env <- new.env(parent = emptyenv())

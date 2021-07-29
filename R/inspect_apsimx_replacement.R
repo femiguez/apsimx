@@ -24,7 +24,7 @@
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 #' @note I need to make some changes in order to be able to handle multiple parameters. At this point, it
 #' might work but it will generate warnings.
-#' @return table with inspected parameters and values
+#' @return table with inspected parameters and values (and \sQuote{parm path} when \sQuote{print.path} = TRUE).
 #' @export
 #' @examples 
 #' \donttest{
@@ -46,15 +46,7 @@
 #'                            node.sub4child = "PotentialBranchingRate",
 #'                            node.sub5child = "XYPairs")
 #'}
-#'\dontrun{  
-#' ## This function can also be used to inspect more complex APSIM-X files
-#' ## For example the 'Factorial' example
-#' ex.dir <- auto_detect_apsimx_examples()
-#' inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
-#'                            root = list("Experiment", 1), 
-#'                            node = "Base", node.child = "Weather")
-#' }
-#'
+
 
 inspect_apsimx_replacement <- function(file = "", src.dir = ".", 
                                        node = NULL, node.child = NULL,

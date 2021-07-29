@@ -20,6 +20,9 @@ read_apsim(
 
 \item{date.format}{format for adding \sQuote{Date} column}
 }
+\value{
+This function returns a data frame with APSIM output or a list if value equals \sQuote{all}
+}
 \description{
 read \sQuote{output} databases created by APSIM runs (.out and .sim). One file at a time.
 }

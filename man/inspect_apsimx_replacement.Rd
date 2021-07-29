@@ -62,7 +62,7 @@ overwrite the other node specifications.}
 \item{grep.options}{Additional options for grep. To be passed as a list.}
 }
 \value{
-table with inspected parameters and values
+table with inspected parameters and values (and \sQuote{parm path} when \sQuote{print.path} = TRUE).
 }
 \description{
 inspect the replacement componenet of an JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
@@ -94,13 +94,4 @@ inspect_apsimx_replacement("WheatRye.apsimx",
                            node.sub4child = "PotentialBranchingRate",
                            node.sub5child = "XYPairs")
 }
-\dontrun{  
-## This function can also be used to inspect more complex APSIM-X files
-## For example the 'Factorial' example
-ex.dir <- auto_detect_apsimx_examples()
-inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
-                           root = list("Experiment", 1), 
-                           node = "Base", node.child = "Weather")
-}
-
 }

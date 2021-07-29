@@ -10,6 +10,9 @@ An object of class \code{environment} of length 3.
 \usage{
 apsim.options
 }
+\value{
+This is an environment, so nothing to return.
+}
 \description{
 Environment which can store the path to the executable and where examples are located.
              Creating an environment avoids the use of global variables or other similar practices

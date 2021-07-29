@@ -50,7 +50,7 @@ the \sQuote{replacement} component. Its length should be equal to the length or 
 \item{...}{additional arguments to be passed to the optimization algorithm. See \code{\link[stats]{optim}}}
 }
 \value{
-vector of optimized coefficients
+object of class \sQuote{optim_apsim}, but really just a list with results from optim and additional information.
 }
 \description{
 It is a wrapper for running APSIM-X and optimizing parameters using \code{\link[stats]{optim}}
@@ -71,4 +71,10 @@ a vector only. (I can add this feature in the future if it is justified.)
 When computing the objective function (residual sum-of-squares) different variables are combined.
 It is common to weight them since they are in different units. If the argument weights is not supplied
 no weighting is applied. It can be 'mean', 'variance' or a numeric vector of appropriate length.
+}
+\examples{
+\donttest{
+## See the vignette for examples
+}
+
 }

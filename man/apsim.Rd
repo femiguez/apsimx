@@ -29,6 +29,9 @@ option \sQuote{none} runs simulation but does not return a data frame.}
 
 \item{simplify}{whether to return a single data frame when multiple simulations are present. If FALSE it will return a list.}
 }
+\value{
+This function returns a data frame with APSIM output, but it depends on the argument \sQuote{value} above.
+}
 \description{
 Run apsim from R. It's for Windows only. It uses \sQuote{shell}.
 }
@@ -39,7 +42,7 @@ A valid apsim file can be run from within R. The main goal is to make running AP
 simple, especially for large scale simulations or parameter optimization
 }
 \examples{
-\dontrun{
+\donttest{
 ## See function 'apsim_example' 
 }
 

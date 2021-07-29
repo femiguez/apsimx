@@ -24,7 +24,7 @@ inspect_apsim_xml(
 \item{print.path}{Whether to print the parameter path}
 }
 \value{
-absolute parameter path(s)
+it returns an absolute parameter path(s)
 }
 \description{
 inspect an auxiliary XML apsim file.

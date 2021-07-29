@@ -17,22 +17,22 @@
 #' @return prints a table with inspected parameters and values (and \sQuote{parm path} when \sQuote{print.path} = TRUE).
 #' @export
 #' @examples 
-#' \dontrun{
-#' ex.dir <- auto_detect_apsimx_examples()
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Clock") 
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Weather")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Metadata") 
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Physical") 
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "SoilWater") 
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Organic")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Soil", soil.child = "InitialN")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "SurfaceOrganicMatter")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "MicroClimate")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Crop")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Manager")
-#' inspect_apsimx("Barley", src.dir = ex.dir, node = "Report")
+#' \donttest{
+#' extd.dir <- system.file("extdata", package = "apsimx")
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Clock") 
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Weather")
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Metadata") 
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Physical") 
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "SoilWater") 
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Organic")
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Chemical")
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialN")
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "SurfaceOrganicMatter")
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "MicroClimate")
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop")
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
+#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Report")
 #' 
 #' ## Manager folder present
 #' extd.dir <- system.file("extdata", package = "apsimx")
@@ -779,6 +779,7 @@ jsonlist2dataframe <- function(x){
 #' @param x object (a list)
 #' @param ignore.case as in grep
 #' @param search.depth search depth for the list (to prevent endless search)
+#' @return It returns a list with the found object, the json path and the positions in the list.
 #' @export
 grep_json_list <- function(pattern, x, ignore.case = FALSE, search.depth = 10){
   
@@ -818,7 +819,7 @@ grep_json_list <- function(pattern, x, ignore.case = FALSE, search.depth = 10){
   return(list(x = x, jsonpath = jsonpath, positions = positions))
 }
 
-## This version of grep is not expose at the moment
+## This version of grep is not exposed at the moment
 grep_json_list1 <- function(pattern, x, ...){
   
   tmp <- rapply(x, function(x,...) grep(pattern = pattern, x = x, value = TRUE, ...), ...)

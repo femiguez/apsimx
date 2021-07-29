@@ -19,6 +19,9 @@ get_iem_apsim_met(lonlat, dates, wrt.dir = ".", state, station, filename)
 
 \item{filename}{file name for writing out to disk}
 }
+\value{
+returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
+}
 \description{
 Retrieves weather data from Iowa Environmental Mesonet (AgWeather) into an APSIM met file
 }
