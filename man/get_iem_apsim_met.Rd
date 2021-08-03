@@ -38,14 +38,14 @@ and latitude or the state and station, but not both. In fact, \sQuote{state} and
 \dontrun{
 ## This will not write a file to disk
 iem.met <- get_iem_apsim_met(state = "IA", 
-                             station = "IA5198", 
+                             station = "IA0200", 
                              dates = c("2012-01-01","2012-12-31"))
 
 summary(iem.met)
 
 ## Alternatively, coordinates can be used
 ## This should be equivalent to the previous request
-iem.met2 <- get_iem_apsim_met(lonlat = c(-93,42), 
+iem.met2 <- get_iem_apsim_met(lonlat = c(-93.77, 42.02), 
                               dates = c("2012-01-01","2012-12-31"))
 
 summary(iem.met2)

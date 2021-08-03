@@ -454,6 +454,17 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     ## Here the path should be to the full parameter path
     ## Unpack the parm.path
     ## root node starts at .
+    
+    if(!missing(parm))
+      parm.path <- paste0(parm.path, ".", parm)
+    
+    if(missing(parm.path))
+      stop("When node = 'Other' parm.path should be provided")
+    
+    ## Strip dollar sign if present
+    if(substr(parm.path, 1, 1) == "$") 
+      parm.path <- substr(parm.path, 2, nchar(parm.path))
+    
     upp <- strsplit(parm.path, ".", fixed = TRUE)[[1]]
     upp.lngth <- length(upp)
     if(upp.lngth < 5) stop("Parameter path too short?")

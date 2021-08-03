@@ -24,7 +24,7 @@ optim_apsimx(
 
 \item{src.dir}{directory containing the .apsimx file to be run (defaults to the current directory)}
 
-\item{parm.paths}{absolute paths of the coefficients to be optimized. 
+\item{parm.paths}{absolute or relative paths of the coefficients to be optimized. 
 It is recommended that you use \code{\link{inspect_apsimx}} for this}
 
 \item{data}{data frame with the observed data. By default is assumes there is a 'Date' column for the index.}

@@ -151,7 +151,7 @@ if(run.apsimx.edit.soil.soilwat){
   
 }
 
-## TEsting Report feature
+## Testing Report feature
 if(run.apsimx.edit){
   
  ex.dir <- auto_detect_apsimx_examples()
@@ -171,5 +171,26 @@ if(run.apsimx.edit){
              value = "[Wheat].EndOfDay")
  
  inspect_apsimx("Wheat-edited.apsimx", src.dir = tmp.dir, node = "Report")
+  
+}
+
+## Testing edit when node = "Other"
+
+if(run.apsimx.edit){
+  
+  extd.dir <- system.file("extdata", package = "apsimx")
+  
+  pp <- inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager",
+                       parm = list("SowingFert", NA))
+  
+  edit_apsimx("Wheat.apsimx", node = "Other",
+              src.dir = extd.dir, wrt.dir = tmp.dir,
+              parm.path = pp, parm = "Amount", value = 5,
+              overwrite = TRUE)
+
+  inspect_apsimx("Wheat.apsimx", src.dir = tmp.dir, node = "Manager",
+                 parm = list("SowingFertiliser", NA))  
+  
+  file.copy(file.path(tmp.dir, "Wheat.apsimx"), ".")
   
 }

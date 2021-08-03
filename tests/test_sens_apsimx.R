@@ -173,10 +173,23 @@ if(run.sens.apsimx){
   ## In this case we want to know the impact of varying the fertilizer amount
   pp <- inspect_apsimx("Wheat.apsimx", src.dir = tmp.dir, 
                        node = "Manager", parm = list("SowingFertiliser", 1))
+  pp <- paste0(pp, ".Amount")
   ## Do we need to edit the Report?
   edit_apsimx("Wheat.apsimx", src.dir = tmp.dir, node = "Report",
-              parm = "VariableNames", value = c("[Wheat].Leaf.LAI", "[Wheat].Leaf.Transpiration"),
+              parm = "VariableNames", value = c("max of [Wheat].Leaf.LAI from 1-Jan to 31-Dec as MaximumLAI", 
+                                                "sum of [Wheat].Leaf.Transpiration from 1-Jan to 31-Dec as AnnualLeafTranspiration"),
               overwrite = TRUE)
+  ## Before the analysis
+  sim0 <- apsimx("Wheat.apsimx", src.dir = tmp.dir)
+  
+  head(sim0)
+  
+  ggplot(data = sim0, aes(x = Date, y = MaximumLAI)) + 
+    geom_point()
+  
+  ggplot(data = sim0, aes(x = MaximumLAI, y = Yield)) + 
+    geom_point()
+  
   ## For simplicity, we create a vector of fertilizer amounts (instead of sampling)
   start <- Sys.time()
   ferts <- seq(5, 300, length.out = 10)
@@ -184,17 +197,71 @@ if(run.sens.apsimx){
   for(i in 1:10){
     
     edit_apsimx("Wheat.apsimx", src.dir = tmp.dir,
-                node = "Other",
-                parm.path = pp, parm = "Amount",
+                node = "Other", parm.path = pp,
                 value = ferts[i],
                 overwrite = TRUE)
     
     sim <- apsimx("Wheat.apsimx", src.dir = tmp.dir)
     col.res <- rbind(col.res, data.frame(fertilizer.amount = ferts[i], 
                                          wheat.aboveground.wt = mean(sim$Wheat.AboveGround.Wt, na.rm = TRUE),
-                                         wheat.leaf.lai = mean(sim$Wheat.Leaf.LAI, na.rm = TRUE),
-                                         wheat.leaf.transpiration = mean(sim$Wheat.Leaf.Transpiration, na.rm = TRUE)))
+                                         wheat.yield = mean(sim$Yield, na.rm = TRUE),
+                                         wheat.maximum.lai = mean(sim$MaximumLAI, na.rm = TRUE),
+                                         wheat.annual.leaf.transpiration = mean(sim$AnnualLeafTranspiration, na.rm = TRUE)))
   }
   end <- Sys.time()
   elapsed.time <- end - start
+  
+  ggplot(col.res, aes(x = fertilizer.amount, y = wheat.aboveground.wt)) + 
+    geom_point()
+  
+  ggplot(col.res, aes(x = fertilizer.amount, y = wheat.yield)) + 
+    geom_point()
+
+  ggplot(col.res, aes(x = fertilizer.amount, y = wheat.maximum.lai)) + 
+    geom_point()
+
+  ggplot(col.res, aes(x = fertilizer.amount, y = wheat.annual.leaf.transpiration)) + 
+    geom_point()
+
+}
+
+if(run.sens.apsimx){
+  
+  tmp.dir <- tempdir()
+  extd.dir <- system.file("extdata", package = "apsimx")
+  file.copy(file.path(extd.dir, "Wheat.apsimx"), tmp.dir)
+  ## Identify a parameter of interest
+  ## In this case we want to know the impact of varying the fertilizer amount
+  ## and the plant population
+  pp1 <- inspect_apsimx("Wheat.apsimx", src.dir = tmp.dir, 
+                       node = "Manager", parm = list("SowingFertiliser", 1))
+  pp1 <- paste0(pp1, ".Amount")
+  
+  pp2 <- inspect_apsimx("Wheat.apsimx", src.dir = tmp.dir, 
+                       node = "Manager", parm = list("SowingRule1", 9))
+  pp2 <- paste0(pp2, ".Population")
+  
+  grd <- expand.grid(parm1 = c(50, 100, 150), parm2 = c(100, 200, 300))
+  names(grd) <- c("Fertiliser", "Population")
+  
+  sns <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+                     parm.paths = c(pp1, pp2),
+                     grid = grd)
+  
+  summary(sns, select = "Wheat.AboveGround.Wt")
+  
+  ## it is possible to use the package sensitivity to design an experiment
+  library(sensitivity)
+  X.mrrs <- morris(factors = c("Fertiliser", "Population"), r = 3, 
+                     design = list(type = "oat", levels = 3, grid.jump = 1), 
+                     binf = c(5, 50), bsup = c(200, 300))
+  
+  sns2 <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+                      parm.paths = c(pp1, pp2),
+                      grid = X.mrrs$X)
+  ## These are the sensitivity results for AboveGround.Wt only
+  sns.res.ag <- tell(X.mrrs, sns2$grid.sims$Wheat.AboveGround.Wt)
+  sns.res.ag
+  plot(sns.res.ag)
+  
 }

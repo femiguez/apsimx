@@ -627,7 +627,7 @@ assign('.run.local.tests', FALSE, apsimx.options)
 #' @import DBI jsonlite knitr RSQLite xml2 
 #' @importFrom utils read.table write.table packageVersion
 #' @importFrom tools file_path_sans_ext
-#' @importFrom stats coef cor cov2cor deviance lm optim qt var sd setNames sigma
+#' @importFrom stats coef cor cov2cor deviance lm optim qt var sd setNames sigma anova
 NULL
 
 utils::globalVariables(".data")

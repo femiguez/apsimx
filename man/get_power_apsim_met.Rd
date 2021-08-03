@@ -29,7 +29,7 @@ but it will return an object of class \sQuote{met}. This is useful in case manip
 is required before writing to disk.
 }
 \examples{
-\donttest{
+\dontrun{
 require(nasapower)
 ## This will not write a file to disk
 pwr <- get_power_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"))

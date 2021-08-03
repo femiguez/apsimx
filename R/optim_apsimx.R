@@ -16,7 +16,7 @@
 #' @description It is a wrapper for running APSIM-X and optimizing parameters using \code{\link[stats]{optim}}
 #' @param file file name to be run (the extension .apsimx is optional)
 #' @param src.dir directory containing the .apsimx file to be run (defaults to the current directory)
-#' @param parm.paths absolute paths of the coefficients to be optimized. 
+#' @param parm.paths absolute or relative paths of the coefficients to be optimized. 
 #'             It is recommended that you use \code{\link{inspect_apsimx}} for this
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
 #' @param type Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}} or \sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}.

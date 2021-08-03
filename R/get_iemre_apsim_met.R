@@ -143,14 +143,14 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
 #' \dontrun{
 #' ## This will not write a file to disk
 #' iem.met <- get_iem_apsim_met(state = "IA", 
-#'                              station = "IA5198", 
+#'                              station = "IA0200", 
 #'                              dates = c("2012-01-01","2012-12-31"))
 #' 
 #' summary(iem.met)
 #' 
 #' ## Alternatively, coordinates can be used
 #' ## This should be equivalent to the previous request
-#' iem.met2 <- get_iem_apsim_met(lonlat = c(-93,42), 
+#' iem.met2 <- get_iem_apsim_met(lonlat = c(-93.77, 42.02), 
 #'                               dates = c("2012-01-01","2012-12-31"))
 #'
 #' summary(iem.met2)
@@ -184,6 +184,11 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
     lat <- as.numeric(lonlat[2])
     ## Need to find the state based on lonlat
     pts <- sf::st_as_sf(data.frame(lon = lon, lat = lat), coords = 1:2, crs = 4326)
+    
+    if(!requireNamespace("sf",quietly = TRUE)){
+      warning("The sf is required for this function")
+      return(NULL)
+    }
     
     if(!requireNamespace("spData",quietly = TRUE)){
       warning("The spData is required for this function")
@@ -240,7 +245,7 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
   
   ## Retrieve data
   iem0 <- readLines(str3)
-  write(iem0, file = paste0(wrt.dir, "/", filename))
+  write(iem0, file = file.path(wrt.dir, filename))
   iem.dat <- read_apsim_met(filename, src.dir = wrt.dir, verbose = FALSE)
   
   attr(iem.dat, "filename") <- paste0(state, "-", station, ".met")
@@ -250,8 +255,14 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
     attr(iem.dat, "longitude") <- paste("longitude =", lonlat[1], "(DECIMAL DEGREES)")
   }
   
+  if(missing(lonlat)){
+    stt <- ftrs[ftrs$id == station, ]
+    attr(iem.dat, "longitude") <- paste("longitude =", stt$geometry$coordinates[[1]][1], "(DECIMAL DEGREES)")
+    attr(iem.dat, "latitude") <- paste("latitude =", stt$geometry$coordinates[[1]][2], "(DECIMAL DEGREES)")
+  }
+  
   if(filename == "noname.met"){
-    unlink(paste0(wrt.dir, "/", filename))
+    unlink(file.path(wrt.dir, filename))
     return(iem.dat)
   }else{
     return(invisible(iem.dat))
