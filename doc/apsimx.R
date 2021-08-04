@@ -20,6 +20,7 @@ tmp.dir <- tempdir()
 extd.dir <- system.file("extdata", package = "apsimx")
 ## maize <- read_apsimx("Maize.db", src.dir = extd.dir)
 maize <- read.csv(paste0(extd.dir, "/Maize.csv"))
+maize$Date <- as.Date(maize$Date)
 
 ## ----summary-ggplot-maize-----------------------------------------------------
 summary(maize)
@@ -62,6 +63,7 @@ inspect_apsimx("Maize-edited.apsimx", src.dir = ".",
 ## ----apsimx-wheat-read, echo = FALSE------------------------------------------
 ## sim <- read_apsimx("Wheat.db", src.dir = extd.dir)
 sim <- read.csv(paste0(extd.dir, "/Wheat.csv"))
+sim$Date <- as.Date(sim$Date)
 
 ## ----apsimx-wheat-summary-----------------------------------------------------
 ## Calcualte summary statistics on all variables
@@ -96,7 +98,7 @@ inspect_apsim("Millet.apsim", src.dir = extd.dir, node  = "Manager",
               parm = list("Sow on a fixed date",5), print.path = TRUE)
 ## Or store it in an object for later editing
 pp <- inspect_apsim("Millet.apsim", src.dir = extd.dir, node = "Manager",
-              parm = list("Sow on a fixed date",5), print.path = TRUE)
+              parm = list("Sow on a fixed date", 5), print.path = TRUE)
 
 ## ----Millet-edit--------------------------------------------------------------
 edit_apsim("Millet.apsim", src.dir = extd.dir, wrt.dir = tmp.dir,
@@ -147,7 +149,7 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node.subchild = "ThermalTime", 
                            node.subsubchild = "BaseThermalTime",
                            node.sub3child = "Response",
-                           parm = c("Y", "X")) 
+                           parm = "Y") 
 
 ## ----inspect-replacement-soybean-cultivar-node--------------------------------
 inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,

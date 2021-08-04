@@ -164,7 +164,7 @@ To look at paths in Windows:
 
 Unix/Linux paths
 
-[Unix paths](https://coolestguidesontheplanet.com/add-shell-path-osx/)
+[Unix paths](https://wpbeaches.com/how-to-add-to-the-shell-path-in-macos-using-terminal/)
 
 
 ### Session information
