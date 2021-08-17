@@ -18,7 +18,7 @@ sens_apsimx(
   ...
 )
 
-\method{summary}{sens_apsim}(object, ..., select = "all")
+\method{summary}{sens_apsim}(object, ..., scale = FALSE, select = "all")
 }
 \arguments{
 \item{file}{file name to be run (the extension .apsimx is optional)}
@@ -45,6 +45,10 @@ the \sQuote{replacement} component. Its length should be equal to the length or 
 
 \item{...}{additional arguments (none used at the moment)}
 
+\item{scale}{if all inputs are numeric it is better to scale them. The
+default is FALSE as some inputs might be characters or factors. In this
+case all inputs will be treated as factors in the sum of squares decomposition.}
+
 \item{select}{option for selecting specific variables in the APSIM output}
 
 \item{x}{object of class \sQuote{sens_apsim}}
@@ -58,6 +62,9 @@ prints to console
 It is a wrapper for running APSIM-X and evaluating different parameters values
 
 Summary computes variance-based sensitivity indexes from an object of class \sQuote{sens_apsim}
+}
+\note{
+The summary function is stored as an attribute of the data frame \sQuote{grid.sims}.
 }
 \examples{
 \donttest{

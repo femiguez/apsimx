@@ -34,24 +34,17 @@ The weather component can depend on different sources of data or manipulations
 to simulate different conditions and stresses. The soil profiles can be from different
 locations or specifically manipulated to understand the impact of particular soil properties.
 Crop properties or cultivar specific parameters can also be investigated as a source of 
-model behavior. Finally, examples of management usually include planting date, fertilizer application,
-tillage or residue management and irrigation. All of these components can be sources of uncertainty
-and can be evaluated in a sensitivity analysis.
+model behavior. Finally, examples of management usually include planting date, fertilizer application, tillage or residue management and irrigation. All of these components can be sources of uncertainty and can be evaluated in a sensitivity analysis.
 
-When multiple parameters are evaluated performing model runs for all combinations can become prohibitive.
-For this reason, there are some combinations which can be more efficient and provide nearly the same 
-amount of information. The suggestion here is to build complexity in the sensitivity analysis task 
-gradually. For example, first choose one parameter and select 5-10 reasonable values, run the model
-and evaluate the model output. This is a one parameter at a time approach and it can be of great value
-in developing an intuition for the model behavior.
+When multiple parameters are evaluated performing model runs for all combinations can become prohibitive. For this reason, there are some combinations which can be more efficient and provide nearly the same amount of information. The suggestion here is to build complexity in the sensitivity analysis task gradually. For example, first choose one parameter and select 5-10 reasonable values, run the model and evaluate the model output. This is a one parameter at a time approach and it can be of great value in developing an intuition for the model behavior.
 
 For a general introduction to sensitivity analysis see Saltelli et al. 2008. Global sensitivity analysis. The Primer.
+
 Here they define sensitivity analysis as:
 
 *The study of how uncertainty in the output of a model (numerical or otherwise) can be apportioned to different sources of uncertainty in the model input*
 
-A preliminary step in sensitivity analysis often involves uncertainty analysis and, as an example, it can involve computing the output from a model based on various samples from the relevant inputs. Usually, this involves identifying parameters, choosing appropriate distributions which we sample
-from and creating candidate values which are then used in the model.
+A preliminary step in sensitivity analysis often involves uncertainty analysis and, as an example, it can involve computing the output from a model based on various samples from the relevant inputs. Usually, this involves identifying parameters, choosing appropriate distributions which we sample from and creating candidate values which are then used in the model.
 
 ## Uncertainty Analysis using for loops
 

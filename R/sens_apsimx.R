@@ -16,6 +16,7 @@
 #' @param root root argument for \code{\link{edit_apsimx_replacement}}
 #' @param verbose whether to print progress in percent and elapsed time.
 #' @param ... additional arguments (none used at the moment).
+#' @note The summary function is stored as an attribute of the data frame \sQuote{grid.sims}.
 #' @return object of class \sQuote{sens_apsim}, but really just a list with results from the evaluations.
 #' @export
 #' @examples 
@@ -191,6 +192,7 @@ sens_apsimx <- function(file, src.dir = ".",
   }
   
   cdat <- cbind(grid, col.sim)
+  attr(cdat, "summary") <- summary
   
   ans <- structure(list(grid.sims = cdat, grid = grid, parm.paths = parm.paths), class = "sens_apsim")
  
@@ -200,13 +202,16 @@ sens_apsimx <- function(file, src.dir = ".",
 
 #' @rdname sens_apsimx
 #' @description Summary computes variance-based sensitivity indexes from an object of class \sQuote{sens_apsim}
-#' @param x object of class \sQuote{sens_apsim}
+#' @param object object of class \sQuote{sens_apsim}
 #' @param ... additional arguments (none used at the moment)
+#' @param scale if all inputs are numeric it is better to scale them. The
+#' default is FALSE as some inputs might be characters or factors. In this
+#' case all inputs will be treated as factors in the sum of squares decomposition.
 #' @param select option for selecting specific variables in the APSIM output
 #' @return prints to console
 #' @export
 #' 
-summary.sens_apsim <- function(object, ..., select = "all"){
+summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
   
   ## Here I compute sensitivity indexes based on the grid.sims object
   ## There are potentially many variables for which sensitivity analysis is relevant
@@ -219,7 +224,6 @@ summary.sens_apsim <- function(object, ..., select = "all"){
       cat("Variables:", nms.resp.var, "\n")
       stop("selected variable(s) not present in simulation object", call. = FALSE)    
     }
-      
   } 
 
   object$grid.sims <- subset(object$grid.sims, select = select)
@@ -230,8 +234,16 @@ summary.sens_apsim <- function(object, ..., select = "all"){
   for(i in seq_along(nms.resp.var)){
     X <- object$grid
     y <- object$grid.sims[,nms.resp.var[i]]
-    if(var(y) == 0) next
-    dat <- data.frame(y, as.data.frame(sapply(X, function(x) as.factor(as.character(x)))))
+    if(suppressWarnings(var(y) == 0) || is.character(y[1]) || !is.numeric(y)) next
+    
+    if(scale){
+      if(any(sapply(object$grid, function(x) is.character(x) || is.factor(x))))
+        stop("Scale can only be applied to numeric inputs", call. = FALSE)
+      dat <- data.frame(y = y, scale(X))
+    }else{
+      dat <- data.frame(y, as.data.frame(sapply(X, function(x) as.factor(as.character(x)))))  
+    }
+    
     frml <- paste("y ~", paste(names(X), collapse = "+"))
     fit <- lm(formula = frml, data = dat)
     if(inherits(fit, "try-error")) next

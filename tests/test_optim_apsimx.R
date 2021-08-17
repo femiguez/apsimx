@@ -1,6 +1,6 @@
 ## Testing the capability of optimizing parameters
 require(apsimx)
-library(ggplot2)
+require(ggplot2)
 apsimx_options(warn.versions = FALSE)
 
 ## 1. Simulate data from a model with known parameters

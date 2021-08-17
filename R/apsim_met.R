@@ -313,6 +313,10 @@ check_apsim_met <- function(met){
   
   if(!inherits(met, "met")) stop("object should be of class 'met'")
   
+  if(nrow(met) == 0){
+    stop("No rows of data present in this object.")
+  }
+  
   col.names <- c("year","day","radn","mint","maxt","rain")
   ## check for column names
   if(sum(names(met) %in% col.names) < 6) warning("column names might be wrong")

@@ -63,7 +63,8 @@ get_isric_soil_profile <- function(lonlat,
   if(lon < -180 || lon > 180) stop("longitude should be between -180 and 180")
   if(lat < -90 || lat > 90) stop("latitude should be between -90 and 90")
   
-  rest0 <- "https://rest.soilgrids.org/soilgrids/v2.0/properties/query?lon="
+##  rest0 <- "https://rest.soilgrids.org/soilgrids/v2.0/properties/query?lon="
+  rest0 <- "https://rest.isric.org/soilgrids/v2.0/properties/query?lon="
   rest1 <- paste0(rest0, lon, "&lat=", lat)
   rest.properties <- paste("&property=bdod", 
                            "property=soc",
