@@ -43,17 +43,17 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL){
                               pars = c("T2M_MAX",
                               "T2M_MIN",
                               "ALLSKY_SFC_SW_DWN",
-                              "PRECTOT",
+                              "PRECTOTCORR",
                               "RH2M",
                               "WS2M"),
                               dates = dates,
                               lonlat = lonlat,
-                              temporal_average = "DAILY")
+                              temporal_api = "DAILY")
   
   pwr <- subset(as.data.frame(pwr), select = c("YEAR", "DOY",
                                                "ALLSKY_SFC_SW_DWN",
                                                "T2M_MAX", "T2M_MIN",
-                                               "PRECTOT", "RH2M", "WS2M"))
+                                               "PRECTOTCORR", "RH2M", "WS2M"))
   
   names(pwr) <- c("year", "day", "radn", "maxt", "mint", "rain", "rh", "wind_speed")
   units <- c("()", "()", "(MJ/m2/day)", "(oC)", "(oC)", "(mm)", "(%)", "(m/s)")
