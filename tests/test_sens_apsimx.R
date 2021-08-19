@@ -249,7 +249,16 @@ if(run.sens.apsimx){
                      parm.paths = c(pp1, pp2),
                      grid = grd)
   
+  summary(sns)
   summary(sns, select = "Wheat.AboveGround.Wt")
+  summary(sns, select = "AboveGround")
+  
+  
+  sns.nn <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+                        parm.paths = c(pp1, pp2),
+                        grid = grd, summary = "none")
+  
+  summary(sns.nn, select = "Wheat.AboveGround.Wt")
   
   ## it is possible to use the package sensitivity to design an experiment
   library(sensitivity)
@@ -267,7 +276,7 @@ if(run.sens.apsimx){
   
 }
 
-## Create Classic example
+#### Create Classic example ####
 if(run.sens.apsimx){
   
   apsim_options(warn.versions = FALSE)
@@ -299,5 +308,14 @@ if(run.sens.apsimx){
                      parm.paths = c(pp1, pp2),
                      grid = grd)
   
+  summary(sns)
   summary(sns, select = "millet_biomass")
+  
+  sns2 <- sens_apsim("Millet.apsim",
+                    parm.paths = c(pp1, pp2),
+                    grid = grd,
+                    summary = "none")
+  
+  sns2$grid.sims[1:5, 1:5]  
+  
 }

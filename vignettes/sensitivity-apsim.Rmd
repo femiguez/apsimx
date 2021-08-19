@@ -85,7 +85,7 @@ for(i in seq_along(ferts)){
 
 The code here is shown for illustration so that the basic strategy can be replicated. The results collected in object *col.res* can be further processed to better understand the impact of the chosen parameter (input) on the output.
 
-There is a function in the package which simplifies this task.
+There is a function in the package which simplifies this task. The one below is for APSIM Next Gen and there is a similar one for APSIM Classic.
 
 ## sens_apsimx
 

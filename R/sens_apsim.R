@@ -84,9 +84,6 @@ sens_apsim <- function(file, src.dir = ".",
     } 
   }
 
-  ## If root is not present. Need to think more about this...
-  if(missing(root)) root <- list("Models.Core.Replacements", NA)
-  
   if(missing(grid))
     stop("grid argument is missing")
   
@@ -207,7 +204,12 @@ sens_apsim <- function(file, src.dir = ".",
     }
   }
   
-  cdat <- cbind(grid, col.sim)
+  if(summary != "none"){
+    cdat <- cbind(grid, col.sim)  
+  }else{
+    cdat <- col.sim
+  }
+  
   attr(cdat, "summary") <- summary
   
   ans <- structure(list(grid.sims = cdat, grid = grid, parm.paths = parm.paths), class = "sens_apsim")
