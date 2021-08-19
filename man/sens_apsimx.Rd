@@ -51,7 +51,7 @@ the \sQuote{replacement} component. Its length should be equal to the length or 
 default is FALSE as some inputs might be characters or factors. In this
 case all inputs will be treated as factors in the sum of squares decomposition.}
 
-\item{select}{option for selecting specific variables in the APSIM output}
+\item{select}{option for selecting specific variables in the APSIM output. It will be treated as a regular expression}
 }
 \value{
 object of class \sQuote{sens_apsim}, but really just a list with results from the evaluations.

@@ -95,7 +95,7 @@ sens_apsimx <- function(file, src.dir = ".",
       if(parm.vector.index[j] <= 0){
         par.val <- grid[i, j]  
       }else{
-        stop("not sure about this yet")
+        stop("Submit an issue in github if you need this feature", call. = FALSE)
       }
       
       if(replacement[j]){
@@ -212,7 +212,7 @@ sens_apsimx <- function(file, src.dir = ".",
 #' @param scale if all inputs are numeric it is better to scale them. The
 #' default is FALSE as some inputs might be characters or factors. In this
 #' case all inputs will be treated as factors in the sum of squares decomposition.
-#' @param select option for selecting specific variables in the APSIM output
+#' @param select option for selecting specific variables in the APSIM output. It will be treated as a regular expression
 #' @return prints to console
 #' @export
 #' 
@@ -225,10 +225,16 @@ summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
   if(select == "all"){
     select <- nms.resp.var
   }else{
-    if(!select %in% nms.resp.var){
-      cat("Variables:", nms.resp.var, "\n")
-      stop("selected variable(s) not present in simulation object", call. = FALSE)    
+    gsel.col <- NULL
+    for(i in seq_along(select)){
+      gsel <- grep(select[i], nms.resp.var)
+      if(length(gsel) == 0){
+        cat("selection:", select[i], "\n")  
+        stop("not present in simulation object", call. = FALSE)
+      }
+      gsel.col <- c(gsel.col, gsel)     
     }
+    select <- nms.resp.var[unique(gsel.col)]
   } 
 
   object$grid.sims <- subset(object$grid.sims, select = select)

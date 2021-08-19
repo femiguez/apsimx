@@ -4,6 +4,8 @@
 #' @description It is a wrapper for running APSIM and evaluating different parameters values
 #' @param file file name to be run (with extension .apsim)
 #' @param src.dir directory containing the .apsim file to be run (defaults to the current directory)
+#' @param crop.file name of auxiliary xml file where parameters are stored. If this is missing, it is 
+#'                  assumed that the parameters to be edited are in the main simulation file.
 #' @param parm.paths absolute or relative paths of the coefficients to be evaluated. 
 #'             It is recommended that you use \code{\link{inspect_apsim}} for this
 #' @param parm.vector.index Index to evaluate a specific element of a parameter vector.  At the moment it is
@@ -41,6 +43,9 @@ sens_apsim <- function(file, src.dir = ".",
   
   .check_apsim_name(file)
   .check_apsim_name(src.dir)
+  
+  if(src.dir != ".") stop("At the moment it is not possible \n
+                          to change the source directory.")
   
   ## This might offer suggestions in case there is a typo in 'file'
   file.names <- dir(path = src.dir, pattern = ".apsim$", ignore.case = TRUE)
@@ -111,10 +116,10 @@ sens_apsim <- function(file, src.dir = ".",
       if(parm.vector.index[j] <= 0){
         par.val <- grid[i, j]  
       }else{
-        stop("not sure about this yet")
+        stop("Submit an issue in github if you need this feature", call. = FALSE)
       }
       
-      if(xml.parm[j]){
+      if(cfile[j]){
         ## Here I'm editing an auxiliary file ending in .xml
         edit_apsim_xml(file = aux.file, 
                        src.dir = src.dir,
@@ -176,7 +181,7 @@ sens_apsim <- function(file, src.dir = ".",
     }
     
     if(summary == "none"){
-      sim.sd <- sim
+      sim.sd <- cbind(grid[i, ], sim, row.names = NULL)
     }
     
     col.sim <- rbind(col.sim, sim.sd)

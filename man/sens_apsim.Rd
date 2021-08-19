@@ -23,6 +23,9 @@ sens_apsim(
 
 \item{src.dir}{directory containing the .apsim file to be run (defaults to the current directory)}
 
+\item{crop.file}{name of auxiliary xml file where parameters are stored. If this is missing, it is 
+assumed that the parameters to be edited are in the main simulation file.}
+
 \item{parm.paths}{absolute or relative paths of the coefficients to be evaluated. 
 It is recommended that you use \code{\link{inspect_apsim}} for this}
 

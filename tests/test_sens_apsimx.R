@@ -6,6 +6,9 @@ apsimx_options(warn.versions = FALSE)
 
 run.sens.apsimx <- FALSE
 
+tmp.dir <- tempdir()
+setwd(tmp.dir)
+
 ## WheatRye example
 if(run.sens.apsimx){
   
@@ -166,7 +169,6 @@ if(run.sens.apsimx){
 
 if(run.sens.apsimx){
   
-  tmp.dir <- tempdir()
   extd.dir <- system.file("extdata", package = "apsimx")
   file.copy(file.path(extd.dir, "Wheat.apsimx"), tmp.dir)
   ## Identify a parameter of interest
@@ -227,13 +229,12 @@ if(run.sens.apsimx){
 
 if(run.sens.apsimx){
   
-  tmp.dir <- tempdir()
   extd.dir <- system.file("extdata", package = "apsimx")
-  file.copy(file.path(extd.dir, "Wheat.apsimx"), tmp.dir)
+  file.copy(file.path(extd.dir, "Wheat.apsimx"), ".")
   ## Identify a parameter of interest
   ## In this case we want to know the impact of varying the fertilizer amount
   ## and the plant population
-  pp1 <- inspect_apsimx("Wheat.apsimx", src.dir = tmp.dir, 
+  pp1 <- inspect_apsimx("Wheat.apsimx", src.dir = ".", 
                        node = "Manager", parm = list("SowingFertiliser", 1))
   pp1 <- paste0(pp1, ".Amount")
   
@@ -264,4 +265,39 @@ if(run.sens.apsimx){
   sns.res.ag
   plot(sns.res.ag)
   
+}
+
+## Create Classic example
+if(run.sens.apsimx){
+  
+  apsim_options(warn.versions = FALSE)
+  ex.dir <- auto_detect_apsim_examples()
+  extd.dir <- system.file("extdata", package = "apsimx")
+  file.copy(file.path(extd.dir, "Millet.apsim"), ".")  
+  file.copy(file.path(ex.dir, "MetFiles", "Goond.met"), ".")
+
+  pp1 <- inspect_apsim("Millet.apsim", src.dir = tmp.dir, 
+                        node = "Manager", 
+                       parm = list("Sow", 2),
+                       print.path = TRUE)
+  
+  pp2 <- inspect_apsim("Millet.apsim", src.dir = tmp.dir, 
+                       node = "Manager", 
+                       parm = list("Sow", 5), 
+                       print.path = TRUE)
+
+  grd <- expand.grid(parm1 = c("15-nov", "1-dec", "15-dec"), parm2 = c(5, 7, 9))
+  names(grd) <- c("date", "density")    
+  
+  edit_apsim("Millet.apsim", node = "Clock",
+             parm = "start_date", value = "01/01/1980",
+             overwrite = TRUE)
+  
+  sim0 <- apsim("Millet.apsim")
+  
+  sns <- sens_apsim("Millet.apsim",
+                     parm.paths = c(pp1, pp2),
+                     grid = grd)
+  
+  summary(sns, select = "millet_biomass")
 }
