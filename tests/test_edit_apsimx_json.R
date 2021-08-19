@@ -18,7 +18,7 @@ if(run.edit.apsimx.json){
   ex.dir <- auto_detect_apsimx_examples()
   pp <- inspect_apsimx_json("Barley.apsimx", src.dir = ex.dir, parm = "Version$")
   ## Try editing
-  edit_apsimx_json("Barley.apsimx", src.dir = ex.dir, wrt.dir = tmp.dir,
+  apsimx:::edit_apsimx_json("Barley.apsimx", src.dir = ex.dir, wrt.dir = tmp.dir,
                    parm.path = pp[1], value = 200)
   inspect_apsimx_json("Barley-edited.apsimx", src.dir = tmp.dir, parm = "Version")
   

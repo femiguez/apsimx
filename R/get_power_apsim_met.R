@@ -35,25 +35,29 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL){
     return(NULL)
   }
   
+  if(packageVersion("nasapower") <= '3.0.1'){
+   stop("Please upgrade the 'nasapower' package to the latest version", call. = FALSE) 
+  }
+  
   if(missing(filename)) filename <- "noname.met"
    
   if(!grepl(".met", filename, fixed = TRUE)) stop("filename should end in .met")
   
   pwr <- nasapower::get_power(community = "AG",
-                              pars = c("T2M_MAX",
-                              "T2M_MIN",
-                              "ALLSKY_SFC_SW_DWN",
-                              "PRECTOT",
-                              "RH2M",
-                              "WS2M"),
-                              dates = dates,
-                              lonlat = lonlat,
-                              temporal_average = "DAILY")
-  
+                                pars = c("T2M_MAX",
+                                         "T2M_MIN",
+                                         "ALLSKY_SFC_SW_DWN",
+                                         "PRECTOTCORR",
+                                         "RH2M",
+                                         "WS2M"),
+                                dates = dates,
+                                lonlat = lonlat,
+                                temporal_api = "daily")    
+
   pwr <- subset(as.data.frame(pwr), select = c("YEAR", "DOY",
                                                "ALLSKY_SFC_SW_DWN",
                                                "T2M_MAX", "T2M_MIN",
-                                               "PRECTOT", "RH2M", "WS2M"))
+                                               "PRECTOTCORR", "RH2M", "WS2M"))
   
   names(pwr) <- c("year", "day", "radn", "maxt", "mint", "rain", "rh", "wind_speed")
   units <- c("()", "()", "(MJ/m2/day)", "(oC)", "(oC)", "(mm)", "(%)", "(m/s)")
@@ -77,3 +81,5 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL){
   }
   return(invisible(pwr))
 }
+
+

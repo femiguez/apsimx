@@ -63,6 +63,8 @@ if(run.test.ssurgo.workflow){
   ## If I want to actually run the model
   file.copy(paste0(extd.dir,"/Ames.met"),tmp.dir)
   
+  inspect_apsimx("WheatRye-sp.apsimx", src.dir = tmp.dir, node = "Clock")
+  
   sim <- apsimx("WheatRye-sp.apsimx", src.dir = tmp.dir, value = "report")
   
 }

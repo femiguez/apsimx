@@ -1,19 +1,19 @@
 #' @title Sensitivity Analysis for APSIM Next Generation simulation
-#' @name sens_apsimx
-#' @rdname sens_apsimx
-#' @description It is a wrapper for running APSIM-X and evaluating different parameters values
-#' @param file file name to be run (the extension .apsimx is optional)
-#' @param src.dir directory containing the .apsimx file to be run (defaults to the current directory)
+#' @name sens_apsim
+#' @rdname sens_apsim
+#' @description It is a wrapper for running APSIM and evaluating different parameters values
+#' @param file file name to be run (with extension .apsim)
+#' @param src.dir directory containing the .apsim file to be run (defaults to the current directory)
 #' @param parm.paths absolute or relative paths of the coefficients to be evaluated. 
-#'             It is recommended that you use \code{\link{inspect_apsimx}} for this
+#'             It is recommended that you use \code{\link{inspect_apsim}} for this
 #' @param parm.vector.index Index to evaluate a specific element of a parameter vector.  At the moment it is
 #' possible to only edit one element at a time. This is because there is a conflict when generating multiple
 #' elements in the candidate vector for the same parameter.
-#' @param replacement TRUE or FALSE for each parameter. Indicating whether it is part of 
-#' the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.
+#' @param xml.parm TRUE or FALSE for each parameter. Indicating whether it is part of 
+#' an xml file. Its length should be equal to the length or \sQuote{parm.paths}.
 #' @param grid grid of parameter values for the evaluation. It can be a data.frame.
 #' @param summary function name to use to summarize the output to be a sinlge row (default is the mean).
-#' @param root root argument for \code{\link{edit_apsimx_replacement}}
+#' @param root root argument for \code{\link{edit_apsim}}
 #' @param verbose whether to print progress in percent and elapsed time.
 #' @param ... additional arguments (none used at the moment).
 #' @note The summary function is stored as an attribute of the data frame \sQuote{grid.sims}.
@@ -25,15 +25,16 @@
 #' }
 #' 
 
-sens_apsimx <- function(file, src.dir = ".", 
-                        parm.paths,
-                        parm.vector.index,
-                        replacement,
-                        grid,
-                        summary = c("mean", "max", "var", "sd", "none"),
-                        root,
-                        verbose = TRUE,
-                        ...){
+sens_apsim <- function(file, src.dir = ".", 
+                       crop.file,
+                       parm.paths,
+                       parm.vector.index,
+                       xml.parm,
+                       grid,
+                       summary = c("mean", "max", "var", "sd", "none"),
+                       root,
+                       verbose = TRUE,
+                       ...){
   
   if(missing(file))
     stop("file is missing with no default")
@@ -42,10 +43,10 @@ sens_apsimx <- function(file, src.dir = ".",
   .check_apsim_name(src.dir)
   
   ## This might offer suggestions in case there is a typo in 'file'
-  file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
+  file.names <- dir(path = src.dir, pattern = ".apsim$", ignore.case = TRUE)
   
   if(length(file.names) == 0){
-    stop("There are no .apsimx files in the specified directory to run.")
+    stop("There are no .apsim files in the specified directory to run.")
   }
   
   file <- match.arg(file, file.names)
@@ -61,8 +62,23 @@ sens_apsimx <- function(file, src.dir = ".",
       stop("parm.vector.index should be numeric")
   }
   
-  if(missing(replacement)) replacement <- rep(FALSE, length(parm.paths))
-  
+  ## What this does, is pick the crop.file to be edited when it is not missing
+  if(!missing(crop.file)){
+    aux.file <- crop.file
+    if(missing(xml.parm)){
+      cfile <- rep(TRUE, length(parm.paths))  
+    }else{
+      cfile <- xml.parm
+    } 
+  }else{
+    aux.file <- file
+    if(missing(xml.parm)){
+      cfile <- rep(FALSE, length(parm.paths))
+    }else{
+      cfile <- xml.parm
+    } 
+  }
+
   ## If root is not present. Need to think more about this...
   if(missing(root)) root <- list("Models.Core.Replacements", NA)
   
@@ -72,7 +88,7 @@ sens_apsimx <- function(file, src.dir = ".",
   grid <- as.data.frame(grid)
   
   if(ncol(grid) != length(parm.paths))
-      stop("Number of columns in grid should be equal to the number of parameters")
+    stop("Number of columns in grid should be equal to the number of parameters")
   
   ## Check that the name in the grid appears somewhere in the parameter path
   for(i in seq_along(parm.paths)){
@@ -83,7 +99,7 @@ sens_apsimx <- function(file, src.dir = ".",
       warning("names in grid object do not match parameter path name")  
     }
   }
-
+  
   col.sim <- NULL
   start <- Sys.time()
   
@@ -98,32 +114,28 @@ sens_apsimx <- function(file, src.dir = ".",
         stop("not sure about this yet")
       }
       
-      if(replacement[j]){
-        pp0 <- strsplit(parm.paths[j], ".", fixed = TRUE)[[1]]
-        mpp <- paste0(pp0[-length(pp0)], collapse = ".")
-        edit_apsimx_replacement(file = file, 
-                                src.dir = src.dir,
-                                wrt.dir = src.dir,
-                                node.string = mpp,
-                                overwrite = TRUE,
-                                parm = pp0[length(pp0)],
-                                value = par.val,
-                                root = root,
-                                verbose = FALSE) 
+      if(xml.parm[j]){
+        ## Here I'm editing an auxiliary file ending in .xml
+        edit_apsim_xml(file = aux.file, 
+                       src.dir = src.dir,
+                       parm.path = parm.paths[j],
+                       overwrite = TRUE,
+                       value = as.character(par.val),
+                       verbose = FALSE)        
       }else{
-        edit_apsimx(file = file, 
-                    src.dir = src.dir,
-                    wrt.dir = src.dir,
-                    node = "Other",
-                    parm.path = parm.paths[j],
-                    overwrite = TRUE,
-                    value = par.val,
-                    verbose = FALSE) 
+        ## Here I'm editing the main simulation file .apsim
+        edit_apsim(file = file, 
+                   node = "Other",
+                   src.dir = src.dir,
+                   parm.path = parm.paths[j],
+                   overwrite = TRUE,
+                   value = as.character(par.val),
+                   verbose = FALSE)        
       }
     }
     
     ## Run simulation  
-    sim <- try(apsimx(file = file, src.dir = src.dir,
+    sim <- try(apsim(file = file, src.dir = src.dir,
                       silent = TRUE, cleanup = TRUE, value = "report"),
                silent = TRUE)
     
@@ -147,7 +159,7 @@ sens_apsimx <- function(file, src.dir = ".",
       sim.s <- colMeans(sim[, col.class.numeric], na.rm = TRUE)
       sim.sd <- as.data.frame(t(sim.s))
     }
-
+    
     if(summary == "max"){
       sim.s <- apply(sim[, col.class.numeric], 2, max, na.rm = TRUE)
       sim.sd <- as.data.frame(t(sim.s))
@@ -164,7 +176,7 @@ sens_apsimx <- function(file, src.dir = ".",
     }
     
     if(summary == "none"){
-      sim.sd <- cbind(grid[i, ], sim, row.names = NULL)
+      sim.sd <- sim
     }
     
     col.sim <- rbind(col.sim, sim.sd)
@@ -188,81 +200,14 @@ sens_apsimx <- function(file, src.dir = ".",
         } 
       }
     }
-
   }
   
-  if(summary != "none"){
-    cdat <- cbind(grid, col.sim)  
-  }else{
-    cdat <- col.sim
-  }
-  
+  cdat <- cbind(grid, col.sim)
   attr(cdat, "summary") <- summary
   
   ans <- structure(list(grid.sims = cdat, grid = grid, parm.paths = parm.paths), class = "sens_apsim")
- 
+  
   return(ans) 
 }
 
 
-#' @rdname sens_apsimx
-#' @description Summary computes variance-based sensitivity indexes from an object of class \sQuote{sens_apsim}
-#' @param object object of class \sQuote{sens_apsim}
-#' @param ... additional arguments (none used at the moment)
-#' @param scale if all inputs are numeric it is better to scale them. The
-#' default is FALSE as some inputs might be characters or factors. In this
-#' case all inputs will be treated as factors in the sum of squares decomposition.
-#' @param select option for selecting specific variables in the APSIM output
-#' @return prints to console
-#' @export
-#' 
-summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
-  
-  ## Here I compute sensitivity indexes based on the grid.sims object
-  ## There are potentially many variables for which sensitivity analysis is relevant
-  nms.resp.var <- setdiff(names(object$grid.sims), names(object$grid))
-  
-  if(select == "all"){
-    select <- nms.resp.var
-  }else{
-    if(!select %in% nms.resp.var){
-      cat("Variables:", nms.resp.var, "\n")
-      stop("selected variable(s) not present in simulation object", call. = FALSE)    
-    }
-  } 
-
-  object$grid.sims <- subset(object$grid.sims, select = select)
-    
-  num.resp.var <- ncol(object$grid.sims) - ncol(object$grid)
-  nms.resp.var <- setdiff(names(object$grid.sims), names(object$grid))
-  
-  for(i in seq_along(nms.resp.var)){
-    X <- object$grid
-    y <- object$grid.sims[,nms.resp.var[i]]
-    if(suppressWarnings(var(y) == 0) || is.character(y[1]) || !is.numeric(y)) next
-    
-    if(scale){
-      if(any(sapply(object$grid, function(x) is.character(x) || is.factor(x))))
-        stop("Scale can only be applied to numeric inputs", call. = FALSE)
-      dat <- data.frame(y = y, scale(X))
-    }else{
-      dat <- data.frame(y, as.data.frame(sapply(X, function(x) as.factor(as.character(x)))))  
-    }
-    
-    frml <- paste("y ~", paste(names(X), collapse = "+"))
-    fit <- lm(formula = frml, data = dat)
-    if(inherits(fit, "try-error")) next
-    sfit <- as.matrix(stats::anova(fit))
-    cat("Variable:", nms.resp.var[i], "\n")
-    pmat <- matrix(ncol = 2, nrow = ncol(X) + 1)
-    row.names(pmat) <- row.names(sfit)
-    pmat[,1] <- sfit[,2] 
-    pmat[,2] <- sfit[,2] / sum(sfit[,2]) * 100
-    colnames(pmat) <- c("SS", "SI (%)")
-    pmatd <- as.data.frame(pmat)
-    pmatd <- pmatd[order(pmatd$SS, decreasing = TRUE),]
-    print(knitr::kable(pmatd, digits = 0))
-    cat("\n")
-  }
-  
-}

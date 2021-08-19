@@ -166,7 +166,10 @@ write_apsim_met <- function(met, wrt.dir = NULL, filename = NULL){
   ## Write site if it exists
   if(!is.na(attr(met,"site")) && length(attr(met,"site")) > 0){
     writeLines(attr(met,"site"), con = con)
-  } 
+  }
+  if(is.na(attr(met,"latitude")) || length(attr(met,"latitude")) == 0){
+    stop("latitude should be present", call. = FALSE)
+  }
   writeLines(attr(met,"latitude"), con = con)
   if(!is.na(attr(met,"longitude")) && length(attr(met,"longitude")) > 0){
     writeLines(attr(met,"longitude"), con = con)

@@ -520,7 +520,6 @@ Files in 'inst/extdata' and how they are used (ordered alphabetically):
 * **maize-swim.apsim**: example file with the SWIM module for testing (test_apsim_swim.R).
 * **Maize.apsimx**: This file is needed for the vignette.
 * **Maize.csv**: This file is needed for the vignette.
-* **Maize.db**: This file is needed for the vignette.
 * **Maize.out/sum**: This file is needed for the 'read_apsim' example.
 * **Maize75.xml**: This file is used in 'inspect_apsim_xml' and optim vignette.
 * **MaizeSoybean.apsimx**: This file is needed for the vignette and for testing in 'test_replacements.R'
@@ -532,7 +531,6 @@ Files in 'inst/extdata' and how they are used (ordered alphabetically):
 * **wheat-sim-opt.csv**: This file is used in the 'optim-apsim' vignette.
 * **Wheat.apsimx**: This file is used in the vignette.
 * **Wheat.csv**: This file is used in the vignette.
-* **Wheat.db**: This file is used in the vignette.
 * **WheatRye.apsimx**: This file is used in 'test_replacements.R'.
 
 
