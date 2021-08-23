@@ -194,3 +194,23 @@ if(run.apsimx.edit){
   file.copy(file.path(tmp.dir, "Wheat.apsimx"), ".")
   
 }
+
+## Testing changing variables in the outputfile
+if(run.apsimx.edit){
+ 
+  extd.dir <- system.file("extdata", package = "apsimx")
+  file.copy(file.path(extd.dir, "Millet.apsim"), tmp.dir)
+  
+  inspect_apsim("Millet.apsim", src.dir = tmp.dir, node = "Outputfile", parm = "title")
+
+  edit_apsim("Millet.apsim", src.dir = tmp.dir,
+             node = "Outputfile", value = "surfaceom_wt")
+    
+  edit_apsim("Millet.apsim", src.dir = tmp.dir,
+             node = "Outputfile",
+             parm = "variables", value = "surfaceom_wt")
+  
+  inspect_apsim("Millet-edited.apsim", src.dir = tmp.dir, 
+                node = "Outputfile", parm = "variables")
+  
+}

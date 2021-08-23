@@ -1,4 +1,8 @@
 #' 
+#' In general, this function is used to edit one parameter at a time. There are some exceptions. \cr
+#' 
+#'  - For the Clock, both the \sQuote{Start} and \sQuote{End} can be edited in one call.
+#' 
 #' @title Inspect an .apsimx (JSON) file
 #' @name inspect_apsimx
 #' @description inspect a JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
@@ -64,7 +68,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)
   
-  if(soil.child %in% c("Nutrient")) stop("Not implemented yet")
+  if(soil.child %in% c("Nutrient")) stop("Not implemented yet", call. = FALSE)
   
   ## This matches the specified file from a list of files
   ## Notice that the .apsimx extension will be added here
@@ -208,8 +212,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       ## Assuming there is only one 'relevant' level here
       ## This parameter level would be 2.1.1
       parm.path <- paste0(parm.path.2.1,".",selected.soil.node.child[[1]]$Name) 
-      enms <- c("IncludeInDocumentation", "Enabled", "ReadOnly", "Children", "Name")
+      enms <- c("IncludeInDocumentation", "Enabled", "ReadOnly", "Children", "Name", "$type")
       cnms <- setdiff(names(selected.soil.node.child[[1]]), enms)
+      ## print(names(selected.soil.node.child[[1]]))
       
       if(soil.child == "Physical" || soil.child == "Water")
         cnms <- c(cnms, "Crop LL", "Crop KL", "Crop XF")
@@ -267,21 +272,50 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           print(knitr::kable(soil.d3, digits = digits))
         }
       }else{
+        parm.physical.found <- FALSE
         ## Print first set of soil parameters
-        if(!is.null(soil.d1)) print(knitr::kable(soil.d1[soil.d1$parm == parm,], digits = digits))  
+        if(!is.null(soil.d1)){
+          if(parm %in% names(soil.d1)){
+            ##print(knitr::kable(soil.d1[soil.d1$parm == parm,], digits = digits))    
+            print(knitr::kable(soil.d1[, parm, drop = FALSE], digits = digits))    
+            parm.physical.found <- TRUE
+          }
+          if(parm %in% soil.d1$parm){
+            print(knitr::kable(soil.d1[soil.d1$parm == parm,], digits = digits))    
+            parm.physical.found <- TRUE
+          }
+        } 
         ## Print second set of soil parameters
         if(!is.null(soil.d2)){ 
           soil.d2 <- as.data.frame(soil.d2)
           names(soil.d2) <- col.nms
-          print(knitr::kable(soil.d2[soil.d2$parm == parm,], digits = digits))
+          ## print(knitr::kable(soil.d2[soil.d2$parm == parm,], digits = digits))
+          if(parm %in% names(soil.d2)){
+            print(knitr::kable(soil.d2[, parm, drop = FALSE], digits = digits))  
+            parm.physical.found <- TRUE
+          }
+          if(parm %in% soil.d2$parm){
+            print(knitr::kable(soil.d2[soil.d2$parm == parm,], digits = digits))    
+            parm.physical.found <- TRUE
+          }
         }
         ## Print third set of crop-soil parameters
         if(!is.null(soil.d3)){ 
           soil.d3 <- as.data.frame(soil.d3)
           names(soil.d3) <- d3.col.nms
           soil.d3 <- subset(soil.d3, select = sort(names(soil.d3)))
-          print(knitr::kable(soil.d3[soil.d3$parm == parm,], digits = digits))
+          ##print(knitr::kable(soil.d3[soil.d3$parm == parm,], digits = digits))
+          if(parm %in% names(soil.d3)){
+            print(knitr::kable(soil.d3[, parm, drop = FALSE], digits = digits))  
+            parm.physical.found <- TRUE
+          }
+          if(parm %in% soil.d3$parm){
+            print(knitr::kable(soil.d3[soil.d3$parm == parm,], digits = digits))    
+            parm.physical.found <- TRUE
+          }
         }
+        if(!parm.physical.found)
+          stop("Soil physical parameter not found", call. = FALSE)
       }
     }
   }
@@ -300,7 +334,15 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     som.d <- data.frame(parm = names(som.node)[2:8],
                         value = as.vector(unlist(som.node)[2:8]))
     
-    print(knitr::kable(som.d, digits = digits))
+    if(missing(parm)){
+      print(knitr::kable(som.d, digits = digits))  
+    }else{
+      if(parm %in% som.d$parm){
+        print(knitr::kable(som.d[som.d$parm == parm, ], digits = digits))  
+      }else{
+        stop("Surface OM parameter not found", call. = FALSE)
+      }
+    }
   }
   
   if(node == "MicroClimate"){
@@ -315,7 +357,16 @@ inspect_apsimx <- function(file = "", src.dir = ".",
 
     microclimate.d <- data.frame(parm = names(microclimate.node)[2:9],
                                  value = as.vector(unlist(microclimate.node)[2:9]))
-    print(knitr::kable(microclimate.d, digits = digits))
+    
+    if(missing(parm)){
+      print(knitr::kable(microclimate.d, digits = digits))  
+    }else{
+      if(parm %in% microclimate.d$parm){
+        print(knitr::kable(microclimate.d[microclimate.d$parm == parm, ], digits = digits))  
+      }else{
+        stop("MicroClimate parameter not found", call. = FALSE)
+      }
+    }
   }
   
   if(node == "Crop"){

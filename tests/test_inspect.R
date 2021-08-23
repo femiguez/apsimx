@@ -33,6 +33,7 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 1))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 2))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 3))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 4))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 5))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 6))
   inspect_apsimx(i, src.dir = ex.dir, node = "Report")
@@ -117,22 +118,80 @@ run.inspect.print.path.tests <- get(".run.local.tests", envir = apsimx.options)
 if(run.inspect.print.path.tests){
   
   i <- "Barley.apsimx"
+  #### Clock ####
   pp <- inspect_apsimx(i, src.dir = ex.dir, print.path = TRUE)
   if(pp != ".Simulations.Simulation.Clock") 
     stop("Error in inspect_apsimx, Barley, Clock, print.path")
   pp <- inspect_apsimx(i, src.dir = ex.dir, parm = "Start", print.path = TRUE)
   if(pp != ".Simulations.Simulation.Clock.Start") 
     stop("Error in inspect_apsimx, Barley, Start, print.path")
+  #### Weather ####
   pp <- inspect_apsimx(i, node = "Weather", src.dir = ex.dir, print.path = TRUE)
   if(pp != ".Simulations.Simulation.Weather") 
     stop("Error in inspect_apsimx, Barley, Weather, print.path")
+  #### Soil - Metadata ####
   pp <- inspect_apsimx(i, node = "Soil", src.dir = ex.dir, print.path = TRUE)
   if(pp != ".Simulations.Simulation.Field.Soil") 
-    stop("Error in inspect_apsimx, Barley, Soil, Water, print.path")
-  pp <- inspect_apsimx(i, node = "Soil", soil.child = "Water",
+    stop("Error in inspect_apsimx, Barley, Soil, Metadata, print.path")
+  pp <- inspect_apsimx(i, node = "Soil", src.dir = ex.dir, 
+                       parm = "Latitude", print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.Latitude") ## I think this currently works as expected... ??
+    stop("Error in inspect_apsimx, Barley, Soil, Metadata, Latitude, print.path")
+  #### Soil - Physical ####
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "Physical",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.Physical") 
+    stop("Error in inspect_apsimx, Barley, Soil, Physical, print.path")
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "Physical",
                        parm = "DUL", src.dir = ex.dir, print.path = TRUE)
-  if(pp != ".Simulations.Simulation.Field.Soil.SoilWater.DUL") 
-    stop("Error in inspect_apsimx, Barley, Soil, SoilWater, DUL, print.path")
+  if(pp != ".Simulations.Simulation.Field.Soil.Physical.DUL") 
+    stop("Error in inspect_apsimx, Barley, Soil, Physical, DUL, print.path")
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "Physical",
+                       parm = "Barley XF", src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.Physical.Barley XF") 
+    stop("Error in inspect_apsimx, Barley, Soil, Physical, Barley XF, print.path")
+  #### Soil - SoilWater ####
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "SoilWater",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.SoilWater") 
+    stop("Error in inspect_apsimx, Barley, Soil, SoilWater, print.path")
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "SoilWater", parm = "Salb",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.SoilWater.Salb") 
+    stop("Error in inspect_apsimx, Barley, Soil, SoilWater, SWCON, print.path")
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "SoilWater", parm = "SWCON",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.SoilWater.SWCON") 
+    stop("Error in inspect_apsimx, Barley, Soil, SoilWater, SWCON, print.path")
+  #### Soil - Chemical ####
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "Chemical",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.Chemical") 
+    stop("Error in inspect_apsimx, Barley, Soil, Chemical, print.path")
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "Chemical", parm = "PH",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.Chemical.PH") 
+    stop("Error in inspect_apsimx, Barley, Soil, Chemical, PH, print.path")
+  #### Soil - InitialWater ####
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "InitialWater",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.InitialWater") 
+    stop("Error in inspect_apsimx, Barley, Soil, InitialWater, print.path")
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "InitialWater", parm = "FractionFull",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.InitialWater.FractionFull") 
+    stop("Error in inspect_apsimx, Barley, Soil, InitialWater, FractionFull, print.path")
+  #### Soil - Organic ####
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "Organic", ## parm = "FractionFull",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.Organic") 
+    stop("Error in inspect_apsimx, Barley, Soil, Organic, print.path")
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "Organic", parm = "Carbon",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.Soil.Organic.Carbon") 
+    stop("Error in inspect_apsimx, Barley, Soil, Organic, Carbon, print.path")
+  
+
   pp <- inspect_apsimx(i, node = "Manager", src.dir = ex.dir, print.path = TRUE)
   if(pp != ".Simulations.Simulation.Field") 
     stop("Error in inspect_apsimx, Barley, Manager, print.path")
@@ -144,6 +203,16 @@ if(run.inspect.print.path.tests){
                        src.dir = ex.dir, print.path = TRUE)
   if(pp != ".Simulations.Simulation.Field.SowingFertiliser.Amount") 
     stop("Error in inspect_apsimx, Barley, Manager, SowingFertiliser, Amount, print.path")
+  pp <- inspect_apsimx(i, node = "Surface", 
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.SurfaceOrganicMatter") 
+    stop("Error in inspect_apsimx, Barley, SurfaceOrganicMatter, print.path")
+  pp <- inspect_apsimx(i, node = "Surface", parm = "InitialResidueMass",
+                       src.dir = ex.dir, print.path = TRUE)
+  if(pp != ".Simulations.Simulation.Field.SurfaceOrganicMatter.InitialResidueMass") 
+    stop("Error in inspect_apsimx, Barley, SurfaceOrganicMatter, InitialResidueMass print.path")
+  pp <- inspect_apsimx(i, node = "MicroClimate", 
+                       src.dir = ex.dir, print.path = TRUE)
 }
 
 
@@ -326,8 +395,6 @@ if(inspect.replacement.test.parm.path){
                                    src.dir = extd.dir, 
                                    node = "Soybean",
                                    node.child = "Leaf",
-                                   parm = "Gxmax350",
+                                   parm = "Gsmax350",
                                    print.path = TRUE)
-  ## I don't think this one worked quite as expected
-  
 }

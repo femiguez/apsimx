@@ -438,7 +438,16 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
   if(node == "Outputfile"){
     outputfile.node <- xml2::xml_find_all(apsim_xml, ".//outputfile")
     outputfile.parms <- c("filename", "title", "variables", "events")
+    
+    if(missing(parm)){
+      cat("Parameter choices:", outputfile.parms, "\n")
+      stop("Parameter is missing. Choose one from the options above.", call. = FALSE)
+    }
+    
     parm <- match.arg(parm, outputfile.parms)
+    
+    if(parm == "filename" && !grepl("out$", value))
+      stop("value should have '.out' extension when parm = 'filename'", call. = FALSE)
     
     if(parm == "filename" || parm == "title" || parm == "events"){
       output.node <- xml2::xml_find_first(outputfile.node, parm)

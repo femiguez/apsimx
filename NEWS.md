@@ -1,7 +1,17 @@
 **NEWS**
 
-**apsimx 1.978**
+**apsimx 2.0**
 
+- Sensitivity analysis functions for APSIM Next Gen and Classic
+- Parameter Estimation functions for APSIM Next Gen and Classic
+- Work in progress function **inspect_apsimx_json** for .json or .apsimx files
+- Helper function (**grep_json_list** - not needed for most users)
+- Unreleased **edit_apsimx_json** function.
+- Various bug fixes in edit and inspect functions
+- Creating synthetic soil profiles from ISRIC (**get_isric_soil_profile**)
+- Depracated **get_daymet_apsim_met** (replaced with **get_daymet2_apsim_met**)
+- Creating synthetic soil profile from SSURGO (**get_ssurgo_soil_profile** and **get_ssurgo_tables**)
+- Passing extra arguments to APSIM call through **xargs_apsimx**
 
 **apsimx 1.977**
 
