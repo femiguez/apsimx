@@ -148,7 +148,7 @@ auto_detect_apsimx <- function(){
       ## If only one version of APSIM-X is present
       ## APSIM executable
       st1 <- "/Applications/"
-      st3 <- "/Contents/Resources/Bin/Models.exe" 
+      st3 <- "/Contents/Resources/bin/Models.exe" 
       if(length(find.apsim) == 1){
         apsimx.name <- laf[find.apsim]
         apsimx_dir <- paste0(st1, apsimx.name, st3)
@@ -190,7 +190,7 @@ auto_detect_apsimx <- function(){
       }
       ## APSIM executable
       st1 <- "/usr/local/lib/apsim/"
-      st3 <- "/Bin/Models.exe" 
+      st3 <- "/bin/Models.exe" 
       if(length(find.apsim) == 1){
         apsimx.versions <- list.files("/usr/local/lib/apsim")
         apsimx.name <- apsimx.versions
@@ -233,7 +233,7 @@ auto_detect_apsimx <- function(){
         return(apsimx_dir)        
     }
     
-    st3 <- "/Bin/Models.exe" 
+    st3 <- "/bin/Models.exe" 
     if(length(find.apsim) == 1){
       apsimx.versions <- laf[find.apsim]
       apsimx.name <- apsimx.versions
