@@ -44,6 +44,10 @@ prints a table with inspected parameters and values (and \sQuote{parm path} when
 inspect a JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
 }
 \details{
+In general, this function is used to edit one parameter at a time. There are some exceptions. \cr
+
+ - For the Clock, both the \sQuote{Start} and \sQuote{End} can be edited in one call.
+
 This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
          To investigate the available \sQuote{soil.childs} specify \sQuote{Soil} for \sQuote{node} and do not specify the \sQuote{soil.child}.
 }

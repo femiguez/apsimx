@@ -22,7 +22,7 @@ returns an object of class \sQuote{met} and writes a file to disk when filename 
 Uses \code{\link[nasapower]{get_power}} from the \CRANpkg{nasapower} package to download data to create an APSIM met file.
 }
 \details{
-This function requires the \CRANpkg{nasapower} package.
+This function requires the \CRANpkg{nasapower} package version 4.0.0.
 
 If the filename is not provided it will not write the file to disk, 
 but it will return an object of class \sQuote{met}. This is useful in case manipulation
@@ -33,13 +33,15 @@ is required before writing to disk.
 require(nasapower)
 ## This will not write a file to disk
 pwr <- get_power_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"))
-## There are some missing values
+## Let's insert a missing value
+pwr[100, "radn"] <- NA
 summary(pwr)
 ## Check the met file 
 check_apsim_met(pwr)
 ## Impute using linear interpolation
 pwr.imptd <- impute_apsim_met(pwr, verbose = TRUE)
 summary(pwr.imptd)
+check_apsim_met(pwr.imptd)
 }
 
 }
