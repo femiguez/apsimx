@@ -88,3 +88,31 @@ edit_apsim_replace_soil_profile("Millet.apsim", soil.profile = asp,
                                 src.dir = extd.dir, wrt.dir = tmp.dir)
 
 }
+
+## Testing the feature for APSIM Next Gen
+
+run.soil.profile <- get(".run.local.tests", envir = apsimx.options)
+
+if(run.soil.profile){
+ 
+  extd.dir <- system.file("extdata", package = "apsimx")
+  
+  sp <- apsimx_soil_profile()
+  
+  list.files(tmp.dir)
+  
+  file.copy(file.path(extd.dir, "MaizeSoybean.apsimx"), tmp.dir)
+ 
+  edit_apsimx_replace_soil_profile("MaizeSoybean.apsimx", soil.profile = sp,
+                                   src.dir = tmp.dir, wrt.dir = tmp.dir,
+                                   root = "SimulationSoybean") 
+  
+  inspect_apsimx("MaizeSoybean-edited.apsimx", src.dir = tmp.dir,
+                 node = "Soil", soil.child = "Physical", parm = "DUL",
+                 root = "SimulationSoybean")
+  
+  inspect_apsimx("MaizeSoybean-edited.apsimx", src.dir = tmp.dir,
+                 node = "Soil", soil.child = "Physical", parm = "DUL",
+                 root = "SimulationMaize")
+  
+}

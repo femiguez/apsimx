@@ -157,7 +157,16 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
         parent.node[wlcl][[1]][end] <- value[2]
       }
     }
-    apsimx_json$Children[[1]]$Children <- parent.node
+    ## The code below is not needed, I think
+    # if(missing(root)){
+    #   apsimx_json$Children[[1]]$Children <- parent.node  
+    # }else{
+    #   if(length(root) == 1){
+    #     apsimx_json$Children[[wcore1]]$Children <- parent.node  
+    #   }else{
+    #     apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children <- parent.node
+    #   }
+    # }
   }
   
   ## Edit the met file

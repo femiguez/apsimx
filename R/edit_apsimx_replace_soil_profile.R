@@ -164,14 +164,25 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
       }
     }
   }
-  ## Replace the soil
-  ## 1. soil.node to core.zone.node
-  core.zone.node[wsn] <- soil.node
-  ## 2. core.one.node to parent.node
-  parent.node[wcz][[1]]$Children <- core.zone.node
-  ## parent.node to core
-  apsimx_json$Children[[wcore]]$Children <- parent.node
   
+  if(missing(root)){
+    ## Replace the soil
+    ## 1. soil.node to core.zone.node
+    core.zone.node[wsn] <- soil.node
+    ## 2. core.one.node to parent.node
+    parent.node[wcz][[1]]$Children <- core.zone.node
+    ## parent.node to core
+    apsimx_json$Children[[wcore]]$Children <- parent.node    
+  }else{
+    core.zone.node[wsn] <- soil.node
+    parent.node[wcz][[1]]$Children <- core.zone.node
+    if(length(root) == 1){
+      apsimx_json$Children[[wcore1]]$Children <- parent.node 
+    }else{
+      apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children <- parent.node 
+    }
+  }
+
   if(overwrite == FALSE){
     wr.path <- paste0(wrt.dir, "/",
                       tools::file_path_sans_ext(file),
