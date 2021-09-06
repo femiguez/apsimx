@@ -324,26 +324,30 @@ auto_detect_apsimx_examples <- function(){
   }
   
   if(.Platform$OS.type == "windows"){
-      st1 <- "C:/PROGRA~1"
-      laf <- list.files(st1)
-      find.apsim <- grep("APSIM", laf)
-      
-      if(length(find.apsim) == 0) stop("APSIM-X not found")
-      
-      apsimx.versions <- laf[find.apsim]
-      if(length(apsimx.versions) > 1){
-        newest.version <- laf[find.apsim][length(find.apsim)]
-        if(apsimx.options$warn.versions){
-          warning(paste("Multiple versions of APSIM-X installed. \n
-                        Choosing the newest one:", newest.version))
-        }
-        apsimx.name <- newest.version
-      }else{
-        apsimx.name <- apsimx.versions
-      }
+    ## Need to test this change
+    
+      # st1 <- "C:/PROGRA~1"
+      # laf <- list.files(st1)
+      # find.apsim <- grep("APSIM", laf)
+      # 
+      # if(length(find.apsim) == 0) stop("APSIM-X not found")
+      # 
+      # apsimx.versions <- laf[find.apsim]
+      # if(length(apsimx.versions) > 1){
+      #   newest.version <- laf[find.apsim][length(find.apsim)]
+      #   if(apsimx.options$warn.versions){
+      #     warning(paste("Multiple versions of APSIM-X installed. \n
+      #                   Choosing the newest one:", newest.version))
+      #   }
+      #   apsimx.name <- newest.version
+      # }else{
+      #   apsimx.name <- apsimx.versions
+      # }
+      adax <- auto_detect_apsimx()
       ## APSIM path to examples
-      st3 <- "/Examples" 
-      apsimx_ex_dir <- paste0(st1, "/", apsimx.name, st3)
+      # st3 <- "/Examples" 
+      # apsimx_ex_dir <- paste0(st1, "/", apsimx.name, st3)
+      apsimx_ex_dir <- gsub("bin/Models.exe", "Examples", adax)
   }
   
   if(!is.na(apsimx::apsimx.options$examples.path)){
@@ -618,7 +622,7 @@ assign('exe.path', NA, apsimx.options)
 assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
-assign('.run.local.tests', FALSE, apsimx.options)
+assign('.run.local.tests', TRUE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests
 ## which do not require an APSIM install

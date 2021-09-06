@@ -86,8 +86,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     gfixed <- FALSE
     gignore.case <- FALSE
   }
-    
-  
+
   if(length(frn) == 0) stop(paste0(root," not found"))
   
   if(length(frn) > 1 || !missing(root)){

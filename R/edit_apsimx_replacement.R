@@ -21,6 +21,7 @@
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
 #' @param edit.tag if the file is edited a different tag from the default \sQuote{-edited} can be used.
 #' @param verbose whether to print information about successful edit
+#' @param grep.options Additional options for grep. To be passed as a list.
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
 #' As a side effect this function creates a new (JSON) .apsimx file.
@@ -87,7 +88,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                     node.sub5child = NULL, node.string = NULL,
                                     root = list("Models.Core.Replacements", NA),
                                     parm = NULL, value = NULL, overwrite = FALSE,
-                                    edit.tag = "-edited", verbose = TRUE){
+                                    edit.tag = "-edited", verbose = TRUE, grep.options){
   
   file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
@@ -117,6 +118,14 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     }
   }else{
     replacements.node <- apsimx_json$Children[[frn]]
+  }
+  
+  if(!missing(grep.options)){
+    gfixed <- grep.options$fixed
+    gignore.case <- grep.options$ignore.case
+  }else{
+    gfixed <- FALSE
+    gignore.case <- FALSE
   }
   
   ## Print names of replacements
@@ -189,7 +198,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     if(length(rep.node.child$Command) > 0){
       if(any(grepl(parm, unlist(rep.node.child$Command)))){
         lvl <- 2
-        wrnsc <- grep(parm, unlist(rep.node.child$Command))
+        wrnsc <- grep(parm, unlist(rep.node.child$Command), fixed = gfixed, ignore.case = gignore.case)
         ## Break it up and reassemble
         cmdstrng <- strsplit(rep.node.child$Command[[wrnsc]], "=")[[1]][1]
         rep.node.child$Command[[wrnsc]] <- paste0(cmdstrng, "=", value)
@@ -269,7 +278,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     if(length(rep.node.subsubchild$Command) > 0){
       if(any(grepl(parm, unlist(rep.node.subsubchild$Command)))){
         lvl <- 5
-        wrnsscc <- grep(parm, unlist(rep.node.subsubchild$Command))
+        wrnsscc <- grep(parm, unlist(rep.node.subsubchild$Command), fixed = gfixed, ignore.case = gignore.case)
         if(length(wrnsscc) == 0) stop("node.subsubchild Command not found")
         if(length(wrnsscc) > 1) stop("More than one subsubchild Command found. Make it unique (see regular expressions)")
         ## Break it up and reassemble
@@ -328,7 +337,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     if(length(rep.node.sub3child$Command) > 0){
       if(any(grepl(parm, unlist(rep.node.sub3child$Command)))){
         lvl <- 7
-        wrnssscc <- grep(parm, unlist(rep.node.sub3child$Command))
+        wrnssscc <- grep(parm, unlist(rep.node.sub3child$Command), fixed = gfixed, ignore.case = gignore.case)
         if(length(wrnssscc) == 0) stop("node.sub3child Command not found")
         if(length(wrnssscc) > 1) stop("More than one sub3child Command found. Make it unique (see regular expressions)")
         ## Break it up and reassemble
@@ -359,7 +368,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     rep.node.sub4children.names <- vapply(rep.node.sub3child$Children, function(x) x$Name,
                                           FUN.VALUE = "character")
     ## Select a specific node.subchild
-    wrnssssc <- grep(node.sub4child, rep.node.sub4children.names)
+    wrnssssc <- grep(node.sub4child, rep.node.sub4children.names, fixed = gfixed, ignore.case = gignore.case)
     if(length(wrnssssc) == 0) stop("node.sub4child not found")
     if(length(wrnssssc) > 1) stop("More than one sub4child found. Make it unique (see regular expressions)")
     
@@ -389,7 +398,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     if(length(rep.node.sub4child$Command) > 0){
       if(any(grepl(parm, unlist(rep.node.sub4child$Command)))){
         lvl <- 9
-        wrnsssscc <- grep(parm, unlist(rep.node.sub4child$Command))
+        wrnsssscc <- grep(parm, unlist(rep.node.sub4child$Command), fixed = gfixed, ignore.case = gignore.case)
         if(length(wrnsssscc) == 0) stop("node.sub4child Command not found")
         if(length(wrnsssscc) > 1) stop("More than one sub4child Command found. Make it unique (see regular expressions)")
         ## Break it up and reassemble
@@ -421,7 +430,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     rep.node.sub5children.names <- vapply(rep.node.sub4child$Children, function(x) x$Name,
                                           FUN.VALUE = "character")
     ## Select a specific node.subchild
-    wrnsssssc <- grep(node.sub5child, rep.node.sub5children.names)
+    wrnsssssc <- grep(node.sub5child, rep.node.sub5children.names, fixed = gfixed, ignore.case = gignore.case)
     if(length(wrnsssssc) == 0) stop("node.subs5child not found")
     if(length(wrnsssssc) > 1) stop("More than one sub5child found. Make it unique (see regular expressions)")
     rep.node.sub5child <- rep.node.sub4child$Children[[wrnsssssc]]
@@ -451,7 +460,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     if(length(rep.node.sub5child$Command) > 0){
       if(any(grepl(parm, unlist(rep.node.sub5child$Command)))){
         lvl <- 11
-        wrnssssscc <- grep(parm, unlist(rep.node.sub5child$Command))
+        wrnssssscc <- grep(parm, unlist(rep.node.sub5child$Command), fixed = gfixed, ignore.case = gignore.case)
         if(length(wrnssssscc) == 0) stop("node.subs5child Command not found")
         if(length(wrnssssscc) > 1) stop("More than one sub5child Command found. Make it unique (see regular expressions)")
         ## Break it up and reassemble

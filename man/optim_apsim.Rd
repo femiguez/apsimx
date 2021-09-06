@@ -109,6 +109,12 @@ will edit and overwrite the file during the optimization.
 * When you use the parm.vector.index you cannot edit two separate elements of
 a vector at the same time. This should be used to target a single element of 
 a vector only.
+
+* Internally, the optimization is done around the scaled value of the initial parameter
+values. A value of 1 would correspond to the inital value of the parameter. 
+The \sQuote{lower} and \sQuote{upper} (or \sQuote{ub} and \sQuote{lb}) are also scaled 
+to the initial values of the parameters. So, for example, if your initial value is 20 
+and you provide an upper bound of 5, it means that the actual upper value that you are allowing for is 100.
 }
 \note{
 When computing the objective function (residual sum-of-squares) different variables are combined.

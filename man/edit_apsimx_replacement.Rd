@@ -21,7 +21,8 @@ edit_apsimx_replacement(
   value = NULL,
   overwrite = FALSE,
   edit.tag = "-edited",
-  verbose = TRUE
+  verbose = TRUE,
+  grep.options
 )
 }
 \arguments{
@@ -60,6 +61,8 @@ the nodes and their childs and not a real \sQuote{jsonpath}.}
 \item{edit.tag}{if the file is edited a different tag from the default \sQuote{-edited} can be used.}
 
 \item{verbose}{whether to print information about successful edit}
+
+\item{grep.options}{Additional options for grep. To be passed as a list.}
 }
 \value{
 (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.

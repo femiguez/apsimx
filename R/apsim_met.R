@@ -405,6 +405,8 @@ check_apsim_met <- function(met){
     warning("Rain is negative")
   }
   if(any(max(met[["rain"]], na.rm = TRUE) > 100)){
+    ## Apparently it is more or less reasonable to question 100mm in 24 hours
+    ## https://journals.ametsoc.org/view/journals/hydr/20/12/jhm-d-19-0039_1.xml
     warning("Rain is possibly too high")
   }
   

@@ -9,6 +9,7 @@
 #' @param edit.tag default edit tag \sQuote{-edited}
 #' @param overwrite default FALSE
 #' @param verbose default TRUE and it will print messages to console
+#' @param root supply the node postion in the case of multiple simulations such as factorials.
 #' @return writes a file to disk with the supplied soil profile
 #' @details This function is designed to batch replace the whole soil in an APSIM simulation file. 
 #' @note There is no such thing as a default soil, carefully build the profile for each simulation.
@@ -33,7 +34,8 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
                                               soil.profile = NULL,
                                               edit.tag = "-edited",
                                               overwrite = FALSE,
-                                              verbose = TRUE){
+                                              verbose = TRUE,
+                                              root){
   
   .check_apsim_name(file)
   
@@ -52,11 +54,34 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   ## Parse apsimx file (JSON)
   apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
   
-  parent.node0 <- apsimx_json$Children
   ## Where is the 'Core' simulation?
-  wcore <- grep("Core.Simulation", parent.node0)
-  parent.node <- parent.node0[[wcore]]$Children
+  parent.node <- apsimx_json$Children
+  wcore <- grep("Core.Simulation", parent.node)
   
+  if(length(wcore) > 1){
+    if(missing(root)){
+      cat("Simulation structure: \n")
+      str_list(apsimx_json)
+      stop("more than one simulation found and no root node label has been specified \n select one of the children names above")   
+    }else{
+      if(length(root) == 1){
+        wcore1 <- grep(as.character(root), apsimx_json$Children)
+        if(length(wcore1) == 0 || length(wcore1) > 1)
+          stop("no root node label found or root is not unique")
+        parent.node <- apsimx_json$Children[[wcore1]]$Children
+      }else{
+        root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
+        wcore1 <- grep(as.character(root[1]), root.node.0.names)
+        root.node.0 <- apsimx_json$Children[[wcore1]]
+        root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)
+        wcore2 <- grep(as.character(root[2]), root.node.0.child.names)
+        parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children
+      }
+    }
+  }else{
+    parent.node <- apsimx_json$Children[[wcore]]$Children  
+  }
+
   ## Extract 'Core' simulation
   wcz <- grepl("Models.Core.Zone", parent.node)
   core.zone.node <- parent.node[wcz][[1]]$Children

@@ -1,5 +1,6 @@
 ## Testing the edit function with a variety of files
 require(apsimx)
+apsimx_options(warn.versions = FALSE)
 
 extd.dir <- system.file("extdata", package = "apsimx")
 
@@ -171,6 +172,27 @@ if(run.apsimx.edit){
              value = "[Wheat].EndOfDay")
  
  inspect_apsimx("Wheat-edited.apsimx", src.dir = tmp.dir, node = "Report")
+ 
+ ## Running soil carbon
+ edit_apsimx("Wheat.apsimx", src.dir = ex.dir,
+             node = "Report", wrt.dir = tmp.dir,
+             parm = "VariableNames",
+             value = "[Soil].Nutrient.Organic.C",
+             edit.tag = "-carbon")
+ 
+ inspect_apsimx("Wheat-carbon.apsimx", src.dir = tmp.dir, node = "Report")
+ 
+ sim.o <- apsimx("Wheat-carbon.apsimx", src.dir = tmp.dir)
+ 
+ edit_apsimx("Soybean.apsimx", src.dir = ex.dir,
+             node = "Report", wrt.dir = tmp.dir,
+             parm = "VariableNames",
+             value = "[Soil].Nutrient.Organic.C",
+             edit.tag = "-carbon")
+ 
+ inspect_apsimx("Soybean-carbon.apsimx", src.dir = tmp.dir, node = "Report")
+ 
+ sim.o <- apsimx("Soybean-carbon.apsimx", src.dir = tmp.dir)
   
 }
 
@@ -204,7 +226,8 @@ if(run.apsimx.edit){
   inspect_apsim("Millet.apsim", src.dir = tmp.dir, node = "Outputfile", parm = "title")
 
   edit_apsim("Millet.apsim", src.dir = tmp.dir,
-             node = "Outputfile", value = "surfaceom_wt")
+             node = "Outputfile", parm = "variables", 
+             value = "surfaceom_wt")
     
   edit_apsim("Millet.apsim", src.dir = tmp.dir,
              node = "Outputfile",

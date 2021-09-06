@@ -261,6 +261,9 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
     attr(iem.dat, "latitude") <- paste("latitude =", stt$geometry$coordinates[[1]][2], "(DECIMAL DEGREES)")
   }
   
+  if(nrow(iem.dat) == 0)
+    warning("No weather data for this location and dates combination")
+  
   if(filename == "noname.met"){
     unlink(file.path(wrt.dir, filename))
     return(iem.dat)
