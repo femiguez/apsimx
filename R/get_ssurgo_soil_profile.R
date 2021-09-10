@@ -88,9 +88,9 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
   }
   
   if(verbose == FALSE){
-    res <- suppressWarnings(soilDB::SDA_spatialQuery(spg, what = 'mukey'))
+    res <- suppressWarnings(soilDB::SDA_spatialQuery(spg, what = 'geom', geomIntersection = TRUE))
   }else{
-    res <- soilDB::SDA_spatialQuery(spg, what = 'mukey')  
+    res <- soilDB::SDA_spatialQuery(spg, what = 'geom', geomIntersection = TRUE)  
   }
   
   mu.is <- soilDB::format_SQL_in_statement(res$mukey)
@@ -115,7 +115,7 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
   
   ## Retrieve the state from the areasymbol
   if(shift <= 0 || length(unique(mapunit$areasymbol)) == 1){
-    cmpnt$state <- strtrim(mapunit$areasymbol, 2)
+    cmpnt$state <- unique(strtrim(mapunit$areasymbol, 2))
   }else{
     cmpnt$state <- NA
     warning("This area includes more than one state. 
@@ -139,7 +139,7 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
     spg.sf[["AREASYMBOL"]] <- mapunit$areasymbol
     mapunit.shp <- spg.sf
   }else{
-    mapunit.shp <- sf::st_as_sf(spg)
+    mapunit.shp <- sf::st_as_sf(res)
   }
   
   sp0 <- ssurgo2sp(mapunit = mapunit, component = cmpnt,

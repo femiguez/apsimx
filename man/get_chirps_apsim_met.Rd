@@ -22,7 +22,7 @@ get_chirps_apsim_met(
 
 \item{filename}{file name for writing out to disk}
 
-\item{fillin.radn}{whether to fill in radiation data using the nasapower pacakge. Default is FALSE.}
+\item{fillin.radn}{whether to fill in radiation data using the nasapower pacakge. Default is TRUE.}
 
 \item{silent}{defaut is FALSE. Changing it will not do anything at the moment. A future feature.}
 }

@@ -8,7 +8,7 @@
 #' @param dates date ranges
 #' @param wrt.dir write directory
 #' @param filename file name for writing out to disk
-#' @param fillin.radn whether to fill in radiation data using the nasapower pacakge. Default is FALSE.
+#' @param fillin.radn whether to fill in radiation data using the nasapower pacakge. Default is TRUE.
 #' @param silent defaut is FALSE. Changing it will not do anything at the moment. A future feature.
 #' @return returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
 #' @details If the filename is not provided it will not write the file to disk,

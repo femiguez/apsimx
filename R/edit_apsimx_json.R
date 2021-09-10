@@ -131,7 +131,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     parm <- match.arg(parm, choices = parm.choices, several.ok = TRUE)
     ## Find what the 'Start' and 'End' are actually called
     ## Find the 'Clock'
-    wlc <- function(x) grepl("Clock", x$Name)
+    wlc <- function(x) grepl("Clock", x$Name, ignore.case = TRUE)
     wlcl <- sapply(parent.node, FUN = wlc)
     
     start <- grep("Start", names(parent.node[wlcl][[1]]), 

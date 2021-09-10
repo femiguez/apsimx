@@ -64,18 +64,42 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
       str_list(apsimx_json)
       stop("more than one simulation found and no root node label has been specified \n select one of the children names above")   
     }else{
+      if(length(root) > 3)
+        stop("At the moment 3 is the maximum length for root", call. = TRUE)
+      
       if(length(root) == 1){
         wcore1 <- grep(as.character(root), apsimx_json$Children)
         if(length(wcore1) == 0 || length(wcore1) > 1)
           stop("no root node label found or root is not unique")
         parent.node <- apsimx_json$Children[[wcore1]]$Children
-      }else{
+      }
+      if(length(root) == 2){
         root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
         wcore1 <- grep(as.character(root[1]), root.node.0.names)
+        if(length(wcore1) == 0 || length(wcore1) > 1)
+          stop("no root node label in position 1 found or root is not unique")
         root.node.0 <- apsimx_json$Children[[wcore1]]
         root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)
         wcore2 <- grep(as.character(root[2]), root.node.0.child.names)
-        parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children
+        if(length(wcore2) == 0 || length(wcore2) > 1)
+          stop("no root node label in position 2 found or root is not unique")
+        parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children        
+      }else{
+        root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
+        wcore1 <- grep(as.character(root[1]), root.node.0.names)
+        if(length(wcore1) == 0 || length(wcore1) > 1)
+          stop("no root node label in position 1 found or root is not unique")
+        root.node.0 <- apsimx_json$Children[[wcore1]]
+        root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)
+        wcore2 <- grep(as.character(root[2]), root.node.0.child.names)
+        if(length(wcore2) == 0 || length(wcore2) > 1)
+          stop("no root node label in position 2 found or root is not unique")
+        root.node.1 <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children
+        root.node.1.child.names <- sapply(root.node.1$Children, function(x) x$Name)
+        wcore3 <- grep(as.character(root[3]), root.node.1.child.names)
+        if(length(wcore3) == 0 || length(wcore3) > 1)
+          stop("no root node label in position 3 found or root is not unique")
+        parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children[[wcore3]]$Children        
       }
     }
   }else{
@@ -178,8 +202,11 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
     parent.node[wcz][[1]]$Children <- core.zone.node
     if(length(root) == 1){
       apsimx_json$Children[[wcore1]]$Children <- parent.node 
-    }else{
+    }
+    if(length(root) == 2){
       apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children <- parent.node 
+    }else{
+      apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children[[wcore3]]$Children <- parent.node 
     }
   }
 

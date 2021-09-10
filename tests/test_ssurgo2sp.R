@@ -68,3 +68,17 @@ if(run.test.ssurgo.workflow){
   sim <- apsimx("WheatRye-sp.apsimx", src.dir = tmp.dir, value = "report")
   
 }
+
+if(run.test.ssurgo.workflow){
+  
+  ## Testing the shift feature
+  stbls <- get_ssurgo_tables(lonlat = c(-82.97, 40.739), shift = 300)
+  stbls$mapunit$mukey  
+  
+  sp0 <- ssurgo2sp(mapunit = stbls$mapunit, component = stbls$component,
+                   chorizon = stbls$chorizon, mapunit.shp = stbls$mapunit.shp)
+  
+  stbls.sp <- get_ssurgo_soil_profile(lonlat = c(-82.97, 40.739), shift = 300)
+  
+  
+}

@@ -4,13 +4,16 @@
 \alias{get_ssurgo_tables}
 \title{Retrieve soil profile data and return a table with data}
 \usage{
-get_ssurgo_tables(lonlat, shift = -1, verbose = FALSE)
+get_ssurgo_tables(lonlat, shift = -1, aoi, verbose = FALSE)
 }
 \arguments{
 \item{lonlat}{Longitude and latitude vector (e.g. c(-93, 42))}
 
 \item{shift}{simple mechanism for creating an area of interest by displacing the point indicated in 
 lonlat by some amount of distance (e.g. 300 - in meters)}
+
+\item{aoi}{area of interest, if supplied the lonlat and shift arguments will be ignored. Should be
+of class \sQuote{sp::SpatialPolygons}.}
 
 \item{verbose}{whether to pring messages and warnings to the console default FALSE}
 }
@@ -23,6 +26,12 @@ returns a list with tables for mapunit, component, chorizon and mapunit.shp (obj
 }
 \details{
 Data source is USDA-NRCS Soil Data Access. See package soilDB for more details
+
+* If a point is requested then an object of class \sQuote{sf} is returned (for mapunit.shp) 
+with the MUKEY and AREASYMBOL with GEOMETRY type: POINT. 
+
+* If a the request is for a spatial polygon, then an object of class \sQuote{sf} is returned
+with gid, mukey and area_ac with GEOMETRY type: POLYGON.
 }
 \examples{
 \dontrun{
@@ -32,6 +41,8 @@ require(sf)
 require(spData)
 ## retrieve data from lon -93, lat = 42
 stbls <- get_ssurgo_tables(lonlat = c(-93, 42)) 
+
+stbls2 <- get_ssurgo_tables(lonlat = c(-93, 42), shift = 200)
 
 }
 }
