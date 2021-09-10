@@ -84,7 +84,8 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
         if(length(wcore2) == 0 || length(wcore2) > 1)
           stop("no root node label in position 2 found or root is not unique")
         parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children        
-      }else{
+      }
+      if(length(root) == 3){
         root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
         wcore1 <- grep(as.character(root[1]), root.node.0.names)
         if(length(wcore1) == 0 || length(wcore1) > 1)
@@ -205,7 +206,8 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
     }
     if(length(root) == 2){
       apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children <- parent.node 
-    }else{
+    }
+    if(length(root) == 3){
       apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children[[wcore3]]$Children <- parent.node 
     }
   }
