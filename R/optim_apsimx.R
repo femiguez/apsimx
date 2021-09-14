@@ -35,7 +35,10 @@
 #' @param replacement TRUE or FALSE for each parameter. Indicating whether it is part of 
 #' the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.
 #' @param root root argument for \code{\link{edit_apsimx_replacement}}
-#' @param initial.values (required) supply the initial values of the parameters. (Working on fixing this...)
+#' @param initial.values (required) supply the initial values of the parameters. (Working on fixing this...).
+#' If the parameters to be optimized correspond to a single value, then a simple numeric vector can be supplied.
+#' If one or more of the parameters represent a vector in APSIM, then the initial values should be passed as a
+#' list. At the moment, it is not possible to check if these are appropriate (correct name and length). 
 #' @param ... additional arguments to be passed to the optimization algorithm. See \code{\link[stats]{optim}}
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
@@ -135,21 +138,34 @@ optim_apsimx <- function(file, src.dir = ".",
   names(iparms) <- parm.paths
   
   if(missing(initial.values))
-    stop("Initial values should be supplied. (Working on a fix for this)")
+    stop("Initial values should be supplied. (Working on a fix for this)", call. = FALSE)
   
   ## How do I retrieve the current value I want to optimize?
   for(i in seq_along(parm.paths)){
     if(missing(initial.values)){
       if(replacement[i]){
-        parm.val <- extract_values_apsimx(file = file, src.dir = src.dir, 
-                    parm.path = paste0(".Simulations.Replacements.", parm.paths[i]))  
+        if(!grepl(".Simulations.Replacements.", parm.paths[i])){
+          parm.val <- extract_values_apsimx(file = file, src.dir = src.dir, 
+                                            parm.path = paste0(".Simulations.Replacements.", parm.paths[i]))            
+        }else{
+          parm.val <- extract_values_apsimx(file = file, src.dir = src.dir, parm.path = parm.paths[i])            
+        }
       }else{
         parm.val <- extract_values_apsimx(file = file, src.dir = src.dir, 
                                           parm.path = parm.paths[i])  
       }
-      iparms[[i]] <- as.numeric(parm.val)
+      if(is.list(parm.val)){
+        iparms[[i]] <- as.numeric(unlist(parm.val))  
+      }else{
+        iparms[[i]] <- as.numeric(parm.val)  
+      }
     }else{
-      iparms[[i]] <- as.numeric(initial.values[i])
+      if(is.list(initial.values)){
+        iparms[[i]] <- initial.values[[i]]
+      }else{
+        iparms[[i]] <- as.numeric(initial.values[i])  
+      }
+      
     }
   }
   

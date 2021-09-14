@@ -131,17 +131,20 @@ sens_apsimx <- function(file, src.dir = ".",
       stop("Simulation failed for initial parameter combination")
     }
     
+    ## Extract basic information from sim
+    if(i == 1){
+      col.class.numeric <- which(sapply(sim, class) == "numeric") ## Which columns are numeric
+      nms.sim <- names(sim[, col.class.numeric]) ## Names of the columns
+      ncol.class.numeric <- ncol(sim[,col.class.numeric]) 
+    }
+
     if(inherits(sim, "try-error") && i > 1){
-      mat <- matrix(ncol = ncol(sim[,col.class.numeric]))
+      mat <- matrix(ncol = ncol.class.numeric)
       sim.sd <- as.data.frame(mat)
       names(sim.sd) <- nms.sim
       col.sim <- rbind(col.sim, sim.sd)
       next
     } 
-    
-    ## Extract basic information from sim
-    col.class.numeric <- which(sapply(sim, class) == "numeric") ## Which columns are numeric
-    nms.sim <- names(sim[, col.class.numeric]) ## Names of the columns
     
     if(summary == "mean"){
       sim.s <- colMeans(sim[, col.class.numeric], na.rm = TRUE)
@@ -175,7 +178,7 @@ sens_apsimx <- function(file, src.dir = ".",
       
       if(nrow.grid <= 10){
         dftm <- difftime(Sys.time(), start)
-        cat("Progress:", round((i/nrow.grid) * 100), "%. Time elapsed:", dftm, units(dftm)," \n")  
+        cat("Progress:", round((i/nrow.grid) * 100), "%. Time elapsed:", round(dftm, 2), units(dftm)," \n")  
       }else{
         progress.step <- ifelse(nrow.grid <= 20, 10, 5)
         
@@ -183,7 +186,7 @@ sens_apsimx <- function(file, src.dir = ".",
         
         if(prev.div > old.prev.div){
           dftm <- difftime(Sys.time(), start)
-          cat("Progress:", round((i/nrow(grid)) * 100), "%. Time elapsed:", dftm, units(dftm)," \n")  
+          cat("Progress:", round((i/nrow(grid)) * 100), "%. Time elapsed:", round(dftm, 2), units(dftm)," \n")  
           old.prev.div <- prev.div
         } 
       }
@@ -245,7 +248,7 @@ summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
   for(i in seq_along(nms.resp.var)){
     X <- object$grid
     y <- object$grid.sims[,nms.resp.var[i]]
-    if(suppressWarnings(var(y) == 0) || is.character(y[1]) || !is.numeric(y)) next
+    if(suppressWarnings(var(y, na.rm = TRUE) == 0) || is.character(y[1]) || !is.numeric(y)) next
     
     if(scale){
       if(any(sapply(object$grid, function(x) is.character(x) || is.factor(x))))
@@ -256,7 +259,7 @@ summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
     }
     
     frml <- paste("y ~", paste(names(X), collapse = "+"))
-    fit <- lm(formula = frml, data = dat)
+    fit <- lm(formula = frml, data = dat, na.action = na.omit)
     if(inherits(fit, "try-error")) next
     sfit <- as.matrix(stats::anova(fit))
     cat("Variable:", nms.resp.var[i], "\n")

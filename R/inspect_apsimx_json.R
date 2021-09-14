@@ -86,8 +86,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     if(missing(root)){
       cat("Simulation structure: \n")
       str_list(apsimx_json)
-      stop("more than one simulation found and no root node label has been specified \n select one of the children names above")   
+      stop("more than one simulation found and no root node label has been specified \n select one of the children names above", call. = FALSE)   
     }else{
+      if(length(root) > 3)
+        stop("At the moment 3 is the maximum length for root for this function", call. = FALSE)
       if(length(root) == 1){
         nms <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
                       FUN.VALUE = "character")
@@ -97,15 +99,37 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         if(length(fcsn) == 0 || length(fcsn) > 1)
           stop("no root node label found or root is not unique")
       }else{
-        nms1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
-                      FUN.VALUE = "character")
-        fcsn1 <- grep(as.character(root[1]), nms1)
-        root.node.0 <- apsimx_json$Children[[fcsn1]]
-        root.node.0.child.names <- vapply(root.node.0$Children, function(x) x$Name, 
-                                          FUN.VALUE = "character")
-        fcsn2 <- grep(as.character(root[2]), root.node.0.child.names)
-        parent.node <- apsimx_json$Children[[fcsn1]]$Children[[fcsn2]]$Children
-        parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[fcsn1]]$Children[[fcsn2]])
+        if(length(root) == 2){
+          root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
+          wcore1 <- grep(as.character(root[1]), root.node.0.names)
+          if(length(wcore1) == 0 || length(wcore1) > 1)
+            stop("no root node label in position 1 found or root is not unique")
+          root.node.0 <- apsimx_json$Children[[wcore1]]
+          root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)  
+          wcore2 <- grep(as.character(root[2]), root.node.0.child.names)
+          if(length(wcore2) == 0 || length(wcore2) > 1)
+            stop("no root node label in position 2 found or root is not unique")
+          parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children        
+          parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[wcore1]]$Children[[wcore2]])
+        }
+        if(length(root) == 3){
+          root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
+          wcore1 <- grep(as.character(root[1]), root.node.0.names)
+          if(length(wcore1) == 0 || length(wcore1) > 1)
+            stop("no root node label in position 1 found or root is not unique")
+          root.node.0 <- apsimx_json$Children[[wcore1]]
+          root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)
+          wcore2 <- grep(as.character(root[2]), root.node.0.child.names)
+          if(length(wcore2) == 0 || length(wcore2) > 1)
+            stop("no root node label in position 2 found or root is not unique")
+          root.node.1 <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]
+          root.node.1.child.names <- sapply(root.node.1$Children, function(x) x$Name)  
+          wcore3 <- grep(as.character(root[3]), root.node.1.child.names)
+          if(length(wcore3) == 0 || length(wcore3) > 1)
+            stop("no root node label in position 3 found or root is not unique")
+          parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children[[wcore3]]$Children
+          parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children[[wcore3]])
+        }
       }
     }
   }else{
@@ -114,7 +138,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   }
   
   if(node == "Clock"){
-    wlc <- function(x) grepl("Clock", x$Name, ignore.case = TRUE)
+    wlc <- function(x) grepl("Models.Clock", x$`$typ3`, ignore.case = TRUE)
     wlcl <- sapply(parent.node, FUN = wlc)
     if(all(wlcl == FALSE)){
       stop("Clock not found")
@@ -135,7 +159,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## The previous creates a list
   if(node == "Weather"){
     ## Extract the list which has a component Name == "Weather"
-    wlw <- function(x) grepl("Weather", x$Name)
+    wlw <- function(x) grepl("Models.Weather", x$`$type`)
     wlwl <- sapply(parent.node, FUN = wlw)
     if(all(wlwl == FALSE)){
       stop("Weather not found")
@@ -608,7 +632,7 @@ inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
   .check_apsim_name(src.dir)
   
   if(missing(parm))
-    stop("You need to specify the parm argument")
+    stop("You need to specify the parm argument", call. = FALSE)
   
   file.names.apsimx <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
   file.names.json <- dir(path = src.dir, pattern = ".json$", ignore.case = TRUE)

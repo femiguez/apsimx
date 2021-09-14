@@ -595,9 +595,8 @@ tt_apsim_met <- function(met, dates,
 
   method <- match.arg(method, several.ok = TRUE)
   
-  if("all" %in% method) method <- c("Classic_TT", "HeatStress_TT", "CropHeatUnit_TT")
+  if("all" %in% method) method <- c("Classic_TT", "HeatStress_TT", "CropHeatUnit_TT", "APSIM_TT")
   
-  if("APSIM_TT" %in% method) stop("not implemented yet.")
   if("CERES_TT" %in% method) stop("not implemented yet.")
   
   if(is.na(as.Date(dates[1], format = dates.format))) stop("first date might be in the wrong format")
@@ -613,6 +612,7 @@ tt_apsim_met <- function(met, dates,
   if("Classic_TT" %in% method) met$Classic_TT <- 0
   if("HeatStress_TT" %in% method) met$HeatStress_TT <- 0
   if("CropHeatUnit_TT" %in% method) met$CropHeatUnit_TT <- 0
+  if("APSIM_TT" %in% method) met$APSIM_TT <- 0
   
   if(nrow(met) != nrow(tmpd))
     warning("Days for each year should be complete")
@@ -639,6 +639,7 @@ tt_apsim_met <- function(met, dates,
   cum.classic.tt <- 0
   cum.heatstress.tt <- 0
   cum.cropheatunit.tt <- 0
+  cum.apsim.tt <- 0
   k <- 0
   
   for(i in 1:nrow(met)){
@@ -673,10 +674,16 @@ tt_apsim_met <- function(met, dates,
         cum.cropheatunit.tt <- cum.cropheatunit.tt + cropheatunit.tt
         met$CropHeatUnit_TT[i] <- cum.cropheatunit.tt
       }
+      if("APSIM_TT" %in% method){
+        apsim.tt <- apsim_tt(met$maxt[i], met$mint[i], Tb = base_temp, To = max_temp, cardinal.temps = x_temp, gdd.coord = y_tt)
+        cum.apsim.tt <- cum.apsim.tt + apsim.tt
+        met$APSIM_TT[i] <- cum.apsim.tt
+      }
     }else{
       cum.classic.tt <- 0
       cum.heatstress.tt <- 0
       cum.cropheatunit.tt <- 0
+      cum.apsim.tt <- 0
     }
   }
 
@@ -684,5 +691,198 @@ tt_apsim_met <- function(met, dates,
   return(met)
 }
   
+## APSIM calculation of thermal time
+########################################################################################################
+########################################################################################################
+## Functions to convert temperature to gdd following APSIM's XY interpolation method. 
+## There are three options available in this script. Users can modify or add new functions. 
+## We used the temp2gdd function in the paper (APSIM-soybean version 7.5).
+## We provide two more options as examples (temp3gdd and temp4dd function)
+## See supplementary materials, figure S1  for the shape of each function
+
+## function 1 or method 1 (temp2gdd)
+temp2gdd <- function(temp, cardinal.temps = c(10,30,40), gdd.coord=c(0,20,0)){
   
+  gdd <- numeric(length(temp))
+  
+  for(i in 1:length(temp)){
+    if(temp[i] <= cardinal.temps[2]){
+      slp <- c(gdd.coord[2]-gdd.coord[1])/c(cardinal.temps[2]-cardinal.temps[1])    # slope = (20-0)/(30-10)=1
+      int <- gdd.coord[1]                                                           # int   = 0
+      gdd[i] <- int + slp * (temp[i] - cardinal.temps[1])    
+    }else{
+      slp <- c(gdd.coord[3]-gdd.coord[2])/c(cardinal.temps[3]-cardinal.temps[2])    # slope = (0-20)/(40-30)=-2
+      int <- gdd.coord[2]                                                           # int   = 20
+      gdd[i] <- int + slp * (temp[i] - cardinal.temps[2])
+    }
+  }
+  
+  gdd <- pmax(gdd,0)
+  return(gdd)
+}
+
+
+## function 2 or method 2 (temp3gdd)
+temp3gdd <- function(temp, cardinal.temps = c(0,15,30,40), gdd.coord=c(0,5,20,0)){
+  
+  gdd <- numeric(length(temp))
+  
+  for(i in 1:length(temp)){
+    if(temp[i] <= cardinal.temps[2]){                                                 # temp < 15
+      slp <- c(gdd.coord[2]-gdd.coord[1])/c(cardinal.temps[2]-cardinal.temps[1])      # slope = (5-0)/(15-0)=0.333
+      int <- gdd.coord[1]                                                             # int = gdd.coord[1] = 0
+      gdd[i] <- int + slp * (temp[i] - cardinal.temps[1])                             # if temp = 15, gdd=5
+    }
+    if(temp[i] > cardinal.temps[2] && temp[i] <= cardinal.temps[3]){                  # temp < 30
+      slp <- c(gdd.coord[3]-gdd.coord[2])/c(cardinal.temps[3]-cardinal.temps[2])      # slope = (20-5)/(30-15)=1
+      int <- gdd.coord[2]                                                             # int = gdd.coord[2] = 5
+      gdd[i] <- int + slp * (temp[i] - cardinal.temps[2])                             # if temp = 30, gdd=20
+    }
+    if(temp[i] > cardinal.temps[3] && temp[i] <= cardinal.temps[4]){                  # temp < 40
+      slp <- c(gdd.coord[4]-gdd.coord[3])/c(cardinal.temps[4]-cardinal.temps[3])      # slope = (0-20)/(40-30)=-2
+      int <-  gdd.coord[3]                                                            # int = gd.coord[3]=20
+      gdd[i] <- int + slp * (temp[i] - cardinal.temps[3])                             # if temp = 40, gdd=0
+      #}else{
+      # gdd[i] <- 0
+    }
+  }
+  gdd <- pmax(gdd,0)
+  return(gdd)
+}
+
+
+## function 3 or method 3 (temp4gdd)
+temp4gdd <- function(temp, cardinal.temps = c(7,28,35,45), gdd.coord=c(0,21,21,0)){
+  
+  gdd <- numeric(length(temp))
+  
+  for(i in 1:length(temp)){
+    if(temp[i] <= cardinal.temps[2]){                                                 # temp < 28
+      slp <- c(gdd.coord[2]-gdd.coord[1])/c(cardinal.temps[2]-cardinal.temps[1])      # slope = (21-0)/(28-7)=1
+      int <- gdd.coord[1]                                                             # int = gdd.coord[1] = 0
+      gdd[i] <- int + slp * (temp[i] - cardinal.temps[1])                             # if temp = 28, gdd=21
+    }
+    if(temp[i] > cardinal.temps[2] && temp[i] <= cardinal.temps[3]){                  # temp < 35
+      slp <- c(gdd.coord[3]-gdd.coord[2])/c(cardinal.temps[3]-cardinal.temps[2])      # slope = (21-21)/(35-28)=0
+      int <- gdd.coord[2]                                                             # int = gdd.coord[2] = 21
+      gdd[i] <- int + slp * (temp[i] - cardinal.temps[2])                             # if temp = 35, gdd=21
+    }
+    if(temp[i] > cardinal.temps[3] && temp[i] <= cardinal.temps[4]){                  # temp < 45
+      slp <- c(gdd.coord[4]-gdd.coord[3])/c(cardinal.temps[4]-cardinal.temps[3])      # slope = (0-21)/(45-35)=-2.1
+      int <-  gdd.coord[3]                                                            # int = gd.coord[3]=21
+      gdd[i] <- int + slp * (temp[i] - cardinal.temps[3])                             # if temp = 45, gdd=0
+    }
+  }
+  gdd <- pmax(gdd,0)
+  return(gdd)
+}
+
+
+########################################################################################################
+########################################################################################################
+## This function calculates daily gdd using the 3-hour interval approach from APSIM
+## Min and max daily temperature, Tb, To, and interpolation method are the inputs (see above for options).
+## We used the "temp2gdd" interpolation method and APSIM's default Tb and To values (Table 1).   
+
+apsim_tt <- function(maxt, mint, Tb=10, To=30, cardinal.temps, gdd.coord){
+  
+  h2c <- function(hr){
+    ans <- 0.92105 + 0.114 * hr - 0.0703 * (hr^2) + 0.0053*(hr^3)   # apsim equation  
+    ans
+  } 
+  
+  method <- "temp2gdd"
+  if(missing(cardinal.temps) && missing(gdd.coord)){
+    method <- "temp2gdd"
+  }else{
+    if(length(cardinal.temps) == 3) method <- "temp2gdd"
+    if(length(cardinal.temps) == 4) method <- "temp3gdd"
+    if(length(cardinal.temps) == 5) 
+      stop("Method not implemented yet", call. = FALSE)
+  } 
+
+  if(method == "temp2gdd"){
+    if(mint < Tb || maxt > To){
+      temp1 <- mint + h2c(1)*(maxt - mint)
+      temp2 <- mint + h2c(2)*(maxt - mint)
+      temp3 <- mint + h2c(3)*(maxt - mint)
+      temp4 <- mint + h2c(4)*(maxt - mint)
+      temp5 <- mint + h2c(5)*(maxt - mint)
+      temp6 <- mint + h2c(6)*(maxt - mint)
+      temp7 <- mint + h2c(7)*(maxt - mint)
+      temp8 <- mint + h2c(8)*(maxt - mint)
+      
+      if(missing(cardinal.temps) && missing(gdd.coord)){
+        gdd <- mean(temp2gdd(c(temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8)))    
+      }else{
+        if(length(cardinal.temps) != 3 || length(gdd.coord) != 3)
+          stop("Length of cardinal.temps and/or gdd.coord is not equal to 3", call. = FALSE)
+        gdd <- mean(temp2gdd(c(temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8),
+                             cardinal.temps = cardinal.temps, gdd.coord = gdd.coord))    
+      }
+      
+    }else{
+      gdd <- temp2gdd((maxt + mint)*0.5)                                                 
+    } 
+  }
+  
+  if(method == "temp3gdd"){
+    if(mint < Tb || maxt > To){
+      temp1 <- mint + h2c(1)*(maxt - mint)
+      temp2 <- mint + h2c(2)*(maxt - mint)
+      temp3 <- mint + h2c(3)*(maxt - mint)
+      temp4 <- mint + h2c(4)*(maxt - mint)
+      temp5 <- mint + h2c(5)*(maxt - mint)
+      temp6 <- mint + h2c(6)*(maxt - mint)
+      temp7 <- mint + h2c(7)*(maxt - mint)
+      temp8 <- mint + h2c(8)*(maxt - mint)
+      
+      if(missing(cardinal.temps) && missing(gdd.coord)){
+        gdd <- mean(temp3gdd(c(temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8)))   
+      }else{
+        if(length(cardinal.temps) != 4 || length(gdd.coord) != 4)
+          stop("Length of cardinal.temps and/or gdd.coord is not equal to 4", call. = FALSE)
+        gdd <- mean(temp3gdd(c(temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8),
+                             cardinal.temps = cardinal.temps, gdd.coord = gdd.coord))    
+      }
+    }else{
+      gdd <- temp3gdd((maxt + mint)*0.5)                                                 
+    }
+  }
+  
+  return(gdd)
+}
+
+## Function to include the photoperiod in an APSIM met file
+pp_apsim_met <- function(metfile, sun_angle=0){
+  
+  if(!inherits(metfile, "met"))
+    stop("Object 'metfile' should be of class 'met'", call. = FALSE)
+  lat0 <-  attr(metfile, "latitude") # read latitude from the Measured file
+  lat <- as.numeric(strsplit(lat0, "=")[[1]][2])
+  day <-  metfile$day                  # read day from the Met file 
+  
+  aeqnox <- 79.25              
+  pi     <- 3.14159265359
+  dg2rdn <- (2.0 * pi) /360.0    
+  decsol <- 23.45116 * dg2rdn  
+  dy2rdn <- (2.0 * pi) /365.25   
+  rdn2hr <- 24.0/(2.0 * pi)      
+  
+  sun_alt <- sun_angle * dg2rdn
+  dec     <- decsol * sin (dy2rdn * (day - aeqnox))
+  latrn   <- lat * dg2rdn
+  slsd    <- sin(latrn) * sin(dec)
+  clcd    <- cos(latrn) * cos(dec)
+  altmn   <- asin(pmin(pmax(slsd - clcd, -1.0), 1.0))
+  altmx   <- asin(pmin(pmax(slsd + clcd, -1.0), 1.0))
+  alt     <- pmin(pmax(sun_alt, altmn), altmx)
+  
+  coshra1 <- (sin (alt) - slsd) /clcd
+  coshra  <- pmin(pmax(coshra1, -1.0), 1.0)
+  hrangl  <- acos (coshra)
+  PP      <- hrangl * rdn2hr * 2.0          
+  metfile$photoperiod <- PP
+  return(metfile)
+}
   

@@ -105,7 +105,13 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
   apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
   
   ## Select Replacements node
-  frn <- grep(root[[1]], apsimx_json$Children, fixed = TRUE)
+  if(missing(grep.options)){
+    frn <- grep(root[[1]], apsimx_json$Children, fixed = TRUE)  
+  }else{
+    gfixed <- ifelse(is.null(grep.options$fixed), FALSE, grep.options$fixed)
+    gignore.case <- ifelse(is.null(grep.options$ignore.case), FALSE, grep.options$ignore.case)
+    frn <- grep(root[[1]], apsimx_json$Children, fixed = gfixed, ignore.case = gignore.case)  
+  }
   
   if(length(frn) == 0) stop(paste0(root," not found"))
 

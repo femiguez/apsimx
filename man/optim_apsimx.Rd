@@ -45,7 +45,10 @@ the \sQuote{replacement} component. Its length should be equal to the length or 
 
 \item{root}{root argument for \code{\link{edit_apsimx_replacement}}}
 
-\item{initial.values}{(required) supply the initial values of the parameters. (Working on fixing this...)}
+\item{initial.values}{(required) supply the initial values of the parameters. (Working on fixing this...).
+If the parameters to be optimized correspond to a single value, then a simple numeric vector can be supplied.
+If one or more of the parameters represent a vector in APSIM, then the initial values should be passed as a
+list. At the moment, it is not possible to check if these are appropriate (correct name and length).}
 
 \item{...}{additional arguments to be passed to the optimization algorithm. See \code{\link[stats]{optim}}}
 }
