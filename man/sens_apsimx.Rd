@@ -9,7 +9,7 @@ sens_apsimx(
   file,
   src.dir = ".",
   parm.paths,
-  parm.vector.index,
+  convert,
   replacement,
   grid,
   summary = c("mean", "max", "var", "sd", "none"),
@@ -28,9 +28,9 @@ sens_apsimx(
 \item{parm.paths}{absolute or relative paths of the coefficients to be evaluated. 
 It is recommended that you use \code{\link{inspect_apsimx}} for this}
 
-\item{parm.vector.index}{Index to evaluate a specific element of a parameter vector.  At the moment it is
-possible to only edit one element at a time. This is because there is a conflict when generating multiple
-elements in the candidate vector for the same parameter.}
+\item{convert}{(logical) This argument is needed if there is a need to pass a vector instead of a single value.
+The vector can be passed as a character string (separated by spaces) and it will be converted to a 
+numeric vector. It should be either TRUE or FALSE for each parameter.}
 
 \item{replacement}{TRUE or FALSE for each parameter. Indicating whether it is part of 
 the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.}
