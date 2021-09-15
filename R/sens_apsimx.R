@@ -6,9 +6,9 @@
 #' @param src.dir directory containing the .apsimx file to be run (defaults to the current directory)
 #' @param parm.paths absolute or relative paths of the coefficients to be evaluated. 
 #'             It is recommended that you use \code{\link{inspect_apsimx}} for this
-#' @param parm.vector.index Index to evaluate a specific element of a parameter vector.  At the moment it is
-#' possible to only edit one element at a time. This is because there is a conflict when generating multiple
-#' elements in the candidate vector for the same parameter.
+#' @param convert (logical) This argument is needed if there is a need to pass a vector instead of a single value.
+#' The vector can be passed as a character string (separated by spaces) and it will be converted to a 
+#' numeric vector. It should be either TRUE or FALSE for each parameter.
 #' @param replacement TRUE or FALSE for each parameter. Indicating whether it is part of 
 #' the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.
 #' @param grid grid of parameter values for the evaluation. It can be a data.frame.
@@ -27,7 +27,7 @@
 
 sens_apsimx <- function(file, src.dir = ".", 
                         parm.paths,
-                        parm.vector.index,
+                        convert,
                         replacement,
                         grid,
                         summary = c("mean", "max", "var", "sd", "none"),
@@ -36,7 +36,7 @@ sens_apsimx <- function(file, src.dir = ".",
                         ...){
   
   if(missing(file))
-    stop("file is missing with no default")
+    stop("file is missing with no default", call. = FALSE)
   
   .check_apsim_name(file)
   .check_apsim_name(src.dir)
@@ -45,20 +45,20 @@ sens_apsimx <- function(file, src.dir = ".",
   file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
   
   if(length(file.names) == 0){
-    stop("There are no .apsimx files in the specified directory to run.")
+    stop("There are no .apsimx files in the specified directory to run.", call. = FALSE)
   }
   
   file <- match.arg(file, file.names)
   
   summary <- match.arg(summary)
   
-  if(missing(parm.vector.index)){
+  if(missing(convert)){
     parm.vector.index <- rep(-1, length(parm.paths))
   }else{
-    if(length(parm.vector.index) != length(parm.paths))
-      stop("parm.vector.index should have length equal to parm.paths") 
-    if(!is.numeric(parm.vector.index))
-      stop("parm.vector.index should be numeric")
+    if(length(convert) != length(parm.paths))
+      stop("convert should have length equal to parm.paths", call. = FALSE) 
+    if(!is.logical(convert))
+      stop("convert should be logical", call. = FALSE)
   }
   
   if(missing(replacement)) replacement <- rep(FALSE, length(parm.paths))
@@ -92,10 +92,11 @@ sens_apsimx <- function(file, src.dir = ".",
     ## Need to edit the parameters in the simulation file or replacement
     for(j in seq_along(parm.paths)){
       ## Edit the specific parameters with the corresponding values
-      if(parm.vector.index[j] <= 0){
+      if(convert[j] <= 0){
         par.val <- grid[i, j]  
       }else{
-        stop("Submit an issue in github if you need this feature", call. = FALSE)
+        ## Converting from character to numeric. Values need to be separated by spaces.
+        par.val <- as.numeric(strsplit(grid[i, j], " ")[[1]])
       }
       
       if(replacement[j]){
@@ -111,14 +112,26 @@ sens_apsimx <- function(file, src.dir = ".",
                                 root = root,
                                 verbose = FALSE) 
       }else{
-        edit_apsimx(file = file, 
-                    src.dir = src.dir,
-                    wrt.dir = src.dir,
-                    node = "Other",
-                    parm.path = parm.paths[j],
-                    overwrite = TRUE,
-                    value = par.val,
-                    verbose = FALSE) 
+        if(missing(root)){
+          edit_apsimx(file = file, 
+                      src.dir = src.dir,
+                      wrt.dir = src.dir,
+                      node = "Other",
+                      parm.path = parm.paths[j],
+                      overwrite = TRUE,
+                      value = par.val,
+                      verbose = FALSE)           
+        }else{
+          edit_apsimx(file = file, 
+                      src.dir = src.dir,
+                      wrt.dir = src.dir,
+                      node = "Other",
+                      parm.path = parm.paths[j],
+                      overwrite = TRUE,
+                      value = par.val,
+                      root = root,
+                      verbose = FALSE)           
+        }
       }
     }
     

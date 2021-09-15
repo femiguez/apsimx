@@ -612,7 +612,8 @@ tt_apsim_met <- function(met, dates,
   if("Classic_TT" %in% method) met$Classic_TT <- 0
   if("HeatStress_TT" %in% method) met$HeatStress_TT <- 0
   if("CropHeatUnit_TT" %in% method) met$CropHeatUnit_TT <- 0
-  if("APSIM_TT" %in% method) met$APSIM_TT <- 0
+  # if("APSIM_TT" %in% method) met$APSIM_TT <- 0
+  if("APSIM_TT" %in% method) stop("Not implemented yet.", call. = FALSE)
   
   if(nrow(met) != nrow(tmpd))
     warning("Days for each year should be complete")
