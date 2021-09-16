@@ -51,6 +51,9 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   
   if(missing(soil.profile)) stop("soil profile is missing")
   
+  if(!inherits(soil.profile, "soil_profile"))
+    stop("Object soil.profile should be of class 'soil_profile'", call. = FALSE)
+  
   ## Parse apsimx file (JSON)
   apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
   
