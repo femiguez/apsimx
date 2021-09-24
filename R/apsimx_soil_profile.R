@@ -42,6 +42,7 @@
 #' @param metadata list with soil metadata. For possible parameters and values see an example of \code{\link{inspect_apsimx}} with soil.child = \dQuote{Metadata}.
 #' @param soilwat optional \sQuote{list} of class \sQuote{soilwat_parms}
 #' @param swim optional \sQuote{list} of class \sQuote{swim_parms}
+#' @param soilorganicmatter optional \sQuote{list} of class \sQuote{soilorganicmatter_parms}
 #' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
 #' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
 #' If a != 0 and b != 0 then the equation is \code{a*soil.layer*exp(-b*soil.layer)}.  
@@ -84,6 +85,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                  metadata = NULL,
                                  soilwat = NA,
                                  swim = NA,
+                                 soilorganicmatter = NA,
                                  dist.parms = list(a = 0, b = 0.2)){
 
   if(!is.null(Depth) & !is.null(Thickness)){
@@ -355,23 +357,33 @@ apsimx_soil_profile <-  function(nlayers = 10,
     PH <- PH.max * soil_variable_profile(nlayers, a = PH[[2]], b = PH[[3]])
   }
   
+  ## Build the crop soil
+  crop.soil <- as.data.frame(replicate(length(crops), do.call(cbind, list(crop.KL, crop.LL, crop.XF))))
+  names(crop.soil) <- as.vector(sapply(crops, function(x) paste0(x, c(".KL", ".LL", ".XF"))))
+    
   soil <- data.frame(Depth=Depth, Thickness=Thickness, BD=BD, 
                      AirDry=AirDry, LL15=LL15, DUL=DUL, SAT=SAT, 
-                     KS=KS, crop.XF=crop.XF, crop.KL = crop.KL,
-                     crop.LL = crop.LL, Carbon=Carbon, 
+                     KS=KS, Carbon=Carbon, 
                      SoilCNRatio=SoilCNRatio, FOM=FOM, 
                      FOM.CN=FOM.CN, FBiom=FBiom, FInert=FInert,
                      NO3N=NO3N, NH4N=NH4N, PH=PH)
   
     names(soil) <- c("Depth","Thickness", "BD", "AirDry","LL15",
-                     "DUL","SAT","KS","crop.XF","crop.KL","crop.LL",
-                     "Carbon","SoilCNRatio", "FOM","FOM.CN","FBiom","FInert",
+                     "DUL","SAT","KS", "Carbon","SoilCNRatio", "FOM",
+                     "FOM.CN","FBiom","FInert",
                      "NO3N","NH4N","PH")
+    
+    soil <- cbind(soil, crop.soil)
+    
+    ## These are some values for a sandy clay loam
+    soil$ParticleSizeClay <- 25
+    soil$ParticleSizeSilt <- 15
+    soil$ParticleSizeSand <- 60 
     
     ## Check for reasonable values
     check_apsimx_soil_profile(soil)
     
-    ans <- list(soil=soil, crops = crops, metadata = metadata, soilwat = soilwat, swim = swim)
+    ans <- list(soil=soil, crops = crops, metadata = metadata, soilwat = soilwat, swim = swim, soilorganicmatter = soilorganicmatter)
     class(ans) <- "soil_profile"
     return(ans)
   }
@@ -423,8 +435,7 @@ soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
 #' @export 
 plot.soil_profile <- function(x,..., property = c("all", "water","BD",
                                               "AirDry","LL15","DUL","SAT",
-                                              "KS","crop.XF","crop.KL",
-                                              "crop.LL", "Carbon", "SoilCNRatio", 
+                                              "KS", "Carbon", "SoilCNRatio", 
                                               "FOM","FOM.CN","FBiom",
                                               "FInert","NO3N","NH4N","PH")){
   ## Test for existence of ggplot2
@@ -438,7 +449,31 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
   xsoil <- x$soil
   ## Add soil bottom depth
   xsoil$soil.depth.bottom <- sapply(as.character(xsoil$Depth), FUN = function(x) as.numeric(strsplit(x,"-")[[1]][2]))
-  property <- match.arg(property)
+  
+  crops.property <- as.vector(sapply(x$crops, function(x) paste0(x, c(".XF", ".KL", ".LL"))))
+  
+  property.in.crops <- try(match.arg(property, choices = crops.property, several.ok = TRUE), silent = TRUE)
+  
+  properties <- c("all", "water","BD",
+                  "AirDry","LL15","DUL","SAT",
+                  "KS", "Carbon", "SoilCNRatio", 
+                  "FOM","FOM.CN","FBiom",
+                  "FInert","NO3N","NH4N","PH")
+    
+  if(inherits(property.in.crops, "try-error")){
+    property <- try(match.arg(property), silent = TRUE) 
+    if(inherits(property, "try-error")){
+      cat("property should be one of:", c(properties, crops.property), "\n")
+      stop("property does not match on of the possible properties", call. = FALSE)
+    }
+  }else{
+    property <- try(match.arg(property, choices = crops.property, several.ok = TRUE), silent = TRUE) 
+    if(inherits(property, "try-error")){
+      cat("Available crop properties", crops.property, "\n")
+      stop("Crop property is not in the possible list of crop properties", call. = FALSE)      
+    }
+  }
+
   if(property != "all" & property != "water"){
     
     tmp <- xsoil[,c(property,"Depth","soil.depth.bottom")]
@@ -460,23 +495,31 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
     dul <- data.frame(var = "DUL", dist = tmp[,"DUL"]) # 4
     sat <- data.frame(var = "SAT", dist = tmp[,"SAT"]) # 5
     ks <- data.frame(var = "KS", dist = tmp[,"KS"]) # 6
-    c.xf <- data.frame(var = "crop.XF", dist = tmp[,"crop.XF"]) # 7
-    c.kl <- data.frame(var = "crop.KL", dist = tmp[,"crop.KL"]) # 8
-    c.ll <- data.frame(var = "crop.LL", dist = tmp[,"crop.LL"]) # 9
-    carbon <- data.frame(var = "Carbon", dist = tmp[,"Carbon"]) # 10
-    soilcn <- data.frame(var = "SoilCNRatio", dist = tmp[,"SoilCNRatio"]) # 11
-    fom <- data.frame(var = "FOM", dist = tmp[,"FOM"]) # 12
-    fom.cn <- data.frame(var = "FOM.CN", dist = tmp[,"FOM.CN"]) # 13
-    fbiom <- data.frame(var = "FBiom", dist = tmp[,"FBiom"]) # 14
-    finert <- data.frame(var = "FInert", dist = tmp[,"FInert"]) # 15
-    no3n <- data.frame(var = "NO3N", dist = tmp[,"NO3N"]) # 16
-    nh4n <- data.frame(var = "NH4N", dist = tmp[,"NH4N"]) # 17
-    ph <- data.frame(var = "PH", dist = tmp[,"PH"]) # 18
+    carbon <- data.frame(var = "Carbon", dist = tmp[,"Carbon"]) # 7
+    soilcn <- data.frame(var = "SoilCNRatio", dist = tmp[,"SoilCNRatio"]) # 8
+    fom <- data.frame(var = "FOM", dist = tmp[,"FOM"]) # 9
+    fom.cn <- data.frame(var = "FOM.CN", dist = tmp[,"FOM.CN"]) # 10
+    fbiom <- data.frame(var = "FBiom", dist = tmp[,"FBiom"]) # 11
+    finert <- data.frame(var = "FInert", dist = tmp[,"FInert"]) # 12
+    no3n <- data.frame(var = "NO3N", dist = tmp[,"NO3N"]) # 13
+    nh4n <- data.frame(var = "NH4N", dist = tmp[,"NH4N"]) # 14
+    ph <- data.frame(var = "PH", dist = tmp[,"PH"]) # 15
+    crops.xf <- NULL
+    crops.kl <- NULL
+    crops.ll <- NULL
+    num.crops <- length(x$crops)
+    num.crops.dats <- num.crops * 3
+    for(i in x$crops){
+      crops.xf <- rbind(crops.xf, data.frame(var = paste0(i, ".XF"), dist = tmp[,paste0(i, ".XF")]))
+      crops.kl <- rbind(crops.kl, data.frame(var = paste0(i, ".KL"), dist = tmp[,paste0(i, ".KL")])) 
+      crops.ll <- rbind(crops.ll, data.frame(var = paste0(i, ".LL"), dist = tmp[,paste0(i, ".LL")])) 
+    }
+
+    soil.depth.bottoms <- rep(xsoil$soil.depth.bottom, 15 + num.crops.dats)
     
-    soil.depth.bottoms <- rep(xsoil$soil.depth.bottom, 18)
-    
-    dat0 <- rbind(bd,ad,ll,dul,sat,ks,c.xf,c.kl,c.ll,carbon,
-                  soilcn,fom,fom.cn,fbiom,finert,no3n,nh4n,ph)
+    dat0 <- rbind(bd, ad, ll, dul, sat, ks, carbon,
+                  soilcn, fom, fom.cn, fbiom, finert, no3n, nh4n, ph,
+                  crops.xf, crops.kl, crops.ll)
     
     dat <- data.frame(dat0, soil.depths = soil.depth.bottoms)
     
@@ -523,10 +566,12 @@ check_apsimx_soil_profile <- function(x){
     soil <- x
   } 
   
+  crop.vars <- as.vector(sapply(x$crops, function(x) paste0(x, c(".KL", ".LL", ".XF"))))
+  
   vars <- c("Depth","Thickness", "BD", "AirDry","LL15",
-            "DUL","SAT","KS","crop.XF","crop.KL","crop.LL",
+            "DUL","SAT","KS",
             "Carbon","SoilCNRatio", "FOM","FOM.CN","FBiom","FInert",
-            "NO3N","NH4N","PH")
+            "NO3N","NH4N","PH", crop.vars)
   
   soil.names <- names(soil)
   
@@ -556,15 +601,11 @@ check_apsimx_soil_profile <- function(x){
   if(max(soil$SAT) > 1) warning("SAT is too high")
   ## KS 
   if(min(soil$KS) <= 0) warning("KS is zero or negative")
-  ## crop.XF
-  if(min(soil$crop.XF) <= 0) warning("crop.XF is zero or negative")
-  if(max(soil$crop.XF) > 1) warning("crop.XF is too high")
-  ## crop.KL
-  if(min(soil$crop.KL) <= 0) warning("crop.KL is zero or negative")
-  if(max(soil$crop.KL) > 1) warning("crop.KL is too high")
-  ## crop.LL
-  if(min(soil$crop.LL) <= 0) warning("crop.LL is zero or negative")
-  if(max(soil$crop.LL) > 1) warning("crop.LL is too high")
+  ## crop.soil
+  for(i in seq_along(crop.vars)){
+    if(min(soil[[crop.vars[i]]]) < 0) warning(paste(crop.vars[i], "is negative"))
+    if(max(soil[[crop.vars[i]]]) > 1) warning(paste(crop.vars[i], "is greater than 1"))
+  }
   ## Carbon
   if(min(soil$Carbon) <= 0) warning("Carbon is zero or negative")
   ## SoilCNRatio
@@ -587,10 +628,28 @@ check_apsimx_soil_profile <- function(x){
   if(min(soil$PH) <= 0) warning("PH is zero or negative")
   if(max(soil$PH) > 14) warning("PH is too high")
   
+  ## Checking texture if it exists
+  if(!is.null(soil$Clay)){
+    if(any(soil$Clay > 100)) warning("Clay cannot be greater than 100")
+    if(any(soil$Clay < 0)) warning("Clay is negative")
+  }
+  
+  if(!is.null(soil$Silt)){
+    if(any(soil$Silt > 100)) warning("Silt cannot be greater than 100")
+    if(any(soil$Silt < 0)) warning("Silt is negative")
+  }
+  
+  if(!is.null(soil$Sand)){
+    if(any(soil$Sand > 100)) warning("Sand cannot be greater than 100")
+    if(any(soil$Sand < 0)) warning("Sand is negative")
+  }
+  
   SATminusDUL <- soil$SAT - soil$DUL
   DULminusLL <- soil$DUL - soil$LL
   DULminuscrop.LL <- soil$DUL - soil$crop.LL
   SATminusLL <- soil$SAT - soil$LL
+  LLminuscrop.LL <- soil$LL - soil$crop.LL
+  LLminusAirDry <- soil$LL - soil$AirDry
   
   if(any(SATminusDUL <= 0))
     warning("DUL cannot be greater than SAT")
@@ -603,6 +662,12 @@ check_apsimx_soil_profile <- function(x){
 
   if(any(SATminusLL <= 0))
     warning("LL cannot be greater than SAT")
+  
+  if(any(LLminuscrop.LL < 0))
+    warning("crop.LL cannot be lower than soil LL")
+  
+  if(any(LLminusAirDry < 0))
+    warning("AirDry cannot be greater than LL")
 
   return(invisible(x))
 }

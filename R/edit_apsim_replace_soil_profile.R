@@ -176,7 +176,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
   }
   
   ## Edit Sample (NO3, NH4)
-  for(i in c("Thickness","NO3N","NH4N")){
+  for(i in c("Thickness", "NO3N", "NH4N")){
     if(i == "Thickness") ii <- "Thickness"
     if(i == "NO3N") ii <- "NO3"
     if(i == "NH4N") ii <- "NH4"
@@ -199,7 +199,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
   ## Print names of crops present in the original file
   crop.names <- xml2::xml_attr(xml2::xml_find_all(apsim_xml, ".//Soil/Water/SoilCrop"), "name")
   
-  if(verbose) cat("Crops in the original file",crop.names,"\n")
+  if(verbose) cat("Crops in the original file", crop.names, "\n")
 
   if(!isTRUE(all.equal(sort(soil.profile$crops), sort(crop.names)))){
       cat("Name of crops in soil profile", soil.profile$crops,"\n")
@@ -209,10 +209,10 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
   
   soil.crops.node <- xml2::xml_find_all(apsim_xml, ".//Soil/Water/SoilCrop")
   
-  for(i in soil.profile$crops){
-    crop.index <- which(crop.names == i)
-    for(j in c("Thickness","XF","LL","KL")){
-      crop.specific.node <- xml2::xml_find_first(xml2::xml_find_all(apsim_xml, ".//Soil/Water/SoilCrop")[[crop.index]],paste0("./",j))
+  for(crop in soil.profile$crops){
+    crop.index <- which(crop.names == crop)
+    for(j in c("Thickness", "XF", "LL", "KL")){
+      crop.specific.node <- xml2::xml_find_first(xml2::xml_find_all(apsim_xml, ".//Soil/Water/SoilCrop")[[crop.index]], paste0("./",j))
       
       len.child.crop.specific.node <- length(xml2::xml_children(crop.specific.node))
       rows.soil.profile <- nrow(soil.profile$soil)
@@ -230,7 +230,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
       }
       
       if(j != "Thickness"){
-        jj <- paste0("crop.",j)
+        jj <- paste0(crop, ".", j)
       }else{
         jj <- j
       }
@@ -244,7 +244,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
                       tools::file_path_sans_ext(file),
                       edit.tag,".apsim")
   }else{
-    wr.path <- paste0(wrt.dir,"/",file)
+    wr.path <- file.path(wrt.dir, file)
   }
   xml2::write_xml(apsim_xml, file = wr.path)
   
@@ -271,7 +271,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
 #' @param CNRed see APSIM documentation
 #' @param CNCov see APSIM documentation
 #' @param Slope see APSIM documentation
-#' @param Discharge see APSIM documentation
+#' @param DischargeWidth see APSIM documentation
 #' @param CatchmentArea see APSIM documentation
 #' @param MaxPond see APSIM documentation
 #' @param SWCON see APSIM documentation
@@ -284,7 +284,7 @@ soilwat_parms <- function(SummerCona = NA, SummerU = NA, SummerDate = NA,
                           WinterCona = NA, WinterU = NA, WinterDate = NA,
                           DiffusConst = NA, DiffusSlope = NA, Salb = NA,
                           CN2Bare = NA, CNRed = NA, CNCov = NA, Slope = NA,
-                          Discharge = NA, CatchmentArea = NA, MaxPond = NA,
+                          DischargeWidth = NA, CatchmentArea = NA, MaxPond = NA,
                           SWCON = NA){
   
   ## Could incorporate error checking in the future
@@ -293,10 +293,12 @@ soilwat_parms <- function(SummerCona = NA, SummerU = NA, SummerDate = NA,
               WinterCona = WinterCona, WinterU = WinterU, WinterDate = WinterDate,
               DiffusConst = DiffusConst, DiffusSlope = DiffusSlope, Salb = Salb,
               CN2Bare = CN2Bare, CNRed = CNRed, CNCov = CNCov, Slope = Slope,
-              Discharge = Discharge, CatchmentArea = CatchmentArea, MaxPond = MaxPond, 
+              DischargeWidth = DischargeWidth, CatchmentArea = CatchmentArea, MaxPond = MaxPond, 
               SWCON = SWCON)
   
-  if(any(SWCON < 0) || any(SWCON > 1)) stop("SWCON should be between 0 and 1")
+  if(!is.na(SWCON[1])){
+    if(any(SWCON < 0) || any(SWCON > 1)) stop("SWCON should be between 0 and 1")  
+  }
   
   if(!is.character(SummerCona) && !is.na(SummerCona)) stop("SummerCona should be a date as a character day-month. Ex: 1-Nov")
   if(!is.character(WinterCona) && !is.na(WinterCona)) stop("WinterCona should be a date as a character day-month. Ex: 1-Apr")
@@ -363,4 +365,29 @@ swim_parms <- function(Salb = NA, CN2Bare = NA, CNRed = NA,
   
   ans <- structure(swim.lst, class = c("swim_parms","list"))
   ans
+}
+
+#'
+#' @title Helper function to supply additional Soil Organic Matter parameters
+#' @name soilorganicmatter_parms
+#' @description Creates a list with specific components for the Soil Organic Matter module
+#' @param RootCN Root Carbon:Nitrogen ratio (see APSIM documentation)
+#' @param RootWt Root weight (see APSIM documentation)
+#' @param EnrACoeff (see APSIM documentation)
+#' @param EnrBCoeff (see APSIM documentation)
+#' @param OCUnits Organic Carbon Units
+#' @export
+
+soilorganicmatter_parms <- function(RootCN = NA, RootWt = NA, EnrACoeff = NA, EnrBCoeff = NA, OCUnits = NA){
+  
+  som.list <- list(RootCN = RootCN, RootWt = RootWt, EnrACoeff = EnrACoeff, EnrBCoeff = EnrBCoeff, OCUnits = OCUnits)
+  
+  if(!is.na(RootCN) && RootCN <= 0) warning("RootCN should be a value greater than zero") 
+  if(!is.na(RootWt) && RootWt <= 0) warning("RootWt should be a value greater than zero")
+  if(!is.na(EnrACoeff) && EnrACoeff <= 0) warning("EnrACoeff should be a value greater than zero")
+  if(!is.na(EnrBCoeff) && EnrBCoeff <= 0) warning("EnrBCoeff should be a value greater than zero")
+  
+  ans <- structure(som.list, class = c("soilorganicmatter_parms","list"))
+  ans
+  
 }

@@ -18,7 +18,7 @@ soilwat_parms(
   CNRed = NA,
   CNCov = NA,
   Slope = NA,
-  Discharge = NA,
+  DischargeWidth = NA,
   CatchmentArea = NA,
   MaxPond = NA,
   SWCON = NA
@@ -51,7 +51,7 @@ soilwat_parms(
 
 \item{Slope}{see APSIM documentation}
 
-\item{Discharge}{see APSIM documentation}
+\item{DischargeWidth}{see APSIM documentation}
 
 \item{CatchmentArea}{see APSIM documentation}
 

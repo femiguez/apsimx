@@ -55,7 +55,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
     stop("Object soil.profile should be of class 'soil_profile'", call. = FALSE)
   
   ## Parse apsimx file (JSON)
-  apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
+  apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
   
   ## Where is the 'Core' simulation?
   parent.node <- apsimx_json$Children
@@ -124,9 +124,9 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   ## Depth, Thickness, ParticleSizeClay,
   ## BD, AirDry, LL15, DUL, SAT, KS
   soil.physical.node <- soil.node[[1]]$Children[[1]]
-  for(i in c("Depth", "Thickness", "ParticleSizeClay", "BD", "AirDry", "LL15", "DUL", "SAT", "KS")){
+  for(i in c("Depth", "Thickness", "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand", "BD", "AirDry", "LL15", "DUL", "SAT", "KS")){
     ## Format the variable
-    if(i == "ParticleSizeClay") next
+    if(is.null(soil.profile$soil[[i]])) next
     tmp <- as.vector(soil.profile$soil[[i]], mode = "list")
     ## Replace the variable
     soil.physical.node[[i]] <- tmp 
@@ -140,7 +140,8 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   }
   ## Crop parameters
   for(i in 1:length(soil.profile$crops)){
-    for(j in c("crop.XF", "crop.KL", "crop.LL")){
+    crop.vars.names <- grep("KL|XF|LL$", names(soil.profile$soil), value = TRUE)
+    for(j in crop.vars.names){
       tmp <- as.vector(soil.profile$soil[[j]], mode = "list")
       strpcrop <- strsplit(j, ".", fixed = TRUE)[[1]][2]
       soil.physical.node$Children[[i]][[strpcrop]] <- tmp

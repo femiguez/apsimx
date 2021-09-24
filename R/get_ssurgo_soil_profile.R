@@ -64,7 +64,7 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
   lat <- lonlat[2]
   
   ## Determine if the location is in the US
-  if(requireNamespace("maps")){
+  if(requireNamespace("maps", quietly = TRUE)){
     country <- maps::map.where(x = lon, y = lat)
     if(country != "USA" || is.na(country))
       stop("These coordinates do not correspond to a location in the USA. \n Did you specify the coordinates correctly?")
@@ -168,7 +168,7 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
                                soil.bottom = soil.bottom,
                                metadata = metadata)
     
-    check_apsimx_soil_profile(asp)
+    ## check_apsimx_soil_profile(asp)
     
     ans[[i]] <- asp
   }

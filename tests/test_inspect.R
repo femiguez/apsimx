@@ -288,6 +288,23 @@ extd.dir <- system.file("extdata", package = "apsimx")
 
 if(inspect.replacement.test2){
   
+  ## Testing inspect_apsimx on MaizeSoybean.apsimx
+  pp <- inspect_apsimx("MaizeSoybean.apsimx", src.dir = extd.dir,
+                       node = "Weather",
+                       root = "SimulationSoybean",
+                       parm = "FileName",
+                       print.path = TRUE)
+  
+  if(pp != ".Simulations.SimulationSoybean.Weather.FileName")
+    stop("pp does not match for inspect_apsimx MaizeSoybean.apsimx root = SimulationSoybean", call. = FALSE)
+  
+  pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                                   root = "SimulationSoybean", 
+                                   node = "Weather", parm = "FileName", print.path = TRUE)
+  
+  if(pp != ".Simulations.SimulationSoybean.Weather.FileName")
+    stop("pp does not match for inspect_apsimx_replacement MaizeSoybean.apsimx root = SimulationSoybean", call. = FALSE)
+  
   ## Looking at values within Leaf
   inspect_apsimx_replacement("MaizeSoybean.apsimx", 
                              src.dir = extd.dir, 
@@ -338,22 +355,39 @@ if(inspect.replacement.test2){
   pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", 
                                    src.dir = extd.dir, 
                                    node = "Soybean",
-                                   node.child = "Stephens_MG40",
-                                   parm = "Vegetative",
+                                   node.child = "Cultivars",
+                                   node.subchild = "USA",
+                                   node.subsubchild = "PioneerP22T61_MG22",
+                                   parm = "Vegetative.Target.FixedValue",
                                    print.path = TRUE)
   
-  if(pp != ".Simulations.Replacements.Soybean.Stephens_MG40.Vegetative") 
-    stop("Error in inspect_apsimx_replacement, MaizeSoybean, Stephens_MG40, Vegetative, print.path")
+  if(pp != ".Simulations.Replacements.Soybean.Cultivars.USA.PioneerP22T61_MG22.Vegetative.Target.FixedValue") 
+    stop("Error in inspect_apsimx_replacement, MaizeSoybean, PioneerP22T61_MG22, Vegetative.Target.FixedValue, print.path")
 
   pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", 
                                    src.dir = extd.dir, 
                                    node = "Soybean",
-                                   node.child = "Stephens_MG40",
+                                   node.child = "Cultivars",
+                                   node.subchild = "USA",
+                                   node.subsubchild = "PioneerP22T61_MG22",
                                    parm = "EarlyFlowering",
                                    print.path = TRUE)
   
-  if(pp != ".Simulations.Replacements.Soybean.Stephens_MG40.EarlyFlowering") 
-    stop("Error in inspect_apsimx_replacement, MaizeSoybean, Stephens_MG40, EarlyFlowering, print.path")
+  if(pp != ".Simulations.Replacements.Soybean.Cultivars.USA.PioneerP22T61_MG22.EarlyFlowering") 
+    stop("Error in inspect_apsimx_replacement, MaizeSoybean, PioneerP22T61_MG22, EarlyFlowering, print.path")
+  
+  ## Testing the root
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                             src.dir = extd.dir, 
+                             root = "SimulationSoybean",
+                             node = "Weather",
+                             parm = "FileName")
+
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", 
+                             src.dir = extd.dir, 
+                             root = "SimulationMaize",
+                             node = "Weather",
+                             parm = "FileName")
   
   ## WheatRye version
   inspect_apsimx_replacement("WheatRye.apsimx", src.dir = extd.dir,

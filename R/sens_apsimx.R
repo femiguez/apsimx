@@ -272,7 +272,7 @@ summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
     }
     
     frml <- paste("y ~", paste(names(X), collapse = "+"))
-    fit <- lm(formula = frml, data = dat, na.action = na.omit)
+    fit <- stats::lm(formula = frml, data = dat, na.action = "na.omit")
     if(inherits(fit, "try-error")) next
     sfit <- as.matrix(stats::anova(fit))
     cat("Variable:", nms.resp.var[i], "\n")

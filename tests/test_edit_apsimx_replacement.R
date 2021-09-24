@@ -53,8 +53,10 @@ if(run.test.edit.apsimx.replacement){
   #### Looking at Soybean
   inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                              node = "Soybean", 
-                             node.child = "Stephens_MG40",
-                             parm = "Vegetative",
+                             node.child = "Cultivars",
+                             node.subchild = "USA",
+                             node.subsubchild = "IA2008_MG20",
+                             parm = "VegetativePhotoperiod",
                              print.path = TRUE)
   
   # edit_apsim

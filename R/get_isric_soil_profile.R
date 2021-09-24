@@ -98,9 +98,12 @@ get_isric_soil_profile <- function(lonlat,
   
   if(any(is.na(soc))) stop("No soil data available for this location. Did you specify the coordinates correctly?")
 
+  ## These are the default thicknesses in ISRIC
+  thcknss <- c(50, 100, 150, 300, 400, 1000) ## in mm
+  
   ## Create the empty soil profile
   if(missing(soil.profile)){
-    thcknss <- c(50, 100, 150, 300, 400, 1000) ## in mm
+    new.soil <- FALSE
     soil_profile <- apsimx_soil_profile(nlayers = 6, Thickness = thcknss) 
     soil_profile$soil$Clay <- NA
     soil_profile$soil$Silt <- NA
@@ -111,20 +114,39 @@ get_isric_soil_profile <- function(lonlat,
     soil_profile$soil$LL15 <- NA
     soil_profile$soil$SAT <- NA
   }else{
+    ## stop("This is not fully implemented yet. Submit a github issue if you need it.", call. = FALSE)
     soil_profile <- soil.profile
+    new.soil <- TRUE
   }
 
   ### For some of the conversions see: https://www.isric.org/explore/soilgrids/faq-soilgrids
-  soil_profile$soil$BD <- bdod[[1]] * 1e-2
-  soil_profile$soil$Carbon <- soc[[1]] * 1e-2
-  soil_profile$soil$PH <- phh2o[[1]] * 1e-1  
-  soil_profile$soil$Clay <- clay[[1]] * 1e-1
-  soil_profile$soil$Sand <- sand[[1]] * 1e-1
-  soil_profile$soil$Nitrogen <- nitrogen[[1]]
-  soil_profile$soil$CEC <- cec[[1]]
-  
+  if(new.soil){
+    sp.xout <- cumsum(soil_profile$soil$Thickness)
+    soil_profile$soil$BD <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = bdod[[1]] * 1e-2), 
+                                                 xout = sp.xout)$y    
+    soil_profile$soil$Carbon <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = soc[[1]] * 1e-2), 
+                                                 xout = sp.xout)$y    
+    soil_profile$soil$PH <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = phh2o[[1]] * 1e-1), 
+                                                     xout = sp.xout)$y    
+    soil_profile$soil$Clay <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = clay[[1]] * 1e-1), 
+                                                 xout = sp.xout)$y   
+    soil_profile$soil$Sand <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = sand[[1]] * 1e-1), 
+                                                   xout = sp.xout)$y   
+    soil_profile$soil$Nitrogen <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = nitrogen[[1]]), 
+                                                   xout = sp.xout)$y   
+    soil_profile$soil$CEC <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = cec[[1]]), 
+                                                       xout = sp.xout)$y   
+  }else{
+    soil_profile$soil$BD <- bdod[[1]] * 1e-2
+    soil_profile$soil$Carbon <- soc[[1]] * 1e-2
+    soil_profile$soil$PH <- phh2o[[1]] * 1e-1  
+    soil_profile$soil$Clay <- clay[[1]] * 1e-1
+    soil_profile$soil$Sand <- sand[[1]] * 1e-1
+    soil_profile$soil$Nitrogen <- nitrogen[[1]]
+    soil_profile$soil$CEC <- cec[[1]]
+  }
+
   soil_profile$soil$Silt <- 100 - (soil_profile$soil$Clay + soil_profile$soil$Sand)
-  
   ## Populating DUL and LL. These are equations from Table 1 in Saxton and Rawls 2006
   soil_profile$soil$DUL <- sr_dul(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2)
   soil_profile$soil$LL15 <- sr_ll(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2)
@@ -138,13 +160,16 @@ get_isric_soil_profile <- function(lonlat,
   soil_profile$soil$AirDry <- soil_profile$soil$LL15
   soil_profile$soil$AirDry[1] <- soil_profile$soil$LL15[1] * 0.5 ## AirDry is half of LL for the first layer
   
+  soil_profile$soil$crop.LL <- soil_profile$soil$LL ## Without better information
+  
   #### Passing parameters from soilwat
   ## The soil texture class will be based on the first layer only
   txt_clss <- texture_class(soil_profile$soil$Clay[1] * 1e-2, soil_profile$soil$Silt[1] * 1e-2)
   t2sp <- texture2soilParms(txt_clss)
-  soil_profile$soilwat <- soilwat_parms(Salb = t2sp$Albedo, CN2Bare = t2sp$CN2, SWCON = rep(t2sp$SWCON, 6))
+  soil_profile$soilwat <- soilwat_parms(Salb = t2sp$Albedo, CN2Bare = t2sp$CN2, 
+                                        SWCON = rep(t2sp$SWCON, nrow(soil_profile$soil)))
   
-  if(requireNamespace("maps")){
+  if(requireNamespace("maps", quietly = TRUE)){
     country <- maps::map.where(x = lon, y = lat)
     if(country == "USA"){
       state <- toupper(maps::map.where(database = "county", x = lon, y = lat)) 
@@ -176,6 +201,8 @@ get_isric_soil_profile <- function(lonlat,
                           "- geomdesc =", NA)
   
   soil_profile$metadata <- alist
+  
+  check_apsimx_soil_profile(soil_profile)
   
   return(soil_profile)  
 }

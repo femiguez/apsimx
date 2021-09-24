@@ -465,8 +465,14 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
     
   if(length(report.names) == 1L){
     tbl0 <- DBI::dbGetQuery(con, paste("SELECT * FROM ", report.names))  
+    
+    if(nrow(tbl0) == 0)
+      warning("Report table has no data")
+    
     if(any(grepl("Clock.Today", names(tbl0)))){
-      tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)
+      if(nrow(tbl0) > 0){
+        tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)  
+      }
     }
   }
     
@@ -476,8 +482,14 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
       lst0 <- NULL
       for(i in seq_along(report.names)){
         tbl0 <- DBI::dbGetQuery(con, paste("SELECT * FROM ", report.names[i]))
+        
+        if(nrow(tbl0) == 0)
+          warning(paste("Report", report.names[i]), "has no data")
+        
         if(any(grepl("Clock.Today", names(tbl0)))){
-          tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)
+          if(nrow(tbl0) > 0){
+            tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)  
+          }
         }
         dat0 <- data.frame(report = report.names[i], tbl0)
         lst0 <- try(rbind(lst0, dat0), silent = TRUE)

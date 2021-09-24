@@ -138,7 +138,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   }
   
   if(node == "Clock"){
-    wlc <- function(x) grepl("Models.Clock", x$`$typ3`, ignore.case = TRUE)
+    wlc <- function(x) grepl("Models.Clock", x$`$type`, ignore.case = TRUE)
     wlcl <- sapply(parent.node, FUN = wlc)
     if(all(wlcl == FALSE)){
       stop("Clock not found")
@@ -159,7 +159,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## The previous creates a list
   if(node == "Weather"){
     ## Extract the list which has a component Name == "Weather"
-    wlw <- function(x) grepl("Models.Weather", x$`$type`)
+    wlw <- function(x) grepl("Models.Climate.Weather|Models.Weather", x$`$type`)
     wlwl <- sapply(parent.node, FUN = wlw)
     if(all(wlwl == FALSE)){
       stop("Weather not found")

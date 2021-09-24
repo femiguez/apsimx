@@ -50,7 +50,7 @@ See the following for details
 
 This package has been tested on (latest version):
 
-**Mac**: ApsimX version (2021-04-01) 6228 (R 4.0.3)
+**Mac**: ApsimX version (2021-08-12) 6707 (R 4.0.5)
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
@@ -344,13 +344,15 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
                            node = "Soybean", display.available = TRUE) 
 ```
 
-In this case the cultivars are at the sub-node level.
+The cultivars are at the node.child level.
 
 ```{r inspect-replacement-soybean-cultivar-node-child}
 inspect_apsimx_replacement("MaizeSoybean.apsimx", 
                            src.dir = extd.dir,
                            node = "Soybean", 
-                           node.child = "PioneerP22T61_MG22",
+                           node.child = "Cultivars",
+                           node.subchild = "USA",
+                           node.subsubchild = "PioneerP22T61_MG22",
                            display.available = FALSE) 
 ```
 
