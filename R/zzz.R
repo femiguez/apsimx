@@ -10,10 +10,19 @@
     ## Check for mono
     mono <- system("which mono", intern = TRUE)
     if(length(mono) == 0){
-      find.mono <- "Mono framework not found \n"
+      find.mono <- "Mono framework not found (only needed for pre-Sept 2021 versions of APSIM Next Gen) \n"
       ## In Ubuntu mono seems to be in /usr/bin/mono
       ## In Mac mono seems to be installed in:
       ## "/Library/Frameworks/Mono.framework/Versions/Current/Commands/mono"
+      ## In both of them the command 'mono' seems to work
+    }
+    ## Check for dotnet
+    dotnet <- system("which dotnet", intern = TRUE)
+    if(length(dotnet) == 0){
+      find.dotnet <- "dotnet core framework not found (needed Sept 2021 -or later- versions of APSIM Next Gen) \n"
+      ## In Ubuntu mono seems to be in /usr/bin/mono
+      ## In Mac mono seems to be installed in:
+      ## "/usr/local/bin/dotnet"
       ## In both of them the command 'mono' seems to work
     }
     
@@ -57,6 +66,8 @@
             You can still try as the package will look into the registry (under Windows)"
     
     if(!is.null(find.mono)) apsim.not.found <- c(find.mono, apsim.not.found)
+    if(!is.null(find.dotnet)) apsim.not.found <- c(find.dotnet, apsim.not.found)
+    if(!is.null(find.dotnet) && !is.null(find.mono)) apsim.not.found <- c(find.mono, find.dotnet, apsim.not.found)
     
     packageStartupMessage(apsim.not.found)
   }

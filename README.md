@@ -22,11 +22,19 @@ for 'Classic'.
 
 * and/or APSIM (7.x) 'Classic'
 
-The new APSIM uses the mono framework to run on Mac and Linux
-(Debian). Mono should be installed first (in Mac and Linux).
+NOTE: with current (Sept 2021) versions of APSIM Next Gen the .NET Core framework is
+needed to run it from the command line in Mac and Linux.
+
+For older versions of APSIM Next Gen (before Sept 2021) the mono framework is required 
+to run on Mac and Linux (Debian). Mono should be installed first (in Mac and Linux). 
+**If you are running the latest version of APSIM Next Gen (Sept 2021 or later), you do 
+not need to install the Mono Framework**.
 
 **Mono framework download**:
 https://www.mono-project.com/download/stable/
+
+**.Net Core download for Mac**:
+https://dotnet.microsoft.com/download
 
 **APSIMX download**:
 https://www.apsim.info/download-apsim/

@@ -49,13 +49,21 @@ apsimx <- function(file = "", src.dir = ".",
   file.name.path <- file.path(src.dir, file)
   
   ada <- auto_detect_apsimx()
+  
+  dotnet <- apsimx::apsimx.options$dotnet
+  
+  if(!missing(xargs))dotnet <- xargs$dotnet
 
   if(.Platform$OS.type == "unix"){
-    mono <- system("which mono", intern = TRUE)
-    run.strng <- paste0(mono, " ", ada, " ", file.name.path) ## Could use 'paste' instead I guess...
+    if(dotnet){
+      run.strng <- paste("dotnet", ada, file.name.path)
+    }else{
+      mono <- system("which mono", intern = TRUE)
+      run.strng <- paste0(mono, " ", ada, " ", file.name.path) ## Could use 'paste' instead I guess...            
+    }
     ## Run APSIM-X on the command line
-    if(!missing(xargs)) run.strng <- paste(run.strng, xargs)
-    system(command = run.strng, ignore.stdout = silent)
+    if(!missing(xargs)) run.strng <- paste(run.strng, xargs$xargs.string)
+    res <- system(command = run.strng, ignore.stdout = silent, intern = TRUE)
   }
   
   if(.Platform$OS.type == "windows"){
@@ -64,7 +72,7 @@ apsimx <- function(file = "", src.dir = ".",
     ## I will leave the line below until I'm sure it is not needed
     ## if(src.dir != ".") stop("In Windows you can only run a file from the current directory.")
     run.strng <- paste0(ada, " ", file.name.path)
-    if(!missing(xargs)) run.strng <- paste(run.strng, xargs)
+    if(!missing(xargs)) run.strng <- paste(run.strng, xargs$xargs.string)
     shell(cmd = run.strng, translate = TRUE, intern = TRUE)
   }
 
@@ -99,12 +107,15 @@ apsimx <- function(file = "", src.dir = ".",
 #' @param single.threaded  Run all simulations sequentially on a single thread.
 #' @param cpu.count (Default: -1) Maximum number of threads/processes to spawn for running simulations.
 #' @param simulation.names Only run simulations if their names match this regular expression.
+#' @param dotnet There is a global option for this argument, but this will override it. This 
+#' can be useful if the goal is to compare an old version of Next Gen (before Sept 2021) with a more
+#' recent version in the same script.
 #' @return it returns a character vector with the extra arguments.
 #' @export
 
 xargs_apsimx <- function(verbose = FALSE, csv = FALSE, merge.db.files = FALSE, list.simulations = FALSE,
                          list.referenced.filenames = FALSE, single.threaded = FALSE, cpu.count = -1L,
-                         simulation.names = FALSE){
+                         simulation.names = FALSE, dotnet = TRUE){
 
   verbose <- ifelse(verbose, " --verbose", "")
   csv <- ifelse(csv, " --csv", "")
@@ -123,6 +134,7 @@ xargs_apsimx <- function(verbose = FALSE, csv = FALSE, merge.db.files = FALSE, l
   ## Remove beggining or trailing spaces
   xargs.string <- gsub("^\\s+|\\s+$", "", xargs.string)
   xargs.string
+  ans <- list(xargs.string = xargs.string, dotnet = dotnet)
 }
 
 ## This is an internal function so I won't export/document it
@@ -148,7 +160,9 @@ auto_detect_apsimx <- function(){
       ## If only one version of APSIM-X is present
       ## APSIM executable
       st1 <- "/Applications/"
-      st3 <- "/Contents/Resources/bin/Models.exe" 
+      st3 <- "/Contents/Resources/bin/Models.exe"   
+      if(apsimx.options$dotnet)  st3 <- gsub("exe$", "dll", st3) 
+
       if(length(find.apsim) == 1){
         apsimx.name <- laf[find.apsim]
         apsimx_dir <- paste0(st1, apsimx.name, st3)
@@ -191,10 +205,12 @@ auto_detect_apsimx <- function(){
       ## APSIM executable
       st1 <- "/usr/local/lib/apsim/"
       st3 <- "/bin/Models.exe" 
+      if(apsimx.options$dotnet) st3 <- gsub("exe$", "dll", st3) 
+      
       if(length(find.apsim) == 1){
         apsimx.versions <- list.files("/usr/local/lib/apsim")
         apsimx.name <- apsimx.versions
-        apsimx_dir <- paste0(st1,apsimx.name,st3)
+        apsimx_dir <- paste0(st1, apsimx.name, st3)
       }
       
       ## Note: Apparently Debian does not tolerate multiple 
@@ -207,7 +223,7 @@ auto_detect_apsimx <- function(){
                     Choosing the newest one:", newest.version))
         }
         apsimx.name <- newest.version
-        apsimx_dir <- paste0(st1,apsimx.name,st3)
+        apsimx_dir <- paste0(st1, apsimx.name, st3)
       }
     }
   }
@@ -234,6 +250,8 @@ auto_detect_apsimx <- function(){
     }
     
     st3 <- "/bin/Models.exe" 
+    if(apsimx.options$dotnet) st3 <- gsub("exe$", "dll", st3) 
+    
     if(length(find.apsim) == 1){
       apsimx.versions <- laf[find.apsim]
       apsimx.name <- apsimx.versions
@@ -347,7 +365,7 @@ auto_detect_apsimx_examples <- function(){
       ## APSIM path to examples
       # st3 <- "/Examples" 
       # apsimx_ex_dir <- paste0(st1, "/", apsimx.name, st3)
-      apsimx_ex_dir <- gsub("bin/Models.exe", "Examples", adax)
+      apsimx_ex_dir <- gsub("bin/Models.*", "Examples", adax)
   }
   
   if(!is.na(apsimx::apsimx.options$examples.path)){
@@ -586,6 +604,7 @@ read_apsimx_all <- function(src.dir = ".", value = "report"){
 #' @name apsimx_options
 #' @description Set the path to the APSIM-X executable, examples and warning suppression. 
 #' @param exe.path path to apsim executable. White spaces are not allowed.
+#' @param dotnet logical indicating if APSIM should be run through the dotnet command
 #' @param examples.path path to apsim examples
 #' @param warn.versions logical. warning if multiple versions of APSIM-X are detected.
 #' @param warn.find.apsimx logical. By default a warning will be thrown if APSIM-X is not found. 
@@ -603,9 +622,10 @@ read_apsimx_all <- function(src.dir = ".", value = "report"){
 #' apsimx.options$exe.path
 #' }
 
-apsimx_options <- function(exe.path = NA, examples.path = NA, 
+apsimx_options <- function(exe.path = NA, dotnet = TRUE, examples.path = NA, 
                            warn.versions = TRUE, warn.find.apsimx = TRUE){
   assign('exe.path', exe.path, apsimx.options)
+  assign('dotnet', dotnet, apsimx.options)
   assign('examples.path', examples.path, apsimx.options)
   assign('warn.versions', warn.versions, apsimx.options)
   assign('warn.find.apsimx', warn.find.apsimx, apsimx.options)
@@ -631,6 +651,7 @@ apsimx_options <- function(exe.path = NA, examples.path = NA,
 
 apsimx.options <- new.env(parent = emptyenv())
 assign('exe.path', NA, apsimx.options)
+assign('dotnet', TRUE, apsimx.options)
 assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
