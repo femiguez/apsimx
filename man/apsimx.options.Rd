@@ -5,7 +5,7 @@
 \alias{apsimx.options}
 \title{Environment which stores APSIM-X options}
 \format{
-An object of class \code{environment} of length 6.
+An object of class \code{environment} of length 7.
 }
 \usage{
 apsimx.options

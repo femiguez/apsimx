@@ -13,7 +13,8 @@ xargs_apsimx(
   single.threaded = FALSE,
   cpu.count = -1L,
   simulation.names = FALSE,
-  dotnet = TRUE
+  dotnet = FALSE,
+  mono = FALSE
 )
 }
 \arguments{
@@ -33,9 +34,11 @@ xargs_apsimx(
 
 \item{simulation.names}{Only run simulations if their names match this regular expression.}
 
-\item{dotnet}{There is a global option for this argument, but this will override it. This 
+\item{dotnet}{Logical. There is a global option for this argument, but this will override it. This 
 can be useful if the goal is to compare an old version of Next Gen (before Sept 2021) with a more
-recent version in the same script.}
+recent version in the same script. This might be needed if you have your own compiled version of APSIM Next Gen.}
+
+\item{mono}{Logical. Should be set to TRUE if running a version of APSIM Next Gen from Aug 2021 or older on Mac or Linux.}
 }
 \value{
 it returns a character vector with the extra arguments.

@@ -1,4 +1,8 @@
 #' 
+#'  Some of the conversions use pedotrasnfer equations from Saxton and Rawls.
+#'  Soil Water Characteristic Estimates by Texture and Organic Matter for Hydrologic Solutions.
+#'  Soil Sci. Soc. Am. J. 70:1569–1578 (2006). 
+#' 
 #' @title Take in \acronym{SSURGO} csv files and create a soil profile
 #' @name ssurgo2sp
 #' @description Utility function to convert \acronym{SSURGO} data to soil profile
@@ -204,7 +208,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   chorizon3$PH <- chorizon3$ph1to1h2o.r
   
   ## From Saxton and Rawls
-  chorizon3$BD <- (1 - chorizon3$SAT) * ifelse(is.na(chorizon3$partdensity),2.65,chorizon3$partdensity)
+  chorizon3$BD <- (1 - chorizon3$SAT) * ifelse(is.na(chorizon3$partdensity), 2.65, chorizon3$partdensity)
   
   ## Convert to fraction
   chorizon3$AirDry <- chorizon3$LL15 * ifelse(chorizon3$hzdept.r == 0, 0.5, 1)

@@ -202,7 +202,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   
   ## Edit the met file
   if(node == "Weather"){
-    wlw <- function(x) grepl("Models.Weather, Models", x$`$type`)
+    wlw <- function(x) grepl("Models.Climate.Weather|Models.Weather", x$`$type`)
     wlwl <- sapply(parent.node, FUN = wlw)
     
     if(sum(wlwl) < 1)

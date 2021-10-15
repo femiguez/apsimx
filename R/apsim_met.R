@@ -437,7 +437,7 @@ napad_apsim_met <- function(met){
   last.day <- doy2date(met$day[nrow(met)], year = met$year[nrow(met)])
   dates <- seq(from = first.day, to = last.day, by = "day")
   if(nrow(met) == length(dates)){
-    stop("No discontinuities found")
+    stop("No discontinuities found", call. = FALSE)
   }  
   
   ## Create a data.frame with continuous dates

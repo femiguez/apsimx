@@ -59,7 +59,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   
   ## Where is the 'Core' simulation?
   parent.node <- apsimx_json$Children
-  wcore <- grep("Core.Simulation", parent.node)
+  wcore <- grep("Models.Core.Simulation", parent.node)
   
   if(length(wcore) > 1){
     if(missing(root)){
@@ -118,12 +118,13 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   wsn <- grepl("Models.Soils.Soil", core.zone.node)
   soil.node <- core.zone.node[wsn]
   
-  soil.node0 <- soil.node[[1]]$Children
+  soil.node0 <- soil.node[[1]]$Children ## Is the 1 safe here because there is only one soil?
   
-  ## First edit: soil 'Water' or 'Physical'
+  ## First edit: soil 'Physical'
   ## Depth, Thickness, ParticleSizeClay,
   ## BD, AirDry, LL15, DUL, SAT, KS
-  soil.physical.node <- soil.node[[1]]$Children[[1]]
+  wspn <- grepl("Models.Soils.Physical", soil.node0)
+  soil.physical.node <- soil.node0[wspn][[1]]
   for(i in c("Depth", "Thickness", "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand", "BD", "AirDry", "LL15", "DUL", "SAT", "KS")){
     ## Format the variable
     if(is.null(soil.profile$soil[[i]])) next
@@ -147,11 +148,11 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
       soil.physical.node$Children[[i]][[strpcrop]] <- tmp
     }
   }
-  soil.node[[1]]$Children[[1]] <- soil.physical.node
-  soil.node0 <- soil.node[[1]]$Children
+  soil.node0[wspn][[1]] <- soil.physical.node
+  soil.node[[1]]$Children <- soil.node0
   
   ## Next edit the soil organic component
-  wsomn <- grepl("Organic", soil.node0)
+  wsomn <- grepl("Models.Soils.Organic", soil.node0)
   soil.om.node <- soil.node0[wsomn][[1]]
   
   for(i in c("Depth", "Thickness", "Carbon", "SoilCNRatio", "FBiom", "FInert", "FOM")){
@@ -192,6 +193,11 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
         }
       }
     }
+  }
+  
+  ## Use metadata to edit the name of the soil
+  if(!is.null(soil.profile$metadata$SoilType)){
+    soil.node[[1]]$Name <- soil.profile$metadata$SoilType
   }
   
   if(missing(root)){

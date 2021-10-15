@@ -48,6 +48,10 @@ a list with soil profile matrices with length equal to nsoil
 Utility function to convert \acronym{SSURGO} data to soil profile
 }
 \details{
+Some of the conversions use pedotrasnfer equations from Saxton and Rawls.
+ Soil Water Characteristic Estimates by Texture and Organic Matter for Hydrologic Solutions.
+ Soil Sci. Soc. Am. J. 70:1569–1578 (2006).
+
 Download the data from \acronym{SSURGO} using the \sQuote{FedData} package \cr
 This will generate csv files \sQuote{chorizon}, \sQuote{component} and \sQuote{mapunit}, \cr
 but also many other files which are not needed for creating a soil profile.

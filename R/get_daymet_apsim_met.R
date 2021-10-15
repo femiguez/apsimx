@@ -165,7 +165,7 @@ get_daymet_apsim_met <- function(lonlat, years,
 #' @description Uses \code{\link[daymetr]{download_daymet}} from the \CRANpkg{daymetr} package to download data to create an APSIM met file.
 #' @name get_daymet2_apsim_met
 #' @param lonlat Longitude and latitude vector
-#' @param years a numeric vector of years to extract
+#' @param years a numeric vector of years to extract (c(start, end)). For example, f you need 2012 through 2015, use c(2012, 2015).
 #' @param wrt.dir write directory (default is the current directory)
 #' @param filename file name for writing out to disk
 #' @param silent argument passed to \code{\link[daymetr]{download_daymet}}
@@ -199,6 +199,7 @@ get_daymet2_apsim_met <- function(lonlat, years, wrt.dir = ".", filename, silent
   }
   
   if(length(years) == 1) years <- rep(years, 2)
+  if(length(years) > 2) stop("years should be a numeric vector of size = 2", call. = FALSE)
   
   if(missing(filename)) filename <- "noname.met"
   

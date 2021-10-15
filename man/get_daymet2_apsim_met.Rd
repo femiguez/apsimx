@@ -13,7 +13,7 @@ get_daymet2_apsim_met(lonlat, years, wrt.dir = ".", filename, silent = FALSE)
 \arguments{
 \item{lonlat}{Longitude and latitude vector}
 
-\item{years}{a numeric vector of years to extract}
+\item{years}{a numeric vector of years to extract (c(start, end)). For example, f you need 2012 through 2015, use c(2012, 2015).}
 
 \item{wrt.dir}{write directory (default is the current directory)}
 
