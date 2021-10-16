@@ -58,8 +58,26 @@ if(run.test.edit.apsimx.replacement){
                              node.subsubchild = "IA2008_MG20",
                              parm = "VegetativePhotoperiod",
                              print.path = TRUE)
-  
-  # edit_apsim
-  
 }
 
+if(run.test.edit.apsimx.replacement){
+  
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                             node = "Weather",
+                             parm = "FileName",
+                             root = "SimulationMaize")
+
+  inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                             node = "Weather",
+                             parm = "FileName",
+                             root = "SimulationSoybean")
+
+  pp <- inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
+                                   node = "field",
+                                   node.child = "Soil",
+                                   node.subchild = "Physical",
+                                   parm = "LL15",
+                                   root = "SimulationMaize",
+                                   print.path = TRUE)
+  
+}

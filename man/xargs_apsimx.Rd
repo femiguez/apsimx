@@ -14,7 +14,8 @@ xargs_apsimx(
   cpu.count = -1L,
   simulation.names = FALSE,
   dotnet = FALSE,
-  mono = FALSE
+  mono = FALSE,
+  exe.path = NA
 )
 }
 \arguments{
@@ -39,6 +40,9 @@ can be useful if the goal is to compare an old version of Next Gen (before Sept 
 recent version in the same script. This might be needed if you have your own compiled version of APSIM Next Gen.}
 
 \item{mono}{Logical. Should be set to TRUE if running a version of APSIM Next Gen from Aug 2021 or older on Mac or Linux.}
+
+\item{exe.path}{executable path. This can be useful for having both a global option through \sQuote{apsimx.options} and
+a local option that will override that. This option will take precedence.}
 }
 \value{
 it returns a character vector with the extra arguments.

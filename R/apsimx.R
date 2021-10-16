@@ -57,6 +57,8 @@ apsimx <- function(file = "", src.dir = ".",
   if(!missing(xargs)){
     dotnet.flag <- xargs$dotnet
     mono.flag <- xargs$mono
+    if(!is.na(xargs$exe.path))
+      ada <- xargs$exe.path
   } 
 
   if(.Platform$OS.type == "unix"){
@@ -120,12 +122,15 @@ apsimx <- function(file = "", src.dir = ".",
 #' can be useful if the goal is to compare an old version of Next Gen (before Sept 2021) with a more
 #' recent version in the same script. This might be needed if you have your own compiled version of APSIM Next Gen.
 #' @param mono Logical. Should be set to TRUE if running a version of APSIM Next Gen from Aug 2021 or older on Mac or Linux.
+#' @param exe.path executable path. This can be useful for having both a global option through \sQuote{apsimx.options} and
+#' a local option that will override that. This option will take precedence.
 #' @return it returns a character vector with the extra arguments.
 #' @export
 
 xargs_apsimx <- function(verbose = FALSE, csv = FALSE, merge.db.files = FALSE, list.simulations = FALSE,
                          list.referenced.filenames = FALSE, single.threaded = FALSE, cpu.count = -1L,
-                         simulation.names = FALSE, dotnet = FALSE, mono = FALSE){
+                         simulation.names = FALSE, dotnet = FALSE, mono = FALSE,
+                         exe.path = NA){
 
   if(dotnet && mono)
     stop("either dotnet or mono should be TRUE, but not both", call. = TRUE)
@@ -147,7 +152,7 @@ xargs_apsimx <- function(verbose = FALSE, csv = FALSE, merge.db.files = FALSE, l
   ## Remove beggining or trailing spaces
   xargs.string <- gsub("^\\s+|\\s+$", "", xargs.string)
   xargs.string
-  ans <- list(xargs.string = xargs.string, dotnet = dotnet, mono = mono)
+  ans <- list(xargs.string = xargs.string, dotnet = dotnet, mono = mono, exe.path = exe.path)
 }
 
 ## This is an internal function so I won't export/document it
