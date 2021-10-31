@@ -248,6 +248,26 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
       ## apsimx_json is ready to be written back to file
     }
     
+    ## Cultivar parameters can be in 'Command'
+    if(length(rep.node.subchild$Command) > 0){
+      if(any(grepl(parm, unlist(rep.node.subchild$Command)))){
+        lvl <- 3
+        wrnscc <- grep(parm, unlist(rep.node.subchild$Command), fixed = gfixed, ignore.case = gignore.case)
+        ## Break it up and reassemble
+        cmdstrng <- strsplit(rep.node.subchild$Command[[wrnscc]], "=")[[1]][1]
+        rep.node.subchild$Command[[wrnscc]] <- paste0(cmdstrng, "=", value)
+        ## Now write back to list
+        rep.node.child$Children[[wrnsc]] <- rep.node.subchild
+        rep.node$Children[[wrnc]] <- rep.node.child
+        replacements.node$Children[[wrn]] <- rep.node
+        if(length(frn) == 1){
+          apsimx_json$Children[[frn]] <- replacements.node
+        }else{
+          apsimx_json$Children[[frn[root[[2]]]]] <- replacements.node
+        }
+      }
+    }
+    
     if(missing(node.subsubchild) && lvl == -1)
       stop("Failed to find and edit parameter")
   }
@@ -513,7 +533,11 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     if(!missing(node.sub3child)) cat("Edited (node.sub3child): ", node.sub3child,"\n")
     cat("Edit (level): ", lvl,"\n")
     cat("Edited parameter: ",parm, "\n")
-    cat("New values: ",value, "\n")
+    if(inherits(value, "factor")){
+      cat("New values: ",as.character(value), "\n")  
+    }else{
+      cat("New values: ",value, "\n")  
+    }
     cat("Created: ",wr.path,"\n")
   }
 }

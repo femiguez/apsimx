@@ -85,7 +85,7 @@
 #' 
 #' ## Convert to an APSIM soil profile
 #' asp2.c <- apsimx_soil_profile(nlayers = 10,
-#'                               Thickness = sp2.c[[1]]$Thickness,
+#'                               Thickness = sp2.c[[1]]$Thickness * 10,
 #'                               BD = sp2.c[[1]]$BD,
 #'                               AirDry = sp2.c[[1]]$AirDry,
 #'                               LL15 = sp2.c[[1]]$LL15,

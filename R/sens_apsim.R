@@ -178,7 +178,7 @@ sens_apsim <- function(file, src.dir = ".",
     }
     
     if(summary == "none"){
-      sim.sd <- cbind(grid[i, ], sim, row.names = NULL)
+      sim.sd <- cbind(grid[i, ,drop = FALSE], sim, row.names = NULL)
     }
     
     col.sim <- rbind(col.sim, sim.sd)

@@ -560,6 +560,9 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
 
 check_apsimx_soil_profile <- function(x){
   
+  if(!inherits(x, "soil_profile"))
+    stop("object should be of class 'soil_profile'", call. = FALSE)
+  
   if(inherits(x, "soil_profile")){
     soil <- x$soil
   }else{
@@ -650,6 +653,7 @@ check_apsimx_soil_profile <- function(x){
   SATminusLL <- soil$SAT - soil$LL
   LLminuscrop.LL <- soil$LL - soil$crop.LL
   LLminusAirDry <- soil$LL - soil$AirDry
+  AirDryminuscrop.LL <- soil$AirDry - soil$crop.LL
   
   if(any(SATminusDUL <= 0))
     warning("DUL cannot be greater than SAT")
@@ -668,6 +672,9 @@ check_apsimx_soil_profile <- function(x){
   
   if(any(LLminusAirDry < 0))
     warning("AirDry cannot be greater than LL")
+  
+  if(any(AirDryminuscrop.LL < 0))
+    warning("crop.LL cannot be lower than AirDry")
 
   return(invisible(x))
 }

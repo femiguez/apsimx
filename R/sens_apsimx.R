@@ -1,3 +1,10 @@
+#' Suggested reading on the topic of sensitivity analysis:
+#' 
+#' Pianosa et al (2016). Sensitivity analysis of environmental models: A systematic review with practical workflow.
+#' \url{http://dx.doi.org/10.1016/j.envsoft.2016.02.008}
+#' 
+#' Saltelli et al. . Global Sensitivity Analysis.
+#' 
 #' @title Sensitivity Analysis for APSIM Next Generation simulation
 #' @name sens_apsimx
 #' @rdname sens_apsimx
@@ -53,7 +60,7 @@ sens_apsimx <- function(file, src.dir = ".",
   summary <- match.arg(summary)
   
   if(missing(convert)){
-    parm.vector.index <- rep(-1, length(parm.paths))
+    convert <- rep(FALSE, length(parm.paths))
   }else{
     if(length(convert) != length(parm.paths))
       stop("convert should have length equal to parm.paths", call. = FALSE) 
@@ -180,7 +187,7 @@ sens_apsimx <- function(file, src.dir = ".",
     }
     
     if(summary == "none"){
-      sim.sd <- cbind(grid[i, ], sim, row.names = NULL)
+      sim.sd <- cbind(grid[i, , drop = FALSE], sim, row.names = NULL)
     }
     
     col.sim <- rbind(col.sim, sim.sd)

@@ -226,6 +226,8 @@ auto_detect_apsimx <- function(){
       st1 <- "/usr/local/lib/apsim/"
       st3 <- "/bin/Models.exe" 
       if(apsimx.options$dotnet) st3 <- gsub("exe$", "dll", st3) 
+      if(isFALSE(apsimx.options$mono) && isFALSE(apsimx.options$dotnet)) 
+        st3 <- "/bin/Models"
       
       if(length(find.apsim) == 1){
         apsimx.versions <- list.files("/usr/local/lib/apsim")
