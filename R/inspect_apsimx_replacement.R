@@ -569,6 +569,10 @@ unpack_node <- function(x, parm = NULL, display.available = FALSE){
         if(class(tcp) != "try-error"){
           cat(names(node.child), "\n")
           tcp
+        }else{
+          print(unlist(x[[i]]))
+          print(parm)
+          stop("There was an error in cat_parm", call. = FALSE)
         }
       }
       ## Let's handle 'Children' now
@@ -588,7 +592,7 @@ unpack_node <- function(x, parm = NULL, display.available = FALSE){
       
         
 cat_parm <- function(x, parm = NULL){
-  
+
   ## This will print an element or multiple elements 
   ## When x is a simple list structure, with no 
   ## Children
@@ -598,8 +602,16 @@ cat_parm <- function(x, parm = NULL){
     if(is.null(parm)){
       cat(x.nms[i], ":", unlist(x[i]), "\n")
     }else{
-      if(x.nms[i] %in% parm || any(sapply(parm, function(x) grepl(x, unlist(x[i]))))){
-        cat(x.nms[i], ":", unlist(x[i]), "\n")
+      ## First case is name is in parm
+      if(!is.null(x.nms[i])){
+        if(grepl(parm, x.nms[i]))
+           cat(x.nms[i], ":", unlist(x[i]), "\n")
+      }else{
+        ## Second case is
+        ulx <- unlist(x[i])
+        if(any(sapply(parm, function(x1) grepl(x1, ulx)))){
+          cat(x.nms[i], ":", unlist(x[i]), "\n")  
+        }
       }
     }
   }

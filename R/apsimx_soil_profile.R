@@ -380,11 +380,12 @@ apsimx_soil_profile <-  function(nlayers = 10,
     soil$ParticleSizeSilt <- 15
     soil$ParticleSizeSand <- 60 
     
-    ## Check for reasonable values
-    check_apsimx_soil_profile(soil)
-    
     ans <- list(soil=soil, crops = crops, metadata = metadata, soilwat = soilwat, swim = swim, soilorganicmatter = soilorganicmatter)
     class(ans) <- "soil_profile"
+    
+    ## Check for reasonable values
+    check_apsimx_soil_profile(ans)
+    
     return(ans)
   }
 
