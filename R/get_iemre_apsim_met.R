@@ -206,6 +206,22 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
     
     ## Now find the station
     ftrs <- jsonlite::fromJSON(paste0("http://mesonet.agron.iastate.edu/geojson/network.php?network=",stt.climate))$features
+    
+    ## Subset stations which include the dates request
+    yr1 <- as.numeric(format(as.Date(dates[1]), "%Y"))
+    yr2 <- as.numeric(format(as.Date(dates[2]), "%Y"))
+    
+    ## This chucnk of code selects stations which have data in the desired range
+    start.year <- sapply(ftrs$properties$time_domain, function(x) as.numeric(gsub("(", "", strsplit(x, "-")[[1]][1], fixed = TRUE)))
+    end.year0 <- sapply(ftrs$properties$time_domain, function(x) gsub("(", "", strsplit(x, "-")[[1]][2], fixed = TRUE))
+    end.year <- ifelse(end.year0 == "Now)", 
+                       as.numeric(format(Sys.Date(), "%Y")), 
+                       suppressWarnings(as.numeric(gsub(")", "", end.year0, fixed = TRUE))))
+    
+    wch.yr <- which(start.year < yr1 & end.year >= yr2)
+    ftrs <- ftrs[wch.yr,]
+    ## end of time span selection
+    
     geo.station <- ftrs$geometry$coordinates
     geo.station.lon <- sapply(geo.station, FUN = function(x) x[[1]])
     geo.station.lat <- sapply(geo.station, FUN = function(x) x[[2]])
