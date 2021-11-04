@@ -128,6 +128,9 @@ asp2.c <- apsimx_soil_profile(nlayers = 10,
                               KS = sp2.c[[1]]$KS,
                               Carbon = sp2.c[[1]]$Carbon,
                               PH = sp2.c[[1]]$PH,
+                              ParticleSizeClay = sp2.c[[1]]$ParticleSizeClay,
+                              ParticleSizeSilt = sp2.c[[1]]$ParticleSizeSilt,
+                              ParticleSizeSand = sp2.c[[1]]$ParticleSizeSand,
                               metadata = metadata)
                               
 plot(asp2.c)

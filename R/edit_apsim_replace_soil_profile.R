@@ -275,6 +275,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
 #' @param CatchmentArea see APSIM documentation
 #' @param MaxPond see APSIM documentation
 #' @param SWCON see APSIM documentation
+#' @param Thickness provide the corresponding thickness layer
 #' @return a \sQuote{list} with class \sQuote{soilwat_parms}
 #' @details current documentation for APSIM 7.10 \url{https://www.apsim.info/documentation/model-documentation/soil-modules-documentation/soilwat/}
 #' @export
@@ -285,7 +286,7 @@ soilwat_parms <- function(SummerCona = NA, SummerU = NA, SummerDate = NA,
                           DiffusConst = NA, DiffusSlope = NA, Salb = NA,
                           CN2Bare = NA, CNRed = NA, CNCov = NA, Slope = NA,
                           DischargeWidth = NA, CatchmentArea = NA, MaxPond = NA,
-                          SWCON = NA){
+                          SWCON = NA, Thickness = NA){
   
   ## Could incorporate error checking in the future
   
@@ -294,7 +295,7 @@ soilwat_parms <- function(SummerCona = NA, SummerU = NA, SummerDate = NA,
               DiffusConst = DiffusConst, DiffusSlope = DiffusSlope, Salb = Salb,
               CN2Bare = CN2Bare, CNRed = CNRed, CNCov = CNCov, Slope = Slope,
               DischargeWidth = DischargeWidth, CatchmentArea = CatchmentArea, MaxPond = MaxPond, 
-              SWCON = SWCON)
+              SWCON = SWCON, Thickness = Thickness)
   
   if(!is.na(SWCON[1])){
     if(any(SWCON < 0) || any(SWCON > 1)) stop("SWCON should be between 0 and 1")  

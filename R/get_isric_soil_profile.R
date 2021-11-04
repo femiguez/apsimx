@@ -105,9 +105,9 @@ get_isric_soil_profile <- function(lonlat,
   if(missing(soil.profile)){
     new.soil <- FALSE
     soil_profile <- apsimx_soil_profile(nlayers = 6, Thickness = thcknss) 
-    soil_profile$soil$Clay <- NA
-    soil_profile$soil$Silt <- NA
-    soil_profile$soil$Sand <- NA
+    soil_profile$soil$ParticleSizeClay <- NA
+    soil_profile$soil$ParticleSizeSilt <- NA
+    soil_profile$soil$ParticleSizeSand <- NA
     soil_profile$soil$CEC <- NA  
     soil_profile$soil$Nitrogen <- NA
     soil_profile$soil$DUL <- NA
@@ -128,10 +128,10 @@ get_isric_soil_profile <- function(lonlat,
                                                  xout = sp.xout)$y    
     soil_profile$soil$PH <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = phh2o[[1]] * 1e-1), 
                                                      xout = sp.xout)$y    
-    soil_profile$soil$Clay <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = clay[[1]] * 1e-1), 
+    soil_profile$soil$ParticleSizeClay <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = clay[[1]] * 1e-1), 
                                                  xout = sp.xout)$y   
-    soil_profile$soil$Sand <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = sand[[1]] * 1e-1), 
-                                                   xout = sp.xout)$y   
+    soil_profile$soil$ParticleSizeSand <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = sand[[1]] * 1e-1), 
+                                                   xout = sp.xout)$y 
     soil_profile$soil$Nitrogen <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = nitrogen[[1]]), 
                                                    xout = sp.xout)$y   
     soil_profile$soil$CEC <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = cec[[1]]), 
@@ -140,18 +140,18 @@ get_isric_soil_profile <- function(lonlat,
     soil_profile$soil$BD <- bdod[[1]] * 1e-2
     soil_profile$soil$Carbon <- soc[[1]] * 1e-2
     soil_profile$soil$PH <- phh2o[[1]] * 1e-1  
-    soil_profile$soil$Clay <- clay[[1]] * 1e-1
-    soil_profile$soil$Sand <- sand[[1]] * 1e-1
+    soil_profile$soil$ParticleSizeClay <- clay[[1]] * 1e-1
+    soil_profile$soil$ParticleSizeSand <- sand[[1]] * 1e-1
     soil_profile$soil$Nitrogen <- nitrogen[[1]]
     soil_profile$soil$CEC <- cec[[1]]
   }
 
-  soil_profile$soil$Silt <- 100 - (soil_profile$soil$Clay + soil_profile$soil$Sand)
+  soil_profile$soil$ParticleSizeSilt <- 100 - (soil_profile$soil$ParticleSizeSand + soil_profile$soil$ParticleSizeClay)
   ## Populating DUL and LL. These are equations from Table 1 in Saxton and Rawls 2006
-  soil_profile$soil$DUL <- sr_dul(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2)
-  soil_profile$soil$LL15 <- sr_ll(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2)
-  DUL_S <- sr_dul_s(soil_profile$soil$Clay, soil_profile$soil$Sand, soil_profile$soil$Carbon * 2)
-  soil_profile$soil$SAT <- sr_sat(soil_profile$soil$Sand, soil_profile$soil$DUL, DUL_S)
+  soil_profile$soil$DUL <- sr_dul(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
+  soil_profile$soil$LL15 <- sr_ll(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
+  DUL_S <- sr_dul_s(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
+  soil_profile$soil$SAT <- sr_sat(soil_profile$soil$ParticleSizeSand, soil_profile$soil$DUL, DUL_S)
   
   B <- (log(1500) - log(33))/(log(soil_profile$soil$DUL) - log(soil_profile$soil$LL15))
   Lambda <- 1/B
@@ -160,14 +160,17 @@ get_isric_soil_profile <- function(lonlat,
   soil_profile$soil$AirDry <- soil_profile$soil$LL15
   soil_profile$soil$AirDry[1] <- soil_profile$soil$LL15[1] * 0.5 ## AirDry is half of LL for the first layer
   
-  soil_profile$soil$crop.LL <- soil_profile$soil$LL ## Without better information
+  for(i in soil_profile$crops){
+    soil_profile$soil[[paste0(i,".LL")]] <- soil_profile$soil$LL15 ## Without better information  
+  }
   
   #### Passing parameters from soilwat
   ## The soil texture class will be based on the first layer only
-  txt_clss <- texture_class(soil_profile$soil$Clay[1] * 1e-2, soil_profile$soil$Silt[1] * 1e-2)
+  txt_clss <- texture_class(soil_profile$soil$ParticleSizeClay[1] * 1e-2, soil_profile$soil$ParticleSizeSilt[1] * 1e-2)
   t2sp <- texture2soilParms(txt_clss)
   soil_profile$soilwat <- soilwat_parms(Salb = t2sp$Albedo, CN2Bare = t2sp$CN2, 
-                                        SWCON = rep(t2sp$SWCON, nrow(soil_profile$soil)))
+                                        SWCON = rep(t2sp$SWCON, nrow(soil_profile$soil)),
+                                        Thickness = thcknss)
   
   if(requireNamespace("maps", quietly = TRUE)){
     country <- maps::map.where(x = lon, y = lat)

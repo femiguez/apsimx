@@ -94,6 +94,9 @@
 #'                               KS = sp2.c[[1]]$KS,
 #'                               Carbon = sp2.c[[1]]$Carbon,
 #'                               PH = sp2.c[[1]]$PH,
+#'                               ParticleSizeClay = sp2.c[[1]]$ParticleSizeClay,
+#'                               ParticleSizeSilt = sp2.c[[1]]$ParticleSizeSilt,
+#'                               ParticleSizeSand = sp2.c[[1]]$ParticleSizeSand,
 #'                               metadata = metadata)
 #'                               
 #' plot(asp2.c)
@@ -218,12 +221,18 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   ## 1.72 can be used to convert OC to SOM.
   chorizon3$Carbon <- chorizon3$om.r * 0.58
   
+  ### Adding texture
+  chorizon3$ParticleSizeClay <- chorizon3$claytotal.r
+  chorizon3$ParticleSizeSilt <- chorizon3$silttotal.r
+  chorizon3$ParticleSizeSand <- chorizon3$sandtotal.r
+  
   ## Soil names
   soil.names <- component5$compname.mukey
   soil.list <- vector(mode = "list", length = length(soil.names))
   names(soil.list) <- soil.names
   
-  vars <- c("Depth", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", "Carbon", "PH")
+  vars <- c("Depth", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", 
+            "Carbon", "PH", "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand")
   
   for(sz in 1:length(soil.names)){
     

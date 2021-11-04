@@ -99,6 +99,10 @@ if(run.soil.profile){
   
   sp <- apsimx_soil_profile()
   
+  swat <- soilwat_parms(Thickness = rep(50, 10), SWCON = runif(10, 0.2, 0.4))
+  
+  sp$soilwat <- swat
+  
   list.files(tmp.dir)
   
   file.copy(file.path(extd.dir, "MaizeSoybean.apsimx"), tmp.dir)
@@ -106,9 +110,17 @@ if(run.soil.profile){
   edit_apsimx_replace_soil_profile("MaizeSoybean.apsimx", soil.profile = sp,
                                    src.dir = tmp.dir, wrt.dir = tmp.dir,
                                    root = "SimulationSoybean") 
-  
+
+  inspect_apsimx("MaizeSoybean-edited.apsimx", src.dir = tmp.dir,
+                 node = "Soil", soil.child = "Physical",
+                 root = "SimulationSoybean")
+    
   inspect_apsimx("MaizeSoybean-edited.apsimx", src.dir = tmp.dir,
                  node = "Soil", soil.child = "Physical", parm = "DUL",
+                 root = "SimulationSoybean")
+  
+  inspect_apsimx("MaizeSoybean-edited.apsimx", src.dir = tmp.dir,
+                 node = "Soil", soil.child = "SoilWater",
                  root = "SimulationSoybean")
   
   inspect_apsimx("MaizeSoybean-edited.apsimx", src.dir = tmp.dir,

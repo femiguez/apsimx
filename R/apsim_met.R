@@ -357,6 +357,10 @@ check_apsim_met <- function(met){
   if(nrow(met) < length(dates)){
     warning(paste(length(dates) - nrow(met), "date discontinuities found. Consider using napad_apsim_met."))
   }
+  ## Check for last day of leap year
+  if(is_leap_year(met$year[nrow(met)]) && met$day[nrow(met)] == 365){
+    warning("Last year in the met file is a leap year and it only has 365 days")
+  }
   ## Detect possible errors with minimum temperature
   if(any(is.na(met[["mint"]]))){
     print(met[is.na(met$mint),])
@@ -436,24 +440,40 @@ napad_apsim_met <- function(met){
   first.day <- doy2date(met$day[1], year = met$year[1])
   last.day <- doy2date(met$day[nrow(met)], year = met$year[nrow(met)])
   dates <- seq(from = first.day, to = last.day, by = "day")
-  if(nrow(met) == length(dates)){
+  
+  if(nrow(met) == length(dates) && !is_leap_year(met$year[nrow(met)])){
     stop("No discontinuities found", call. = FALSE)
-  }  
-  
-  ## Create a data.frame with continuous dates
-  namet <- data.frame(date = dates)
-  
-  ## Create date column for merging
-  met$date <- rep(as.Date(NA), length.out = nrow(met))
-  for(i in 1:nrow(met)){
-    met$date[i] <- doy2date(met$day[i], year = met$year[i])
   }
   
-  ans <- merge(namet, met, by = "date", all.x = TRUE)
-  ans$year <- as.numeric(format(ans$date, "%Y"))
-  ans$day <- as.numeric(format(ans$date, "%j"))
-  ans$date <- NULL
- 
+  if(nrow(met) != length(dates)){
+    ## Create a data.frame with continuous dates
+    namet <- data.frame(date = dates)
+    
+    ## Create date column for merging
+    met$date <- rep(as.Date(NA), length.out = nrow(met))
+    for(i in 1:nrow(met)){
+      met$date[i] <- doy2date(met$day[i], year = met$year[i])
+    }
+    
+    ans <- merge(namet, met, by = "date", all.x = TRUE)
+    ans$year <- as.numeric(format(ans$date, "%Y"))
+    ans$day <- as.numeric(format(ans$date, "%j"))
+    ans$date <- NULL    
+  }  
+  
+  ## Is the last year a leap year?
+  if(is_leap_year(met$year[nrow(met)]) && met$day[nrow(met)] == 365){
+      ## This adds a row at the end when it is a leap year and it only has 365 days
+    nms.met <- names(met)
+    fill.dat <- as.data.frame(matrix(ncol = length(nms.met)))
+    names(fill.dat) <- nms.met
+    fill.row <- data.frame(year = met$year[nrow(met)],
+                           day = 366,
+                           fill.dat[, -c(1:2)])
+    ans <- rbind(met, fill.row)
+    ans$date <- NULL
+  }
+  
   attr(ans, "filename") <- attr(met, "filename")
   attr(ans, "site") <- attr(met, "site")
   attr(ans, "latitude") <- attr(met, "latitude")
@@ -466,6 +486,23 @@ napad_apsim_met <- function(met){
   attr(ans, "comments") <- attr(met, "comments")
   class(ans) <- c("met","data.frame")
   return(ans) 
+}
+
+is_leap_year <- function(year){
+  if((year %% 4) == 0){
+    if((year %% 100) == 0){
+      if((year %% 400) == 0){
+        ans <- TRUE
+      }else{
+        ans <- FALSE
+      }
+    }else{
+      ans <- TRUE
+    }
+  }else{
+    ans <- FALSE
+  }
+  return(ans)
 }
 
 #' Simple utility for converting a data frame to an object of class met

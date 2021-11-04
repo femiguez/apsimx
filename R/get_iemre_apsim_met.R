@@ -218,7 +218,7 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
                        as.numeric(format(Sys.Date(), "%Y")), 
                        suppressWarnings(as.numeric(gsub(")", "", end.year0, fixed = TRUE))))
     
-    wch.yr <- which(start.year < yr1 & end.year >= yr2)
+    wch.yr <- which(start.year <= yr1 & end.year >= yr2)
     ftrs <- ftrs[wch.yr,]
     ## end of time span selection
     

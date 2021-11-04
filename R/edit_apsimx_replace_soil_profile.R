@@ -165,7 +165,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   soil.node[[1]]$Children <- soil.node0
   
   ## Next edit the Chemical component
-  wschn <- grepl("Chemical", soil.node0)
+  wschn <- grepl("Models.Soils.Chemical", soil.node0)
   soil.chemical.node <- soil.node0[wschn][[1]]
   
   for(i in c("Depth", "Thickness", "NO3N", "NH4N", "PH")){
@@ -199,6 +199,23 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   if(!is.null(soil.profile$metadata$SoilType)){
     soil.node[[1]]$Name <- soil.profile$metadata$SoilType
   }
+  
+  ## Edit soilWat if present
+  if(inherits(soil.profile$soilwat, "soilwat_parms")){
+    
+    wsswn <- grepl("Models.WaterModel", soil.node0) 
+    soil.soilwat.node <- soil.node0[wsswn][[1]]
+    for(i in names(soil.profile$soilwat)){
+      if(any(is.na(soil.profile$soilwat[[i]]))){
+        next
+      }else{
+          soil.soilwat.node[[i]] <- soil.profile$soilwat[[i]]  
+      } 
+    }
+    soil.node0[wsswn][[1]] <- soil.soilwat.node
+    soil.node[[1]]$Children <- soil.node0
+  }
+  
   
   if(missing(root)){
     ## Replace the soil
