@@ -437,30 +437,32 @@ napad_apsim_met <- function(met){
   
   ## First check if there are any discontinuities
   origin <- as.Date(paste0(met$year[1], "-01-01"))
-  first.day <- doy2date(met$day[1], year = met$year[1])
+  ## first.day <- doy2date(met$day[1], year = met$year[1])
   last.day <- doy2date(met$day[nrow(met)], year = met$year[nrow(met)])
-  dates <- seq(from = first.day, to = last.day, by = "day")
+  dates <- seq(from = origin, to = last.day, by = "day")
   
   if(nrow(met) == length(dates) && !is_leap_year(met$year[nrow(met)])){
     stop("No discontinuities found", call. = FALSE)
   }
   
+  fix1 <- FALSE
+  
   if(nrow(met) != length(dates)){
     ## Create a data.frame with continuous dates
+
     namet <- data.frame(date = dates)
     
     ## Create date column for merging
-    met$date <- rep(as.Date(NA), length.out = nrow(met))
-    for(i in 1:nrow(met)){
-      met$date[i] <- doy2date(met$day[i], year = met$year[i])
-    }
-    
+    met$date <- as.Date(paste0(met$year, "-", met$day), format = "%Y-%j")
+
     ans <- merge(namet, met, by = "date", all.x = TRUE)
     ans$year <- as.numeric(format(ans$date, "%Y"))
     ans$day <- as.numeric(format(ans$date, "%j"))
-    ans$date <- NULL    
+    ans$date <- NULL  
+    fix1 <- TRUE
   }  
   
+  fix2 <- FALSE
   ## Is the last year a leap year?
   if(is_leap_year(met$year[nrow(met)]) && met$day[nrow(met)] == 365){
       ## This adds a row at the end when it is a leap year and it only has 365 days
@@ -472,7 +474,11 @@ napad_apsim_met <- function(met){
                            fill.dat[, -c(1:2)])
     ans <- rbind(met, fill.row)
     ans$date <- NULL
+    fix2 <- TRUE
   }
+  
+  if(!fix1 && !fix2)
+    stop("No discontinuities found", call. = FALSE)
   
   attr(ans, "filename") <- attr(met, "filename")
   attr(ans, "site") <- attr(met, "site")

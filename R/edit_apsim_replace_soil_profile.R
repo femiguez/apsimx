@@ -298,11 +298,14 @@ soilwat_parms <- function(SummerCona = NA, SummerU = NA, SummerDate = NA,
               SWCON = SWCON, Thickness = Thickness)
   
   if(!is.na(SWCON[1])){
-    if(any(SWCON < 0) || any(SWCON > 1)) stop("SWCON should be between 0 and 1")  
+    if(any(SWCON < 0) || any(SWCON > 1)) stop("SWCON should be between 0 and 1", call. = FALSE)  
   }
   
-  if(!is.character(SummerCona) && !is.na(SummerCona)) stop("SummerCona should be a date as a character day-month. Ex: 1-Nov")
-  if(!is.character(WinterCona) && !is.na(WinterCona)) stop("WinterCona should be a date as a character day-month. Ex: 1-Apr")
+  if(length(SWCON) != length(Thickness))
+    stop("length of SWCON should be the same as length of Thickness", call. = FALSE)
+  
+  if(!is.character(SummerCona) && !is.na(SummerCona)) stop("SummerCona should be a date as a character day-month. Ex: 1-Nov", call. = FALSE)
+  if(!is.character(WinterCona) && !is.na(WinterCona)) stop("WinterCona should be a date as a character day-month. Ex: 1-Apr", call. = FALSE)
   
   ans <- structure(sw.lst, class = c("soilwat_parms","list"))
   ans

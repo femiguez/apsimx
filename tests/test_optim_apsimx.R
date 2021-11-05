@@ -16,8 +16,33 @@ extd.dir <- system.file("extdata", package = "apsimx")
 if(FALSE){
   
   ## One model run takes ~4 seconds
-  system.time(sim0 <- apsimx("Wheat-opt-ex-orig.apsimx", src.dir = extd.dir, value = "report"))
+  ## The original values for these were 1.5 for RUE and 90 for BasePhyllochron
+  system.time(sim0 <- apsimx("Wheat-opt-ex.apsimx", src.dir = extd.dir))
 
+  pp1 <- inspect_apsimx_replacement("Wheat-opt-ex.apsimx", 
+                                    src.dir = extd.dir, 
+                                    node = "Wheat", 
+                                    node.child = "Leaf",
+                                    node.subchild = "Photosynthesis",
+                                    node.subsubchild = "RUE",
+                                    parm = "FixedValue",
+                                    print.path = TRUE,
+                                    display.available = FALSE, 
+                                    verbose = FALSE)
+  
+  pp2 <- inspect_apsimx_replacement("Wheat-opt-ex.apsimx", 
+                                    src.dir = extd.dir, 
+                                    node = "Wheat", 
+                                    node.child = "Cultivars",
+                                    node.subchild = "USA",
+                                    node.subsubchild = "Yecora",
+                                    parm = "BasePhyllochron",
+                                    print.path = TRUE,
+                                    display.available = FALSE, 
+                                    verbose = FALSE)
+  
+  edit_apsimx_replacement("Wheat-opt-ex.apsimx")
+  
   ## Visualize the data
   ggplot(sim0, aes(Date, Wheat.AboveGround.Wt)) + 
     geom_line()
@@ -59,6 +84,7 @@ if(FALSE){
                              node.child = "Cultivars",
                              node.subchild = "USA",
                              node.subsubchild = "Yecora",
+                             parm = "BasePhyllochron",
                              print.path = TRUE,
                              display.available = FALSE, 
                              verbose = FALSE)
@@ -66,7 +92,7 @@ if(FALSE){
   ## Run the model with incorrect parameters
   ## RUE = 1.2
   ## Phyllochron = 120
-  system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = extd.dir, value = "report"))
+  system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = extd.dir))
   
   ## write.csv(sim.b4, "wheat-sim-b4-opt.csv", row.names = FALSE)
 

@@ -1,8 +1,8 @@
 {
   "$type": "Models.Core.Simulations, Models",
   "ExplorerWidth": 300,
-  "Version": 117,
-  "ApsimVersion": "2020.9.9.5640",
+  "Version": 137,
+  "ApsimVersion": "2021.8.12.6707",
   "Name": "Simulations",
   "Children": [
     {
@@ -289,7 +289,7 @@
                   "Children": [
                     {
                       "$type": "Models.Memo, Models",
-                      "Text": "Vernalisation responses are based on those described by [Brown_Anthesis_2013].   Vernalisation is assumed to be related to the expression of the Vrn1 Gene.  Its experssion is accumulated daily and daily upregulation as a function of development (DeltaHaunStage) and a TempResponseProfile that declines exponentially from a maximum at 1<sup>o</sup>C to zero at 0<sup>o</sup>C and at 18<sup>o</sup>C.",
+                      "Text": "Vernalisation responses are based on those described by [Brown_Anthesis_2013].   Vernalisation is assumed to be related to the expression of the Vrn1 Gene.  Its experssion is accumulated daily and daily upregulation as a function of development (DeltaHaunStage) and a TempResponseProfile that declines exponentially from a maximum at 1^o^C to zero at 0^o^C and at 18^o^C.",
                       "Name": "Memo",
                       "Children": [],
                       "IncludeInDocumentation": true,
@@ -2877,7 +2877,7 @@
               "Name": "Root",
               "Children": [
                 {
-                  "$type": "Models.Functions.RootShape.RootShapeCylindre, Models",
+                  "$type": "Models.Functions.RootShape.RootShapeCylinder, Models",
                   "Name": "RootShape",
                   "Children": [],
                   "IncludeInDocumentation": true,
@@ -2975,11 +2975,22 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "Germination",
                   "End": "Maturity",
                   "Name": "NitrogenDemandSwitch",
-                  "Children": [],
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
@@ -3781,8 +3792,8 @@
                   "$type": "Models.PMF.Organs.Leaf+LeafCohortParameters, Models",
                   "ExpansionStressValue": 0.0,
                   "CellDivisionStressValue": 0.0,
-                  "DroughtInducedLagAccelerationValue": 0.0,
-                  "DroughtInducedSenAccelerationValue": 0.0,
+                  "LagAccelerationValue": 0.0,
+                  "SenescenceAccelerationValue": 0.0,
                   "ShadeInducedSenescenceRateValue": 0.0,
                   "SenessingLeafRelativeSizeValue": 0.0,
                   "Name": "CohortParameters",
@@ -4483,7 +4494,7 @@
                     },
                     {
                       "$type": "Models.Functions.AddFunction, Models",
-                      "Name": "DroughtInducedLagAcceleration",
+                      "Name": "LagAcceleration",
                       "Children": [
                         {
                           "$type": "Models.Functions.Constant, Models",
@@ -4555,7 +4566,7 @@
                     },
                     {
                       "$type": "Models.Functions.AddFunction, Models",
-                      "Name": "DroughtInducedSenAcceleration",
+                      "Name": "SenescenceAcceleration",
                       "Children": [
                         {
                           "$type": "Models.Functions.Constant, Models",
@@ -4968,7 +4979,7 @@
                     },
                     {
                       "$type": "Models.Functions.VariableReference, Models",
-                      "VariableName": "[Leaf].RadIntTot",
+                      "VariableName": "[Leaf].RadiationIntercepted",
                       "Name": "RadnInt",
                       "Children": [],
                       "IncludeInDocumentation": true,
@@ -5527,11 +5538,22 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "Emergence",
                   "End": "StartGrainFill",
                   "Name": "NitrogenDemandSwitch",
-                  "Children": [],
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
@@ -6079,6 +6101,64 @@
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.Constant, Models",
+                  "FixedValue": 0.0,
+                  "Units": null,
+                  "Name": "Photosynthesis",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.VariableReference, Models",
+                  "VariableName": "[Spike].MinimumNConc",
+                  "Name": "initialNConcFunction",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.PMF.BiomassDemand, Models",
+                  "Name": "dmDemandPriorityFactors",
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Structural",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Metabolic",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Storage",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
                 }
               ],
               "IncludeInDocumentation": true,
@@ -6208,11 +6288,22 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "Emergence",
                   "End": "StartGrainFill",
                   "Name": "NitrogenDemandSwitch",
-                  "Children": [],
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
@@ -6888,6 +6979,64 @@
                     {
                       "$type": "Models.Functions.Constant, Models",
                       "FixedValue": 0.0,
+                      "Units": null,
+                      "Name": "Storage",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.Constant, Models",
+                  "FixedValue": 0.0,
+                  "Units": null,
+                  "Name": "Photosynthesis",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.VariableReference, Models",
+                  "VariableName": "[Stem].MinimumNConc",
+                  "Name": "initialNConcFunction",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.PMF.BiomassDemand, Models",
+                  "Name": "dmDemandPriorityFactors",
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Structural",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Metabolic",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
                       "Units": null,
                       "Name": "Storage",
                       "Children": [],
@@ -11517,7 +11666,7 @@
               "Name": "Root",
               "Children": [
                 {
-                  "$type": "Models.Functions.RootShape.RootShapeCylindre, Models",
+                  "$type": "Models.Functions.RootShape.RootShapeCylinder, Models",
                   "Name": "RootShape",
                   "Children": [],
                   "IncludeInDocumentation": true,
@@ -11728,7 +11877,7 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "Emergence",
                   "End": "EndGrainFill",
                   "Name": "NitrogenDemandSwitch",
@@ -11737,6 +11886,16 @@
                       "$type": "Models.Memo, Models",
                       "Text": "",
                       "Name": "Memo",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
                       "Children": [],
                       "IncludeInDocumentation": true,
                       "Enabled": true,
@@ -12393,7 +12552,7 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "Emergence",
                   "End": "EndGrainFill",
                   "Name": "NitrogenDemandSwitch",
@@ -12402,6 +12561,16 @@
                       "$type": "Models.Memo, Models",
                       "Text": "",
                       "Name": "Memo",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
                       "Children": [],
                       "IncludeInDocumentation": true,
                       "Enabled": true,
@@ -13288,7 +13457,7 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "StartPodDevelopment",
                   "End": "EndPodDevelopment",
                   "Name": "NitrogenDemandSwitch",
@@ -13297,6 +13466,16 @@
                       "$type": "Models.Memo, Models",
                       "Text": "",
                       "Name": "Memo",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
                       "Children": [],
                       "IncludeInDocumentation": true,
                       "Enabled": true,
@@ -14074,6 +14253,64 @@
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.Constant, Models",
+                  "FixedValue": 0.0,
+                  "Units": null,
+                  "Name": "Photosynthesis",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.VariableReference, Models",
+                  "VariableName": "[Shell].MinimumNConc",
+                  "Name": "initialNConcFunction",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.PMF.BiomassDemand, Models",
+                  "Name": "dmDemandPriorityFactors",
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Structural",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Metabolic",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Storage",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
                 }
               ],
               "IncludeInDocumentation": true,
@@ -14276,8 +14513,8 @@
                   "$type": "Models.PMF.Organs.Leaf+LeafCohortParameters, Models",
                   "ExpansionStressValue": 0.0,
                   "CellDivisionStressValue": 0.0,
-                  "DroughtInducedLagAccelerationValue": 0.0,
-                  "DroughtInducedSenAccelerationValue": 0.0,
+                  "LagAccelerationValue": 0.0,
+                  "SenescenceAccelerationValue": 0.0,
                   "ShadeInducedSenescenceRateValue": 0.0,
                   "SenessingLeafRelativeSizeValue": 0.0,
                   "Name": "LeafCohortParameters",
@@ -14420,6 +14657,7 @@
                                   ],
                                   "LegendPosition": 3,
                                   "LegendOrientation": 0,
+                                  "AnnotationPosition": 0,
                                   "DisabledSeries": null,
                                   "LegendOutsideGraph": false,
                                   "Name": "Graph",
@@ -14487,6 +14725,7 @@
                                   ],
                                   "LegendPosition": 3,
                                   "LegendOrientation": 0,
+                                  "AnnotationPosition": 0,
                                   "DisabledSeries": null,
                                   "LegendOutsideGraph": false,
                                   "Name": "Graph1",
@@ -14554,6 +14793,7 @@
                                   ],
                                   "LegendPosition": 3,
                                   "LegendOrientation": 0,
+                                  "AnnotationPosition": 0,
                                   "DisabledSeries": null,
                                   "LegendOutsideGraph": false,
                                   "Name": "Graph2",
@@ -14621,6 +14861,7 @@
                                   ],
                                   "LegendPosition": 3,
                                   "LegendOrientation": 0,
+                                  "AnnotationPosition": 0,
                                   "DisabledSeries": null,
                                   "LegendOutsideGraph": false,
                                   "Name": "Graph3",
@@ -14688,6 +14929,7 @@
                                   ],
                                   "LegendPosition": 3,
                                   "LegendOrientation": 0,
+                                  "AnnotationPosition": 0,
                                   "DisabledSeries": null,
                                   "LegendOutsideGraph": false,
                                   "Name": "Graph4",
@@ -14755,6 +14997,7 @@
                                   ],
                                   "LegendPosition": 3,
                                   "LegendOrientation": 0,
+                                  "AnnotationPosition": 0,
                                   "DisabledSeries": null,
                                   "LegendOutsideGraph": false,
                                   "Name": "Graph5",
@@ -15551,7 +15794,7 @@
                       "$type": "Models.Functions.Constant, Models",
                       "FixedValue": 1.0,
                       "Units": null,
-                      "Name": "DroughtInducedSenAcceleration",
+                      "Name": "SenescenceAcceleration",
                       "Children": [],
                       "IncludeInDocumentation": true,
                       "Enabled": true,
@@ -15571,7 +15814,7 @@
                       "$type": "Models.Functions.Constant, Models",
                       "FixedValue": 1.0,
                       "Units": null,
-                      "Name": "DroughtInducedLagAcceleration",
+                      "Name": "LagAcceleration",
                       "Children": [],
                       "IncludeInDocumentation": true,
                       "Enabled": true,
@@ -15846,7 +16089,7 @@
                     },
                     {
                       "$type": "Models.Functions.VariableReference, Models",
-                      "VariableName": "[Leaf].RadIntTot",
+                      "VariableName": "[Leaf].RadiationIntercepted",
                       "Name": "RadnInt",
                       "Children": [],
                       "IncludeInDocumentation": true,
@@ -16235,7 +16478,7 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "Emergence",
                   "End": "StartGrainFilling",
                   "Name": "NitrogenDemandSwitch",
@@ -16244,6 +16487,16 @@
                       "$type": "Models.Memo, Models",
                       "Text": "",
                       "Name": "Memo",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
                       "Children": [],
                       "IncludeInDocumentation": true,
                       "Enabled": true,
@@ -16745,6 +16998,64 @@
                     {
                       "$type": "Models.Functions.Constant, Models",
                       "FixedValue": 0.0,
+                      "Units": null,
+                      "Name": "Storage",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.Constant, Models",
+                  "FixedValue": 0.0,
+                  "Units": null,
+                  "Name": "Photosynthesis",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.VariableReference, Models",
+                  "VariableName": "[Stem].MinimumNConc",
+                  "Name": "initialNConcFunction",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.PMF.BiomassDemand, Models",
+                  "Name": "dmDemandPriorityFactors",
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Structural",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Metabolic",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
                       "Units": null,
                       "Name": "Storage",
                       "Children": [],
@@ -19090,7 +19401,7 @@
               "Name": "Root",
               "Children": [
                 {
-                  "$type": "Models.Functions.RootShape.RootShapeCylindre, Models",
+                  "$type": "Models.Functions.RootShape.RootShapeCylinder, Models",
                   "Name": "RootShape",
                   "Children": [],
                   "IncludeInDocumentation": true,
@@ -19396,11 +19707,22 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "Germination",
                   "End": "Maturity",
                   "Name": "NitrogenDemandSwitch",
-                  "Children": [],
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
@@ -19981,8 +20303,8 @@
                   "$type": "Models.PMF.Organs.Leaf+LeafCohortParameters, Models",
                   "ExpansionStressValue": 0.0,
                   "CellDivisionStressValue": 0.0,
-                  "DroughtInducedLagAccelerationValue": 0.0,
-                  "DroughtInducedSenAccelerationValue": 0.0,
+                  "LagAccelerationValue": 0.0,
+                  "SenescenceAccelerationValue": 0.0,
                   "ShadeInducedSenescenceRateValue": 0.0,
                   "SenessingLeafRelativeSizeValue": 0.0,
                   "Name": "CohortParameters",
@@ -20609,7 +20931,7 @@
                     },
                     {
                       "$type": "Models.Functions.AddFunction, Models",
-                      "Name": "DroughtInducedLagAcceleration",
+                      "Name": "LagAcceleration",
                       "Children": [
                         {
                           "$type": "Models.Functions.Constant, Models",
@@ -20681,7 +21003,7 @@
                     },
                     {
                       "$type": "Models.Functions.AddFunction, Models",
-                      "Name": "DroughtInducedSenAcceleration",
+                      "Name": "SenescenceAcceleration",
                       "Children": [
                         {
                           "$type": "Models.Functions.Constant, Models",
@@ -21085,7 +21407,7 @@
                     },
                     {
                       "$type": "Models.Functions.VariableReference, Models",
-                      "VariableName": "[Leaf].RadIntTot",
+                      "VariableName": "[Leaf].RadiationIntercepted",
                       "Name": "RadnInt",
                       "Children": [],
                       "IncludeInDocumentation": true,
@@ -21574,11 +21896,22 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "Emergence",
                   "End": "StartGrainFill",
                   "Name": "NitrogenDemandSwitch",
-                  "Children": [],
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
@@ -22081,6 +22414,64 @@
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.Constant, Models",
+                  "FixedValue": 0.0,
+                  "Units": null,
+                  "Name": "Photosynthesis",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.VariableReference, Models",
+                  "VariableName": "[Husk].MinimumNConc",
+                  "Name": "initialNConcFunction",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.PMF.BiomassDemand, Models",
+                  "Name": "dmDemandPriorityFactors",
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Structural",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Metabolic",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Storage",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
                 }
               ],
               "IncludeInDocumentation": true,
@@ -22365,11 +22756,22 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "Emergence",
                   "End": "StartGrainFill",
                   "Name": "NitrogenDemandSwitch",
-                  "Children": [],
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
@@ -22787,6 +23189,64 @@
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.Constant, Models",
+                  "FixedValue": 0.0,
+                  "Units": null,
+                  "Name": "Photosynthesis",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.VariableReference, Models",
+                  "VariableName": "[Rachis].MinimumNConc",
+                  "Name": "initialNConcFunction",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.PMF.BiomassDemand, Models",
+                  "Name": "dmDemandPriorityFactors",
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Structural",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Metabolic",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Storage",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
                 }
               ],
               "IncludeInDocumentation": true,
@@ -22862,11 +23322,22 @@
                   "ReadOnly": false
                 },
                 {
-                  "$type": "Models.Functions.PhaseBasedSwitch, Models",
+                  "$type": "Models.Functions.PhaseLookupValue, Models",
                   "Start": "Emergence",
                   "End": "StartGrainFill",
                   "Name": "NitrogenDemandSwitch",
-                  "Children": [],
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Constant",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
                   "IncludeInDocumentation": true,
                   "Enabled": true,
                   "ReadOnly": false
@@ -23431,6 +23902,64 @@
                     {
                       "$type": "Models.Functions.Constant, Models",
                       "FixedValue": 0.0,
+                      "Units": null,
+                      "Name": "Storage",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    }
+                  ],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.Constant, Models",
+                  "FixedValue": 0.0,
+                  "Units": null,
+                  "Name": "Photosynthesis",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.Functions.VariableReference, Models",
+                  "VariableName": "[Stem].MinimumNConc",
+                  "Name": "initialNConcFunction",
+                  "Children": [],
+                  "IncludeInDocumentation": true,
+                  "Enabled": true,
+                  "ReadOnly": false
+                },
+                {
+                  "$type": "Models.PMF.BiomassDemand, Models",
+                  "Name": "dmDemandPriorityFactors",
+                  "Children": [
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Structural",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
+                      "Units": null,
+                      "Name": "Metabolic",
+                      "Children": [],
+                      "IncludeInDocumentation": true,
+                      "Enabled": true,
+                      "ReadOnly": false
+                    },
+                    {
+                      "$type": "Models.Functions.Constant, Models",
+                      "FixedValue": 1.0,
                       "Units": null,
                       "Name": "Storage",
                       "Children": [],
@@ -24543,6 +25072,7 @@
         },
         {
           "$type": "Models.Climate.Weather, Models",
+          "ConstantsFile": null,
           "FileName": "Ames.met",
           "ExcelWorkSheetName": "",
           "Name": "Weather",
@@ -24590,8 +25120,8 @@
             },
             {
               "$type": "Models.Fertiliser, Models",
+              "ResourceName": "Fertiliser",
               "Name": "Fertiliser",
-              "Children": [],
               "IncludeInDocumentation": true,
               "Enabled": true,
               "ReadOnly": false
@@ -24624,7 +25154,6 @@
               "b_interception": 1.0,
               "c_interception": 0.0,
               "d_interception": 0.0,
-              "soil_albedo": 0.3,
               "SoilHeatFluxFraction": 0.4,
               "MinimumHeightDiffForNewLayer": 0.0,
               "NightInterceptionFraction": 0.5,
@@ -25100,6 +25629,8 @@
                   "CL": null,
                   "EC": null,
                   "ESP": null,
+                  "LabileP": null,
+                  "UnavailableP": null,
                   "ECMetadata": null,
                   "CLMetadata": null,
                   "ESPMetadata": null,
@@ -25146,8 +25677,10 @@
                     300.0,
                     400.0
                   ],
-                  "NO3N": null,
-                  "NH4N": null,
+                  "NO3": null,
+                  "NH4": null,
+                  "LabileP": null,
+                  "UnavailableP": null,
                   "SW": [
                     0.31,
                     0.31,
@@ -25193,7 +25726,6 @@
                   "CN2Bare": 85.0,
                   "CNRed": 20.0,
                   "CNCov": 0.8,
-                  "Slope": 0.0,
                   "DischargeWidth": 0.0,
                   "CatchmentArea": 0.0,
                   "Thickness": [
@@ -25227,7 +25759,7 @@
                 },
                 {
                   "$type": "Models.Soils.CERESSoilTemperature, Models",
-                  "Name": "CERESSoilTemperature",
+                  "Name": "Temperature",
                   "Children": [],
                   "IncludeInDocumentation": false,
                   "Enabled": true,
@@ -25328,6 +25860,7 @@
           ],
           "LegendPosition": 0,
           "LegendOrientation": 0,
+          "AnnotationPosition": 0,
           "DisabledSeries": [],
           "LegendOutsideGraph": false,
           "Name": "WheatRyeBiomass",
