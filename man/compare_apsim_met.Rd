@@ -2,6 +2,7 @@
 % Please edit documentation in R/compare_apsim_met.R
 \name{compare_apsim_met}
 \alias{compare_apsim_met}
+\alias{print.met_mrg}
 \alias{plot.met_mrg}
 \title{Compare two or more metfiles}
 \usage{
@@ -9,8 +10,11 @@ compare_apsim_met(
   ...,
   met.var = c("all", "radn", "maxt", "mint", "rain", "rh", "wind_speed", "vp"),
   labels,
-  check = FALSE
+  check = FALSE,
+  verbose = FALSE
 )
+
+\method{print}{met_mrg}(x, ..., digits = 2)
 
 \method{plot}{met_mrg}(
   x,
@@ -51,6 +55,8 @@ it produces a plot
 }
 \description{
 Helper function which allows for a simple comparison among help files
+
+print method for \sQuote{met_mrg}
 
 plotting function for compare_apsim_met, it requires ggplot2
 }
