@@ -929,4 +929,127 @@ pp_apsim_met <- function(metfile, sun_angle=0){
   metfile$photoperiod <- PP
   return(metfile)
 }
+
+
+#' @title Plot method for object of class \sQuote{met} 
+#' @name plot.met
+#' @description Some plots are similar to APSIM, others are different
+#' and more useful in some respects
+#' @param x object of class \sQuote{met}
+#' @param years optional argument to subset some years
+#' @param met.var optional argument to choose a certain variable. By default,
+#' temperature (min and max) is displayed
+#' @param plot.type type of plot, default is \sQuote{ts} or time-series
+#' @param cumulative default is FALSE. Especially useful for \sQuote{rain}
+#' @param facet whether to display the years in in different panels (facets)
+#' @param summary whether to plot \sQuote{summary} data
+#' @export
+#' @examples 
+#' \donttest{
+#' ## Read in and plot a met file
+#' extd.dir <- system.file("extdata", package = "apsimx")
+#' ames <- read_apsim_met("Ames.met", src.dir = extd.dir)
+#' plot(ames, years = 2012:2015)
+#' ## Perhaps more informative
+#' plot(ames, years = 2012:2015, cumulative = TRUE)
+#' ## for rain
+#' plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)
+#' }
+#' 
+plot.met <- function(x, ..., years, met.var, 
+                     plot.type = c("ts"), 
+                     cumulative = FALSE,
+                     facet = FALSE,
+                     summary = FALSE){
   
+  if(!requireNamespace("ggplot2", quietly = TRUE)){
+    warning("ggplot2 is required for this plotting function")
+    return(NULL)
+  }
+  
+  plot.type <- match.arg(plot.type)
+  
+  if(!missing(years)){
+    x <- x[x$year %in% years,]
+  }
+  
+  x$Years <- as.factor(x$year)
+  
+  if(!missing(met.var)){
+    if(!met.var %in% names(x)){
+      cat("Variables in met:", names(x), "\n")
+      stop("met.var was not found in the names of the 'met' object", call. = FALSE)
+    }
+    if(met.var %in% c("day", "year"))
+      stop("year or day cannot be used as a 'met.var'", call. = FALSE)
+  }
+  
+  if(summary == FALSE){
+    if(plot.type == "ts"){
+      if(missing(met.var)){
+        if(cumulative){
+          dat <- NULL
+          for(i in seq_along(sort(unique(x$year)))){
+            yr <- sort(unique(x$year))[i]
+            x.tmp <- x[x$year == yr,]
+            x.ag.maxt <- cumsum(x.tmp$maxt)
+            x.ag.mint <- cumsum(x.tmp$mint)
+            dat <- rbind(dat, data.frame(year = yr, day = 1:nrow(x.tmp), cum.maxt = x.ag.maxt, cum.mint = x.ag.mint))
+          }
+          
+          dat$Years <- as.factor(dat$year)
+          gp1 <- ggplot2::ggplot(data = dat) + 
+            ggplot2::geom_line(ggplot2::aes(day, cum.maxt, color = Years)) +
+            ggplot2::geom_line(ggplot2::aes(day, cum.mint, color = Years), linetype = 2) +
+            ggplot2::ylab("Cumulative temperature (degree C)")
+          print(gp1)        
+        }else{
+          gp1 <- ggplot2::ggplot(data = x) + 
+            ggplot2::geom_line(ggplot2::aes(day, maxt, color = Years)) +
+            ggplot2::geom_line(ggplot2::aes(day, mint, color = Years), linetype = 2) +
+            ggplot2::ylab("Temperature (degree C)")
+          print(gp1)        
+        }
+      }else{
+        if(met.var %in% c("rain", "radn", "vp", "rh", "maxt", "mint")){
+          
+          met.var.units <- switch(met.var,
+                                  rain = "(mm)",
+                                  radn = "(MJ/m2)",
+                                  rh = "(%)",
+                                  maxt = "(degrees C)",
+                                  mint = "(degrees C)")
+          if(cumulative){
+            
+            ylabel <- paste("Cumulative ", met.var, met.var.units)
+            dat <- NULL
+            for(i in seq_along(sort(unique(x$year)))){
+              yr <- sort(unique(x$year))[i]
+              x.tmp <- x[x$year == yr,]
+              x.ag.met.var <- cumsum(x.tmp[[met.var]])
+              dat <- rbind(dat, data.frame(year = yr, day = 1:nrow(x.tmp), cum.met.var = x.ag.met.var))
+            }
+            
+            dat$Years <- as.factor(dat$year)
+            gp1 <- ggplot2::ggplot(data = dat) + 
+              ggplot2::geom_line(ggplot2::aes(day, cum.met.var, color = Years)) +
+              ggplot2::ylab(ylabel)
+            print(gp1)        
+          }else{
+            ylabel <- paste(met.var, met.var.units)
+            gp1 <- ggplot2::ggplot(data = x) + 
+              ggplot2::geom_point(ggplot2::aes(day, 
+                                               y = eval(parse(text = eval(met.var))),
+                                               color = Years)) +
+              ggplot2::ylab(ylabel)
+            print(gp1)        
+          }
+        }
+      }
+    }    
+  }
+}
+
+
+
+

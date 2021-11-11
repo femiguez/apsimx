@@ -44,7 +44,8 @@ compare_apsim_met <- function(...,
                                           "mint", "rain", "rh", 
                                           "wind_speed", "vp"),
                               labels,
-                              check = FALSE){
+                              check = FALSE,
+                              verbose = FALSE){
   
   mets <- list(...)
   
@@ -52,7 +53,7 @@ compare_apsim_met <- function(...,
   
   met.var <- match.arg(met.var)
   
-  if(n.mets < 2) stop("you should provide at least two met files")
+  if(n.mets < 2) stop("you should provide at least two met files", call. = FALSE)
   
   met1 <- mets[[1]]
   
@@ -60,10 +61,10 @@ compare_apsim_met <- function(...,
   if(!missing(labels)){
     m.nms <- labels
     if(length(labels) != n.mets)
-      stop(" 'labels' lenght should be the same as the number of 'met' objects")
+      stop(" 'labels' lenght should be the same as the number of 'met' objects", call. = FALSE)
   } 
   
-  if(!inherits(met1, "met")) stop("object should be of class 'met' ")
+  if(!inherits(met1, "met")) stop("object should be of class 'met' ", call. = FALSE)
   
   ## Check for any issues
   if(check) check_apsim_met(met1)
@@ -79,8 +80,8 @@ compare_apsim_met <- function(...,
     
     met.i <- mets[[i]]
     
-    if(ncol(met1) != ncol(met.i)) stop("met files should have the same number of columns")
-    if(all(!names(met1) %in% names(met.i))) stop("met files should have the same column names")
+    if(ncol(met1) != ncol(met.i)) stop("met files should have the same number of columns", call. = FALSE)
+    if(all(!names(met1) %in% names(met.i))) stop("met files should have the same column names", call. = FALSE)
     if(check) check_apsim_met(met.i)
     
     yr <- as.character(met.i$year[1])
@@ -92,29 +93,53 @@ compare_apsim_met <- function(...,
     met.mrg <- merge(met.mrg, met.i, by = "dates")
   }
   
+  if(met.var == "all"){
+    ans <- data.frame(variable = setdiff(names(met1), c("year", "day")),
+                      vs = NA, labels = NA,
+                      bias = NA, slope = NA, corr = NA)
+    if(missing(labels)) ans$labels <- NULL
+  }else{
+    ans <- data.frame(variable = met.var,
+                      vs = NA, labels = NA,
+                      bias = NA, slope = NA, corr = NA)
+    if(missing(labels)) ans$labels <- NULL
+  }
+  
   ## Calculate bias for all variables
   if(met.var == "all"){
     met.var.sel <- nms1[!(nms1 %in% c("year", "day", "dates"))]
     gvar.sel <- paste0(met.var.sel, collapse = "|")
     idx.met.mrg <- grep(gvar.sel, names(met.mrg))
     met.mrg.s <- met.mrg[,idx.met.mrg]
-    
+  
+    k <- 1  
     ## Compute Bias matrix
     for(i in met.var.sel){
-      cat("Variable ", i, "\n")
+      if(verbose) cat("Variable ", i, "\n")
+      ans$variable[k] <- i
       tmp <- met.mrg.s[, grep(i, names(met.mrg.s))]
-      if(ncol(tmp) < 2) stop("merged selected variables should be at least of length 2")
+      if(ncol(tmp) < 2) stop("merged selected variables should be at least of length 2", call. = FALSE)
 
       for(j in 2:ncol(tmp)){
-        cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
-        if(!missing(labels))cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
+        if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
+        ans$vs[k] <- paste(names(tmp)[j - 1], "vs.", names(tmp)[j])
+        if(!missing(labels)){
+          if(verbose) cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
+          ans$labels[k] <- paste(labels[j - 1], "vs.", labels[j])
+        } 
         fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
-        cat(" \t Bias: ", coef(fm0)[1], "\n")
-        cat(" \t Slope: ", coef(fm0)[2], "\n")
-        cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
-        cat(" \t RSS: ", deviance(fm0), "\n")
-        cat(" \t RMSE: ", sigma(fm0), "\n")
+        if(verbose) cat(" \t Bias: ", coef(fm0)[1], "\n")
+        ans$bias[k] <- coef(fm0)[1]
+        if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
+        ans$slope[k] <- coef(fm0)[2]
+        if(verbose) cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
+        ans$corr[k] <- cor(tmp[,j - 1], tmp[, j])
+        if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
+        ans$rss[k] <- deviance(fm0)
+        if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
+        ans$rmse[k] <- sigma(fm0)
       }
+      k <- k + 1
     }
   }
   
@@ -123,24 +148,45 @@ compare_apsim_met <- function(...,
     idx.met.mrg <- grep(met.var, names(met.mrg))
     met.mrg.s <- met.mrg[,idx.met.mrg]
     
-    cat("Variable ", met.var, "\n")
+    if(verbose) cat("Variable ", met.var, "\n")
+    ans$variable[1] <- met.var
+    
     tmp <- met.mrg.s
     for(j in 2:ncol(tmp)){
-      cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
-      if(!missing(labels))cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
+      if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
+      ans$vs[1] <- paste(names(tmp)[j - 1], "vs.", names(tmp)[j])
+      if(!missing(labels)){
+        if(verbose) cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
+        ans$labels[1] <- paste(labels[j - 1], "vs.", labels[j])
+      }
       fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
-      cat(" \t Bias: ", coef(fm0)[1], "\n")
-      cat(" \t Slope: ", coef(fm0)[2], "\n")
-      cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
-      cat(" \t RSS: ", deviance(fm0), "\n")
-      cat(" \t RMSE: ", sigma(fm0), "\n")
+      if(verbose) cat(" \t Bias: ", coef(fm0)[1], "\n")
+      ans$bias[1] <- coef(fm0)[1]
+      if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
+      ans$slope[1] <- coef(fm0)[2]
+      if(verbose) cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
+      ans$corr[1] <- cor(tmp[,j - 1], tmp[, j])
+      if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
+      ans$rss[1] <- deviance(fm0)
+      if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
+      ans$rmse <- sigma(fm0)
     }
   }
-  
-  class(met.mrg) <- "met_mrg"
+
   attr(met.mrg, "met.names") <- m.nms
-  attr(met.mrg, "length.mets") <- n.mets
+  attr(met.mrg, "length.mets") <- n.mets  
+  met.mrg <- structure(list(met.mrg = met.mrg, index.table = ans),
+                       class = "met_mrg")
   invisible(met.mrg)
+}
+
+#' print method for met_mrg
+#' @rdname compare_apsim_met
+#' @description print method for \sQuote{met_mrg}
+#' @param x object of class \sQuote{met_mrg}
+#' @param ... additional arguments passed to print
+print.met_mrg <- function(x, ..., digits = 2){
+  print(x$index.table, digits = digits)
 }
 
 #' Plotting function for weather data
@@ -167,6 +213,8 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     warning("ggplot2 is required for this plotting function")
     return(NULL)
   }
+  
+  x <- x$met.mrg
   
   m.nms <- attr(x, "met.names")
   if(max(pairs) > attr(x, "length.mets")) stop("pairs index larger than length of mets")
@@ -282,5 +330,135 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
 }
 
 
+#' @title Summary for an APSIM met file
+#' @name summary.met
+#' @description Create a data.frame summarizing an object of class \sQuote{met}
+#' @param object object of class \sQuote{met}
+#' @param ... optional argument (none used at the momemt) 
+#' @param years optional argument to subset years
+#' @param months optional argument to subset by months. If an integer, it should
+#' be between 1 and 12. If a character, it can be in the format, for example, 
+#' \sQuote{jan} or \sQuote{Jan}.
+#' @param days optional argument to subset by days. It should be an integer
+#'  between 1 and 31. 
+#' @param julian.days optional argument to subset by julian days. It
+#' should be a vector of integers between 1 and 365. Either use \sQuote{days} or
+#' \sQuote{julian.days} but not both.
+#' @param verbose whether to print additional infomation to the console
+#' @return an object of class \sQuote{data.frame} with attributes
+#' @export
+#' @examples 
+#' 
+#' extd.dir <- system.file("extdata", package = "apsimx")
+#' ames <- read_apsim_met("Ames.met", src.dir = extd.dir)
+#' 
+#' summary(ames, years = 2014: 2016)
+#' 
+summary.met <- function(object, ..., years, months, days, julian.days,
+                        verbose = FALSE, na.rm = FALSE, digits = 2){
+  
+  x <- object
+  check_apsim_met(x)
+  
+  if(!missing(days) && !missing(julian.days))
+    stop("Either use days or julian.days but not both", call. = TRUE)
+
+  ## Summarize information by year
+  if(!missing(years)) x <- x[x$year %in% years,]
+  
+  if(!missing(months)){
+    if(!inherits(months, "integer") && !inherits(months, "character"))
+      stop("months should be wither an integer or a character", call. = FALSE)
+    ## Select months that fit the criteria
+    date.range <- seq(as.Date("2012-01-01"), as.Date("2012-12-31"), by = "day")
+    dat <- data.frame(month = as.numeric(format(date.range, "%m")),
+                      Month = format(date.range, "%b"),
+                      day = as.numeric(format(date.range, "%j")))
+    if(inherits(months, "integer")){
+      if(months < 1 || months > 12)
+        stop("months should be between 1 and 12", call. = FALSE)
+      wch.months <- which(dat$month %in% months)
+      x <- x[x$day %in% dat[wch.months, "day"],]
+    }
+    if(inherits(months, "character")){
+      ## Months might be in upper of lower case
+      Months <- format(as.Date(paste0(1, months, 2012), "%d%b%Y"), "%b")
+      wch.months <- which(dat$Month %in% Months)
+      x <- x[x$day %in% dat[wch.months, "day"],]
+    }
+  }else{
+    months <- "1:12"
+  }
+  
+  if(!missing(days)){
+    if(!inherits(days, "integer"))
+      stop("days should be of class integer", call. = FALSE)
+    if(days < 1 || days > 31)
+      stop("days should be between 1 and 31")
+    ## Select days that fit the criteria
+    date.range <- seq(as.Date("2012-01-01"), as.Date("2012-12-31"), by = "day")
+    dat <- data.frame(month = as.numeric(format(date.range, "%m")),
+                      Month = format(date.range, "%b"),
+                      Day = as.numeric(format(date.range, "%d")),
+                      day = as.numeric(format(date.range, "%j")))
+    if(is.numeric(days)){
+      wch.days <- which(dat$Day %in% days)
+      x <- x[x$day %in% dat[wch.days, "day"],]
+    }
+  }else{
+    days <- 1:31
+  }
+  
+  if(!missing(julian.days)){
+    x <- x[x$day %in% julian.days, ]
+    days <- range(julian.days)
+  }
+  
+  n.years <- length(unique(x$year))
+  ans <- matrix(nrow = n.years, ncol = 12)
+  ans[,1] <- sort(unique(x$year))
+  x$year <- as.factor(x$year)
+  
+  if(verbose){
+    cat("First year:", x$year[1], "\n")
+    cat("Last year:", x$year[nrow(x)], "\n")
+    cat("Total number of years:", length(unique(x$year)), "\n")    
+  }
+
+  ## Store high maxt and mint temperature by year
+  ans[,4] <- round(aggregate(maxt ~ year, data = x, FUN = max, na.rm = na.rm)$maxt, digits)
+  ans[,5] <- round(aggregate(mint ~ year, data = x, FUN = max, na.rm = na.rm)$mint, digits)
+  ## Store mean maxt and mint temperature by year
+  ans[,6] <- round(aggregate(maxt ~ year, data = x, FUN = mean, na.rm = na.rm)$maxt, digits)
+  ans[,7] <- round(aggregate(mint ~ year, data = x, FUN = mean, na.rm = na.rm)$mint, digits)
+  ## Store min maxt and mint temperature by year
+  ans[,8] <- round(aggregate(maxt ~ year, data = x, FUN = min, na.rm = na.rm)$maxt, digits)
+  ans[,9] <- round(aggregate(mint ~ year, data = x, FUN = min, na.rm = na.rm)$mint, digits)
+  ## Total precipitation
+  ans[,10] <- round(aggregate(rain ~ year, data = x, FUN = sum, na.rm = na.rm)$rain, digits)
+  ## Total and mean radiation
+  ans[,11] <- round(aggregate(radn ~ year, data = x, FUN = sum, na.rm = na.rm)$radn, digits)
+  ans[,12] <- round(aggregate(radn ~ year, data = x, FUN = mean, na.rm = na.rm)$radn, digits)
+  
+  colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
+                     "high_maxt", "high_mint", ## 4 and 5
+                     "avg_maxt", "avg_mint", ## 6 and 7
+                     "low_maxt", "low_mint", ## 8 and 9
+                     "rain_sum", "radn_sum", "radn_avg") ## 10, 11, 12
+  ansd <- as.data.frame(ans)
+  if(inherits(months, "integer")){
+    if(grepl(":", deparse(months), fixed = TRUE)){
+      ansd$months <- rep(paste(range(months), collapse = ":"), n.years)    
+    }else{
+      ansd$months <- rep(paste(months, collapse = ","), n.years)    
+    }
+  }else{
+    ansd$months <- rep(paste(months, collapse = ","), n.years)  
+  }
+  
+  ansd$days <- rep(deparse(days), n.years)
+  
+  return(ansd)
+}
 
 

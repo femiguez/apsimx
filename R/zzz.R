@@ -8,7 +8,7 @@
   ## For unix
   if(.Platform$OS.type == "unix"){
     ## Check for mono
-    mono <- system("which mono", intern = TRUE)
+    mono <- suppressWarnings(system("which mono", intern = TRUE))
     if(length(mono) == 0){
       find.mono <- "Mono framework not found (only needed for pre-Sept 2021 versions of APSIM Next Gen) \n"
       ## In Ubuntu mono seems to be in /usr/bin/mono
@@ -66,7 +66,7 @@
             set paths manually using 'apsimx_options' or 'apsim_options'.
             You can still try as the package will look into the registry (under Windows)"
     
-    if(!is.null(find.mono)) apsim.not.found <- c(find.mono, apsim.not.found)
+    ## if(length(find.mono) == 0) apsim.not.found <- c(find.mono, apsim.not.found)
 
     packageStartupMessage(apsim.not.found)
   }
