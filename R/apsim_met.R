@@ -584,7 +584,10 @@ as_apsim_met <- function(x,
   return(x) 
 }
   
-#' Calculating Thermal Time using a variety of methods
+#' Calculating Thermal Time using a variety of methods.
+#' The function will fail if the method is not selected.
+#' Also, it does not work if each year does not have at least
+#' 365 days.
 #' 
 #' @title Calculates Thermal Time taking a \sQuote{met} object
 #' @name tt_apsim_met
@@ -636,6 +639,9 @@ tt_apsim_met <- function(met, dates,
   if(!missing(met) && !inherits(met, "met"))
     stop("Object met should be of class met")
 
+  if(identical(method, c("Classic_TT", "HeatStress_TT", "CropHeatUnit_TT", "APSIM_TT", "CERES_TT", "all")))
+    stop("Please select a method. Not all of them are implemented at the moment.", call. = FALSE)
+  
   method <- match.arg(method, several.ok = TRUE)
   
   if("all" %in% method) method <- c("Classic_TT", "HeatStress_TT", "CropHeatUnit_TT", "APSIM_TT")
@@ -660,6 +666,9 @@ tt_apsim_met <- function(met, dates,
   
   if(nrow(met) != nrow(tmpd))
     warning("Days for each year should be complete")
+  
+  if(any(table(met$year) < 365))
+    stop("Each year should have at least 365 days", call. = FALSE)
   
   ## This first instance will result in calculating TT for every year
   if(inherits(dates, "character")){
@@ -956,6 +965,7 @@ pp_apsim_met <- function(metfile, sun_angle=0){
 #' plot(ames, years = 2012:2015, cumulative = TRUE)
 #' ## for rain
 #' plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)
+#' plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE, climatology = TRUE)
 #' }
 #' 
 plot.met <- function(x, ..., years, met.var, 
@@ -1032,9 +1042,13 @@ plot.met <- function(x, ..., years, met.var,
                             ggplot2::scale_linetype_manual(name = NULL, values = 1) + 
                             ggplot2::ylab("Cumulative temperature (degree C)") 
           }else{
+            dat1 <- data.frame(day = dat$day, temperature = "maxt", value = dat$cum.maxt, Years = dat$Years)
+            dat2 <- data.frame(day = dat$day, temperature = "mint", value = dat$cum.mint, Years = dat$Years)
+            dat <- rbind(dat1, dat2)
             gp1 <- ggplot2::ggplot(data = dat) + 
-              ggplot2::geom_line(ggplot2::aes(day, cum.maxt, color = Years)) +
-              ggplot2::geom_line(ggplot2::aes(day, cum.mint, color = Years), linetype = 2) +
+              ggplot2::geom_line(ggplot2::aes(day, value, color = Years, linetype = temperature)) +
+              ggplot2::geom_line(ggplot2::aes(day, value, color = Years, linetype = temperature)) +
+              ggplot2::scale_linetype_manual(name = NULL, values = c(1, 2)) + 
               ggplot2::ylab("Cumulative temperature (degree C)") 
           }
           print(gp1)        
@@ -1068,9 +1082,11 @@ plot.met <- function(x, ..., years, met.var,
                                   maxt = "(degrees C)",
                                   mint = "(degrees C)")
 
-          met.var.clima <- met.var.climatology[ ,c("day", met.var)]
-          met.var.clima$climatology <- "climatology"
-          
+          if(climatology){
+            met.var.clima <- met.var.climatology[ ,c("day", met.var)]
+            met.var.clima$climatology <- "climatology"            
+          }
+
           if(cumulative){
             ylabel <- paste("Cumulative ", met.var, met.var.units)
             dat <- NULL

@@ -721,10 +721,20 @@ check_apsimx_soil_profile <- function(x){
 #' @note I have only tested this for 2 or 3 objects. The code is set up to be able to 
 #' compare more, but I'm not sure that would be all that useful.
 #' @export
-#' @return object of class \sQuote{mrg_soil_profile}, which can be used for further plotting
+#' @return object of class \sQuote{soil_profile_mrg}, which can be used for further plotting
 #' @examples 
 #' \dontrun{
-
+#' require(soilDB)
+#' require(sp)
+#' require(sf)
+#' require(spData)
+#' # Get two soil profiles
+#' sp1 <- get_ssurgo_soil_profile(lonlat = c(-93, 42))
+#' sp2 <- get_ssurgo_soil_profile(lonlat = c(-92, 41))
+#' # Compare them
+#' cmp <- compare_apsim_soil_profile(sp1[[1]], sp2[[1]], labels = c("sp1", "sp2"))
+#' # Plot the variables
+#' plot(cmp)
 #' }
 #' 
 
@@ -891,6 +901,9 @@ compare_apsim_soil_profile <- function(...,
 #' @description print method for \sQuote{soil_profile_mrg}
 #' @param x object of class \sQuote{soil_profile_mrg}
 #' @param ... additional arguments passed to print
+#' @param digits number of digits to print (default is 2)
+#' @return a table with indexes for the soil profiles
+#' @export
 print.soil_profile_mrg <- function(x, ..., digits = 2){
   print(x$index.table[!is.na(x$index.table$bias),], digits = digits)
 }
@@ -920,6 +933,9 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
     warning("ggplot2 is required for this plotting function")
     return(NULL)
   }
+  
+  if(plot.type != "depth" && soil.var == "all")
+    stop("Please select a soil variable for this type of plot", call. = FALSE)
   
   x <- x$soil.mrg
   
@@ -956,8 +972,10 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
       }
       tmp <- rbind(tmp, tmp2)
     }
-    tmp <- tmp[order(tmp$soil, tmp$variable, tmp$depth),]
-    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = value, y = depth * 0.1, color = soil)) + 
+    tmp.o <- tmp[order(tmp$soil, tmp$variable, tmp$depth),]
+    tmp3 <- tmp.o[!tmp.o$variable %in% c("depth", "cum.thickness"),]
+
+    gp1 <- ggplot2::ggplot(data = tmp3, ggplot2::aes(x = value, y = depth * 0.1, color = soil)) + 
       ggplot2::facet_wrap(~ variable, scales = "free") + 
       ggplot2::geom_point() + 
       ggplot2::geom_path() + 
@@ -1018,10 +1036,10 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
                                                     color = paste(m.nms[pairs[1]], prs0[1]))) +
       
       ggplot2::geom_point() + 
-      ggplot2::geom_line() + 
+      ggplot2::geom_path() + 
       ggplot2::geom_point(ggplot2::aes(x = eval(parse(text = eval(prs0[2]))),
                                        color = paste(m.nms[pairs[2]], prs0[2]))) + 
-      ggplot2::geom_line(ggplot2::aes(x = eval(parse(text = eval(prs0[2]))),
+      ggplot2::geom_path(ggplot2::aes(x = eval(parse(text = eval(prs0[2]))),
                                        color = paste(m.nms[pairs[2]], prs0[2]))) + 
       ggplot2::ylab("Depth (cm)") + 
       ggplot2::xlab(soil.var) + 

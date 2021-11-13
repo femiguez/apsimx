@@ -94,6 +94,12 @@ check_apsimx_soil_profile(x)
 
 \item{PH}{soil pH}
 
+\item{ParticleSizeClay}{particle size clay (in percent)}
+
+\item{ParticleSizeSilt}{particle size silt (in percent)}
+
+\item{ParticleSizeSand}{particle size sand (in percent)}
+
 \item{soil.bottom}{bottom of the soil profile (cm)}
 
 \item{water.table}{water table level (not used at the moment) (cm)}
