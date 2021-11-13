@@ -165,6 +165,9 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
                                KS = sp0[[i]]$KS,
                                Carbon = sp0[[i]]$Carbon,
                                crop.LL = sp0[[i]]$LL15,
+                               ParticleSizeClay = sp0[[i]]$ParticleSizeClay,
+                               ParticleSizeSilt = sp0[[i]]$ParticleSizeSilt,
+                               ParticleSizeSand = sp0[[i]]$ParticleSizeSand,
                                soil.bottom = soil.bottom,
                                metadata = metadata)
     

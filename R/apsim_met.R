@@ -942,6 +942,8 @@ pp_apsim_met <- function(metfile, sun_angle=0){
 #' @param plot.type type of plot, default is \sQuote{ts} or time-series
 #' @param cumulative default is FALSE. Especially useful for \sQuote{rain}
 #' @param facet whether to display the years in in different panels (facets)
+#' @param climatology logical (default FALSE). Whether to display the \sQuote{climatology}
+#' which would be the average of the data.
 #' @param summary whether to plot \sQuote{summary} data
 #' @export
 #' @examples 
@@ -960,6 +962,7 @@ plot.met <- function(x, ..., years, met.var,
                      plot.type = c("ts"), 
                      cumulative = FALSE,
                      facet = FALSE,
+                     climatology = FALSE,
                      summary = FALSE){
   
   if(!requireNamespace("ggplot2", quietly = TRUE)){
@@ -969,6 +972,23 @@ plot.met <- function(x, ..., years, met.var,
   
   plot.type <- match.arg(plot.type)
   
+  ## Calculate climatology before subsetting years
+  if(climatology){
+    maxt.climatology <- aggregate(maxt ~ day, data = x, FUN = mean)
+    mint.climatology <- aggregate(mint ~ day, data = x, FUN = mean)
+    rain.climatology <- aggregate(rain ~ day, data = x, FUN = mean)
+    radn.climatology <- aggregate(radn ~ day, data = x, FUN = mean)
+    met.var.climatology <- cbind(maxt.climatology, 
+                                 mint.climatology[,"mint", drop = FALSE], 
+                                 rain.climatology[,"rain", drop = FALSE], 
+                                 radn.climatology[,"radn", drop = FALSE])
+  }
+
+  if(!missing(years)){
+    if(max(years) > max(x$year) || min(years) < min(x$year))
+      stop("Selected year is not within the range of the data", call. = FALSE)    
+  }
+
   if(!missing(years)){
     x <- x[x$year %in% years,]
   }
@@ -998,16 +1018,44 @@ plot.met <- function(x, ..., years, met.var,
           }
           
           dat$Years <- as.factor(dat$year)
-          gp1 <- ggplot2::ggplot(data = dat) + 
-            ggplot2::geom_line(ggplot2::aes(day, cum.maxt, color = Years)) +
-            ggplot2::geom_line(ggplot2::aes(day, cum.mint, color = Years), linetype = 2) +
-            ggplot2::ylab("Cumulative temperature (degree C)")
+          
+          if(climatology){
+            maxt.climatology$cum.maxt <- cumsum(maxt.climatology$maxt)
+            maxt.climatology$climatology <- "climatology"
+            mint.climatology$cum.mint <- cumsum(mint.climatology$mint)
+            mint.climatology$climatology <- "climatology"
+            gp1 <- ggplot2::ggplot() + 
+                            ggplot2::geom_line(data = dat, ggplot2::aes(day, cum.maxt, color = Years)) +
+                            ggplot2::geom_line(data = dat, ggplot2::aes(day, cum.mint, color = Years), linetype = 2) +
+                            ggplot2::geom_line(data = maxt.climatology, ggplot2::aes(day, cum.maxt, linetype = climatology), color = "black") + 
+                            ggplot2::geom_line(data = mint.climatology, ggplot2::aes(day, cum.mint, linetype = climatology), color = "black", linetype = 2) +
+                            ggplot2::scale_linetype_manual(name = NULL, values = 1) + 
+                            ggplot2::ylab("Cumulative temperature (degree C)") 
+          }else{
+            gp1 <- ggplot2::ggplot(data = dat) + 
+              ggplot2::geom_line(ggplot2::aes(day, cum.maxt, color = Years)) +
+              ggplot2::geom_line(ggplot2::aes(day, cum.mint, color = Years), linetype = 2) +
+              ggplot2::ylab("Cumulative temperature (degree C)") 
+          }
           print(gp1)        
         }else{
-          gp1 <- ggplot2::ggplot(data = x) + 
-            ggplot2::geom_line(ggplot2::aes(day, maxt, color = Years)) +
-            ggplot2::geom_line(ggplot2::aes(day, mint, color = Years), linetype = 2) +
-            ggplot2::ylab("Temperature (degree C)")
+          if(climatology){
+            maxt.climatology$climatology <- "climatology"
+            mint.climatology$climatology <- "climatology"
+            x$Years <- as.factor(x$year)
+            gp1 <- ggplot2::ggplot() + 
+                            ggplot2::geom_line(data = x, ggplot2::aes(day, maxt, color = Years)) +
+                            ggplot2::geom_line(data = x, ggplot2::aes(day, mint, color = Years), linetype = 2) +
+                            ggplot2::geom_line(data = maxt.climatology, ggplot2::aes(day, maxt, linetype = climatology), color = "black") +
+                            ggplot2::geom_line(data = mint.climatology, ggplot2::aes(day, mint, linetype = climatology), color = "black", linetype = 2) +
+                            ggplot2::scale_linetype_manual(name = NULL, values = 1) + 
+                            ggplot2::ylab("Temperature (degree C)")                        
+          }else{
+            gp1 <- ggplot2::ggplot(data = x) + 
+              ggplot2::geom_line(ggplot2::aes(day, maxt, color = Years)) +
+              ggplot2::geom_line(ggplot2::aes(day, mint, color = Years), linetype = 2) +
+              ggplot2::ylab("Temperature (degree C)")            
+          }
           print(gp1)        
         }
       }else{
@@ -1019,8 +1067,11 @@ plot.met <- function(x, ..., years, met.var,
                                   rh = "(%)",
                                   maxt = "(degrees C)",
                                   mint = "(degrees C)")
+
+          met.var.clima <- met.var.climatology[ ,c("day", met.var)]
+          met.var.clima$climatology <- "climatology"
+          
           if(cumulative){
-            
             ylabel <- paste("Cumulative ", met.var, met.var.units)
             dat <- NULL
             for(i in seq_along(sort(unique(x$year)))){
@@ -1031,17 +1082,39 @@ plot.met <- function(x, ..., years, met.var,
             }
             
             dat$Years <- as.factor(dat$year)
-            gp1 <- ggplot2::ggplot(data = dat) + 
-              ggplot2::geom_line(ggplot2::aes(day, cum.met.var, color = Years)) +
-              ggplot2::ylab(ylabel)
+            if(climatology){
+              met.var.clima$cum.met.var <- cumsum(met.var.clima[[met.var]])
+              
+              gp1 <- ggplot2::ggplot() + 
+                ggplot2::geom_line(data = dat, ggplot2::aes(day, cum.met.var, color = Years)) +
+                ggplot2::geom_line(data = met.var.clima, ggplot2::aes(day, cum.met.var, linetype = climatology), color = "black") +
+                ggplot2::scale_linetype_manual(name = NULL, values = 1) + 
+                ggplot2::ylab(ylabel)                            
+            }else{
+              gp1 <- ggplot2::ggplot(data = dat) + 
+                ggplot2::geom_line(ggplot2::aes(day, cum.met.var, color = Years)) +
+                ggplot2::ylab(ylabel)              
+            }
             print(gp1)        
           }else{
             ylabel <- paste(met.var, met.var.units)
-            gp1 <- ggplot2::ggplot(data = x) + 
-              ggplot2::geom_point(ggplot2::aes(day, 
-                                               y = eval(parse(text = eval(met.var))),
-                                               color = Years)) +
-              ggplot2::ylab(ylabel)
+            if(climatology){
+              gp1 <- ggplot2::ggplot() + 
+                ggplot2::geom_point(data = x, ggplot2::aes(day, 
+                                                 y = eval(parse(text = eval(met.var))),
+                                                 color = Years)) +
+                ggplot2::geom_line(data = met.var.clima, ggplot2::aes(day, 
+                                                 y = eval(parse(text = eval(met.var))),
+                                                 linetype = climatology)) +
+                ggplot2::scale_linetype_manual(name = NULL, values = 1) + 
+                ggplot2::ylab(ylabel)                  
+            }else{
+              gp1 <- ggplot2::ggplot(data = x) + 
+                              ggplot2::geom_point(ggplot2::aes(day, 
+                                                 y = eval(parse(text = eval(met.var))),
+                                                 color = Years)) +
+                              ggplot2::ylab(ylabel)              
+            }
             print(gp1)        
           }
         }

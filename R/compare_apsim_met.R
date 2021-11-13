@@ -2,17 +2,17 @@
 #' @title Compare two or more metfiles
 #' @name compare_apsim_met
 #' @rdname compare_apsim_met
-#' @description Helper function which allows for a simple comparison among help files
+#' @description Helper function which allows for a simple comparison among \sQuote{met} objects
 #' @param ... met file objects. Should be of class \sQuote{met}
 #' @param met.var meteorological variable to use in the comparison. Either \sQuote{all},
 #' \sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
 #' \sQuote{wind_speed} or \sQuote{vp}. 
 #' @param labels labels for plotting and identification of \sQuote{met} objects.
-#' @param check whether to check met files using \sQuote{check_apsim_met}.
+#' @param check whether to check \sQuote{met} objects using \sQuote{check_apsim_met}.
 #' @note I have only tested this for 2 or 3 objects. The code is set up to be able to 
 #' compare more, but I'm not sure that would be all that useful.
 #' @export
-#' @return object of class \sQuote{cmet}, which can be used for further plotting
+#' @return object of class \sQuote{met_mrg}, which can be used for further plotting
 #' @examples 
 #' \dontrun{
 #' require(nasapower)
@@ -53,7 +53,7 @@ compare_apsim_met <- function(...,
   
   met.var <- match.arg(met.var)
   
-  if(n.mets < 2) stop("you should provide at least two met files", call. = FALSE)
+  if(n.mets < 2) stop("you should provide at least two met objects", call. = FALSE)
   
   met1 <- mets[[1]]
   
@@ -61,7 +61,7 @@ compare_apsim_met <- function(...,
   if(!missing(labels)){
     m.nms <- labels
     if(length(labels) != n.mets)
-      stop(" 'labels' lenght should be the same as the number of 'met' objects", call. = FALSE)
+      stop(" 'labels' length should be the same as the number of 'met' objects", call. = FALSE)
   } 
   
   if(!inherits(met1, "met")) stop("object should be of class 'met' ", call. = FALSE)
@@ -80,8 +80,8 @@ compare_apsim_met <- function(...,
     
     met.i <- mets[[i]]
     
-    if(ncol(met1) != ncol(met.i)) stop("met files should have the same number of columns", call. = FALSE)
-    if(all(!names(met1) %in% names(met.i))) stop("met files should have the same column names", call. = FALSE)
+    if(ncol(met1) != ncol(met.i)) stop("met objects should have the same number of columns", call. = FALSE)
+    if(all(!names(met1) %in% names(met.i))) stop("met objects should have the same column names", call. = FALSE)
     if(check) check_apsim_met(met.i)
     
     yr <- as.character(met.i$year[1])
@@ -327,6 +327,7 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     
     print(gp1)
   }
+  invisible(gp1)
 }
 
 

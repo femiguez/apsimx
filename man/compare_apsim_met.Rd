@@ -34,7 +34,7 @@ compare_apsim_met(
 
 \item{labels}{labels for plotting and identification of \sQuote{met} objects.}
 
-\item{check}{whether to check met files using \sQuote{check_apsim_met}.}
+\item{check}{whether to check \sQuote{met} objects using \sQuote{check_apsim_met}.}
 
 \item{x}{object of class \sQuote{met_mrg}}
 
@@ -49,12 +49,12 @@ compare_apsim_met(
 \item{span}{argument to be passed to \sQuote{geom_smooth}}
 }
 \value{
-object of class \sQuote{cmet}, which can be used for further plotting
+object of class \sQuote{met_mrg}, which can be used for further plotting
 
 it produces a plot
 }
 \description{
-Helper function which allows for a simple comparison among help files
+Helper function which allows for a simple comparison among \sQuote{met} objects
 
 print method for \sQuote{met_mrg}
 

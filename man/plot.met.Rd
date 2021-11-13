@@ -12,6 +12,7 @@
   plot.type = c("ts"),
   cumulative = FALSE,
   facet = FALSE,
+  climatology = FALSE,
   summary = FALSE
 )
 }
@@ -28,6 +29,9 @@ temperature (min and max) is displayed}
 \item{cumulative}{default is FALSE. Especially useful for \sQuote{rain}}
 
 \item{facet}{whether to display the years in in different panels (facets)}
+
+\item{climatology}{logical (default FALSE). Whether to display the \sQuote{climatology}
+which would be the average of the data.}
 
 \item{summary}{whether to plot \sQuote{summary} data}
 }
