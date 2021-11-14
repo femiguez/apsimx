@@ -330,7 +330,13 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
   invisible(gp1)
 }
 
-
+#' The frost free period is computed by first spliting each year (or year interval)
+#' in two halves. The first and last frosts in the first and second period are found.
+#' For the Northern hemisphere calendar days are used (1-365).
+#' For the Southern hemisphere the year is split in two halfs, but the second half of
+#' the year is used as the first part of the growing season.
+#' If not frost is found a zero is returned.
+#'
 #' @title Summary for an APSIM met file
 #' @name summary.met
 #' @description Create a data.frame summarizing an object of class \sQuote{met}
@@ -345,6 +351,11 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
 #' @param julian.days optional argument to subset by julian days. It
 #' should be a vector of integers between 1 and 365. Either use \sQuote{days} or
 #' \sQuote{julian.days} but not both.
+#' @param compute.frost logical (default FALSE). Whether to compute
+#' frost statistics.
+#' @param frost.temperature value to use for the calculation of the frost 
+#' period (default is zero).
+#' @param check logical (default FALSE). Whether to \sQuote{check} the \sQuote{met} object.
 #' @param verbose whether to print additional infomation to the console
 #' @return an object of class \sQuote{data.frame} with attributes
 #' @export
@@ -353,13 +364,16 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
 #' extd.dir <- system.file("extdata", package = "apsimx")
 #' ames <- read_apsim_met("Ames.met", src.dir = extd.dir)
 #' 
-#' summary(ames, years = 2014: 2016)
+#' summary(ames, years = 2014:2016)
 #' 
 summary.met <- function(object, ..., years, months, days, julian.days,
-                        verbose = FALSE, na.rm = FALSE, digits = 2){
+                        compute.frost = FALSE,
+                        frost.temperature = 0, 
+                        check = FALSE, verbose = FALSE, 
+                        na.rm = FALSE, digits = 2){
   
   x <- object
-  check_apsim_met(x)
+  if(check) check_apsim_met(x)
   
   if(!missing(days) && !missing(julian.days))
     stop("Either use days or julian.days but not both", call. = TRUE)
@@ -368,8 +382,9 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   if(!missing(years)) x <- x[x$year %in% years,]
   
   if(!missing(months)){
+    if(length(months) == 1) months <- as.integer(months)
     if(!inherits(months, "integer") && !inherits(months, "character"))
-      stop("months should be wither an integer or a character", call. = FALSE)
+      stop("months should be either an integer or a character", call. = FALSE)
     ## Select months that fit the criteria
     date.range <- seq(as.Date("2012-01-01"), as.Date("2012-12-31"), by = "day")
     dat <- data.frame(month = as.numeric(format(date.range, "%m")),
@@ -416,7 +431,13 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   }
   
   n.years <- length(unique(x$year))
-  ans <- matrix(nrow = n.years, ncol = 12)
+  
+  if(compute.frost){
+    ans <- matrix(nrow = n.years, ncol = 16)  
+  }else{
+    ans <- matrix(nrow = n.years, ncol = 12)  
+  }
+  
   ans[,1] <- sort(unique(x$year))
   x$year <- as.factor(x$year)
   
@@ -441,11 +462,202 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   ans[,11] <- round(aggregate(radn ~ year, data = x, FUN = sum, na.rm = na.rm)$radn, digits)
   ans[,12] <- round(aggregate(radn ~ year, data = x, FUN = mean, na.rm = na.rm)$radn, digits)
   
-  colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
-                     "high_maxt", "high_mint", ## 4 and 5
-                     "avg_maxt", "avg_mint", ## 6 and 7
-                     "low_maxt", "low_mint", ## 8 and 9
-                     "rain_sum", "radn_sum", "radn_avg") ## 10, 11, 12
+  ## How do I compute the length of the growing season
+  if(compute.frost){
+    lat0 <- strsplit(attr(x, "latitude"), "=")[[1]][2]
+    lat <- as.numeric(strsplit(lat0, "(", fixed = TRUE)[[1]][1])
+
+    ans[,13] <- rep(0, length(unique(x$year)))
+    ans[,14] <- rep(0, length(unique(x$year)))
+    ## This should work regardless of the subset, but I haven't tested
+    if(lat >= 0){
+      ## Northern hemisphere
+      ## Last frost in the spring
+      length.days.by.year <- aggregate(day ~ year, data = x, FUN = length)$day
+      half.point <- floor(mean(length.days.by.year)/2)
+      x.first <- x[x$day < half.point, ]
+      if(length(unique(x.first$year)) != length(unique(x$year))){
+        stop("At least one year has incomplete days. Spring frost cannot be computed.", call. = FALSE)
+      }
+      frosts <- which(x.first$mint < frost.temperature)
+      if(length(frosts) != 0){
+        x.spring.frosts <- x.first[frosts,]
+        last.spring.frost <- aggregate(day ~ year, data = x.spring.frosts, FUN = max)        
+        zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
+        mrg1 <- merge(zero.days, last.spring.frost, all.x = TRUE, by = "year")
+        mrg1[is.na(mrg1$day.y), "day.y"] <- 0
+        ans[,13] <- mrg1[["day.y"]]
+      }
+      ## First frost in the fall
+      x.last <- x[x$day > half.point, ]
+      if(length(unique(x.last$year)) != length(unique(x$year))){
+        stop("At least one year has incomplete days. Fall frost cannot be computed.", call. = FALSE)
+      }
+      frosts <- which(x.last$mint < frost.temperature)
+      if(length(frosts) != 0){
+        x.fall.frosts <- x.last[frosts,]
+        first.fall.frost <- aggregate(day ~ year, data = x.fall.frosts, FUN = min)        
+        zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
+        mrg2 <- merge(zero.days, first.fall.frost, all.x = TRUE, by = "year")
+        mrg2[is.na(mrg2$day.y), "day.y"] <- 0
+        ans[,14] <- mrg2[["day.y"]]
+      }
+      ## Frost days
+      tmp0 <- x[x$mint < 0,]
+      all.frost.days <- aggregate(day ~ year, data = tmp0, FUN = length)
+      zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
+      mrg3 <- merge(zero.days, all.frost.days, all.x = TRUE, by = "year")
+      mrg3[is.na(mrg3$day.y), "day.y"] <- 0
+      ans[,16] <- mrg3[["day.y"]]
+      ## Frost-free period
+      if(sum(ans[,13]) == 0 && sum(ans[,14]) == 0){
+        ans[,15] <- aggregate(day ~ year, data = x, FUN = length)$day 
+      }else{
+        if(all(ans[,13] > 0) && all(ans[,14] > 0)){
+          ans[,15] <- ans[,14] - ans[,13]
+        }else{
+          ## Need to compute this by year
+          yrs <- sort(unique(x$year))
+          for(j in seq_along(yrs)){
+            ## If first half has a zero
+            if(ans[j, 13] == 0 && ans[j, 14] != 0){
+              tmp <- x.fall.frosts[x.fall.frosts$year == yrs[j],]
+              if(nrow(tmp) == 0){
+                ans[j, 15] <- length.days.by.year[j]
+              }else{
+                last.fall.frost <- max(tmp$day)
+                fall.frost.days <- last.fall.frost - ans[j, 14]
+                ans[j, 15] <-  fall.frost.days                
+              }
+            }
+            ## If second half has a zero
+            if(ans[j, 14] == 0 && ans[j, 13] != 0){
+              tmp <- x.spring.frosts[x.spring.frosts$year == yrs[j],]
+              ##print(tmp)
+              if(nrow(tmp) == 0){
+                ans[j, 15] <- length.days.by.year[j]
+              }else{
+                first.spring.frost <- min(tmp$day)
+                spring.frost.days <- ans[j, 13] - first.spring.frost
+                ans[j, 15] <- spring.frost.days               
+              }
+            }
+            ## Both are zero
+            if(ans[j, 14] == 0 && ans[j, 13] == 0){
+              ans[j, 15] <- length.days.by.year[j]
+            }
+            ## Both are not zero
+            if(ans[j, 14] != 0 && ans[j, 13] != 0){
+              ans[j, 15] <- ans[j,14] - ans[j,13]
+            }
+          }
+        } 
+      }
+    }
+    
+    if(lat < 0){
+      ## Southern hemisphere
+      ## Last frost in the fall
+      length.days.by.year <- aggregate(day ~ year, data = x, FUN = length)$day
+      half.point <- floor(mean(length.days.by.year)/2)
+      x.first <- x[x$day > half.point, ]
+      if(length(unique(x.first$year)) != length(unique(x$year))){
+        stop("At least one year has incomplete days. Spring frost cannot be computed.", call. = FALSE)
+      }
+      frosts <- which(x.first$mint < frost.temperature)
+      if(length(frosts) != 0){
+        x.spring.frosts <- x.first[frosts,]
+        last.spring.frost <- aggregate(day ~ year, data = x.spring.frosts, FUN = max)        
+        zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
+        mrg1 <- merge(zero.days, last.spring.frost, all.x = TRUE, by = "year")
+        mrg1[is.na(mrg1$day.y), "day.y"] <- 0
+        ans[,13] <- mrg1[["day.y"]]
+      }
+      ## First frost in the fall
+      x.last <- x[x$day < half.point, ]
+      if(length(unique(x.last$year)) != length(unique(x$year))){
+        stop("At least one year has incomplete days. Fall frost cannot be computed.", call. = FALSE)
+      }
+      frosts <- which(x.last$mint < frost.temperature)
+      if(length(frosts) != 0){
+        x.fall.frosts <- x.last[frosts,]
+        first.fall.frost <- aggregate(day ~ year, data = x.fall.frosts, FUN = min)        
+        zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
+        mrg2 <- merge(zero.days, first.fall.frost, all.x = TRUE, by = "year")
+        mrg2[is.na(mrg2$day.y), "day.y"] <- 0
+        ans[,14] <- mrg2[["day.y"]]
+      }
+      ## Frost days
+      tmp0 <- x[x$mint < 0,]
+      all.frost.days <- aggregate(day ~ year, data = tmp0, FUN = length)
+      zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
+      mrg3 <- merge(zero.days, all.frost.days, all.x = TRUE, by = "year")
+      mrg3[is.na(mrg3$day.y), "day.y"] <- 0
+      ans[,16] <- mrg3[["day.y"]]
+      ## Frost-free period
+      if(sum(ans[,13]) == 0 && sum(ans[,14]) == 0){
+        ans[,15] <- aggregate(day ~ year, data = x, FUN = length)$day 
+      }else{
+        if(all(ans[,13] > 0) && all(ans[,14] > 0)){
+          ##last.day <- ifelse(is_leap_year(sort(unique(x$year))), 366, 365)
+          ans[,15] <- (length.days.by.year - ans[,13]) + ans[,14]
+        }else{
+          ## Need to compute this by year
+          yrs <- sort(unique(x$year))
+          for(j in seq_along(yrs)){
+            ## If first half has a zero
+            if(ans[j, 13] == 0 && ans[j, 14] != 0){
+              tmp <- x.fall.frosts[x.fall.frosts$year == yrs[j],]
+              if(nrow(tmp) == 0){
+                ans[j, 15] <- length.days.by.year[j]
+              }else{
+                last.fall.frost <- max(tmp$day)
+                fall.frost.days <- ans[j, 14] - last.fall.frost
+                ans[j, 15] <-  fall.frost.days                
+              }
+            }
+            ## If second half has a zero
+            if(ans[j, 14] == 0 && ans[j, 13] != 0){
+              tmp <- x.spring.frosts[x.spring.frosts$year == yrs[j],]
+              ##print(tmp)
+              if(nrow(tmp) == 0){
+                ans[j, 15] <- length.days.by.year[j]
+              }else{
+                first.spring.frost <- min(tmp$day)
+                spring.frost.days <- ans[j, 13] - first.spring.frost
+                ans[j, 15] <- length.days.by.year[j] - spring.frost.days               
+              }
+            }
+            ## Both are zero
+            if(ans[j, 14] == 0 && ans[j, 13] == 0){
+              ans[j, 15] <- length.days.by.year[j]
+            }
+            ## Both are not zero
+            if(ans[j, 14] != 0 && ans[j, 13] != 0){
+              ans[j, 15] <- (length.days.by.year[j] - ans[j,13]) + ans[j,14]
+            }
+          }
+        } 
+      }
+    }
+  }
+
+  if(compute.frost){
+    colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
+                       "high_maxt", "high_mint", ## 4 and 5
+                       "avg_maxt", "avg_mint", ## 6 and 7
+                       "low_maxt", "low_mint", ## 8 and 9
+                       "rain_sum", "radn_sum", "radn_avg", ## 10, 11, 12
+                       "first_half_frost", "second_half_frost", ## 13, 14
+                       "frost_free_period", "frost_days") ## 15, 16    
+  }else{
+    colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
+                       "high_maxt", "high_mint", ## 4 and 5
+                       "avg_maxt", "avg_mint", ## 6 and 7
+                       "low_maxt", "low_mint", ## 8 and 9
+                       "rain_sum", "radn_sum", "radn_avg") ## 10, 11, 12
+  }
+
   ansd <- as.data.frame(ans)
   if(inherits(months, "integer")){
     if(grepl(":", deparse(months), fixed = TRUE)){

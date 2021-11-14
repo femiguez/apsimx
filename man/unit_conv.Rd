@@ -44,6 +44,10 @@ At the moment possible conversions are:
 \item \sQuote{g/m2} to \sQuote{soy bu/ac}
 \item \sQuote{mm} to \sQuote{inches}
 \item \sQuote{inches} to \sQuote{mm}
+\item \sQuote{lb/ac} to \sQuote{kg/ha}
+\item \sQuote{kg/ha} to \sQuote{lb/ac}
+\item \sQuote{lb/ac} to \sQuote{g/m2}
+\item \sQuote{g/m2} to \sQuote{lb/ac}
 
 }
 

@@ -11,6 +11,9 @@
   months,
   days,
   julian.days,
+  compute.frost = FALSE,
+  frost.temperature = 0,
+  check = FALSE,
   verbose = FALSE,
   na.rm = FALSE,
   digits = 2
@@ -34,6 +37,14 @@ between 1 and 31.}
 should be a vector of integers between 1 and 365. Either use \sQuote{days} or
 \sQuote{julian.days} but not both.}
 
+\item{compute.frost}{logical (default FALSE). Whether to compute
+frost statistics.}
+
+\item{frost.temperature}{value to use for the calculation of the frost 
+period (default is zero).}
+
+\item{check}{logical (default FALSE). Whether to \sQuote{check} the \sQuote{met} object.}
+
 \item{verbose}{whether to print additional infomation to the console}
 }
 \value{
@@ -42,11 +53,19 @@ an object of class \sQuote{data.frame} with attributes
 \description{
 Create a data.frame summarizing an object of class \sQuote{met}
 }
+\details{
+The frost free period is computed by first spliting each year (or year interval)
+in two halves. The first and last frosts in the first and second period are found.
+For the Northern hemisphere calendar days are used (1-365).
+For the Southern hemisphere the year is split in two halfs, but the second half of
+the year is used as the first part of the growing season.
+If not frost is found a zero is returned.
+}
 \examples{
 
 extd.dir <- system.file("extdata", package = "apsimx")
 ames <- read_apsim_met("Ames.met", src.dir = extd.dir)
 
-summary(ames, years = 2014: 2016)
+summary(ames, years = 2014:2016)
 
 }

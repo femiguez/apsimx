@@ -19,7 +19,7 @@
 \arguments{
 \item{x}{object of class \sQuote{met}}
 
-\item{years}{optional argument to subset some years}
+\item{years}{optional argument to subset years}
 
 \item{met.var}{optional argument to choose a certain variable. By default,
 temperature (min and max) is displayed}
@@ -31,7 +31,8 @@ temperature (min and max) is displayed}
 \item{facet}{whether to display the years in in different panels (facets)}
 
 \item{climatology}{logical (default FALSE). Whether to display the \sQuote{climatology}
-which would be the average of the data.}
+which would be the average of the data. 
+Ideally, there are at least 20 years in the \sQuote{met} object.}
 
 \item{summary}{whether to plot \sQuote{summary} data}
 }
@@ -49,6 +50,7 @@ plot(ames, years = 2012:2015)
 plot(ames, years = 2012:2015, cumulative = TRUE)
 ## for rain
 plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)
+plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE, climatology = TRUE)
 }
 
 }

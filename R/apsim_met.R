@@ -945,14 +945,15 @@ pp_apsim_met <- function(metfile, sun_angle=0){
 #' @description Some plots are similar to APSIM, others are different
 #' and more useful in some respects
 #' @param x object of class \sQuote{met}
-#' @param years optional argument to subset some years
+#' @param years optional argument to subset years
 #' @param met.var optional argument to choose a certain variable. By default,
 #' temperature (min and max) is displayed
 #' @param plot.type type of plot, default is \sQuote{ts} or time-series
 #' @param cumulative default is FALSE. Especially useful for \sQuote{rain}
 #' @param facet whether to display the years in in different panels (facets)
 #' @param climatology logical (default FALSE). Whether to display the \sQuote{climatology}
-#' which would be the average of the data.
+#' which would be the average of the data. 
+#' Ideally, there are at least 20 years in the \sQuote{met} object.
 #' @param summary whether to plot \sQuote{summary} data
 #' @export
 #' @examples 

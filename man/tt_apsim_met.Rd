@@ -45,7 +45,10 @@ Calculates Thermal Time using the \sQuote{Classic} formula,
 Heat Stress, Crop Heat Unit and other methods
 }
 \details{
-Calculating Thermal Time using a variety of methods
+Calculating Thermal Time using a variety of methods.
+The function will fail if the method is not selected.
+Also, it does not work if each year does not have at least
+365 days.
 }
 \examples{
 \dontrun{
