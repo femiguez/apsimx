@@ -9,7 +9,7 @@
   ...,
   years,
   met.var,
-  plot.type = c("ts"),
+  plot.type = c("ts", "area"),
   cumulative = FALSE,
   facet = FALSE,
   climatology = FALSE,
@@ -24,7 +24,8 @@
 \item{met.var}{optional argument to choose a certain variable. By default,
 temperature (min and max) is displayed}
 
-\item{plot.type}{type of plot, default is \sQuote{ts} or time-series}
+\item{plot.type}{type of plot, default is \sQuote{ts} or time-series. 
+The option \sQuote{area} is only when summary = TRUE.}
 
 \item{cumulative}{default is FALSE. Especially useful for \sQuote{rain}}
 
@@ -34,7 +35,7 @@ temperature (min and max) is displayed}
 which would be the average of the data. 
 Ideally, there are at least 20 years in the \sQuote{met} object.}
 
-\item{summary}{whether to plot \sQuote{summary} data}
+\item{summary}{whether to plot \sQuote{summary} data. (default FALSE).}
 }
 \description{
 Some plots are similar to APSIM, others are different

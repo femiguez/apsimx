@@ -504,11 +504,15 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       }
       ## Frost days
       tmp0 <- x[x$mint < 0,]
-      all.frost.days <- aggregate(day ~ year, data = tmp0, FUN = length)
-      zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
-      mrg3 <- merge(zero.days, all.frost.days, all.x = TRUE, by = "year")
-      mrg3[is.na(mrg3$day.y), "day.y"] <- 0
-      ans[,16] <- mrg3[["day.y"]]
+      if(nrow(tmp0) > 0){
+        all.frost.days <- aggregate(day ~ year, data = tmp0, FUN = length)
+        zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
+        mrg3 <- merge(zero.days, all.frost.days, all.x = TRUE, by = "year")
+        mrg3[is.na(mrg3$day.y), "day.y"] <- 0
+        ans[,16] <- mrg3[["day.y"]]        
+      }else{
+        ans[,16] <- rep(0, length(unique(x$years)))
+      }
       ## Frost-free period
       if(sum(ans[,13]) == 0 && sum(ans[,14]) == 0){
         ans[,15] <- aggregate(day ~ year, data = x, FUN = length)$day 
@@ -589,11 +593,15 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       }
       ## Frost days
       tmp0 <- x[x$mint < 0,]
-      all.frost.days <- aggregate(day ~ year, data = tmp0, FUN = length)
-      zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
-      mrg3 <- merge(zero.days, all.frost.days, all.x = TRUE, by = "year")
-      mrg3[is.na(mrg3$day.y), "day.y"] <- 0
-      ans[,16] <- mrg3[["day.y"]]
+      if(nrow(tmp0) > 0){
+        all.frost.days <- aggregate(day ~ year, data = tmp0, FUN = length)
+        zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
+        mrg3 <- merge(zero.days, all.frost.days, all.x = TRUE, by = "year")
+        mrg3[is.na(mrg3$day.y), "day.y"] <- 0
+        ans[,16] <- mrg3[["day.y"]]        
+      }else{
+        ans[,16] <- rep(0, length(unique(x$year)))
+      }
       ## Frost-free period
       if(sum(ans[,13]) == 0 && sum(ans[,14]) == 0){
         ans[,15] <- aggregate(day ~ year, data = x, FUN = length)$day 

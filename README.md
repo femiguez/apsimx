@@ -22,11 +22,15 @@ for 'Classic'.
 
 * and/or APSIM (7.x) 'Classic'
 
-NOTE: with current (Sept 2021) versions of APSIM Next Gen the .NET Core framework is
-needed to run it from the command line in Mac and Linux.
+NOTE ON REQUIREMENTS:
 
-For older versions of APSIM Next Gen (before Sept 2021) the mono framework is required 
-to run on Mac and Linux (Debian). Mono should be installed first (in Mac and Linux). 
+* Current (Nov 2021) versions of APSIM Next Gen do not require additional software
+to run on Mac or Linux. The dotnet runtime environment is shipped with the image/package.
+
+* For current versions (Nov 2021), on Windows, the 'Microsoft Windows Desktop Runtime' 3.1.14 is required. The installer also updated GTK3 to 3.24.20 during the installation.
+
+* For older versions of APSIM Next Gen (before Sept 2021) the mono framework was required to run on Mac and Linux (Debian). Mono should be installed first (in Mac and Linux). 
+
 **If you are running the latest version of APSIM Next Gen (Sept 2021 or later), you do 
 not need to install the Mono Framework**.
 
@@ -41,7 +45,7 @@ https://www.apsim.info/download-apsim/
 
 Since APSIM Next Gen 2021.04.01 (at least) .NET framework 4.6 or higher is 
 required for Windows and I have had to update the Mono framework to 
-6.12.
+6.12 on Mac (again this applies to pre Sep 2021).
 
 If you want to install this package from github try in R:
 
@@ -59,9 +63,9 @@ It is **not** necessary to build the vignettes as they are also at:
 https://femiguez.github.io/apsimx-docs/
 
 *Note*: Building the vignettes does not require the presence of APSIM-X as I
-have recently eliminated the APSIM-X runs in it.
+have recently eliminated the APSIM-X dependency.
 
-Still, if you want to build the vignettes then use this instead
+Still, if you want to build the vignettes, then use this instead
 of the second line above:
 
 > devtools::install_github("femiguez/apsimx", build_vignettes = TRUE,

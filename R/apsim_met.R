@@ -948,13 +948,14 @@ pp_apsim_met <- function(metfile, sun_angle=0){
 #' @param years optional argument to subset years
 #' @param met.var optional argument to choose a certain variable. By default,
 #' temperature (min and max) is displayed
-#' @param plot.type type of plot, default is \sQuote{ts} or time-series
+#' @param plot.type type of plot, default is \sQuote{ts} or time-series. 
+#' The option \sQuote{area} is only when summary = TRUE.
 #' @param cumulative default is FALSE. Especially useful for \sQuote{rain}
 #' @param facet whether to display the years in in different panels (facets)
 #' @param climatology logical (default FALSE). Whether to display the \sQuote{climatology}
 #' which would be the average of the data. 
 #' Ideally, there are at least 20 years in the \sQuote{met} object.
-#' @param summary whether to plot \sQuote{summary} data
+#' @param summary whether to plot \sQuote{summary} data. (default FALSE).
 #' @export
 #' @examples 
 #' \donttest{
@@ -970,7 +971,7 @@ pp_apsim_met <- function(metfile, sun_angle=0){
 #' }
 #' 
 plot.met <- function(x, ..., years, met.var, 
-                     plot.type = c("ts"), 
+                     plot.type = c("ts", "area"), 
                      cumulative = FALSE,
                      facet = FALSE,
                      climatology = FALSE,
@@ -982,6 +983,9 @@ plot.met <- function(x, ..., years, met.var,
   }
   
   plot.type <- match.arg(plot.type)
+  
+  if(plot.type == "histogram" && !summary)
+    stop("plot.type = histogram is only available when summary = TRUE", call. = FALSE)
   
   ## Calculate climatology before subsetting years
   if(climatology){
@@ -1006,16 +1010,18 @@ plot.met <- function(x, ..., years, met.var,
   
   x$Years <- as.factor(x$year)
   
-  if(!missing(met.var)){
-    if(!met.var %in% names(x)){
-      cat("Variables in met:", names(x), "\n")
-      stop("met.var was not found in the names of the 'met' object", call. = FALSE)
-    }
-    if(met.var %in% c("day", "year"))
-      stop("year or day cannot be used as a 'met.var'", call. = FALSE)
+  if(isFALSE(summary)){
+    if(!missing(met.var)){
+      if(!met.var %in% names(x)){
+        cat("Variables in met:", names(x), "\n")
+        stop("met.var was not found in the names of the 'met' object", call. = FALSE)
+      }
+      if(met.var %in% c("day", "year"))
+        stop("year or day cannot be used as a 'met.var'", call. = FALSE)
+    }    
   }
-  
-  if(summary == FALSE){
+
+  if(isFALSE(summary)){
     if(plot.type == "ts"){
       if(missing(met.var)){
         if(cumulative){
@@ -1041,6 +1047,7 @@ plot.met <- function(x, ..., years, met.var,
                             ggplot2::geom_line(data = maxt.climatology, ggplot2::aes(day, cum.maxt, linetype = climatology), color = "black") + 
                             ggplot2::geom_line(data = mint.climatology, ggplot2::aes(day, cum.mint, linetype = climatology), color = "black", linetype = 2) +
                             ggplot2::scale_linetype_manual(name = NULL, values = 1) + 
+                            ggplot2::geom_hline(yintercept = 0, linetype = 3) + 
                             ggplot2::ylab("Cumulative temperature (degree C)") 
           }else{
             dat1 <- data.frame(day = dat$day, temperature = "maxt", value = dat$cum.maxt, Years = dat$Years)
@@ -1050,6 +1057,7 @@ plot.met <- function(x, ..., years, met.var,
               ggplot2::geom_line(ggplot2::aes(day, value, color = Years, linetype = temperature)) +
               ggplot2::geom_line(ggplot2::aes(day, value, color = Years, linetype = temperature)) +
               ggplot2::scale_linetype_manual(name = NULL, values = c(1, 2)) + 
+              ggplot2::geom_hline(yintercept = 0, linetype = 3) + 
               ggplot2::ylab("Cumulative temperature (degree C)") 
           }
           print(gp1)        
@@ -1064,11 +1072,13 @@ plot.met <- function(x, ..., years, met.var,
                             ggplot2::geom_line(data = maxt.climatology, ggplot2::aes(day, maxt, linetype = climatology), color = "black") +
                             ggplot2::geom_line(data = mint.climatology, ggplot2::aes(day, mint, linetype = climatology), color = "black", linetype = 2) +
                             ggplot2::scale_linetype_manual(name = NULL, values = 1) + 
+                            ggplot2::geom_hline(yintercept = 0, linetype = 3) + 
                             ggplot2::ylab("Temperature (degree C)")                        
           }else{
             gp1 <- ggplot2::ggplot(data = x) + 
               ggplot2::geom_line(ggplot2::aes(day, maxt, color = Years)) +
               ggplot2::geom_line(ggplot2::aes(day, mint, color = Years), linetype = 2) +
+              ggplot2::geom_hline(yintercept = 0, linetype = 3) + 
               ggplot2::ylab("Temperature (degree C)")            
           }
           print(gp1)        
@@ -1137,7 +1147,66 @@ plot.met <- function(x, ..., years, met.var,
         }
       }
     }    
+  }else{
+    
+    if(missing(met.var)){
+      met.var <- c("avg_maxt", "avg_mint")
+    }
+    
+    if(is.null(list(...)$compute.frost)){
+      valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg") 
+    }else{
+      valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg", "first_half_frost","second_half_frost","frost_free_period","frost_days") 
+    }
+    sel.met.var <- sapply(met.var, function(x) grep(x, valid.met.vars)) 
+    if(length(sel.met.var) == 0){
+      cat("Valid met.vars:", valid.met.vars, "\n")
+      stop("'met.var' is not a valid meteorological variable", call. = FALSE)
+    }else{
+      met.var <- valid.met.vars[sel.met.var] 
+    }
+    
+    if(any(met.var %in% c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint")))
+      ylabs <- "Temperature (degree C)"
+    
+    if(any(grepl("rain_sum", met.var)) && length(met.var) > 1)
+      stop("If 'rain_sum' is chosen, it should be the only met variable", call. = FALSE)
+    
+    if(any(met.var %in% c("rain_sum")))
+      ylabs <- "Rainfall (mm)"
+    
+    if(any(grepl("radn", met.var)) && length(met.var) > 2)
+      stop("If 'radn' is chosen, it should not be mixed with other variables", call. = FALSE)
+    
+    if(any(met.var %in% c("radn_sum", "radn_avg")))
+      ylabs <- "Radiation (MJ/m2)"
+    
+    if(any(grepl("frost", met.var)))
+      ylabs <- "Days"
+      
+    stmp <- summary(x, ...)
+    tmp <- NULL
+    for(i in seq_along(met.var)){
+      dat <- data.frame(year = stmp$year, met.var = met.var[i], value = stmp[[met.var[i]]])
+      tmp <- rbind(tmp, dat)
+    }
+    
+    if(plot.type == "ts"){
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = year, y = value, color = met.var)) + 
+        ggplot2::geom_point() + 
+        ggplot2::geom_line() + 
+        ggplot2::ylab(ylabs)
+      print(gp1)      
+    }
+    
+    if(plot.type == "area"){
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = year, y = value, fill = met.var)) + 
+        ggplot2::geom_area() + 
+        ggplot2::ylab(ylabs)
+      print(gp1)      
+    }
   }
+  invisible(gp1)
 }
 
 

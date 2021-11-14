@@ -28,38 +28,46 @@ Let's see what is needed to run APSIM-X at the command line.
 
 ## Windows
 
-In Windows if you use the current (`r Sys.Date()`) version of the installer the program will be, most likely, in:
+In Windows, if you use the current (`r Sys.Date()`) version of the installer the program will be, most likely, in:
 
-**C:\\Program Files\\APSIM2021.01.14.6010\\Bin\\Models.exe**
+**C:\\Program Files\\APSIM2021.08.12.6707\\bin\\Models.exe**
 
-Notice that for each new build of APSIM-X the path will change. After 'APSIM' is the year, month, date and version separated by a period. In this case '2021.01.14.6010'. In the folder 'Bin'(for 'binary') there are many libraries ('.dll files') and some executables. The 'Models.exe' is the one that can run .apsimx files.
+Notice that for each new build of APSIM-X the path will change. After 'APSIM' is the year, month, date and version separated by a period. In this case '2021.08.12.6707'. In the folder 'bin' (for 'binary') there are many libraries ('.dll files') and some executables. The 'Models.exe' is the one that can run .apsimx files.
 
 When trying to invoke that line at the command line, the space after 'Program' is a problem. There are some possible solutions. One is to add quotations (for example see 'shQuote' function in R). Another option is to use Windows short name paths, which in this case, for 'Program Files' is 'PROGRA~1' (but this can change). If running the program from R, for example, the separator needs to be either a double backslash '\\\\' or a forward slash '/'. So one example would be:
 
-**C:/PROGRA~1/APSIM2021.01.14.6010/Bin/Models.exe** or
+**C:/PROGRA~1/APSIM2021.08.12.6707/bin/Models.exe** or
 
-**C:\\\\PROGRA~1\\\\APSIM2021.01.14.6010\\\\Bin\\\\Models.exe**
+**C:\\\\PROGRA~1\\\\APSIM2021.08.12.6707\\\\bin\\\\Models.exe**
 
 The backslash ("\\") is an escape character in R, so you can't use it within strings.
 
 After this, the name of the file that you want to run needs to be included. For example,
 
-**C:/PROGRA~1/APSIM2021.01.14.6010/Bin/Models.exe ./Wheat.apsimx**.
+**C:/PROGRA~1/APSIM2021.08.12.6707/bin/Models.exe ./Wheat.apsimx**.
 
-Notice the "./", without this, it will likely not work under Windows. However, the previous string cannot be passed directly to a Windows shell. It needs to be translated with the forward slashes ("/") converted to backslashes ("\\").
+Notice the "./", without this, it will likely not work under Windows. (update: this issue has been addressed in current version of APSIM Next Gen). However, the previous string cannot be passed directly to a Windows shell. It needs to be translated with the forward slashes ("/") converted to backslashes ("\\").
 
 So to run the previous command in Windows from within R this is one way:
 
 ```{r apsimx-windows, eval = FALSE}
-run.strng <- "C:/PROGRA~1/APSIM2021.01.14.6010/Bin/Models.exe ./Wheat.apsimx"
+run.strng <- "C:/PROGRA~1/APSIM2021.08.12.6707/bin/Models.exe ./Wheat.apsimx"
 shell(cmd = run.strng, translate = TRUE, intern = TRUE)
 ```
 
-Note: it seems that, in Windows, it is only possible to run files in the current directory. So, for example, if the file 'Wheat.apsimx' was in subdirectory './myApsimXsimulations' and you want to replace the './Wheat.apsimx' above with './myApsimXsimulations/Wheat.apsimx' this does not work. I do not know yet if there is a possible workaround. 
+<!-- Note: it seems that, in Windows, it is only possible to run files in the current directory. So, for example, if the file 'Wheat.apsimx' was in subdirectory './myApsimXsimulations' and you want to replace the './Wheat.apsimx' above with './myApsimXsimulations/Wheat.apsimx' this does not work. I do not know yet if there is a possible workaround. This issue was fixed at one point. It is now possible to run from a different directory. -->
 
 ## Unix (Mac) or Linux (Debian)
 
-In Unix (Mac) or Linux (Debian) to be able to run APSIM-X the Mono Framework needs to be installed (https://www.mono-project.com/download/stable/). This is important because the command 'mono' needs to be available in order to run APSIM-X at the command line. The Mono Framework should be available to install APSIM-X in the first place, but it is important to be aware of this at this stage.
+For current versions of APSIM Next Gen, this command should be able to run from the command line:
+
+**/Applications/APSIM2021.10.11.6842.app/Contents/Resources/bin/Models ./Wheat.apsimx**
+
+**Mono is not required.**
+
+### Pre Sep 2021 (mono required)
+
+In Unix (Mac) or Linux (Debian) to be able to run APSIM-X the Mono Framework needs to be installed (https://www.mono-project.com/download/stable/) - (pre Sep 2021). This is important because the command 'mono' needs to be available in order to run APSIM-X at the command line. The Mono Framework should be available to install APSIM-X in the first place, but it is important to be aware of this at this stage.
 
 To find out if 'mono' is present you can type 'which mono' at the Terminal.
 
@@ -79,7 +87,7 @@ A current version of Mono (4.3 or higher) is needed and you can find out which v
 
 **mono --version**
 
-Which in my case is 5.18.1.3. (Mac)  and 6.0.0.313 (Debian).
+Which in my case is 6.12.0.122. (Mac)  and 6.0.0.313 (Debian).
 
 To run an example from the command line it is best to move to a directory where you are doing your work and have read and write permissions. APSIM-X will write an SQLite database (.db) with the results and it needs permissions to do this in the current directory. For example, you might want to move to:
 
@@ -95,11 +103,11 @@ Then find out where APSIM-X is installed, but this will change with each new ver
 
 Mac:
 
-**/Applications/APSIM2021.01.14.6010.app**
+**/Applications/APSIM2021.10.11.6842.app**
 
 Debian:
 
-apsim lib: **/usr/local/lib/apsim/2019.10.04.4236**
+apsim lib: **/usr/local/lib/apsim/2021.08.12.6707**
 
 The apsim binary is in: **/usr/local/bin/apsim**
 
@@ -107,11 +115,11 @@ Finally, to run an example at the command line:
 
 Mac:
 
-**mono /Applications/APSIM2021.01.14.6010.app/Contents/Resources/Bin/Models.exe ./Wheat.apsimx**
+**mono /Applications/APSIM2021.08.12.6707.app/Contents/Resources/bin/Models.exe ./Wheat.apsimx**
 
 Debian:
 
-**mono /usr/local/lib/apsim/2019.10.04.4236/Bin/Models.exe ./Wheat.apsimx**
+**mono /usr/local/lib/apsim/2021.08.12.6707/bin/Models.exe ./Wheat.apsimx**
 
 The previous two commands assume that the file "Wheat.apsimx" is present in the current working directory. A detail that seems to have changed with recent versions of 'mono' (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:
 
@@ -142,7 +150,7 @@ Examples: **auto_detect_apsimx_examples()**
 
 Which will return the path to the executable and the directory where the examples are located. These functions are supposed to work whether you are using Windows, Mac or Linux. The function 'auto_detect_apsimx' is not exported, so in order to expose it, you need 'apsimx:::auto_detect_apsimx()'. This function is meant to work with the current binary distributions (as opposed to source code). (I'm guessing that if you are building APSIM-X from source code, you do not need this information.) 
 
-If multiple versions of APSIM-X are installed apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the 'apsimx_options'. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the 'apsimx_options' function. This information applies to APSIM 'Classic' (use apsim_options instead).
+If multiple versions of APSIM-X are installed, apsimx will choose the newest one, but it will issue a warning. If you want to supress this warning change this setting using the 'apsimx_options'. If APSIM-X is installed in an alternative location which make the above functions fail it is possible to set these paths manually using the 'apsimx_options' function. This information applies to APSIM 'Classic' (use apsim_options instead).
 
 In addition, when loaded, the apsimx package will try to detect the presence of APSIM-X and, if not found, it will issue a warning with instructions to set the path manually using 'apsimx_options'. If you have a previous version of APSIM installed (7.x) or multiple versions of both the 'old' and 'new' this might be potentially problematic, but it is hard for me now to consider these endless possibilities.
 
