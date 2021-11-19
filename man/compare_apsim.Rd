@@ -2,10 +2,13 @@
 % Please edit documentation in R/compare_apsim.R
 \name{compare_apsim}
 \alias{compare_apsim}
+\alias{print.out_mrg}
 \alias{plot.out_mrg}
 \title{Compare two or more apsim output objects}
 \usage{
-compare_apsim(..., variable, index = "Date", by, labels)
+compare_apsim(..., variable, index = "Date", by, labels, verbose = FALSE)
+
+\method{print}{out_mrg}(x, ..., digits = 2)
 
 \method{plot}{out_mrg}(
   x,
@@ -29,7 +32,11 @@ compare_apsim(..., variable, index = "Date", by, labels)
 
 \item{labels}{labels for plotting and identification of objects.}
 
+\item{verbose}{whether to print indexes to console (default is FALSE).}
+
 \item{x}{object of class \sQuote{out_mrg}}
+
+\item{digits}{digits to print (default is 2)}
 
 \item{plot.type}{either \sQuote{vs}, \sQuote{diff}, \sQuote{ts} - for time series or \sQuote{density}}
 
@@ -44,10 +51,14 @@ compare_apsim(..., variable, index = "Date", by, labels)
 \value{
 object of class \sQuote{out_mrg}, which can be used for further plotting
 
+it prints the index.table data.frame
+
 it produces a plot
 }
 \description{
 Function which allows for a simple comparison between APSIM output objects
+
+print method for \sQuote{out_mrg}
 
 plotting function for compare_apsim, it requires ggplot2
 }

@@ -76,7 +76,7 @@ get_gsod_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
                                                "MAX", "MIN", "PRCP", "RH", "WDSP"))
   
   
-  names(gsd) <- c("year", "day", "radn", "maxt", "mint", "rain", "rh", "wind_speed")
+  names(gsd) <- c("year", "day", "radn", "maxt", "mint", "rain", "rh", "windspeed")
   units <- c("()", "()", "(MJ/m2/day)", "(oC)", "(oC)", "(mm)", "(%)", "(m/s)")
   
   if(fillin.radn){

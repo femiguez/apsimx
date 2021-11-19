@@ -241,7 +241,12 @@ impute_apsim_met <- function(met, method = c("approx","spline","mean"), verbose 
   if(any(is.na(met[1,]))){
     wn1r <- which(is.na(met[1,]))
     for(i in seq_along(wn1r)){
-      met[1, wn1r[i]] <- mean(met[1:5, wn1r[i]], na.rm = TRUE)
+      if(all(is.na(met[1:15, wn1r[i]]))){
+        warning("The mean was used to impute the first row as the first 15 values were NAs")
+        met[1, wn1r[i]] <- mean(met[, wn1r[i]], na.rm = TRUE)
+      }else{
+        met[1, wn1r[i]] <- mean(met[1:15, wn1r[i]], na.rm = TRUE)  
+      }
       cat("Imputed first row for:", names(met)[wn1r[i]], "\n")
     }
     print(as.data.frame(met[1,]))
@@ -251,7 +256,12 @@ impute_apsim_met <- function(met, method = c("approx","spline","mean"), verbose 
   if(any(is.na(met[nrow(met),]))){
     wn1r <- which(is.na(met[nrow(met),]))
     for(i in seq_along(wn1r)){
-      met[nrow(met), wn1r[i]] <- mean(met[(nrow(met) - 5):nrow(met), wn1r[i]], na.rm = TRUE)
+      if(all(is.na(met[(nrow(met) - 15):nrow(met), wn1r[i]]))){
+        warning("The mean was used to impute the last row as the last 15 values were NAs")
+        met[nrow(met), wn1r[i]] <- mean(met[, wn1r[i]], na.rm = TRUE)
+      }else{
+        met[nrow(met), wn1r[i]] <- mean(met[(nrow(met) - 15):nrow(met), wn1r[i]], na.rm = TRUE)  
+      }
       cat("Imputed last row for:", names(met)[wn1r[i]], "\n")
     }
     print(as.data.frame(met[nrow(met),]))
@@ -320,7 +330,14 @@ check_apsim_met <- function(met){
     stop("No rows of data present in this object.")
   }
   
-  col.names <- c("year","day","radn","mint","maxt","rain")
+  col.names <- attr(met, "colnames")
+  
+  if(length(col.names) != ncol(met)){
+    cat("Names in data.frame:", names(met), "\n")
+    cat("Names in attribute column names", col.names, "\n")
+    cat("Different names", setdiff(names(met), col.names), "\n")
+    warning("Number of columns in data.frame do not match column names")
+  } 
   ## check for column names
   if(sum(names(met) %in% col.names) < 6) warning("column names might be wrong")
   ## Detect possible errors with years
@@ -460,12 +477,22 @@ napad_apsim_met <- function(met){
     ans$day <- as.numeric(format(ans$date, "%j"))
     ans$date <- NULL  
     fix1 <- TRUE
+    ans <- as_apsim_met(ans, 
+                        filename = attr(met, "filename"),
+                        site = attr(met, "site"),
+                        latitude = attr(met, "latitude"),
+                        tav = attr(met, "tav"),
+                        amp = attr(met, "amp"),
+                        colnames = attr(met, "colnames"),
+                        units = attr(met, "units"),
+                        comments = attr(met, "comments"))
   }  
   
   fix2 <- FALSE
   ## Is the last year a leap year?
   if(is_leap_year(met$year[nrow(met)]) && met$day[nrow(met)] == 365){
       ## This adds a row at the end when it is a leap year and it only has 365 days
+    if(fix1) met <- ans
     nms.met <- names(met)
     fill.dat <- as.data.frame(matrix(ncol = length(nms.met)))
     names(fill.dat) <- nms.met
@@ -550,7 +577,7 @@ as_apsim_met <- function(x,
   if(!inherits(x, "data.frame"))
     stop("Object should be of class data.frame")
 
-  if(ncol(x) != 6)
+  if(ncol(x) != 6 && length(colnames) == 6)
     stop("If number of columns is not 6 then provide column names")
   
   names(x) <- colnames
@@ -949,9 +976,9 @@ pp_apsim_met <- function(metfile, sun_angle=0){
 #' @param met.var optional argument to choose a certain variable. By default,
 #' temperature (min and max) is displayed
 #' @param plot.type type of plot, default is \sQuote{ts} or time-series. 
-#' The option \sQuote{area} is only when summary = TRUE.
-#' @param cumulative default is FALSE. Especially useful for \sQuote{rain}
-#' @param facet whether to display the years in in different panels (facets)
+#' The options \sQuote{area} and \sQuote{col} are only available when summary = TRUE.
+#' @param cumulative default is FALSE. Especially useful for \sQuote{rain}.
+#' @param facet whether to display the years in in different panels (facets). Not implemented yet.
 #' @param climatology logical (default FALSE). Whether to display the \sQuote{climatology}
 #' which would be the average of the data. 
 #' Ideally, there are at least 20 years in the \sQuote{met} object.
@@ -971,7 +998,7 @@ pp_apsim_met <- function(metfile, sun_angle=0){
 #' }
 #' 
 plot.met <- function(x, ..., years, met.var, 
-                     plot.type = c("ts", "area"), 
+                     plot.type = c("ts", "area", "col"), 
                      cumulative = FALSE,
                      facet = FALSE,
                      climatology = FALSE,
@@ -984,19 +1011,27 @@ plot.met <- function(x, ..., years, met.var,
   
   plot.type <- match.arg(plot.type)
   
-  if(plot.type == "histogram" && !summary)
-    stop("plot.type = histogram is only available when summary = TRUE", call. = FALSE)
+  if(plot.type %in% c("area", "col") && !summary)
+    stop("plot.type = area and plot.type = col are only available when summary = TRUE", call. = FALSE)
   
   ## Calculate climatology before subsetting years
   if(climatology){
-    maxt.climatology <- aggregate(maxt ~ day, data = x, FUN = mean)
-    mint.climatology <- aggregate(mint ~ day, data = x, FUN = mean)
-    rain.climatology <- aggregate(rain ~ day, data = x, FUN = mean)
-    radn.climatology <- aggregate(radn ~ day, data = x, FUN = mean)
+    maxt.climatology <- stats::aggregate(maxt ~ day, data = x, FUN = mean)
+    mint.climatology <- stats::aggregate(mint ~ day, data = x, FUN = mean)
+    rain.climatology <- stats::aggregate(rain ~ day, data = x, FUN = mean)
+    radn.climatology <- stats::aggregate(radn ~ day, data = x, FUN = mean)
     met.var.climatology <- cbind(maxt.climatology, 
                                  mint.climatology[,"mint", drop = FALSE], 
                                  rain.climatology[,"rain", drop = FALSE], 
                                  radn.climatology[,"radn", drop = FALSE])
+    if(any(grepl("vp", names(x), fixed = TRUE))){
+      vp.climatology <- stats::aggregate(vp ~ day, data = x, FUN = mean)
+      met.var.climatology <- cbind(met.var.climatology, vp.climatology[, "vp", drop = FALSE])
+    }
+    if(any(grepl("windspeed", names(x), fixed = TRUE))){
+      windspeed.climatology <- stats::aggregate(windspeed ~ day, data = x, FUN = mean)
+      met.var.climatology <- cbind(met.var.climatology, windspeed.climatology[, "windspeed", drop = FALSE])
+    }
   }
 
   if(!missing(years)){
@@ -1084,14 +1119,16 @@ plot.met <- function(x, ..., years, met.var,
           print(gp1)        
         }
       }else{
-        if(met.var %in% c("rain", "radn", "vp", "rh", "maxt", "mint")){
+        if(met.var %in% c("rain", "radn", "vp", "rh", "maxt", "mint", "windspeed")){
           
           met.var.units <- switch(met.var,
                                   rain = "(mm)",
                                   radn = "(MJ/m2)",
                                   rh = "(%)",
                                   maxt = "(degrees C)",
-                                  mint = "(degrees C)")
+                                  mint = "(degrees C)",
+                                  vp = "(hPa)",
+                                  windspeed = "(m/s)")
 
           if(climatology){
             met.var.clima <- met.var.climatology[ ,c("day", met.var)]
@@ -1159,7 +1196,7 @@ plot.met <- function(x, ..., years, met.var,
       valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg", "first_half_frost","second_half_frost","frost_free_period","frost_days") 
     }
     sel.met.var <- sapply(met.var, function(x) grep(x, valid.met.vars)) 
-    if(length(sel.met.var) == 0){
+    if(length(sel.met.var) == 0 || is.list(sel.met.var)){
       cat("Valid met.vars:", valid.met.vars, "\n")
       stop("'met.var' is not a valid meteorological variable", call. = FALSE)
     }else{
@@ -1202,6 +1239,13 @@ plot.met <- function(x, ..., years, met.var,
     if(plot.type == "area"){
       gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = year, y = value, fill = met.var)) + 
         ggplot2::geom_area() + 
+        ggplot2::ylab(ylabs)
+      print(gp1)      
+    }
+    
+    if(plot.type == "col"){
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = year, y = value, fill = met.var)) + 
+        ggplot2::geom_col() + 
         ggplot2::ylab(ylabs)
       print(gp1)      
     }

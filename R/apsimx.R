@@ -539,6 +539,9 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
            call. = FALSE)
     }
     tbl0 <- DBI::dbGetQuery(con, paste("SELECT * FROM ", value))
+    if(any(grepl("Clock.Today", names(tbl0)))){
+      tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)
+    }
   }
     
   if(value == "all"){
@@ -666,7 +669,7 @@ assign('mono', FALSE, apsimx.options)
 assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
-assign('.run.local.tests', FALSE, apsimx.options)
+assign('.run.local.tests', TRUE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests
 ## which do not require an APSIM install
@@ -675,7 +678,7 @@ assign('.run.local.tests', FALSE, apsimx.options)
 #' @import DBI jsonlite knitr RSQLite xml2 
 #' @importFrom utils read.table write.table packageVersion
 #' @importFrom tools file_path_sans_ext
-#' @importFrom stats coef cor cov2cor deviance lm optim qt var sd setNames sigma anova
+#' @importFrom stats aggregate anova coef cor cov2cor deviance lm optim qt var sd setNames sigma 
 NULL
 
 utils::globalVariables(".data")

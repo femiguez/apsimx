@@ -115,7 +115,7 @@ compare_apsim_met <- function(...,
     k <- 1  
     ## Compute Bias matrix
     for(i in met.var.sel){
-      if(verbose) cat("Variable ", i, "\n")
+      if(verbose) cat("Variable: ", i, "\n")
       ans$variable[k] <- i
       tmp <- met.mrg.s[, grep(i, names(met.mrg.s))]
       if(ncol(tmp) < 2) stop("merged selected variables should be at least of length 2", call. = FALSE)
@@ -124,7 +124,7 @@ compare_apsim_met <- function(...,
         if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
         ans$vs[k] <- paste(names(tmp)[j - 1], "vs.", names(tmp)[j])
         if(!missing(labels)){
-          if(verbose) cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
+          if(verbose) cat("labels:", labels[j - 1], " vs. ", labels[j], "\n")
           ans$labels[k] <- paste(labels[j - 1], "vs.", labels[j])
         } 
         fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
@@ -185,6 +185,9 @@ compare_apsim_met <- function(...,
 #' @description print method for \sQuote{met_mrg}
 #' @param x object of class \sQuote{met_mrg}
 #' @param ... additional arguments passed to print
+#' @param digits digits to print (default is 2)
+#' @export
+#' @return it prints the index.table data.frame
 print.met_mrg <- function(x, ..., digits = 2){
   print(x$index.table, digits = digits)
 }
@@ -448,19 +451,19 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   }
 
   ## Store high maxt and mint temperature by year
-  ans[,4] <- round(aggregate(maxt ~ year, data = x, FUN = max, na.rm = na.rm)$maxt, digits)
-  ans[,5] <- round(aggregate(mint ~ year, data = x, FUN = max, na.rm = na.rm)$mint, digits)
+  ans[,4] <- round(stats::aggregate(maxt ~ year, data = x, FUN = max, na.rm = na.rm)$maxt, digits)
+  ans[,5] <- round(stats::aggregate(mint ~ year, data = x, FUN = max, na.rm = na.rm)$mint, digits)
   ## Store mean maxt and mint temperature by year
-  ans[,6] <- round(aggregate(maxt ~ year, data = x, FUN = mean, na.rm = na.rm)$maxt, digits)
-  ans[,7] <- round(aggregate(mint ~ year, data = x, FUN = mean, na.rm = na.rm)$mint, digits)
+  ans[,6] <- round(stats::aggregate(maxt ~ year, data = x, FUN = mean, na.rm = na.rm)$maxt, digits)
+  ans[,7] <- round(stats::aggregate(mint ~ year, data = x, FUN = mean, na.rm = na.rm)$mint, digits)
   ## Store min maxt and mint temperature by year
-  ans[,8] <- round(aggregate(maxt ~ year, data = x, FUN = min, na.rm = na.rm)$maxt, digits)
-  ans[,9] <- round(aggregate(mint ~ year, data = x, FUN = min, na.rm = na.rm)$mint, digits)
+  ans[,8] <- round(stats::aggregate(maxt ~ year, data = x, FUN = min, na.rm = na.rm)$maxt, digits)
+  ans[,9] <- round(stats::aggregate(mint ~ year, data = x, FUN = min, na.rm = na.rm)$mint, digits)
   ## Total precipitation
-  ans[,10] <- round(aggregate(rain ~ year, data = x, FUN = sum, na.rm = na.rm)$rain, digits)
+  ans[,10] <- round(stats::aggregate(rain ~ year, data = x, FUN = sum, na.rm = na.rm)$rain, digits)
   ## Total and mean radiation
-  ans[,11] <- round(aggregate(radn ~ year, data = x, FUN = sum, na.rm = na.rm)$radn, digits)
-  ans[,12] <- round(aggregate(radn ~ year, data = x, FUN = mean, na.rm = na.rm)$radn, digits)
+  ans[,11] <- round(stats::aggregate(radn ~ year, data = x, FUN = sum, na.rm = na.rm)$radn, digits)
+  ans[,12] <- round(stats::aggregate(radn ~ year, data = x, FUN = mean, na.rm = na.rm)$radn, digits)
   
   ## How do I compute the length of the growing season
   if(compute.frost){
@@ -473,7 +476,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
     if(lat >= 0){
       ## Northern hemisphere
       ## Last frost in the spring
-      length.days.by.year <- aggregate(day ~ year, data = x, FUN = length)$day
+      length.days.by.year <- stats::aggregate(day ~ year, data = x, FUN = length)$day
       half.point <- floor(mean(length.days.by.year)/2)
       x.first <- x[x$day < half.point, ]
       if(length(unique(x.first$year)) != length(unique(x$year))){
@@ -482,7 +485,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       frosts <- which(x.first$mint < frost.temperature)
       if(length(frosts) != 0){
         x.spring.frosts <- x.first[frosts,]
-        last.spring.frost <- aggregate(day ~ year, data = x.spring.frosts, FUN = max)        
+        last.spring.frost <- stats::aggregate(day ~ year, data = x.spring.frosts, FUN = max)        
         zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
         mrg1 <- merge(zero.days, last.spring.frost, all.x = TRUE, by = "year")
         mrg1[is.na(mrg1$day.y), "day.y"] <- 0
@@ -496,7 +499,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       frosts <- which(x.last$mint < frost.temperature)
       if(length(frosts) != 0){
         x.fall.frosts <- x.last[frosts,]
-        first.fall.frost <- aggregate(day ~ year, data = x.fall.frosts, FUN = min)        
+        first.fall.frost <- stats::aggregate(day ~ year, data = x.fall.frosts, FUN = min)        
         zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
         mrg2 <- merge(zero.days, first.fall.frost, all.x = TRUE, by = "year")
         mrg2[is.na(mrg2$day.y), "day.y"] <- 0
@@ -505,7 +508,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       ## Frost days
       tmp0 <- x[x$mint < 0,]
       if(nrow(tmp0) > 0){
-        all.frost.days <- aggregate(day ~ year, data = tmp0, FUN = length)
+        all.frost.days <- stats::aggregate(day ~ year, data = tmp0, FUN = length)
         zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
         mrg3 <- merge(zero.days, all.frost.days, all.x = TRUE, by = "year")
         mrg3[is.na(mrg3$day.y), "day.y"] <- 0
@@ -515,7 +518,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       }
       ## Frost-free period
       if(sum(ans[,13]) == 0 && sum(ans[,14]) == 0){
-        ans[,15] <- aggregate(day ~ year, data = x, FUN = length)$day 
+        ans[,15] <- stats::aggregate(day ~ year, data = x, FUN = length)$day 
       }else{
         if(all(ans[,13] > 0) && all(ans[,14] > 0)){
           ans[,15] <- ans[,14] - ans[,13]
@@ -562,7 +565,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
     if(lat < 0){
       ## Southern hemisphere
       ## Last frost in the fall
-      length.days.by.year <- aggregate(day ~ year, data = x, FUN = length)$day
+      length.days.by.year <- stats::aggregate(day ~ year, data = x, FUN = length)$day
       half.point <- floor(mean(length.days.by.year)/2)
       x.first <- x[x$day > half.point, ]
       if(length(unique(x.first$year)) != length(unique(x$year))){
@@ -571,7 +574,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       frosts <- which(x.first$mint < frost.temperature)
       if(length(frosts) != 0){
         x.spring.frosts <- x.first[frosts,]
-        last.spring.frost <- aggregate(day ~ year, data = x.spring.frosts, FUN = max)        
+        last.spring.frost <- stats::aggregate(day ~ year, data = x.spring.frosts, FUN = max)        
         zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
         mrg1 <- merge(zero.days, last.spring.frost, all.x = TRUE, by = "year")
         mrg1[is.na(mrg1$day.y), "day.y"] <- 0
@@ -585,7 +588,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       frosts <- which(x.last$mint < frost.temperature)
       if(length(frosts) != 0){
         x.fall.frosts <- x.last[frosts,]
-        first.fall.frost <- aggregate(day ~ year, data = x.fall.frosts, FUN = min)        
+        first.fall.frost <- stats::aggregate(day ~ year, data = x.fall.frosts, FUN = min)        
         zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
         mrg2 <- merge(zero.days, first.fall.frost, all.x = TRUE, by = "year")
         mrg2[is.na(mrg2$day.y), "day.y"] <- 0
@@ -594,7 +597,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       ## Frost days
       tmp0 <- x[x$mint < 0,]
       if(nrow(tmp0) > 0){
-        all.frost.days <- aggregate(day ~ year, data = tmp0, FUN = length)
+        all.frost.days <- stats::aggregate(day ~ year, data = tmp0, FUN = length)
         zero.days <- data.frame(year = sort(unique(x$year)), day = 0)
         mrg3 <- merge(zero.days, all.frost.days, all.x = TRUE, by = "year")
         mrg3[is.na(mrg3$day.y), "day.y"] <- 0
@@ -604,7 +607,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       }
       ## Frost-free period
       if(sum(ans[,13]) == 0 && sum(ans[,14]) == 0){
-        ans[,15] <- aggregate(day ~ year, data = x, FUN = length)$day 
+        ans[,15] <- stats::aggregate(day ~ year, data = x, FUN = length)$day 
       }else{
         if(all(ans[,13] > 0) && all(ans[,14] > 0)){
           ##last.day <- ifelse(is_leap_year(sort(unique(x$year))), 366, 365)

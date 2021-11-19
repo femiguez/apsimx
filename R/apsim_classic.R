@@ -143,6 +143,12 @@ auto_detect_apsim <- function(){
   if(length(find.apsim) > 1){
     apsim.versions <- laf[find.apsim]
     max.main.version <- max(sapply(apsim.versions, fmv))
+    if(any(is.na(max.main.version))){
+      max.main.version <- max.main.version[!is.na(max.main.version)]
+    }
+    if(length(max.main.version) == 0){
+      stop("It is likely that APSIM Next Gen was found when looking for APSIM Classic. Please set the path manually.", call. = FALSE) 
+    }
     which.main.versions <- grep(max.main.version, apsim.versions)
     versions <- sapply(apsim.versions[which.main.versions], fev)
     newest.version <- apsim.versions[which.max(versions)]
@@ -157,7 +163,11 @@ auto_detect_apsim <- function(){
   
   ## APSIM executable
   st3 <- "/Model/Apsim.exe" 
-  if(length(apsim.name) >= 1) apsim_dir <- paste0(st1, apsim.name, st3)
+  if(length(apsim.name) >= 1 && is.na(apsimx::apsim.options$exe.path)){
+    apsim_dir <- paste0(st1, apsim.name, st3)
+  }else{
+    stop("APSIM not found. Please try setting the path manually through 'apsim_optim'", call. = FALSE)
+  } 
   
   if(!is.na(apsimx::apsim.options$exe.path)){
     ## Windows paths can contain white spaces which are

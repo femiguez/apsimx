@@ -9,7 +9,7 @@
   ...,
   years,
   met.var,
-  plot.type = c("ts", "area"),
+  plot.type = c("ts", "area", "col"),
   cumulative = FALSE,
   facet = FALSE,
   climatology = FALSE,
@@ -25,11 +25,11 @@
 temperature (min and max) is displayed}
 
 \item{plot.type}{type of plot, default is \sQuote{ts} or time-series. 
-The option \sQuote{area} is only when summary = TRUE.}
+The options \sQuote{area} and \sQuote{col} are only available when summary = TRUE.}
 
-\item{cumulative}{default is FALSE. Especially useful for \sQuote{rain}}
+\item{cumulative}{default is FALSE. Especially useful for \sQuote{rain}.}
 
-\item{facet}{whether to display the years in in different panels (facets)}
+\item{facet}{whether to display the years in in different panels (facets). Not implemented yet.}
 
 \item{climatology}{logical (default FALSE). Whether to display the \sQuote{climatology}
 which would be the average of the data. 

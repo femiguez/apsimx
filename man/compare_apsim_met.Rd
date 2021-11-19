@@ -38,6 +38,8 @@ compare_apsim_met(
 
 \item{x}{object of class \sQuote{met_mrg}}
 
+\item{digits}{digits to print (default is 2)}
+
 \item{plot.type}{either \sQuote{vs}, \sQuote{diff}, \sQuote{ts} - for time series or \sQuote{density}}
 
 \item{pairs}{pair of objects to compare, defaults to 1 and 2 but others are possible}
@@ -50,6 +52,8 @@ compare_apsim_met(
 }
 \value{
 object of class \sQuote{met_mrg}, which can be used for further plotting
+
+it prints the index.table data.frame
 
 it produces a plot
 }

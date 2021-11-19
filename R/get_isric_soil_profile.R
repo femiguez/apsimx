@@ -322,6 +322,3 @@ texture_class <- function (usda_clay, usda_silt ) {
   
   return( class )
 }
-
-
-

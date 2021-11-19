@@ -226,7 +226,7 @@ get_daymet2_apsim_met <- function(lonlat, years, wrt.dir = ".", filename, silent
   
   names(dmet) <- c("year","day","radn","maxt","mint","rain","vp","swe")
   
-  units <- c("()","()","(MJ/m2/day)","(oC)","(oC)","(mm)","hPa","kg/m2")
+  units <- c("()","()","(MJ/m2/day)","(oC)","(oC)","(mm)","(hPa)","(kg/m2)")
   
   comments <- paste("!data from DayMet obtained through daymetr R pacakge. retrieved: ",Sys.time())
   

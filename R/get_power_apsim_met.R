@@ -61,7 +61,7 @@ get_power_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL){
                                                "T2M_MAX", "T2M_MIN",
                                                "PRECTOTCORR", "RH2M", "WS2M"))
   
-  names(pwr) <- c("year", "day", "radn", "maxt", "mint", "rain", "rh", "wind_speed")
+  names(pwr) <- c("year", "day", "radn", "maxt", "mint", "rain", "rh", "windspeed")
   units <- c("()", "()", "(MJ/m2/day)", "(oC)", "(oC)", "(mm)", "(%)", "(m/s)")
   
   comments <- paste("!data from nasapower R package. retrieved: ", Sys.time())

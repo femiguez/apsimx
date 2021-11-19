@@ -8,6 +8,7 @@
 #' @param index index for merging objects. Default is \sQuote{Date}
 #' @param by factor for splitting the comparison, such as a treatment effect.
 #' @param labels labels for plotting and identification of objects.
+#' @param verbose whether to print indexes to console (default is FALSE).
 #' @note \sQuote{Con Corr} is the concordance correlation coefficient (https://en.wikipedia.org/wiki/Concordance_correlation_coefficient);
 #' \sQuote{ME} is the model efficiency (https://en.wikipedia.org/wiki/Nash%E2%80%93Sutcliffe_model_efficiency_coefficient)
 #' @export
@@ -37,7 +38,8 @@ compare_apsim <- function(...,
                           variable,
                           index = "Date",
                           by,
-                          labels){
+                          labels, 
+                          verbose = FALSE){
   
   outs <- list(...)
   
@@ -91,6 +93,11 @@ compare_apsim <- function(...,
     }
   }
   
+  ans.out.length <- ifelse(missing(variable), length(nms1.i) - 1, 1)
+  ans <- data.frame(variable = rep(NA, ans.out.length), vs = NA, labels = NA, bias = NA,
+                    intercept = NA, slope = NA, rss = NA, rmse = NA, r2 = NA, concorr = NA,
+                    mod.eff = NA)
+  k <- 1
   ## Calculate bias for all variables
   if(missing(variable)){
     var.sel <- setdiff(nms1.i, index) ## All variables except index
@@ -100,25 +107,39 @@ compare_apsim <- function(...,
     
     ## Compute Bias matrix
     for(i in var.sel){
-      cat("Variable ", i, "\n")
+      if(verbose) cat("Variable: ", i, "\n")
       tmp <- out.mrg.s[, grep(i, names(out.mrg.s))]
       if(ncol(tmp) < 2) stop("merged selected variables should be at least of length 2")
+      ans$variable[k] <- i
       
       for(j in 2:ncol(tmp)){
-        cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
-        if(!missing(labels))cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
+        if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
+        ans$vs[k] <- c(paste(names(tmp)[j - 1], "vs.", names(tmp)[j]))
+        if(!missing(labels)){
+          if(verbose) cat("labels:", labels[j - 1], " vs. ", labels[j], "\n")
+          ans$labels[k] <- paste(labels[j - 1], " vs. ", labels[j])
+        }
         fm0 <- lm(tmp[, j] ~ tmp[, j - 1])
-        cat(" \t Bias: ", sum(tmp[, j - 1] - tmp[, j]), "\n")
-        cat(" \t Intercept: ", coef(fm0)[1], "\n")
-        cat(" \t Slope: ", coef(fm0)[2], "\n")
-        cat(" \t RSS: ", deviance(fm0), "\n")
-        cat(" \t RMSE: ", sigma(fm0), "\n")
-        cat(" \t R^2: ", summary(fm0)$r.squared, "\n")
-        cat(" \t Corr: ", cor(tmp[, j - 1], tmp[, j]), "\n")
-        cat(" \t Con. Corr: ", con_cor(tmp[, j - 1], tmp[, j]), "\n")
-        cat(" \t ME: ", mod_eff(tmp[, j - 1], tmp[, j]), "\n")
-
+        if(verbose) cat(" \t Bias: ", sum(tmp[, j - 1] - tmp[, j]), "\n")
+        ans$bias[k] <- sum(tmp[, j - 1] - tmp[, j])
+        if(verbose) cat(" \t Intercept: ", coef(fm0)[1], "\n")
+        ans$intercept[k] <- coef(fm0)[1]
+        if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
+        ans$slope[k] <- coef(fm0)[2]
+        if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
+        ans$rss[k] <- deviance(fm0)
+        if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
+        ans$rmse[k] <- sigma(fm0)
+        if(verbose) cat(" \t R^2: ", summary(fm0)$r.squared, "\n")
+        ans$r2[k] <- summary(fm0)$r.squared
+        if(verbose) cat(" \t Corr: ", cor(tmp[, j - 1], tmp[, j]), "\n")
+        ans$corr[k] <- cor(tmp[, j - 1], tmp[, j])
+        if(verbose) cat(" \t Con. Corr: ", con_cor(tmp[, j - 1], tmp[, j]), "\n")
+        ans$concorr[k] <- con_cor(tmp[, j - 1], tmp[, j])
+        if(verbose) cat(" \t ME: ", mod_eff(tmp[, j - 1], tmp[, j]), "\n")
+        ans$mod.eff[k] <- mod_eff(tmp[, j - 1], tmp[, j])
       }
+      k <- k + 1
     }
   }
   
@@ -127,29 +148,56 @@ compare_apsim <- function(...,
     idx.out.mrg <- grep(variable, names(out.mrg))
     out.mrg.s <- out.mrg[, idx.out.mrg]
     
-    cat("Variable ", variable, "\n")
+    if(verbose) cat("Variable:", variable, "\n")
+    ans$variable[k] <- i
     tmp <- out.mrg.s
     for(j in 2:ncol(tmp)){
-      cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
-      if(!missing(labels))cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
+      if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
+      ans$vs[k] <- c(paste(names(tmp)[j - 1], "vs.", names(tmp)[j]))
+      if(!missing(labels)){
+        if(verbose) cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
+        ans$labels[k] <- paste(labels[j - 1], " vs. ", labels[j])
+      }
       fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
-      cat(" \t Bias: ", sum(tmp[, j - 1] - tmp[, j]), "\n")
-      cat(" \t Intercept: ", coef(fm0)[1], "\n")
-      cat(" \t Slope: ", coef(fm0)[2], "\n")
-      cat(" \t RSS: ", deviance(fm0), "\n")
-      cat(" \t RMSE: ", sigma(fm0), "\n")
-      cat(" \t R^2: ", summary(fm0)$r.squared, "\n")
-      cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
-      cat(" \t Con. Corr: ", con_cor(tmp[, j - 1], tmp[, j]), "\n")
-      cat(" \t ME: ", mod_eff(tmp[, j-1], tmp[, j]), "\n")
+      if(verbose) cat(" \t Bias: ", sum(tmp[, j - 1] - tmp[, j]), "\n")
+      ans$bias[k] <- sum(tmp[, j - 1] - tmp[, j])
+      if(verbose) cat(" \t Intercept: ", coef(fm0)[1], "\n")
+      ans$intercept[k] <- coef(fm0)[1]
+      if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
+      ans$slope[k] <- coef(fm0)[2]
+      if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
+      ans$rss[k] <- deviance(fm0)
+      if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
+      ans$rmse[k] <- sigma(fm0)
+      if(verbose) cat(" \t R^2: ", summary(fm0)$r.squared, "\n")
+      ans$r2[k] <- summary(fm0)$r.squared
+      if(verbose) cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
+      ans$corr[k] <- cor(tmp[, j - 1], tmp[, j])
+      if(verbose) cat(" \t Con. Corr: ", con_cor(tmp[, j - 1], tmp[, j]), "\n")
+      ans$concorr[k] <- con_cor(tmp[, j - 1], tmp[, j])
+      if(verbose) cat(" \t ME: ", mod_eff(tmp[, j-1], tmp[, j]), "\n")
+      ans$mod.eff[k] <- mod_eff(tmp[, j - 1], tmp[, j])
     }
   }
   
-  class(out.mrg) <- "out_mrg"
   attr(out.mrg, "out.names") <- o.nms
   attr(out.mrg, "length.outs") <- n.outs
   attr(out.mrg, "index") <- index
+  out.mrg <- structure(list(out.mrg = out.mrg, index.table = ans),
+                       class = "out_mrg")
   invisible(out.mrg)
+}
+
+#' print method for out_mrg
+#' @rdname compare_apsim
+#' @description print method for \sQuote{out_mrg}
+#' @param x object of class \sQuote{out_mrg}
+#' @param ... additional arguments passed to print
+#' @param digits digits to print (default is 2)
+#' @export
+#' @return it prints the index.table data.frame
+print.out_mrg <- function(x, ..., digits = 2){
+  print(x$index.table, digits = digits)
 }
 
 #' Plotting function for weather data
@@ -176,6 +224,8 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     warning("ggplot2 is required for this plotting function")
     return(NULL)
   }
+  
+  x <- x$out.mrg
   
   o.nms <- attr(x, "out.names")
   if(max(pairs) > attr(x, "length.outs")) stop("pairs index larger than length of outs")
