@@ -50,15 +50,15 @@ See the following for details
 
 This package has been tested on (latest version):
 
-**Mac**: ApsimX version (2021-08-12) 6707 (R 4.0.5)
+**Mac**: ApsimX version (2021-10-11) 6842 (R 4.0.5)
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 
-**Windows**: ApsimX version (2021-01-14) 6010 and APSIM 7.10-r4207 (R 3.6.2)
+**Windows**: ApsimX version (2021-11-16) 6943 and APSIM 7.10-r4207 (R 3.6.2)
 
 ## Installing APSIM (Next Generation)
 
-For most functions in this pacakge you need to have a version of APSIM-X (or 'Next Generation') installed (or APSIM 'Classic'). For Mac and Linux, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM (https://www.apsim.info/download-apsim/downloads/). The **apsimx** package will try to detect both mono and APSIM (Classic and Next Generation). 
+For most functions in this pacakge you need to have a version of APSIM-X (or 'Next Generation') installed (or APSIM 'Classic'). For Mac and Linux, for versions older than Sep 2021, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM (https://www.apsim.info/download-apsim/downloads/). **NOTE**: If you are using a version of APSIM Next Gen older than Sep 2021, you do **not** need to install mono. The **apsimx** package will try to detect both mono and APSIM (Classic and Next Generation). 
 
 **Mac**: For Mac it is also assumed that APSIM has been moved to 'Applications'.
 
@@ -470,8 +470,10 @@ Environmental Mesonet (https://mesonet.agron.iastate.edu/). In addition, this pa
 * **get_gsod_apsim_met**: (requires the 'GSODR' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
 * **get_iem_apsim_met**: Fetch data from Iowa Environmental Mesonet
 * **get_iemre_apsim_met**: Fetch data from Iowa Environmental Mesonet Reanalysis
+* **plot** plotting method for objects of class 'met'.
+* **summary** summary method for objects of class 'met'.
 
-Note that some utilities were available in the 'APSIM' package (loadMet, prepareMet, checkMet, writeMetFile) for reading, preparing, checking and writing a met file. However, that package has been removed from CRAN as of 2020-10-19.
+Note that some utilities were available in the 'APSIM' package (loadMet, prepareMet, checkMet, writeMetFile) for reading, preparing, checking and writing a met file. However, that package has been removed from CRAN.
 
 ## Obtaining soil data
 
@@ -479,13 +481,15 @@ The function **get_isric_soil_profile** will retrieve data from the ISRIC Soil G
 
 In the USA, the function **get_ssurgo_soil_profile** will retrieve data from the SSURGO database through the **soilDB** R pacakge and will always return a list with objects of class *soil_profile*. Internally, it uses the **ssurgo2sp** function, which can be used to create an APSIM soil profile in two steps. The first step would be to obtain soil data through the 'FedData' R package by using the function **get_ssurgo** or use the **get_ssurgo_tables** in apsimx. The function **ssurgo2sp** can be used for conversion from **SSURGO** csv files to an object of class **soil_profile** and **apsimx_soil_profile** for generating a soil profile that can be used in APSIM-X. Finally, the function **edit_apsimx_replace_soil_profile** will batch replace the soil profile created by **apsimx_soil_profile** in a designated '.apsimx' file. Similarly, 'edit_apsim_replace_soil_profile' will batch replace the soil profile in a designated '.apsim' (Classic) file. I will be working on a more concrete tutorial at some point.
 
+In addition, there are is a function to compare soil profiles **compare_apsim_soil_profile**, which can be used to compare, numerically, one or more soil profiles and a **plot** method to visually comapre this object.
+
 # File Type (or File Format) Details
 
 APSIM has traditionally generated files that produce simulations using an XML schema. This has been used with APSIM versions of 7.x, 'Classic'. With APSIM-X a new format based on JSON files has been implemented and apparently both formats will be supported for the forseeable future. JSON files are less verbose and they are gaining widespread adoption. All distributed APSIM-X examples are 'JSON' now.
 
 The apsimx package supports inspection and editing of both file types, but XML is for 'Classic' only and JSON is for APSIM-X. In most instances the parameters that are likely to need inspection and editing are supported, but more features will be added in the future as needed. 
 
-# Additional functions
+# Additional miscellaneous functions
 
 **apsim_version**: displays which version(s) of APSIM(X) are available. For example,
 
@@ -502,12 +506,11 @@ aiu <- apsim_version(which = "inuse")
 
 **unit_conv**: Unit conversion utility
 
-# To-Do
+**carbon_stocks**: function to calcualte carbon stocks.
 
-* **inspect_apsimx_replacement** challenge this function with more complex
-examples. It can have problems with 'manager' when replacements are present
-and it also has limitations in terms of how deep it can inspect. This also
-limits the ability of doing deep edits.
+**check_apsim_met**: check an object of class 'met'
+
+**check_apsimx_soil_profile**: check an object of class 'soil_profile'
 
 # Appendix
 
