@@ -36,6 +36,8 @@ compare_apsim_met(
 
 \item{check}{whether to check \sQuote{met} objects using \sQuote{check_apsim_met}.}
 
+\item{verbose}{whether to print agreement stats to console (default is FALSE).}
+
 \item{x}{object of class \sQuote{met_mrg}}
 
 \item{digits}{digits to print (default is 2)}

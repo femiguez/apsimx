@@ -502,36 +502,47 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
     }
   }
 
-  if(property != "all" & property != "water"){
+  if(property != "all" && property != "water"){
     
     tmp <- xsoil[,c(property,"Depth","soil.depth.bottom")]
-    qp <- ggplot2::ggplot() + 
+    gp <- ggplot2::ggplot() + 
                    ggplot2::geom_point(ggplot2::aes(x = tmp[,1], y = -tmp[,3])) + 
                    ggplot2::geom_path(ggplot2::aes(x = tmp[,1], y = -tmp[,3])) +
                    ggplot2::xlab(property) + 
                    ggplot2::ylab("Soil Depth (cm)") 
-    print(qp)
+    print(gp)
   }
   
   if(property == "all"){
     
     tmp <- xsoil
+    ## Check if property is missing
+    tmp.nms0 <- names(tmp)
+    tmp.nms <- setdiff(tmp.nms0, c("Depth", "Thickness"))
+
+    dat0 <- NULL
+    for(i in tmp.nms){
+      tmp1 <- data.frame(var = i, dist = tmp[,i])
+      dat0 <- rbind(dat0, tmp1)
+    }
     ## This looks dumb, but I'd rather not need a new package for such a simple task
-    bd <- data.frame(var = "BD", dist = tmp[,"BD"]) # 1
-    ad <- data.frame(var = "AirDry", dist = tmp[,"AirDry"]) # 2
-    ll <- data.frame(var = "LL15", dist = tmp[,"LL15"]) # 3
-    dul <- data.frame(var = "DUL", dist = tmp[,"DUL"]) # 4
-    sat <- data.frame(var = "SAT", dist = tmp[,"SAT"]) # 5
-    ks <- data.frame(var = "KS", dist = tmp[,"KS"]) # 6
-    carbon <- data.frame(var = "Carbon", dist = tmp[,"Carbon"]) # 7
-    soilcn <- data.frame(var = "SoilCNRatio", dist = tmp[,"SoilCNRatio"]) # 8
-    fom <- data.frame(var = "FOM", dist = tmp[,"FOM"]) # 9
-    fom.cn <- data.frame(var = "FOM.CN", dist = tmp[,"FOM.CN"]) # 10
-    fbiom <- data.frame(var = "FBiom", dist = tmp[,"FBiom"]) # 11
-    finert <- data.frame(var = "FInert", dist = tmp[,"FInert"]) # 12
-    no3n <- data.frame(var = "NO3N", dist = tmp[,"NO3N"]) # 13
-    nh4n <- data.frame(var = "NH4N", dist = tmp[,"NH4N"]) # 14
-    ph <- data.frame(var = "PH", dist = tmp[,"PH"]) # 15
+    # bd <- data.frame(var = "BD", dist = tmp[,"BD"]) # 1
+    # ad <- data.frame(var = "AirDry", dist = tmp[,"AirDry"]) # 2
+    # ll <- data.frame(var = "LL15", dist = tmp[,"LL15"]) # 3
+    # dul <- data.frame(var = "DUL", dist = tmp[,"DUL"]) # 4
+    # sat <- data.frame(var = "SAT", dist = tmp[,"SAT"]) # 5
+    # ks <- data.frame(var = "KS", dist = tmp[,"KS"]) # 6
+    # carbon <- data.frame(var = "Carbon", dist = tmp[,"Carbon"]) # 7
+    # soilcn <- data.frame(var = "SoilCNRatio", dist = tmp[,"SoilCNRatio"]) # 8
+    # fom <- data.frame(var = "FOM", dist = tmp[,"FOM"]) # 9
+    # fom.cn <- data.frame(var = "FOM.CN", dist = tmp[,"FOM.CN"]) # 10
+    # fbiom <- data.frame(var = "FBiom", dist = tmp[,"FBiom"]) # 11
+    # finert <- data.frame(var = "FInert", dist = tmp[,"FInert"]) # 12
+    # no3n <- data.frame(var = "NO3N", dist = tmp[,"NO3N"]) # 13
+    # nh4n <- data.frame(var = "NH4N", dist = tmp[,"NH4N"]) # 14
+    # ph <- data.frame(var = "PH", dist = tmp[,"PH"]) # 15
+    
+    ## The code below is not needed
     crops.xf <- NULL
     crops.kl <- NULL
     crops.ll <- NULL
@@ -543,13 +554,14 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
       crops.ll <- rbind(crops.ll, data.frame(var = paste0(i, ".LL"), dist = tmp[,paste0(i, ".LL")])) 
     }
 
-    soil.depth.bottoms <- rep(xsoil$soil.depth.bottom, 15 + num.crops.dats)
+    soil.depth.bottoms <- rep(xsoil$soil.depth.bottom, length(tmp.nms))
     
-    dat0 <- rbind(bd, ad, ll, dul, sat, ks, carbon,
-                  soilcn, fom, fom.cn, fbiom, finert, no3n, nh4n, ph,
-                  crops.xf, crops.kl, crops.ll)
+    # dat0 <- rbind(bd, ad, ll, dul, sat, ks, carbon,
+    #               soilcn, fom, fom.cn, fbiom, finert, no3n, nh4n, ph,
+    #               crops.xf, crops.kl, crops.ll)
     
     dat <- data.frame(dat0, soil.depths = soil.depth.bottoms)
+    dat$soil.depth.bottom <- NULL
     
     gp <- ggplot2::ggplot(data = dat, ggplot2::aes(x = dist, y = -soil.depths)) +
       ggplot2::ylab("Soil Depth (cm)") + ggplot2::xlab("") + 
@@ -573,6 +585,7 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
               ggplot2::coord_flip()  
     print(gp)
   }
+  invisible(gp)
 }
 
 #' Check an apsimx soil profile
@@ -718,6 +731,7 @@ check_apsimx_soil_profile <- function(x){
 #' \sQuote{wind_speed} or \sQuote{vp}. 
 #' @param labels labels for plotting and identification of \sQuote{soil_profile} objects.
 #' @param check whether to check \sQuote{soil_profile} objects using \sQuote{check_apsimx_soil_profile}.
+#' @param verbose whether to print agreement values (default is FALSE).
 #' @note I have only tested this for 2 or 3 objects. The code is set up to be able to 
 #' compare more, but I'm not sure that would be all that useful.
 #' @export
@@ -783,7 +797,13 @@ compare_apsim_soil_profile <- function(...,
     soil.i <- soils[[i]]$soil
     
     if(nrow(soil1) != nrow(soil.i)) stop("soil profiles should have the same number of rows", call. = FALSE)
-    if(all(!names(soil1) %in% names(soil.i))) stop("soil profiles should have the same column names", call. = FALSE)
+    
+    if(ncol(soil1) != ncol(soil.i) || length(setdiff(names(soil1), names(soil.i))) > 0){
+      warning("Number of columns is not the same for the soil profiles. Selecting the ones in common.")
+      common.names <- intersect(names(soil1), names(soil.i))
+      soil1 <- subset(soil1, select = common.names)
+      soil.i <- subset(soil.i, select = common.names)
+    }
   
     names(soil1) <- paste0(names(soil1), ".1")  
     names(soil.i) <- paste0(names(soil.i), ".", i)
@@ -927,7 +947,7 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
                                       "DUL", "SAT", "KS", "Carbon", "SoilCNRatio",
                                       "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
                                       "NH4N", "PH"),
-                         id, span = 0.75){
+                         span = 0.75){
   
   if(!requireNamespace("ggplot2", quietly = TRUE)){
     warning("ggplot2 is required for this plotting function")
@@ -938,6 +958,8 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
     stop("Please select a soil variable for this type of plot", call. = FALSE)
   
   x <- x$soil.mrg
+  
+  value <- NULL; depth <- NULL; soil <- NULL
   
   m.nms <- attr(x, "soil.names")
   if(max(pairs) > attr(x, "length.soils")) stop("pairs index larger than length of soils")
@@ -1066,4 +1088,96 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
     print(gp1)
   }
   invisible(gp1)
+}
+
+#' Function to calculate carbon stocks. The output units depend on the choice of area.
+#' If \sQuote{m2} is used, then the output units will be \sQuote{kg/m2}. If the \sQuote{area}
+#' is \sQuote{ha}, then the output units will be \sQuote{Mg/ha}.
+#' 
+#' @title Calculate soil carbon stocks
+#' @description Calculation of carbon stocks based on an object of class \sQuote{soil_profile}
+#' @name carbon_stocks
+#' @param x object of class \sQuote{soil_profile}
+#' @param depth soil depth (in meters). If missing then the whole soil profile is used.
+#' @param area either \sQuote{m2} meter squared or \sQuote{ha}.
+#' @param method interpolation method. Either \sQuote{linear} or \sQuote{constant}.
+#' @param ... additional arguments passed to internal functions (none used at the moment).
+#' @return returns a value with attribute \sQuote{units} and \sQuote{depth}
+#' @export
+#' @examples 
+#' \dontrun{
+#' sp <- apsimx_soil_profile()
+#' carbon_stocks(sp)
+#' carbon_stocks(sp, depth = 0.1)
+#' carbon_stocks(sp, depth = 0.2)
+#' carbon_stocks(sp, depth = 0.3)
+#' carbon_stocks(sp, depth = 0.4)
+#' }
+
+carbon_stocks <- function(x, depth, area = c("m2", "ha"), method = c("linear", "constant"), ...){
+  
+  if(!inherits(x, "soil_profile")){
+    stop("This function is intended to be used with an object of class 'soil_profile'", call. = FALSE)
+  }
+  
+  bottom <- sum(x$soil$Thickness) * 1e-3 ## Thickness is in mm, so after conversion this is in meters
+  
+  if(!missing(depth)){
+    if(depth <= 0) stop("'depth' should be a positive number", call. = FALSE)
+    if(depth > bottom) stop("'depth' should be a lower number than the bottom of the soil profile ", call. = FALSE)
+    if(depth > 10){
+      warning("'depth' should be in meters and the value entered is larger than 10. Is this correct?")
+    }
+  }
+  
+  area <- match.arg(area)
+  method <- match.arg(method)
+  
+  ## Compute carbon for the whole profile
+  if(missing(depth)){
+    weights <- x$soil$Thickness / sum(x$soil$Thickness)
+    ### Total volume is equal to 'bottom' (m^3)
+    ## Original BD (from APSIM) is reported in g/cc, which needs to be multipled by 1e3 to get kg/m^3
+    ## Carbon is in percent so it needs to be divided by 100 to get it as a proportion.
+    weighted.carbon <- sum(x$soil$Carbon * 1e-2 * weights * x$soil$BD * 1e3) 
+    total.carbon <- weighted.carbon * bottom
+    depth <- bottom
+  }else{
+    ## If depth only includes the first layer
+    if(depth <= x$soil$Thickness[1] * 1e-3){
+      first.layer.carbon <- x$soil$Carbon[1] * 1e-2 * x$soil$BD[1] * 1e3
+      total.carbon <- first.layer.carbon * depth
+    }else{
+      total.carbon <- 0
+      cum.thick <- cumsum(x$soil$Thickness) * 1e-3 ## Cumulative thickness in meters
+      for(i in 1:nrow(x$soil)){
+        ## If the desired depth is greater than the current depth
+        ## then add the soil carbon as it is
+        if(depth >= cum.thick[i]){ 
+          layer.carbon <- x$soil$Carbon[i] * 1e-2 * (x$soil$BD[i] * 1e3) * (x$soil$Thickness[i] * 1e-3)
+          total.carbon <- total.carbon + layer.carbon
+        }else{
+         ## In this case, we need to interpolate 
+          crbn <- x$soil$Carbon
+          bds <- x$soil$BD
+          dat <- data.frame(depth = cum.thick, carbon = crbn, bd = bds)
+          tmp.c <- stats::approx(dat$depth, y = dat$carbon, xout = depth, method = method)
+          tmp.bd <- stats::approx(dat$depth, y = dat$bd, xout = depth, method = method)  
+          layer.carbon <- tmp.c$y * 1e-2 * (tmp.bd$y * 1e3) * (depth - cum.thick[i - 1])
+          total.carbon <- total.carbon + layer.carbon
+          break
+        }
+      }
+    }
+  }
+
+  if(area == "ha"){
+    ans <- total.carbon * 1e4 * 1e-3 ## 1e4 converts from m2 to ha. 1e3 converts from kg to Mg
+    attr(ans, "units") <- "Mg/ha"
+  }else{
+    ans <- total.carbon
+    attr(ans, "units") <- "kg/m2"
+  }
+  attr(ans, "depth (m)") <- depth 
+  return(ans)
 }

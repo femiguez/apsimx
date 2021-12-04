@@ -73,3 +73,22 @@
   x3 <- as.Date(paste(x2[1:3], collapse="-"), format = "%Y-%m-%d") ## Convert to 'Date'
   return(x3)
 }
+
+#' This function converts thickness to depth for soil profiles
+#' Thickness is assumed to be in mm and the returned depths would be in 
+#' cm
+#' @name .t2d
+#' @description Takes a \sQuote{Thickness} column and returns \sQuote{Depth}
+#' @param x a soil profile \sQuote{Thickness} column (numeric)
+#' @return it returns a column with strings such as \sQuote{0-20}
+#' @noRd
+#' 
+.t2d <- function(x){
+  x2 <- c(0, x)/10 ## Divide by 10 to go from mm to cm
+  ans <- character(length(x))
+  csx2 <- cumsum(x2)
+  for(i in 2:length(x2)){
+    ans[i-1] <- paste0(csx2[i-1], "-", csx2[i]) 
+  }
+  ans
+}

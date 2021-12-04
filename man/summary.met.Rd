@@ -46,6 +46,10 @@ period (default is zero).}
 \item{check}{logical (default FALSE). Whether to \sQuote{check} the \sQuote{met} object.}
 
 \item{verbose}{whether to print additional infomation to the console}
+
+\item{na.rm}{whether to remove missing values. Passed to \sQuote{aggregate}}
+
+\item{digits}{digits for rounding (default is 2).}
 }
 \value{
 an object of class \sQuote{data.frame} with attributes

@@ -9,6 +9,7 @@
 #' \sQuote{wind_speed} or \sQuote{vp}. 
 #' @param labels labels for plotting and identification of \sQuote{met} objects.
 #' @param check whether to check \sQuote{met} objects using \sQuote{check_apsim_met}.
+#' @param verbose whether to print agreement stats to console (default is FALSE).
 #' @note I have only tested this for 2 or 3 objects. The code is set up to be able to 
 #' compare more, but I'm not sure that would be all that useful.
 #' @export
@@ -360,6 +361,8 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
 #' period (default is zero).
 #' @param check logical (default FALSE). Whether to \sQuote{check} the \sQuote{met} object.
 #' @param verbose whether to print additional infomation to the console
+#' @param na.rm whether to remove missing values. Passed to \sQuote{aggregate}
+#' @param digits digits for rounding (default is 2).
 #' @return an object of class \sQuote{data.frame} with attributes
 #' @export
 #' @examples 

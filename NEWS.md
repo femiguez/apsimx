@@ -1,5 +1,16 @@
 **NEWS**
 
+**apsimx 2.2**
+
+- By deault it runs for newer versions of APSIM Next Gen (Sep 2021 or newer) (Classic is unchanged)
+- For Mac and Linux, you might need to set 'mono = TRUE' for compatibility with older versions of APSIM Next Gen
+- New functions: plot.met and summary.met for 'met' objects
+- New function: carbon_stocks for calculating carbon stocks for an object of class 'soil_profile'
+- New functions: comparing soil profiles 'compare_apsim_soil_profile' and associated plot function
+- More options in 'unit_conv' function. 
+- Edits to writing scripts vignette
+- Various bug fixes and improvements.
+
 **apsimx 2.0**
 
 - Sensitivity analysis functions for APSIM Next Gen and Classic

@@ -19,6 +19,8 @@
 \arguments{
 \item{x}{object of class \sQuote{met}}
 
+\item{...}{additional arguments. None used at the moment.}
+
 \item{years}{optional argument to subset years}
 
 \item{met.var}{optional argument to choose a certain variable. By default,

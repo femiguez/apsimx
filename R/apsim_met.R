@@ -404,6 +404,12 @@ check_apsim_met <- function(met){
     print(met[met$maxt > 60,])
     warning("Maximum temperature is greater than 60")
   }
+  ## Make sure that maxt is always higher or equal to mint
+  temp.diff <- met[["maxt"]] - met[["mint"]]
+  if(any(temp.diff < 0)){
+    print(met[which(temp.diff < 0),])
+    warning("Minimum temperature is greater than maximum temperature")
+  }
   ## Detect possible errors with radiation
   if(any(is.na(met[["radn"]]))){
     print(met[is.na(met$radn),])
@@ -972,6 +978,7 @@ pp_apsim_met <- function(metfile, sun_angle=0){
 #' @description Some plots are similar to APSIM, others are different
 #' and more useful in some respects
 #' @param x object of class \sQuote{met}
+#' @param ... additional arguments. None used at the moment.
 #' @param years optional argument to subset years
 #' @param met.var optional argument to choose a certain variable. By default,
 #' temperature (min and max) is displayed
@@ -1014,6 +1021,10 @@ plot.met <- function(x, ..., years, met.var,
   if(plot.type %in% c("area", "col") && !summary)
     stop("plot.type = area and plot.type = col are only available when summary = TRUE", call. = FALSE)
   
+  ## Global variables?
+  day <- NULL; cum.maxt <- NULL; Years <- NULL; cum.mint <- NULL;
+  value <- NULL; temperature <- NULL; maxt <- NULL; mint <- NULL;
+  cum.met.var <- NULL; year <- NULL; 
   ## Calculate climatology before subsetting years
   if(climatology){
     maxt.climatology <- stats::aggregate(maxt ~ day, data = x, FUN = mean)

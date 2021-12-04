@@ -219,7 +219,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   ## Soil Carbon
   ## SOM contains approximately 58% C; therefore, a factor of
   ## 1.72 can be used to convert OC to SOM.
-  chorizon3$Carbon <- chorizon3$om.r * 0.58
+  chorizon3$Carbon <- chorizon3$om.r * (1/1.72)
   
   ### Adding texture
   chorizon3$ParticleSizeClay <- chorizon3$claytotal.r
@@ -237,6 +237,8 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   for(sz in 1:length(soil.names)){
     
     one.soil <- chorizon3[chorizon3$cokey == component5$cokey[sz],]
+    
+    if(is.na(soil.bottom)) soil.bottom <- max(one.soil$hzdepb.r)
     
     if(nrow(one.soil) < 1){
       stop("There is no soil horizon for this component")
