@@ -82,11 +82,11 @@ sens_apsimx <- function(file, src.dir = ".",
       stop("Number of columns in grid should be equal to the number of parameters")
   
   ## Check that the name in the grid appears somewhere in the parameter path
-  for(i in seq_along(parm.paths)){
-    ippgn <- grepl(names(grid)[i], parm.paths[i], ignore.case = TRUE)
+  for(.i in seq_along(parm.paths)){
+    ippgn <- grepl(names(grid)[.i], parm.paths[.i], ignore.case = TRUE)
     if(!ippgn){
-      cat("Name in grid:", names(grid)[i], "\n")
-      cat("parameter name", parm.paths[i], "\n")
+      cat("Name in grid:", names(grid)[.i], "\n")
+      cat("parameter name", parm.paths[.i], "\n")
       warning("names in grid object do not match parameter path name")  
     }
   }
@@ -94,20 +94,20 @@ sens_apsimx <- function(file, src.dir = ".",
   col.sim <- NULL
   start <- Sys.time()
   
-  for(i in 1:dim(grid)[1]){
+  for(.i in 1:dim(grid)[1]){
     
     ## Need to edit the parameters in the simulation file or replacement
-    for(j in seq_along(parm.paths)){
+    for(.j in seq_along(parm.paths)){
       ## Edit the specific parameters with the corresponding values
-      if(convert[j] <= 0){
-        par.val <- grid[i, j]  
+      if(convert[.j] <= 0){
+        par.val <- grid[.i, .j]  
       }else{
         ## Converting from character to numeric. Values need to be separated by spaces.
-        par.val <- as.numeric(strsplit(grid[i, j], " ")[[1]])
+        par.val <- as.numeric(strsplit(grid[.i, .j], " ")[[1]])
       }
       
-      if(replacement[j]){
-        pp0 <- strsplit(parm.paths[j], ".", fixed = TRUE)[[1]]
+      if(replacement[.j]){
+        pp0 <- strsplit(parm.paths[.j], ".", fixed = TRUE)[[1]]
         mpp <- paste0(pp0[-length(pp0)], collapse = ".")
         edit_apsimx_replacement(file = file, 
                                 src.dir = src.dir,
@@ -124,7 +124,7 @@ sens_apsimx <- function(file, src.dir = ".",
                       src.dir = src.dir,
                       wrt.dir = src.dir,
                       node = "Other",
-                      parm.path = parm.paths[j],
+                      parm.path = parm.paths[.j],
                       overwrite = TRUE,
                       value = par.val,
                       verbose = FALSE)           
@@ -133,7 +133,7 @@ sens_apsimx <- function(file, src.dir = ".",
                       src.dir = src.dir,
                       wrt.dir = src.dir,
                       node = "Other",
-                      parm.path = parm.paths[j],
+                      parm.path = parm.paths[.j],
                       overwrite = TRUE,
                       value = par.val,
                       root = root,
@@ -147,18 +147,18 @@ sens_apsimx <- function(file, src.dir = ".",
                       silent = TRUE, cleanup = TRUE, value = "report"),
                silent = TRUE)
     
-    if(inherits(sim, "try-error") && i == 1){
+    if(inherits(sim, "try-error") && .i == 1){
       stop("Simulation failed for initial parameter combination")
     }
     
     ## Extract basic information from sim
-    if(i == 1){
+    if(.i == 1){
       col.class.numeric <- which(sapply(sim, class) == "numeric") ## Which columns are numeric
       nms.sim <- names(sim[, col.class.numeric]) ## Names of the columns
       ncol.class.numeric <- ncol(sim[,col.class.numeric]) 
     }
 
-    if(inherits(sim, "try-error") && i > 1){
+    if(inherits(sim, "try-error") && .i > 1){
       mat <- matrix(ncol = ncol.class.numeric)
       sim.sd <- as.data.frame(mat)
       names(sim.sd) <- nms.sim
@@ -187,7 +187,7 @@ sens_apsimx <- function(file, src.dir = ".",
     }
     
     if(summary == "none"){
-      sim.sd <- cbind(grid[i, , drop = FALSE], sim, row.names = NULL)
+      sim.sd <- cbind(grid[.i, , drop = FALSE], sim, row.names = NULL)
     }
     
     col.sim <- rbind(col.sim, sim.sd)
@@ -198,15 +198,15 @@ sens_apsimx <- function(file, src.dir = ".",
       
       if(nrow.grid <= 10){
         dftm <- difftime(Sys.time(), start)
-        cat("Progress:", round((i/nrow.grid) * 100), "%. Time elapsed:", round(dftm, 2), units(dftm)," \n")  
+        cat("Progress:", round((.i/nrow.grid) * 100), "%. Time elapsed:", round(dftm, 2), units(dftm)," \n")  
       }else{
         progress.step <- ifelse(nrow.grid <= 20, 10, 5)
         
-        prev.div <- round((i/nrow.grid) * 100) %/% progress.step
+        prev.div <- round((.i/nrow.grid) * 100) %/% progress.step
         
         if(prev.div > old.prev.div){
           dftm <- difftime(Sys.time(), start)
-          cat("Progress:", round((i/nrow(grid)) * 100), "%. Time elapsed:", round(dftm, 2), units(dftm)," \n")  
+          cat("Progress:", round((.i/nrow(grid)) * 100), "%. Time elapsed:", round(dftm, 2), units(dftm)," \n")  
           old.prev.div <- prev.div
         } 
       }
@@ -245,6 +245,9 @@ summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
   ## There are potentially many variables for which sensitivity analysis is relevant
   nms.resp.var <- setdiff(names(object$grid.sims), names(object$grid))
   
+  l.nms.resp.var <- length(nms.resp.var)
+  .j <- 0
+  
   if(select == "all"){
     select <- nms.resp.var
   }else{
@@ -265,9 +268,9 @@ summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
   num.resp.var <- ncol(object$grid.sims) - ncol(object$grid)
   nms.resp.var <- setdiff(names(object$grid.sims), names(object$grid))
   
-  for(i in seq_along(nms.resp.var)){
+  for(.i in seq_along(nms.resp.var)){
     X <- object$grid
-    y <- object$grid.sims[,nms.resp.var[i]]
+    y <- object$grid.sims[,nms.resp.var[.i]]
     if(suppressWarnings(var(y, na.rm = TRUE) == 0) || is.character(y[1]) || !is.numeric(y)) next
     
     if(scale){
@@ -282,7 +285,7 @@ summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
     fit <- stats::lm(formula = frml, data = dat, na.action = "na.omit")
     if(inherits(fit, "try-error")) next
     sfit <- as.matrix(stats::anova(fit))
-    cat("Variable:", nms.resp.var[i], "\n")
+    cat("Variable:", nms.resp.var[.i], "\n")
     pmat <- matrix(ncol = 2, nrow = ncol(X) + 1)
     row.names(pmat) <- row.names(sfit)
     pmat[,1] <- sfit[,2] 
@@ -292,6 +295,7 @@ summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
     pmatd <- pmatd[order(pmatd$SS, decreasing = TRUE),]
     print(knitr::kable(pmatd, digits = 0))
     cat("\n")
+    .j <- .j + 1
   }
-  
+  if(.j == 0) return("No variables reported. Are they all constant?")
 }

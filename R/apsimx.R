@@ -417,7 +417,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## Examples which do not run: Chicory
   ex.ch <- c("Barley", "ControlledEnvironment", "Eucalyptus",
              "EucalyptusRotation",
-             "Maize", "Oats", "Rotation", "Sugarcane", "Wheat")
+             "Maize", "Oats", "Rotation", "Soybean", "Sugarcane", "Wheat")
 
   example <- match.arg(example, choices = ex.ch)
   

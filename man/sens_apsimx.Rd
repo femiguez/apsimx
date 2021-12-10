@@ -67,7 +67,7 @@ Summary computes variance-based sensitivity indexes from an object of class \sQu
 Suggested reading on the topic of sensitivity analysis:
 
 Pianosa et al (2016). Sensitivity analysis of environmental models: A systematic review with practical workflow.
-\url{http://dx.doi.org/10.1016/j.envsoft.2016.02.008}
+\doi{10.1016/j.envsoft.2016.02.008}
 
 Saltelli et al. . Global Sensitivity Analysis.
 }

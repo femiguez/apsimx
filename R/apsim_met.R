@@ -406,6 +406,7 @@ check_apsim_met <- function(met){
   }
   ## Make sure that maxt is always higher or equal to mint
   temp.diff <- met[["maxt"]] - met[["mint"]]
+  temp.diff <- temp.diff[!is.na(temp.diff)] ## Just look at data which is not NA
   if(any(temp.diff < 0)){
     print(met[which(temp.diff < 0),])
     warning("Minimum temperature is greater than maximum temperature")
@@ -491,7 +492,8 @@ napad_apsim_met <- function(met){
                         amp = attr(met, "amp"),
                         colnames = attr(met, "colnames"),
                         units = attr(met, "units"),
-                        comments = attr(met, "comments"))
+                        comments = attr(met, "comments"),
+                        check = FALSE)
   }  
   
   fix2 <- FALSE
