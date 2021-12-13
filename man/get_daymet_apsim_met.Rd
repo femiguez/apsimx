@@ -4,64 +4,32 @@
 \alias{get_daymet_apsim_met}
 \title{Get DAYMET data for an APSIM met file}
 \source{
-The data is retrieved using the \CRANpkg{FedData} package. For the original
+The data is retrieved using the \CRANpkg{daymetr} package. For the original
 source see: https://daymet.ornl.gov/
 }
 \usage{
-get_daymet_apsim_met(
-  lonlat,
-  years,
-  wrt.dir = ".",
-  filename = NULL,
-  width.height = c(0.1 * 1.263012, 0.1),
-  template,
-  label = NULL,
-  elements = c("dayl", "prcp", "srad", "swe", "tmax", "tmin", "vp"),
-  region = "na",
-  tempo = "day",
-  extraction.dir = paste0(tempdir(), "/FedData/extractions/daymet/", label, "/"),
-  force.redo = FALSE,
-  cleanup = FALSE
-)
+get_daymet_apsim_met(lonlat, years, wrt.dir = ".", filename, silent = FALSE)
 }
 \arguments{
 \item{lonlat}{Longitude and latitude vector}
 
-\item{years}{a numeric vector of years to extract}
+\item{years}{a numeric vector of years to extract (c(start, end)). For example, f you need 2012 through 2015, use c(2012, 2015).}
 
-\item{wrt.dir}{write directory}
+\item{wrt.dir}{write directory (default is the current directory)}
 
 \item{filename}{file name for writing out to disk}
 
-\item{width.height}{width and height of the cropped area (default 0.001, 0.001)}
-
-\item{template}{A Raster or Spatial object to serve as a template for cropping (see \code{\link[FedData]{get_daymet}}).}
-
-\item{label}{a character string naming the area (see \code{\link[FedData]{get_daymet}})}
-
-\item{elements}{see \code{\link[FedData]{get_daymet}}}
-
-\item{region}{see \code{\link[FedData]{get_daymet}}}
-
-\item{tempo}{see \code{\link[FedData]{get_daymet}}}
-
-\item{extraction.dir}{see \code{\link[FedData]{get_daymet}}}
-
-\item{force.redo}{see \code{\link[FedData]{get_daymet}}}
-
-\item{cleanup}{whether to delete download directories (default is FALSE). 
-If the intention is for cleanup to delete all the files, \sQuote{raw.dir} 
-and \sQuote{extraction.dir} should be supplied, supplying a sinlge name, 
-such as \sQuote{RAW} and \sQuote{EXTRACTION}.}
+\item{silent}{argument passed to \code{\link[daymetr]{download_daymet}}}
 }
 \value{
 It returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
 }
 \description{
-Uses \code{\link[FedData]{get_daymet}} from the \CRANpkg{FedData} package to download data to create an APSIM met file.
+Uses \code{\link[daymetr]{download_daymet}} from the \CRANpkg{daymetr} package to download data to create an APSIM met file.
 }
 \details{
-This function requires the \CRANpkg{FedData} pacakge.
+This function requires the \CRANpkg{daymetr} package. This function should replace 
+the \code{\link{get_daymet_apsim_met}} function.
 
 If the filename is not provided it will not write the file to disk, 
 but it will return an object of class \sQuote{met}. This is useful in case manipulation
@@ -73,12 +41,9 @@ Vapor Pressure Deficit (vp) should be in hecto Pascals
 }
 \examples{
 \dontrun{
-require(FedData)
+require(daymetr)
 ## I write to a temp directory but replace as needed
-tmp.dir <- tempdir()
-dmet12 <- get_daymet_apsim_met(lonlat = c(-93,42),
-                               extraction.dir = paste0(tmp.dir,"/FedData/extractions/daymet/"),
-                               years = 2012)
+dmet12 <- get_daymet_apsim_met(lonlat = c(-93,42), years = 2012)
 summary(dmet12)
 ## Check for reasonable ranges 
 check_apsim_met(dmet12)

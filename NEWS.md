@@ -8,7 +8,7 @@
 - optim functions data argument data frame can contain missing data
 - function get_daymet_apsim_met (which used to depend on the FedData package) is depracated. 
 It has been replaced by the previous get_daymet2_apsim_met function.
-- 
+- remove use of raster package
 
 **apsimx 2.2**
 

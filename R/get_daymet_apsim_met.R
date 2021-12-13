@@ -4,41 +4,6 @@
 #'
 #' @title Get DAYMET data for an APSIM met file
 #' @description Uses \code{\link[daymetr]{download_daymet}} from the \CRANpkg{daymetr} package to download data to create an APSIM met file.
-#' @name get_daymet_apsim_met
-#' @param lonlat Longitude and latitude vector
-#' @param years a numeric vector of years to extract (c(start, end)). For example, f you need 2012 through 2015, use c(2012, 2015).
-#' @param wrt.dir write directory (default is the current directory)
-#' @param filename file name for writing out to disk
-#' @param silent argument passed to \code{\link[daymetr]{download_daymet}}
-#' @details If the filename is not provided it will not write the file to disk, 
-#' but it will return an object of class \sQuote{met}. This is useful in case manipulation
-#' is required before writing to disk. The variable \sQuote{srad} as downloaded from
-#' daymet is average solar radiation, so it is converted to total. 
-#' Daily total radiation (MJ/m2/day) can be calculated as 
-#' follows: ((srad (W/m2) * dayl (s/day)) / 1,000,000) \cr
-#' Vapor Pressure Deficit (vp) should be in hecto Pascals
-#' @source The data is retrieved using the \CRANpkg{daymetr} package. For the original
-#' source see: https://daymet.ornl.gov/
-#' @return It returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
-#' @export
-#' @examples 
-#' \dontrun{
-#' require(daymetr)
-#' ## I write to a temp directory but replace as needed
-#' dmet12 <- get_daymet_apsim_met(lonlat = c(-93,42), years = 2012)
-#' summary(dmet12)
-#' ## Check for reasonable ranges 
-#' check_apsim_met(dmet12)
-#' }
-#' 
-get_daymet_apsim_met <- get_daymet2_apsim_met
-
-#'
-#' This function requires the \CRANpkg{daymetr} package. This function should replace 
-#' the \code{\link{get_daymet_apsim_met}} function.
-#'
-#' @title Get DAYMET data for an APSIM met file
-#' @description Uses \code{\link[daymetr]{download_daymet}} from the \CRANpkg{daymetr} package to download data to create an APSIM met file.
 #' @name get_daymet2_apsim_met
 #' @param lonlat Longitude and latitude vector
 #' @param years a numeric vector of years to extract (c(start, end)). For example, f you need 2012 through 2015, use c(2012, 2015).
@@ -124,3 +89,38 @@ get_daymet2_apsim_met <- function(lonlat, years, wrt.dir = ".", filename, silent
 
   return(invisible(dmet))  
 }
+
+#'
+#' This function requires the \CRANpkg{daymetr} package. This function should replace 
+#' the \code{\link{get_daymet_apsim_met}} function.
+#'
+#' @title Get DAYMET data for an APSIM met file
+#' @description Uses \code{\link[daymetr]{download_daymet}} from the \CRANpkg{daymetr} package to download data to create an APSIM met file.
+#' @name get_daymet_apsim_met
+#' @param lonlat Longitude and latitude vector
+#' @param years a numeric vector of years to extract (c(start, end)). For example, f you need 2012 through 2015, use c(2012, 2015).
+#' @param wrt.dir write directory (default is the current directory)
+#' @param filename file name for writing out to disk
+#' @param silent argument passed to \code{\link[daymetr]{download_daymet}}
+#' @details If the filename is not provided it will not write the file to disk, 
+#' but it will return an object of class \sQuote{met}. This is useful in case manipulation
+#' is required before writing to disk. The variable \sQuote{srad} as downloaded from
+#' daymet is average solar radiation, so it is converted to total. 
+#' Daily total radiation (MJ/m2/day) can be calculated as 
+#' follows: ((srad (W/m2) * dayl (s/day)) / 1,000,000) \cr
+#' Vapor Pressure Deficit (vp) should be in hecto Pascals
+#' @source The data is retrieved using the \CRANpkg{daymetr} package. For the original
+#' source see: https://daymet.ornl.gov/
+#' @return It returns an object of class \sQuote{met} and writes a file to disk when filename is supplied.
+#' @export
+#' @examples 
+#' \dontrun{
+#' require(daymetr)
+#' ## I write to a temp directory but replace as needed
+#' dmet12 <- get_daymet_apsim_met(lonlat = c(-93,42), years = 2012)
+#' summary(dmet12)
+#' ## Check for reasonable ranges 
+#' check_apsim_met(dmet12)
+#' }
+#' 
+get_daymet_apsim_met <- get_daymet2_apsim_met

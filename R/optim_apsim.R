@@ -381,13 +381,16 @@ optim_apsim <- function(file, src.dir = ".",
       ## This is unweighted
       post.lrss <- obj_fun(cfs = op$par,
                            parm.paths = parm.paths,
-                           data = data,
-                           iparms = iparms,
+                           data = data, 
+                           file = file,
+                           aux.file = aux.file, 
+                           iaux.parms = iaux.parms,
                            weights = rep(1, ncol(datami)),
                            index = index,
                            parm.vector.index = parm.vector.index,
-                           replacement = replacement,
-                           root = root)
+                           xml.parm = cfile,
+                           ...) 
+      
       post.unweighted.rss <- exp(post.lrss)
     }
   }
@@ -395,7 +398,7 @@ optim_apsim <- function(file, src.dir = ".",
   ans <- structure(list(pre.rss = exp(pre.lrss), 
                         post.rss = post.rss, ## This is weighted
                         post.unweighted.rss = post.unweighted.rss,
-                        iaux.parms = iparms, op = op, n = nrow(data),
+                        iaux.parms = iaux.parms, op = op, n = nrow(data),
                         parm.vector.index = parm.vector.index),
                    class = "optim_apsim")
 
