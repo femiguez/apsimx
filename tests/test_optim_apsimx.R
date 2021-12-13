@@ -92,7 +92,12 @@ if(FALSE){
   ## Run the model with incorrect parameters
   ## RUE = 1.2
   ## Phyllochron = 120
-  system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = extd.dir))
+  tmp <- tempdir()
+  setwd(tmp)
+  file.copy(file.path(extd.dir, "Ames.met"), ".")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+  
+  system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp)) ## This takes 4-5 seconds
   
   ## write.csv(sim.b4, "wheat-sim-b4-opt.csv", row.names = FALSE)
 
@@ -127,7 +132,6 @@ if(FALSE){
   ## This takes about ~7.5 minutes
   start <- Sys.time()
   wop <- optim_apsimx("Wheat-opt-ex.apsimx", 
-                       src.dir = extd.dir, 
                        parm.paths = c(pp1, pp2),
                        data = obsWheat, 
                        weights = "mean",
@@ -207,7 +211,7 @@ if(FALSE){
   apsim_options(warn.versions = FALSE)
   
   ## Testing optimization for an APSIM Classic example
-  ## Millet
+  ## Maize
   if(file.exists("Maize.apsim")) file.remove("Maize.apsim")
   if(file.exists("Maize.xml")) file.remove("Maize.xml")
   if(file.exists("Maize.out")) file.remove("Maize.out")
@@ -329,7 +333,7 @@ if(FALSE){
                         data = obsWheat, 
                         replacement = TRUE,
                         initial.values = 1.2)
-  end <- Sys.time() ## It took 2.6 minutes
+  end <- Sys.time() ## It took 3.48 minutes
   
   ## Plus hessian
   file.remove("Wheat-opt-ex.apsimx")
@@ -342,7 +346,7 @@ if(FALSE){
                           replacement = TRUE,
                           hessian = TRUE,
                           initial.values = 1.2)
-  end <- Sys.time() ## It took 3.14 minutes
+  end <- Sys.time() ## It took 4.02 minutes
  
   ## Erase and try Brent 
   file.remove("Wheat-opt-ex.apsimx")
@@ -356,7 +360,7 @@ if(FALSE){
                           lower = 0.5, upper = 2,
                           replacement = TRUE,
                           initial.values = 1.2)
-  end <- Sys.time() ## It took 2.73 minutes 
+  end <- Sys.time() ## It took 2.63 minutes 
   ## Brent, naturally, will not provide the best solution if
   ## the solution is outside the interval (lower, upper)
   
@@ -410,6 +414,18 @@ if(FALSE){
                         initial.values = c(1.2, 120))
   end <- Sys.time() ## It took 15.7 minutes
   
+  ## Testing with two parameters, without the hessian
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+  ## Testing with two parameters
+  start <- Sys.time()
+  wop.nh.2 <- optim_apsimx("Wheat-opt-ex.apsimx", 
+                        parm.paths = c(pp1, pp2),
+                        data = obsWheat, 
+                        replacement = c(TRUE, TRUE),
+                        initial.values = c(1.2, 120))
+  end <- Sys.time() ## It took 13.97 minutes
+  
   file.remove("Wheat-opt-ex.apsimx")
   file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
   ## Testing with two parameters
@@ -422,5 +438,5 @@ if(FALSE){
                         replacement = c(TRUE, TRUE),
                         hessian = TRUE,
                         initial.values = c(1.2, 120))
-  end <- Sys.time() ## It took 28 minutes and it did not find the right answer
+  end <- Sys.time() ## It took 28.97 minutes and it did not find the right answer
 }

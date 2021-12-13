@@ -2,9 +2,6 @@
 ## In repeated testing it seems that speed slows down when multiple queries are requested
 
 require(apsimx)
-require(raster)
-
-apsimx_options(warn.versions = FALSE)
 
 run.test.isric.workflow <- get(".run.local.tests", envir = apsimx.options)
 

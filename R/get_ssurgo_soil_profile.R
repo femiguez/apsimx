@@ -88,9 +88,9 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
   }
   
   if(verbose == FALSE){
-    res <- suppressWarnings(soilDB::SDA_spatialQuery(spg, what = 'geom', geomIntersection = TRUE))
+    res <- suppressWarnings(soilDB::SDA_spatialQuery(spg, what = 'mupolygon', geomIntersection = TRUE))
   }else{
-    res <- soilDB::SDA_spatialQuery(spg, what = 'geom', geomIntersection = TRUE)  
+    res <- soilDB::SDA_spatialQuery(spg, what = 'mupolygon', geomIntersection = TRUE)  
   }
   
   mu.is <- soilDB::format_SQL_in_statement(res$mukey)

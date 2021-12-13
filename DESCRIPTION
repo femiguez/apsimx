@@ -33,7 +33,6 @@ Suggests:
 	      mvtnorm,
 	      nasapower,
 	      nloptr,
-	      raster,
 	      reactR,
 	      rmarkdown,
 	      sensitivity,
