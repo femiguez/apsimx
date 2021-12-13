@@ -304,3 +304,123 @@ if(FALSE){
   if(file.exists("Maize.out")) file.remove("Maize.out")
   if(file.exists("Maize.sum")) file.remove("Maize.sum")
 }
+
+## Testing the optimization of a single parameter 
+## comparing methods
+if(FALSE){
+  
+  tmp <- tempdir()
+  setwd(tmp)
+  
+  extd.dir <- system.file("extdata", package = "apsimx")
+  
+  file.copy(file.path(extd.dir, "Ames.met"), ".")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+  
+  sim0 <- apsimx("Wheat-opt-ex.apsimx")
+
+  pp1 <- "Wheat.Leaf.Photosynthesis.RUE.FixedValue"
+  pp2 <- "Wheat.Cultivars.USA.Yecora.BasePhyllochron"
+  
+  ## Testing the "unreliable" method
+  start <- Sys.time()
+  wop.1 <- optim_apsimx("Wheat-opt-ex.apsimx", 
+                        parm.paths = pp1,
+                        data = obsWheat, 
+                        replacement = TRUE,
+                        initial.values = 1.2)
+  end <- Sys.time() ## It took 2.6 minutes
+  
+  ## Plus hessian
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+  
+  start <- Sys.time()
+  wop.h.1 <- optim_apsimx("Wheat-opt-ex.apsimx", 
+                          parm.paths = pp1,
+                          data = obsWheat, 
+                          replacement = TRUE,
+                          hessian = TRUE,
+                          initial.values = 1.2)
+  end <- Sys.time() ## It took 3.14 minutes
+ 
+  ## Erase and try Brent 
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+ 
+  start <- Sys.time()
+  wop.b.1 <- optim_apsimx("Wheat-opt-ex.apsimx", 
+                          parm.paths = pp1,
+                          data = obsWheat, 
+                          method = "Brent",
+                          lower = 0.5, upper = 2,
+                          replacement = TRUE,
+                          initial.values = 1.2)
+  end <- Sys.time() ## It took 2.73 minutes 
+  ## Brent, naturally, will not provide the best solution if
+  ## the solution is outside the interval (lower, upper)
+  
+  ## Erase and try L-BFGS-B
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+  
+  start <- Sys.time()
+  wop.bfgs.1 <- optim_apsimx("Wheat-opt-ex.apsimx", 
+                          parm.paths = pp1,
+                          data = obsWheat, 
+                          method = "L-BFGS-B",
+                          lower = 0.5,
+                          hessian = TRUE,
+                          replacement = TRUE,
+                          initial.values = 1.2,
+                          control = list(trace = 1))
+  end <- Sys.time() ## It took 5.21 minutes 
+  
+  ## Next step is to test whether weighting affects the estimate of the vcov
+  ## and how different it is to the Bayesian analysis
+  
+  ## Erase and try L-BFGS-B
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+  
+  start <- Sys.time()
+  wop.bfgs.2 <- optim_apsimx("Wheat-opt-ex.apsimx", 
+                             parm.paths = pp1,
+                             data = obsWheat,
+                             weights = "mean",
+                             method = "L-BFGS-B",
+                             lower = 0.5,
+                             hessian = TRUE,
+                             replacement = TRUE,
+                             initial.values = 1.2,
+                             control = list(trace = 3))
+  end <- Sys.time() ## It took 14 minutes and it did not converge
+  ## I'm not sure if weighting affects the results substantially or not
+  
+  ## Testing with two parameters
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+  ## Testing with two parameters
+  start <- Sys.time()
+  wop.2 <- optim_apsimx("Wheat-opt-ex.apsimx", 
+                        parm.paths = c(pp1, pp2),
+                        data = obsWheat, 
+                        replacement = c(TRUE, TRUE),
+                        hessian = TRUE,
+                        initial.values = c(1.2, 120))
+  end <- Sys.time() ## It took 15.7 minutes
+  
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+  ## Testing with two parameters
+  start <- Sys.time()
+  wop.3 <- optim_apsimx("Wheat-opt-ex.apsimx", 
+                        parm.paths = c(pp1, pp2),
+                        data = obsWheat, 
+                        type = "ucminf",
+                        weights = "mean",
+                        replacement = c(TRUE, TRUE),
+                        hessian = TRUE,
+                        initial.values = c(1.2, 120))
+  end <- Sys.time() ## It took 28 minutes and it did not find the right answer
+}

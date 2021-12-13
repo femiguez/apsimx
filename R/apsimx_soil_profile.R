@@ -900,7 +900,7 @@ compare_apsim_soil_profile <- function(...,
       if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
       ans$slope[1] <- coef(fm0)[2]
       if(verbose) cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
-      ans$corr[1] <- cor(tmp[,j - 1], tmp[, j])
+      ans$corr[1] <- suppressWarnings(cor(tmp[,j - 1], tmp[, j]))
       if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
       ans$rss[1] <- deviance(fm0)
       if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")

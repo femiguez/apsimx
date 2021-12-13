@@ -9,7 +9,7 @@ optim_apsimx(
   src.dir = ".",
   parm.paths,
   data,
-  type = c("optim", "nloptr", "mcmc"),
+  type = c("optim", "nloptr", "mcmc", "ucminf"),
   weights,
   index = "Date",
   parm.vector.index,
@@ -29,7 +29,8 @@ It is recommended that you use \code{\link{inspect_apsimx}} for this}
 
 \item{data}{data frame with the observed data. By default is assumes there is a 'Date' column for the index.}
 
-\item{type}{Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}} or \sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}.}
+\item{type}{Type of optimization. For now, \code{\link[stats]{optim}}, and, if available, \code{\link[nloptr]{nloptr}} or 
+\sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}. Option \sQuote{ucminf} uses the \code{\link[ucminf]{ucminf}} function.}
 
 \item{weights}{Weighting method or values for computing the residual sum of squares.}
 
@@ -74,7 +75,12 @@ a vector only. (I can add this feature in the future if it is justified.)
 values. A value of 1 would correspond to the inital value of the parameter. 
 The \sQuote{lower} and \sQuote{upper} (or \sQuote{ub} and \sQuote{lb}) are also scaled 
 to the initial values of the parameters. So, for example, if your initial value is 20 
-and you provide an upper bound of 5, it means that the actual upper value that you are allowing for is 100.
+and you provide an upper bound of 5, it means that the actual upper value that you are allowing for is 100. 
+
+* I have tested other optimizers and packages, but I think these are enough for most purposes. I tried
+function stats::nlm (but it does not support bounds and it can fail), package 'optimx' is a bit messy and it
+does not provide sufficient additional functionality. Package 'ucminf' seems like a good alternative, but it
+did not perform better than the other ones.
 }
 \note{
 When computing the objective function (residual sum-of-squares) different variables are combined.

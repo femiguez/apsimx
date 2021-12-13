@@ -5,6 +5,7 @@
 \alias{print.optim_apsim}
 \alias{vcov.optim_apsim}
 \alias{coef.optim_apsim}
+\alias{confint.optim_apsim}
 \title{Optimize parameters in an APSIM simulation}
 \usage{
 optim_apsim(
@@ -26,6 +27,8 @@ optim_apsim(
 \method{vcov}{optim_apsim}(object, ..., scaled = TRUE)
 
 \method{coef}{optim_apsim}(object, ..., scaled = FALSE)
+
+\method{confint}{optim_apsim}(object, parm, level = 0.95, ...)
 }
 \arguments{
 \item{file}{file name to be run (the extension .apsim is optional)}
@@ -40,7 +43,8 @@ It is recommended that you use \code{\link{inspect_apsim}} or \code{\link{inspec
 
 \item{data}{data frame with the observed data. By default is assumes there is a 'Date' column for the index.}
 
-\item{type}{Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}} or \sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}.}
+\item{type}{Type of optimization. For now, \code{\link[stats]{optim}} and, if available, \code{\link[nloptr]{nloptr}} or 
+\sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}. Option \sQuote{ucminf} uses the \code{\link[ucminf]{ucminf}} function.}
 
 \item{weights}{Weighting method or values for computing the residual sum of squares (see Note).}
 
@@ -61,12 +65,14 @@ this argument.}
 
 \item{digits}{number of digits to round up the output}
 
-\item{level}{confidence level (default 0.95)}
+\item{level}{confidence level (default is 0.95)}
 
 \item{object}{object of class \sQuote{optim_apsim}}
 
 \item{scaled}{whether to return the scaled or unscaled estimates
 (TRUE in the optimized scale, FALSE in the original scale)}
+
+\item{parm}{parameter to select (it can be a regular expression)}
 }
 \value{
 object of class \sQuote{optim_apsim}, but really just a list with results from optim and additional information.
@@ -76,6 +82,8 @@ prints to console
 it returns the variance-covariance matrix for an object of class \sQuote{optim_apsim}.
 
 a numeric vector with the value of the parameter estimates.
+
+a matrix with lower and upper limits and the point estimate (coef)
 }
 \description{
 It is a wrapper for running APSIM and optimizing parameters using \code{\link[stats]{optim}}
@@ -85,6 +93,8 @@ Friendly printing of optim_apsim
 Variance-Covariance for an \sQuote{optim_apsim} object
 
 Parameter estimates for an \sQuote{optim_apsim} object
+
+Confidence intervals for parameter estimates for an \sQuote{optim_apsim} object
 }
 \details{
 Simple optimization for APSIM Classic
