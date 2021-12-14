@@ -206,8 +206,12 @@ if(FALSE){
   
 }
 
+#### Classic ####
 if(FALSE){
 
+  tmp <- tempdir()
+  setwd(tmp)
+  
   apsim_options(warn.versions = FALSE)
   
   ## Testing optimization for an APSIM Classic example
@@ -263,6 +267,14 @@ if(FALSE){
                      data = obsMaize,
                      hessian = TRUE,
                      weights = "mean")
+  
+  # op2.u <- optim_apsim("Maize.apsim", 
+  #                      crop.file = "Maize.xml",
+  #                      parm.paths = c(pp1, pp2),
+  #                      type = "ucminf",
+  #                      data = obsMaize,
+  #                      hessian = TRUE,
+  #                      weights = "mean")
   
   op2nl <- optim_apsim("Maize.apsim", 
                      crop.file = "Maize.xml",

@@ -60,7 +60,7 @@
 
 optim_apsim <- function(file, src.dir = ".", 
                         crop.file, parm.paths, data, 
-                        type = c("optim", "nloptr","mcmc"), 
+                        type = c("optim", "nloptr","mcmc", "ucminf"), 
                         weights, index = "Date",
                         parm.vector.index,
                         xml.parm,
@@ -94,6 +94,13 @@ optim_apsim <- function(file, src.dir = ".",
   if(type == "mcmc"){
     if(!requireNamespace("BayesianTools", quietly = TRUE)){
       warning("The BayesianTools package is required for this method.")
+      return(NULL)
+    }
+  }
+  
+  if(type == "ucminf"){
+    if(!requireNamespace("ucminf", quietly = TRUE)){
+      warning("The ucminf package is required for this method.")
       return(NULL)
     }
   }
@@ -388,8 +395,7 @@ optim_apsim <- function(file, src.dir = ".",
                            weights = rep(1, ncol(datami)),
                            index = index,
                            parm.vector.index = parm.vector.index,
-                           xml.parm = cfile,
-                           ...) 
+                           xml.parm = cfile) 
       
       post.unweighted.rss <- exp(post.lrss)
     }
