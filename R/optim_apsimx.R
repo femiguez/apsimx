@@ -113,12 +113,10 @@ optim_apsimx <- function(file, src.dir = ".",
     weights <- rep(1, ncol(datami))
   }else{
     if(weights == "mean"){
-      vmns <- abs(1 / apply(datami, 2, mean, na.rm = TRUE))  
-      weights <- (vmns / sum(vmns)) 
+      weights <- abs(1 / apply(datami, 2, mean, na.rm = TRUE))  
     }else{
       if(weights == "var"){
-        vvrs <- 1 / apply(datami, 2, var, na.rm = TRUE)    
-        weights <- (vvrs / sum(vvrs)) 
+        weights <- 1 / apply(datami, 2, var, na.rm = TRUE)    
       }else{
         if(length(weights) != ncol(datami))
           stop("Weights not of correct length")
@@ -365,28 +363,9 @@ optim_apsimx <- function(file, src.dir = ".",
     return(op.mcmc)
   }
   
-  post.rss <- exp(op$value) ## This is the weighted RSS
-  post.unweighted.rss <- NA    
-  ## I need the unweighted RSS for computing intervals
-  if(!is.null(list(...)$hessian)){
-    if(list(...)$hessian){
-        ## This is unweighted
-        post.lrss <- obj_fun(cfs = op$par,
-                            parm.paths = parm.paths,
-                            data = data,
-                            iparms = iparms,
-                            weights = rep(1, ncol(datami)),
-                            index = index,
-                            parm.vector.index = parm.vector.index,
-                            replacement = replacement,
-                            root = root)
-        post.unweighted.rss <- exp(post.lrss)
-    }
-  }
-  
   ans <- structure(list(pre.rss = exp(pre.lrss), 
-                        post.rss = post.rss, ## This is weighted
-                        post.unweighted.rss = post.unweighted.rss,
+                        post.rss = exp(op$value), ## This is weighted RSS
+                        weights = weights,
                         iaux.parms = iparms, op = op, n = nrow(data),
                         parm.vector.index = parm.vector.index),
                    class = "optim_apsim")

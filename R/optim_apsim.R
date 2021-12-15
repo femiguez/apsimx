@@ -114,12 +114,10 @@ optim_apsim <- function(file, src.dir = ".",
     weights <- rep(1, ncol(datami))
   }else{
     if(weights == "mean"){
-      vmns <- abs(1 / apply(datami, 2, mean, na.rm = TRUE))  
-      weights <- (vmns / sum(vmns))
+      weights <- abs(1 / apply(datami, 2, mean, na.rm = TRUE))  
     }else{
       if(weights == "var"){
-        vvrs <- 1 / apply(datami, 2, var, na.rm = TRUE)    
-        weights <- (vvrs / sum(vvrs))
+        weights <- 1 / apply(datami, 2, var, na.rm = TRUE)    
       }else{
         if(length(weights) != ncol(datami))
           stop("Weights not of correct length")
@@ -375,35 +373,14 @@ optim_apsim <- function(file, src.dir = ".",
 
   }
   
-  ## rss are the pre-optimized residual sum of squares
-  ## op$value are the optimized residual sum of squares
+  ## pre.rss are the pre-optimized residual sum of squares
+  ## op$value are the optimized weighted residual sum of squares in the log scale
   ## The next line is only true when optimizing one single variable
   ## logLik <- 0.5 * ( - N * (log(2 * pi) + 1 - log(N) + log(op$value))
-  
-  post.rss <- exp(op$value) ## This is the weighted RSS
-  post.unweighted.rss <- NA    
-  ## I need the unweighted RSS for computing intervals
-  if(!is.null(list(...)$hessian)){
-    if(list(...)$hessian){
-      ## This is unweighted
-      post.lrss <- obj_fun(cfs = op$par,
-                           parm.paths = parm.paths,
-                           data = data, 
-                           file = file,
-                           aux.file = aux.file, 
-                           iaux.parms = iaux.parms,
-                           weights = rep(1, ncol(datami)),
-                           index = index,
-                           parm.vector.index = parm.vector.index,
-                           xml.parm = cfile) 
-      
-      post.unweighted.rss <- exp(post.lrss)
-    }
-  }
 
   ans <- structure(list(pre.rss = exp(pre.lrss), 
-                        post.rss = post.rss, ## This is weighted
-                        post.unweighted.rss = post.unweighted.rss,
+                        post.rss = exp(op$value), ## This is weighted
+                        weights = weights,
                         iaux.parms = iaux.parms, op = op, n = nrow(data),
                         parm.vector.index = parm.vector.index),
                    class = "optim_apsim")
@@ -449,7 +426,7 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
       ## I actually found this way of computing SE here:
       ## https://www.researchgate.net/post/In_R_how_to_estimate_confidence_intervals_from_the_Hessian_matrix
       degf <- x$n - length(x$iaux.parms) ## Degrees of freedom
-      par.se <- sqrt((2 * (1 / (x$op$hessian[i,i])) * x$post.unweighted.rss) / degf)
+      par.se <- sqrt((2 * (1 / (x$op$hessian[i,i])) * x$iaux.parms[[i]]^2) / degf)
       qTT <- -1 * stats::qt((1 - level) * 0.5, degf) ## t statistic
       cat("\t CI level: ", level, "t: ", qTT, " SE:", round(par.se * x$iaux.parms[[i]], digits),"\n")
       if(x$parm.vector.index[i] <= 0){
@@ -463,10 +440,6 @@ print.optim_apsim <- function(x, ..., digits = 3, level = 0.95){
     }
   }   
   cat("\t Optimized (weighted) RSS: ", x$post.rss, "\n")
-  if(!is.null(x$op$hessian)){
-    cat("\t Optimized (unweighted) RSS: ", x$post.unweighted.rss, "\n")  
-  }
-  ## cat("\t Optimized (log and weighted) RSS: ", x$op$value, "\n")
   cat("Convergence:", x$op$convergence,"\n")
 }
   
@@ -566,7 +539,7 @@ vcov.optim_apsim <- function(object, ..., scaled = TRUE){
   sd.vec <- numeric(nrow(hess))
   degf <- object$n - nrow(hess)
   for(i in 1:nrow(hess)){
-    sd.vec[i] <- sqrt((2 * 1/(hess[i,i]) * object$post.unweighted.rss) / degf)
+    sd.vec[i] <- sqrt((2 * 1/(hess[i,i]) * object$iaux.parms[[i]]^2) / degf)
   }
   ans <- t(sd.vec * cor.mat) * sd.vec
   return(ans)
@@ -636,10 +609,9 @@ confint.optim_apsim <- function(object, parm, level = 0.95, ...){
     }
     
     ## I actually found this way of computing SE here:
-    ## https://www.researchgate.net/post/In_R_how_to_estimate_confidence_intervals_from_the_Hessian_matrix
     ## That post references the Introduction to R section 11.7.2
     degf <- x$n - length(x$iaux.parms) ## Degrees of freedom
-    par.se <- sqrt((2 * (1 / (x$op$hessian[i,i])) * x$post.unweighted.rss) / degf)
+    par.se <- sqrt((2 * (1 / (x$op$hessian[i,i])) * x$iaux.parms[[i]]^2) / degf)
     qTT <- -1 * stats::qt((1 - level) * 0.5, degf) ## t statistic
       if(x$parm.vector.index[i] <= 0){
         ans[i, 1] <- (x$op$par[i] - qTT * par.se) * x$iaux.parms[[i]]
