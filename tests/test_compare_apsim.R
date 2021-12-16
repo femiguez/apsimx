@@ -23,4 +23,20 @@ if(run.test.compare.apsimx){
   plot(cap, variable = "AboveGround", plot.type = "diff")
   plot(cap, variable = "AboveGround", plot.type = "ts")
   
+  ## Adding the capability when the length of the index is equal to 2
+  obsPheno <- read.csv("~/Dropbox/apsimx-other/pheno_optim/obsPheno.csv")
+  simPheno <- read.csv("~/Dropbox/apsimx-other/pheno_optim/simPheno.csv")
+  
+  obsPheno$Date <- as.Date(obsPheno$Date)
+  simPheno$Date <- as.Date(simPheno$Date)
+  
+  ## cmp0 <- compare_apsim(obsPheno, simPheno)
+  cmp <- compare_apsim(obsPheno, simPheno, index = c("report", "Date"), labels = c("Obs", "Sim"))
+  
+  plot(cmp)
+  plot(cmp, by = "report")
+  plot(cmp, by = "report", se = FALSE)
+  plot(cmp, by = "report", se = FALSE, facet = TRUE)
+  plot(cmp, by = "report", plot.type = "ts", facet = TRUE, se = FALSE)
+  
 }

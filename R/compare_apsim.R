@@ -61,31 +61,53 @@ compare_apsim <- function(...,
   ## Process out1
   nms1 <- names(out1)
   
-  if(!index %in% nms1) 
+  if(!all(index %in% nms1)) 
     stop("index not found in first data.frame")
   
-  if(!index %in% names(outs[[2]])) 
+  if(!all(index %in% names(outs[[2]]))) 
     stop("index not found in second data.frame")
   
   nms1.i <- intersect(nms1, names(outs[[2]])) ## Variables in common
-
-  if(length(nms1.i) < 2) 
-    stop("No names in common between the data.frames")
   
+  if(c("report", "Date") %in% nms1 && length(index) == 1){
+    stop("'report' and 'Date' found in first data frame but index length is equal to 1.
+         Maybe index should be c('report', 'Date')?", call. = FALSE)
+  }
+
+  if(length(index) == 1){
+    if(length(nms1.i) < 2) 
+      stop("No names in common between the data.frames")    
+  }else{
+    if(length(nms1.i) < 3) 
+      stop("No names in common between the data.frames")    
+  }
+
   ## The line below drops irrelevant columns and brings index to the first column
-  out1 <- subset(out1, select = c(index, nms1.i[-which(nms1 == index)]))
+  out1 <- subset(out1, select = c(index, nms1.i[-which(nms1 %in% index)]))
   new.nms1 <- paste0(names(out1), ".1") ## This simply adds a 1
-  out1.new.names <- gsub(paste0(index, ".1"), index, new.nms1) ## Rename Date.1 to Date
+  if(length(index) == 1){
+    out1.new.names <- gsub(paste0(index, ".1"), index, new.nms1) ## Rename Date.1 to Date  
+  }else{
+    out1.new.names <- gsub(paste0(index[1], ".1"), index[1], new.nms1) ## Rename report.1 to report
+    out1.new.names <- gsub(paste0(index[2], ".1"), index[2], out1.new.names) ## Rename Date.1 to Date
+  }
+  
   out.mrg <- stats::setNames(out1, out1.new.names) 
   
   for(i in 2:n.outs){
     
     ## This selects only those columns present in the first object
     out.i <- subset(outs[[i]], 
-                    select = c(index, nms1.i[-which(nms1.i == index)])) 
+                    select = c(index, nms1.i[-which(nms1.i %in% index)])) 
     nms.i <- names(out.i)
     new.nms.i <- paste0(nms.i, ".", i)
-    names(out.i) <- gsub(paste0(index, ".", i), index, new.nms.i)
+    if(length(index) == 1){
+      names(out.i) <- gsub(paste0(index, ".", i), index, new.nms.i)  
+    }else{
+      names.out.i <- gsub(paste0(index[1], ".", i), index[1], new.nms.i)  
+      names(out.i) <- gsub(paste0(index[2], ".", i), index[2], names.out.i)  
+    }
+    
     out.mrg <- merge(out.mrg, out.i, by = index)
     
     if(nrow(out.mrg) < 1){
@@ -93,7 +115,12 @@ compare_apsim <- function(...,
     }
   }
   
-  ans.out.length <- ifelse(missing(variable), length(nms1.i) - 1, 1)
+  if(length(index == 1)){
+    ans.out.length <- ifelse(missing(variable), length(nms1.i) - 1, 1)  
+  }else{
+    ans.out.length <- ifelse(missing(variable), length(nms1.i) - 2, 1)  
+  }
+  
   ans <- data.frame(variable = rep(NA, ans.out.length), vs = NA, labels = NA, bias = NA,
                     intercept = NA, slope = NA, rss = NA, rmse = NA, r2 = NA, concorr = NA,
                     mod.eff = NA)
@@ -200,6 +227,8 @@ print.out_mrg <- function(x, ..., digits = 2){
   print(x$index.table, digits = digits)
 }
 
+#' The by and facet arguments are only available for plot.type vs and ts for now
+#' 
 #' Plotting function for weather data
 #' @rdname compare_apsim
 #' @description plotting function for compare_apsim, it requires ggplot2
@@ -210,6 +239,8 @@ print.out_mrg <- function(x, ..., digits = 2){
 #' @param cumulative whether to plot cummulative values (default FALSE)
 #' @param variable variable to plot 
 #' @param id identification (not implemented yet)
+#' @param by variable in \sQuote{index} used for plotting
+#' @param facet whether to facet or use color for the by variable (default is FALSE, meaning \sQuote{color})
 #' @param span argument passed to \sQuote{geom_smooth}
 #' @return it produces a plot
 #' @export
@@ -218,7 +249,10 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
                          pairs = c(1, 2),
                          cumulative = FALSE, ## Might not make sense for these type of graphs...
                          variable,
-                         id, span = 0.75){
+                         id,
+                         by,
+                         facet = FALSE,
+                         span = 0.75){
   
   if(!requireNamespace("ggplot2", quietly = TRUE)){
     warning("ggplot2 is required for this plotting function")
@@ -233,8 +267,12 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
   index <- attr(x, "index") ## This is normally 'Date'
   x <- as.data.frame(unclass(x))
 
+  if(!missing(by) && length(index) == 1)
+    stop("'by' is only available when index length is equal to 2.")
+  
   if(missing(variable)){
-    variable <- gsub(".1", "", names(x)[2], fixed = TRUE)
+    vnms <- setdiff(names(x), index)[1]
+    variable <- gsub(".1", "", vnms, fixed = TRUE)
   }else{
     variable <- gsub(".1", "", grep(variable, names(x), value = TRUE)[1], fixed = TRUE)
   } 
@@ -246,7 +284,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
   if(cumulative && plot.type != "ts") 
     stop("cumulative is only available for plot.type = 'ts' ")
   
-  if(plot.type == "vs" && !cumulative){
+  if(plot.type == "vs" && !cumulative && (length(index) == 1 || missing(by))){
     tmp <- x[, grep(variable, names(x))]
     prs <- paste0(variable, ".", pairs)
     gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs[1]))), 
@@ -259,6 +297,37 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     
     print(gp1)
     
+  }
+  
+  if(plot.type == "vs" && !cumulative && length(index) == 2 && !missing(by)){
+    if(!facet){
+      tmp <- x[, c(by, grep(variable, names(x), value = TRUE))]
+      prs <- paste0(variable, ".", pairs)
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs[1]))), 
+                                                      y = eval(parse(text = eval(prs[2]))),
+                                                      color = eval(parse(text = eval(by))))) +
+        ggplot2::geom_point() + 
+        ggplot2::xlab(paste(o.nms[pairs[1]], prs[1])) + 
+        ggplot2::ylab(paste(o.nms[pairs[2]], prs[2])) + 
+        ggplot2::geom_smooth(method = "lm", ...) + 
+        ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange") + 
+        ggplot2::guides(color=ggplot2::guide_legend(title=by))
+      
+      print(gp1)      
+    }else{
+      tmp <- x[, c(by, grep(variable, names(x), value = TRUE))]
+      prs <- paste0(variable, ".", pairs)
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs[1]))), 
+                                                      y = eval(parse(text = eval(prs[2]))))) +
+        facet_wrap(~eval(parse(text = eval(by)))) + 
+        ggplot2::geom_point() + 
+        ggplot2::xlab(paste(o.nms[pairs[1]], prs[1])) + 
+        ggplot2::ylab(paste(o.nms[pairs[2]], prs[2])) + 
+        ggplot2::geom_smooth(method = "lm", ...) + 
+        ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange")
+      
+      print(gp1)
+    }
   }
   
   if(plot.type == "diff" && !cumulative){
@@ -282,7 +351,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     print(gp1)   
   }
   
-  if(plot.type == "ts" && !cumulative){
+  if(plot.type == "ts" && !cumulative && (length(index) == 1 || missing(by))){
   
     prs0 <- paste0(variable, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
@@ -302,11 +371,40 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
                            span = span, ...) + 
       ggplot2::xlab(index) + 
       ggplot2::ylab(variable) + 
-      ggplot2::theme(legend.title = ggplot2::element_blank())
+      ggplot2::guides(color=ggplot2::guide_legend(title=""))
     
     print(gp1)   
   }
-  
+
+  if(plot.type == "ts" && !cumulative && length(index) == 2 && !missing(by)){
+    
+    if(facet){
+      prs0 <- paste0(variable, ".", pairs)
+      prs <- paste0(prs0, collapse = "|")
+      tmp <- x[, c(index, grep(prs, names(x), value = TRUE))]
+
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = .data[[index[2]]], 
+                                                      y = eval(parse(text = eval(prs0[1]))),
+                                                      color = paste(o.nms[pairs[1]], prs0[1]))) +
+        ggplot2::facet_wrap(~eval(parse(text = eval(by)))) + 
+        ggplot2::geom_point() + 
+        ggplot2::geom_smooth(span = span, ...) + 
+        ggplot2::geom_point(ggplot2::aes(y = eval(parse(text = eval(prs0[2]))),
+                                         color = paste(o.nms[pairs[2]], prs0[2]))) + 
+        ggplot2::geom_smooth(ggplot2::aes(y = eval(parse(text = eval(prs0[2]))),
+                                          color = paste(o.nms[pairs[2]], prs0[2])),
+                             span = span, ...) + 
+        ggplot2::xlab(index[2]) + 
+        ggplot2::ylab(variable) + 
+        ggplot2::guides(color=ggplot2::guide_legend(title=""))
+      
+      print(gp1)         
+    }else{
+      stop("Set 'facet' to TRUE for this type of graph", call. = FALSE)
+    }
+
+  }
+    
   if(plot.type == "ts" && cumulative){
     
     prs0 <- paste0(variable, ".", pairs)
@@ -346,6 +444,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     
     print(gp1)
   }
+  invisible(gp1)
 }
 
 ## Model efficiency
