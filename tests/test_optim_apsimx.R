@@ -345,7 +345,7 @@ if(FALSE){
                         data = obsWheat, 
                         replacement = TRUE,
                         initial.values = 1.2)
-  end <- Sys.time() ## It took 3.48 minutes
+  end <- Sys.time() ## It took 3.25 minutes
   
   ## Plus hessian
   file.remove("Wheat-opt-ex.apsimx")
@@ -358,7 +358,7 @@ if(FALSE){
                           replacement = TRUE,
                           hessian = TRUE,
                           initial.values = 1.2)
-  end <- Sys.time() ## It took 4.02 minutes
+  end <- Sys.time() ## It took 3.4 minutes
  
   ## Erase and try Brent 
   file.remove("Wheat-opt-ex.apsimx")
@@ -372,7 +372,7 @@ if(FALSE){
                           lower = 0.5, upper = 2,
                           replacement = TRUE,
                           initial.values = 1.2)
-  end <- Sys.time() ## It took 2.63 minutes 
+  end <- Sys.time() ## It took 2.18 minutes 
   ## Brent, naturally, will not provide the best solution if
   ## the solution is outside the interval (lower, upper)
   
@@ -389,8 +389,8 @@ if(FALSE){
                           hessian = TRUE,
                           replacement = TRUE,
                           initial.values = 1.2,
-                          control = list(trace = 1))
-  end <- Sys.time() ## It took 5.21 minutes 
+                          control = list(trace = 3))
+  end <- Sys.time() ## It took 7.02 minutes 
   
   ## Next step is to test whether weighting affects the estimate of the vcov
   ## and how different it is to the Bayesian analysis
@@ -410,8 +410,7 @@ if(FALSE){
                              replacement = TRUE,
                              initial.values = 1.2,
                              control = list(trace = 3))
-  end <- Sys.time() ## It took 14 minutes and it did not converge
-  ## I'm not sure if weighting affects the results substantially or not
+  end <- Sys.time() ## It took 4.16 minutes 
   
   ## Testing with two parameters
   file.remove("Wheat-opt-ex.apsimx")

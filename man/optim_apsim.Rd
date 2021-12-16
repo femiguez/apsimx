@@ -14,7 +14,7 @@ optim_apsim(
   crop.file,
   parm.paths,
   data,
-  type = c("optim", "nloptr", "mcmc"),
+  type = c("optim", "nloptr", "mcmc", "ucminf"),
   weights,
   index = "Date",
   parm.vector.index,

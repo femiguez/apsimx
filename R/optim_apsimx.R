@@ -239,12 +239,29 @@ optim_apsimx <- function(file, src.dir = ".",
       stop("names in 'data' do not match names in simulation")
     
     if(length(index) == 1 && index == "Date"){
+      
       sim.s <- subset(sim, sim$Date %in% data[[index]], select = names(data))  
+      sim.s <- sim.s[order(sim.s[, index[1]]),]
+      data <- data[order(data[, index[1]]),]
+      
+      if(!all(sim.s[[index[1]]] == data[[index[1]]]))
+        stop(paste("simulations and data for", index[1], "do not match"))        
+      
     }else{
+      
       if(!is.null(data$report)) data$report <- as.factor(data$report)
       if(!is.null(sim$report)) sim$report <- as.factor(sim$report)
       sim.s0 <- merge(sim, subset(data, select = index), by = index)  
       sim.s <- subset(sim.s0, select = names(data))
+      ## However, they need to be in the exact same order
+      sim.s <- sim.s[order(sim.s[, index[1]], sim.s[ ,index[2]]),]
+      data <- data[order(data[, index[1]], data[, index[2]]),]
+      
+      if(!all(sim.s[[index[1]]] == data[[index[1]]]))
+          stop(paste("simulations and data for", index[1], "do not match"))        
+      
+      if(!all(sim.s[[index[2]]] == data[[index[2]]]))
+        stop(paste("simulations and data for", index[2], "do not match"))        
     }
     
     if(nrow(sim.s) != nrow(data)){
