@@ -445,7 +445,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   }
   
   ans[,1] <- sort(unique(x$year))
-  x$year <- as.factor(x$year)
+  x <- add_column_apsim_met(x, value = as.factor(x$year), name = "year", units = "()")
   
   if(verbose){
     cat("First year:", x$year[1], "\n")

@@ -18,6 +18,8 @@ compare_apsim(..., variable, index = "Date", by, labels, verbose = FALSE)
   cumulative = FALSE,
   variable,
   id,
+  by,
+  facet = FALSE,
   span = 0.75
 )
 }
@@ -28,7 +30,7 @@ compare_apsim(..., variable, index = "Date", by, labels, verbose = FALSE)
 
 \item{index}{index for merging objects. Default is \sQuote{Date}}
 
-\item{by}{factor for splitting the comparison, such as a treatment effect.}
+\item{by}{variable in \sQuote{index} used for plotting}
 
 \item{labels}{labels for plotting and identification of objects.}
 
@@ -46,6 +48,8 @@ compare_apsim(..., variable, index = "Date", by, labels, verbose = FALSE)
 
 \item{id}{identification (not implemented yet)}
 
+\item{facet}{whether to facet or use color for the by variable (default is FALSE, meaning \sQuote{color})}
+
 \item{span}{argument passed to \sQuote{geom_smooth}}
 }
 \value{
@@ -61,6 +65,9 @@ Function which allows for a simple comparison between APSIM output objects
 print method for \sQuote{out_mrg}
 
 plotting function for compare_apsim, it requires ggplot2
+}
+\details{
+Plotting function for weather data
 }
 \note{
 \sQuote{Con Corr} is the concordance correlation coefficient (https://en.wikipedia.org/wiki/Concordance_correlation_coefficient);

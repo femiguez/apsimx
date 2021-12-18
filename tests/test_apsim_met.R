@@ -54,3 +54,23 @@ if(run.apsim.met && internet){
   plot(dmt.imp)
   plot(dmt.imp, met.var = "rain", years = 2010:2015, cumulative = TRUE, climatology = TRUE)
 }
+
+## Testing the feature for adding a column to a met file
+if(run.apsim.met){
+  
+  ## Testing adding a column
+  extd.dir <- system.file("extdata", package = "apsimx")
+  ames <- read_apsim_met("Ames.met", src.dir = extd.dir)
+  
+  ## ames$vp <- 5 This does not work and it is not supposed to 
+  
+  vp <- data.frame(vp = abs(rnorm(nrow(ames), 2)))
+  attr(vp, "units") <- "(hPa)"
+  
+  ames$vp <- vp
+
+  val <- abs(rnorm(nrow(ames), 2))
+  nm <- "vp"
+  ames <- add_column_apsim_met(ames, value = val, name = "vp", units = "(hPa)")
+    
+}

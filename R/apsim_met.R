@@ -1266,6 +1266,74 @@ plot.met <- function(x, ..., years, met.var,
   invisible(gp1)
 }
 
+#' 
+#' @title Add a column to an object of class \sQuote{met}
+#' @rdname add_column_apsim_met
+#' @description The usual way of adding a column to a data frame might
+#' not work for an object of class \sQuote{met}, so this method is recommended
+#' @param met object of class \sQuote{met}
+#' @param value vector of the appropriate length
+#' @param name optional name if the vector value is unnamed
+#' @param units units for the new column (required)
+#' @return an object of class \sQuote{met} with the additional column
+#' @export
+#' @examples
+#' \donttest{
+#' extd.dir <- system.file("extdata", package = "apsimx")
+#' ames <- read_apsim_met("Ames.met", src.dir = extd.dir)
+#' 
+#' ## The recommended method is
+#' val <- abs(rnorm(nrow(ames), 10))
+#' nm <- "vp"
+#' ames <- add_column_apsim_met(ames, value = val, name = "vp", units = "(hPa)")
+#' 
+#' ## This is also possible
+#' vp <- data.frame(vp = abs(rnorm(nrow(ames), 10)))
+#' attr(vp, "units") <- "(hPa)"
+#' ames$vp <- vp
+#' }
+#' 
+#' 
+add_column_apsim_met <- function(met, value, name, units){
+  
+  if(!inherits(met, "met"))
+    stop("Object should be of class met.", call. = FALSE)
+  
+  if(missing(name)){
+    name <- names(value)
+    if(is.null(name))
+      stop("If 'name' is not provided, 'value' should be a named vector", call. = FALSE)
+  }
+  
+  if(missing(units))
+    stop("argument 'units' is required for this function", call. = FALSE)
+  
+  units <- as.character(units)
+  
+  ## This invokes '$<-.data.frame' or not?
+  met[[name]] <- value
+  
+  attr(met, "colnames") <- colnames(met)
+  tmp.units <- attr(met, "units")
+  if(length(tmp.units) < length(colnames(met))){
+    attr(met, "units") <- c(tmp.units, units)    
+  }
+  return(met)
+}
 
-
+#' @rdname add_column_apsim_met
+#' @export
+`$<-.met` <- function(x, name, value){
+  if(is.null(attr(value, "units"))){
+    stop("It is recommended to use function add_column_apsim_met for this operation instead.
+         Partly because units are needed", call. = FALSE)    
+  }else{
+    if(!is.null(names(value))){
+      return(add_column_apsim_met(x, value = value, units = attr(value, "units")))  
+    }else{
+      stop("It is recommended to use function add_column_apsim_met for this operation instead.
+         Partly because units are needed", call. = FALSE)    
+    }
+  }
+}
 

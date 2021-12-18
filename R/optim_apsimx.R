@@ -600,7 +600,7 @@ log_lik <- function(.cfs){
     
     sim.s <- subset(sim, sim[,.index, drop = FALSE] %in% .data[[.index]], select = names(.data))  
     sim.s <- sim.s[order(sim.s[, .index]),]
-    .data <- .data[order(.data[, .index),]
+    .data <- .data[order(.data[, .index]),]
     
     if(!all(sim.s[[.index]] == .data[[.index]]))
       stop(paste("simulations and data for", .index, "do not match"))        
