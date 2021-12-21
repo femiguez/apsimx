@@ -1056,7 +1056,7 @@ plot.met <- function(x, ..., years, met.var,
     x <- x[x$year %in% years,]
   }
   
-  x$Years <- as.factor(x$year)
+  x <- add_column_apsim_met(x, value = as.factor(x$year), name = "Years", units = "()")
   
   if(isFALSE(summary)){
     if(!missing(met.var)){
@@ -1113,7 +1113,8 @@ plot.met <- function(x, ..., years, met.var,
           if(climatology){
             maxt.climatology$climatology <- "climatology"
             mint.climatology$climatology <- "climatology"
-            x$Years <- as.factor(x$year)
+            x <- add_column_apsim_met(x, value = as.factor(x$year), name = "Years", units = "()")
+            x <- as.data.frame(x)
             gp1 <- ggplot2::ggplot() + 
                             ggplot2::geom_line(data = x, ggplot2::aes(day, maxt, color = Years)) +
                             ggplot2::geom_line(data = x, ggplot2::aes(day, mint, color = Years), linetype = 2) +
@@ -1123,6 +1124,7 @@ plot.met <- function(x, ..., years, met.var,
                             ggplot2::geom_hline(yintercept = 0, linetype = 3) + 
                             ggplot2::ylab("Temperature (degree C)")                        
           }else{
+            x <- as.data.frame(x)
             gp1 <- ggplot2::ggplot(data = x) + 
               ggplot2::geom_line(ggplot2::aes(day, maxt, color = Years)) +
               ggplot2::geom_line(ggplot2::aes(day, mint, color = Years), linetype = 2) +
@@ -1159,6 +1161,7 @@ plot.met <- function(x, ..., years, met.var,
             }
             
             dat$Years <- as.factor(dat$year)
+            
             if(climatology){
               met.var.clima$cum.met.var <- cumsum(met.var.clima[[met.var]])
               
@@ -1176,6 +1179,7 @@ plot.met <- function(x, ..., years, met.var,
           }else{
             ylabel <- paste(met.var, met.var.units)
             if(climatology){
+              x <- as.data.frame(x)
               gp1 <- ggplot2::ggplot() + 
                 ggplot2::geom_point(data = x, ggplot2::aes(day, 
                                                  y = eval(parse(text = eval(met.var))),
@@ -1186,6 +1190,7 @@ plot.met <- function(x, ..., years, met.var,
                 ggplot2::scale_linetype_manual(name = NULL, values = 1) + 
                 ggplot2::ylab(ylabel)                  
             }else{
+              x <- as.data.frame(x)
               gp1 <- ggplot2::ggplot(data = x) + 
                               ggplot2::geom_point(ggplot2::aes(day, 
                                                  y = eval(parse(text = eval(met.var))),
@@ -1322,8 +1327,17 @@ add_column_apsim_met <- function(met, value, name, units){
 }
 
 #' @rdname add_column_apsim_met
+#' @param x object of class \sQuote{met}
+#' @param name name of the variable to be added or modified
+#' @param value value for the data.frame. It could be an integer, double or vector of length equal to the number of rows in x.
 #' @export
 `$<-.met` <- function(x, name, value){
+  
+  if(name %in% names(x)){
+    x[[name]] <- value
+    return(x)
+  }
+  
   if(is.null(attr(value, "units"))){
     stop("It is recommended to use function add_column_apsim_met for this operation instead.
          Partly because units are needed", call. = FALSE)    

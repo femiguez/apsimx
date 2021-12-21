@@ -61,10 +61,10 @@
     
   }else{
     
-    apsim.not.found <- "APSIM(X) not found. \n 
-             If APSIM(X) is installed in an alternative location,
-            set paths manually using 'apsimx_options' or 'apsim_options'.
-            You can still try as the package will look into the registry (under Windows)"
+    apsim.not.found <- "APSIM(X) not found.
+                        If APSIM(X) is installed in an alternative location,
+                        set paths manually using 'apsimx_options' or 'apsim_options'.
+                        You can still try as the package will look into the registry (under Windows)"
     
     ## if(length(find.mono) == 0) apsim.not.found <- c(find.mono, apsim.not.found)
 

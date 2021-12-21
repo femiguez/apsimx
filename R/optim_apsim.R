@@ -545,7 +545,7 @@ log_lik2 <- function(.cfs){
   if(nrow(sim.s) == 0L) stop("no rows selected in simulations")
   ## Assuming they are aligned, get rid of the 'index' column
   sim.s <- sim.s[,-which(names(sim.s) == .index)]
-  data <- .data[,-which(names(.data) == .index)]
+  .data <- .data[,-which(names(.data) == .index)]
   ## Now I need to calculate the residual sum of squares
   ## For this to work all variables should be numeric
   diffs <- as.matrix(.data) - as.matrix(sim.s)

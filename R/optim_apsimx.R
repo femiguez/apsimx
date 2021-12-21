@@ -613,7 +613,7 @@ log_lik <- function(.cfs){
     sim.s <- subset(sim.s0, select = names(.data))
     ## However, they need to be in the exact same order
     sim.s <- sim.s[order(sim.s[, .index[1]], sim.s[ ,.index[2]]),]
-    .data <- data[order(.data[, .index[1]], .data[, .index[2]]),]
+    .data <- .data[order(.data[, .index[1]], .data[, .index[2]]),]
     
     if(!all(sim.s[[.index[1]]] == .data[[.index[1]]]))
       stop(paste("simulations and data for", .index[1], "do not match"))        

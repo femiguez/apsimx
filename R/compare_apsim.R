@@ -69,7 +69,7 @@ compare_apsim <- function(...,
   
   nms1.i <- intersect(nms1, names(outs[[2]])) ## Variables in common
   
-  if(c("report", "Date") %in% nms1 && length(index) == 1){
+  if(all(c("report", "Date") %in% nms1) && length(index) == 1){
     stop("'report' and 'Date' found in first data frame but index length is equal to 1.
          Maybe index should be c('report', 'Date')?", call. = FALSE)
   }
@@ -319,7 +319,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
       prs <- paste0(variable, ".", pairs)
       gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs[1]))), 
                                                       y = eval(parse(text = eval(prs[2]))))) +
-        facet_wrap(~eval(parse(text = eval(by)))) + 
+        ggplot2::facet_wrap(~eval(parse(text = eval(by)))) + 
         ggplot2::geom_point() + 
         ggplot2::xlab(paste(o.nms[pairs[1]], prs[1])) + 
         ggplot2::ylab(paste(o.nms[pairs[2]], prs[2])) + 
