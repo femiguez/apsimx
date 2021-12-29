@@ -697,9 +697,9 @@ tt_apsim_met <- function(met, dates,
                                  to = end.date, 
                                  by = "day"), index = 0)
   
-  if("Classic_TT" %in% method) met$Classic_TT <- 0
-  if("HeatStress_TT" %in% method) met$HeatStress_TT <- 0
-  if("CropHeatUnit_TT" %in% method) met$CropHeatUnit_TT <- 0
+  if("Classic_TT" %in% method) met <- add_column_apsim_met(met, 0, "Classic_TT", units = "(Cd)")
+  if("HeatStress_TT" %in% method) met <- add_column_apsim_met(met, 0, "HeatStress_TT", units = "(Cd)")
+  if("CropHeatUnit_TT" %in% method) met <- add_column_apsim_met(met, 0, "CropHeatUnit_TT", units = "(Cd)")
   # if("APSIM_TT" %in% method) met$APSIM_TT <- 0
   if("APSIM_TT" %in% method) stop("Not implemented yet.", call. = FALSE)
   
@@ -779,7 +779,7 @@ tt_apsim_met <- function(met, dates,
     }
   }
 
-  met$Date <- tmpd$Dates
+  met <- add_column_apsim_met(met, tmpd$Dates, "Dates", units = "()")
   return(met)
 }
   
@@ -946,12 +946,19 @@ apsim_tt <- function(maxt, mint, Tb=10, To=30, cardinal.temps, gdd.coord){
 }
 
 ## Function to include the photoperiod in an APSIM met file
-pp_apsim_met <- function(metfile, sun_angle=0){
+pp_apsim_met <- function(metfile, lat, sun_angle=0){
   
   if(!inherits(metfile, "met"))
     stop("Object 'metfile' should be of class 'met'", call. = FALSE)
-  lat0 <-  attr(metfile, "latitude") # read latitude from the Measured file
-  lat <- as.numeric(strsplit(lat0, "=")[[1]][2])
+  if(missing(lat)){
+    lat0 <-  attr(metfile, "latitude") # read latitude from the Measured file
+    lat <- suppressWarnings(as.numeric(strsplit(lat0, "=")[[1]][2]))
+    if(is.na(lat)){
+      lat00 <- strsplit(lat0, "=")[[1]][2]
+      lat0 <- suppressWarnings(as.numeric(strsplit(lat00, " ")[[1]]))
+      lat <- lat0[!is.na(lat0)]
+    }    
+  }
   day <-  metfile$day                  # read day from the Met file 
   
   aeqnox <- 79.25              
@@ -974,7 +981,8 @@ pp_apsim_met <- function(metfile, sun_angle=0){
   coshra  <- pmin(pmax(coshra1, -1.0), 1.0)
   hrangl  <- acos (coshra)
   PP      <- hrangl * rdn2hr * 2.0          
-  metfile$photoperiod <- PP
+  ##metfile$photoperiod <- PP
+  metfile <- add_column_apsim_met(metfile, PP, "photoperiod", units = "(hour)")
   return(metfile)
 }
 
@@ -1251,10 +1259,20 @@ plot.met <- function(x, ..., years, met.var,
       tmp <- rbind(tmp, dat)
     }
     
-    if(plot.type == "ts"){
+    if(plot.type == "ts" && !climatology){
       gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = year, y = value, color = met.var)) + 
         ggplot2::geom_point() + 
         ggplot2::geom_line() + 
+        ggplot2::ylab(ylabs)
+      print(gp1)      
+    }
+    
+    if(plot.type == "ts" && climatology){
+      y.ints <- aggregate(value ~ met.var, data = tmp, FUN = mean, na.rm = TRUE)$value
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = year, y = value, color = met.var)) + 
+        ggplot2::geom_point() + 
+        ggplot2::geom_line() +
+        ggplot2::geom_hline(yintercept = y.ints, linetype = 2) + 
         ggplot2::ylab(ylabs)
       print(gp1)      
     }
