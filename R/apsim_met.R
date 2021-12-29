@@ -324,11 +324,15 @@ impute_apsim_met <- function(met, method = c("approx","spline","mean"), verbose 
 #' 
 check_apsim_met <- function(met){
   
-  if(!inherits(met, "met")) stop("object should be of class 'met'")
+  if(!inherits(met, "met")) 
+    stop("object should be of class 'met'", call. = FALSE)
   
-  if(nrow(met) == 0){
-    stop("No rows of data present in this object.")
-  }
+  if(nrow(met) == 0)
+    stop("No rows of data present in this object.", call. = FALSE)
+
+  
+  if(length(colnames(met)) != length(attr(met, "colnames")))
+    stop("Length of column names does not match the length of 'colnames' in the attributes", call. = FALSE)
   
   col.names <- attr(met, "colnames")
   
@@ -583,10 +587,10 @@ as_apsim_met <- function(x,
                          check = TRUE){
   
   if(!inherits(x, "data.frame"))
-    stop("Object should be of class data.frame")
+    stop("Object should be of class data.frame", call. = FALSE)
 
   if(ncol(x) != 6 && length(colnames) == 6)
-    stop("If number of columns is not 6 then provide column names")
+    stop("If number of columns is not 6 then provide column names", call. = FALSE)
   
   names(x) <- colnames
   
@@ -1129,6 +1133,7 @@ plot.met <- function(x, ..., years, met.var,
               ggplot2::geom_line(ggplot2::aes(day, maxt, color = Years)) +
               ggplot2::geom_line(ggplot2::aes(day, mint, color = Years), linetype = 2) +
               ggplot2::geom_hline(yintercept = 0, linetype = 3) + 
+              ggplot2::scale_linetype_manual(name = NULL, values = c(1, 2)) + 
               ggplot2::ylab("Temperature (degree C)")            
           }
           print(gp1)        
@@ -1289,13 +1294,16 @@ plot.met <- function(x, ..., years, met.var,
 #' 
 #' ## The recommended method is
 #' val <- abs(rnorm(nrow(ames), 10))
-#' nm <- "vp"
 #' ames <- add_column_apsim_met(ames, value = val, name = "vp", units = "(hPa)")
 #' 
 #' ## This is also possible
 #' vp <- data.frame(vp = abs(rnorm(nrow(ames), 10)))
 #' attr(vp, "units") <- "(hPa)"
 #' ames$vp <- vp
+#' 
+#' ## This is needed to ensure that units and related attributes are also removed
+#' ames <- remove_column_apsim_met(ames, "vp")
+#' ## However, ames$vp <- NULL will also work
 #' }
 #' 
 #' 
@@ -1333,6 +1341,14 @@ add_column_apsim_met <- function(met, value, name, units){
 #' @export
 `$<-.met` <- function(x, name, value){
   
+  if(is.null(value) && name %in% names(x)){
+    ## The thing here is that I also need to remove units and column names
+    x[[name]] <- value
+    attr(x, "colnames") <- attr(x, "colnames")[-which(names(x) == name)]
+    attr(x, "units") <- attr(x, "units")[-which(names(x) == name)]
+    return(x)
+  }
+  
   if(name %in% names(x)){
     x[[name]] <- value
     return(x)
@@ -1351,3 +1367,23 @@ add_column_apsim_met <- function(met, value, name, units){
   }
 }
 
+#' @rdname add_column_apsim_met
+#' @name remove_column_apsim_met
+#' @param met object of class \sQuote{met}
+#' @param name name of the variable to be removed
+#' @return an object of class \sQuote{met} without the variable (column) in \sQuote{name}
+#' @export
+remove_column_apsim_met <- function(met, name){
+  
+  if(!inherits(met, "met"))
+    stop("Object should be of class met.", call. = FALSE)
+  
+  if(missing(name)){
+      stop("'name' is not provided. It should be the name of the column to remove", call. = FALSE)
+  }
+  
+  attr(met, "units") <- attr(met, "units")[-which(names(met) == name)]   
+  met[[name]] <- NULL
+  attr(met, "colnames") <- names(met)
+  return(met)
+}

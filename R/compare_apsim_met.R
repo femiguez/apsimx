@@ -72,14 +72,14 @@ compare_apsim_met <- function(...,
   
   ## Create the 'date' for indexing
   nms1 <- names(met1)
-  met.mrg <- met1
+  met.mrg <- as.data.frame(met1)
   yr <- as.character(met1$year[1])
   met.mrg$dates <- as.Date(0:c(nrow(met1) - 1), origin = as.Date(paste0(yr, "-01-01")))
   names(met.mrg) <- c(paste0(names(met1), ".1"), "dates")
 
   for(i in 2:n.mets){
     
-    met.i <- mets[[i]]
+    met.i <- as.data.frame(mets[[i]])
     
     if(ncol(met1) != ncol(met.i)) stop("met objects should have the same number of columns", call. = FALSE)
     if(all(!names(met1) %in% names(met.i))) stop("met objects should have the same column names", call. = FALSE)
@@ -454,19 +454,40 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   }
 
   ## Store high maxt and mint temperature by year
-  ans[,4] <- round(stats::aggregate(maxt ~ year, data = x, FUN = max, na.rm = na.rm)$maxt, digits)
-  ans[,5] <- round(stats::aggregate(mint ~ year, data = x, FUN = max, na.rm = na.rm)$mint, digits)
-  ## Store mean maxt and mint temperature by year
-  ans[,6] <- round(stats::aggregate(maxt ~ year, data = x, FUN = mean, na.rm = na.rm)$maxt, digits)
-  ans[,7] <- round(stats::aggregate(mint ~ year, data = x, FUN = mean, na.rm = na.rm)$mint, digits)
-  ## Store min maxt and mint temperature by year
-  ans[,8] <- round(stats::aggregate(maxt ~ year, data = x, FUN = min, na.rm = na.rm)$maxt, digits)
-  ans[,9] <- round(stats::aggregate(mint ~ year, data = x, FUN = min, na.rm = na.rm)$mint, digits)
+  if(all(is.na(x$maxt))){
+    ans[,4] <- NA
+    ans[,6] <- NA
+    ans[,8] <- NA
+  }else{
+    ans[,4] <- round(stats::aggregate(maxt ~ year, data = x, FUN = max, na.rm = na.rm)$maxt, digits) 
+    ans[,6] <- round(stats::aggregate(maxt ~ year, data = x, FUN = mean, na.rm = na.rm)$maxt, digits)
+    ans[,8] <- round(stats::aggregate(maxt ~ year, data = x, FUN = min, na.rm = na.rm)$maxt, digits)
+  }
+  
+  if(all(is.na(x$mint))){
+    ans[,5] <- NA
+    ans[,7] <- NA
+    ans[,9] <- NA
+  }else{
+    ans[,5] <- round(stats::aggregate(mint ~ year, data = x, FUN = max, na.rm = na.rm)$mint, digits)
+    ans[,7] <- round(stats::aggregate(mint ~ year, data = x, FUN = mean, na.rm = na.rm)$mint, digits)
+    ans[,9] <- round(stats::aggregate(mint ~ year, data = x, FUN = min, na.rm = na.rm)$mint, digits)    
+  }
+  
   ## Total precipitation
-  ans[,10] <- round(stats::aggregate(rain ~ year, data = x, FUN = sum, na.rm = na.rm)$rain, digits)
+  if(all(is.na(x$rain))){
+    ans[,10] <- NA
+  }else{
+    ans[,10] <- round(stats::aggregate(rain ~ year, data = x, FUN = sum, na.rm = na.rm)$rain, digits)  
+  }
   ## Total and mean radiation
-  ans[,11] <- round(stats::aggregate(radn ~ year, data = x, FUN = sum, na.rm = na.rm)$radn, digits)
-  ans[,12] <- round(stats::aggregate(radn ~ year, data = x, FUN = mean, na.rm = na.rm)$radn, digits)
+  if(all(is.na(x$radn))){
+    ans[,11] <- NA
+    ans[,12] <- NA
+  }else{
+    ans[,11] <- round(stats::aggregate(radn ~ year, data = x, FUN = sum, na.rm = na.rm)$radn, digits)
+    ans[,12] <- round(stats::aggregate(radn ~ year, data = x, FUN = mean, na.rm = na.rm)$radn, digits)
+  }
   
   ## How do I compute the length of the growing season
   if(compute.frost){

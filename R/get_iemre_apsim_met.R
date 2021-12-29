@@ -28,7 +28,6 @@
 #' summary(iemre2)
 #' 
 #' ## Still it is important to check this object
-#' ## Since there is one day with missing solar radiation
 #' check_apsim_met(iemre2)
 #' }
 #' 
@@ -87,7 +86,10 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
     }
     pwr <- get_power_apsim_met(lonlat = lonlat, 
                                dates = as.Date(c(paste0(yr1, "-01-01"), paste0(yr2, "-12-31"))))
-    pwr$date <- as.Date(c(1:nrow(pwr)-1), origin = paste0(yr1,"-01-01"))
+    ##pwr$date <- as.Date(c(1:nrow(pwr)-1), origin = paste0(yr1,"-01-01"))
+    pwr <- add_column_apsim_met(pwr, 
+                                value = as.Date(c(1:nrow(pwr)-1), origin = paste0(yr1,"-01-01")),
+                                name = "date", units = "()")
     pwr <- subset(pwr, date >= as.Date(day1) & date <= as.Date(dayn))
     
     if(nrow(iem.dat2) != nrow(pwr))

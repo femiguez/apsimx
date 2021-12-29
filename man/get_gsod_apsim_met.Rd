@@ -47,10 +47,10 @@ TRUE it fill in radiation data using the nasapower package.
 \dontrun{
 require(GSODR)
 ## This will not write a file to disk
-gsd <- get_gsod_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"))
+gsd <- get_gsod_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"),
+                          fillin.radn = TRUE)
 summary(gsd)
 ## Check for reasonable ranges
-## Radiation is not included by default 
 check_apsim_met(gsd)
 }
 

@@ -21,10 +21,10 @@
 #' \dontrun{
 #' require(GSODR)
 #' ## This will not write a file to disk
-#' gsd <- get_gsod_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"))
+#' gsd <- get_gsod_apsim_met(lonlat = c(-93,42), dates = c("2012-01-01","2012-12-31"),
+#'                           fillin.radn = TRUE)
 #' summary(gsd)
 #' ## Check for reasonable ranges
-#' ## Radiation is not included by default 
 #' check_apsim_met(gsd)
 #' }
 #' 
@@ -40,6 +40,9 @@ get_gsod_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
   if(missing(filename)) filename <- "noname.met"
   
   if(!grepl(".met", filename, fixed = TRUE)) stop("filename should end in .met")
+  
+  yr1 <- as.numeric(format(as.Date(dates[1]), "%Y"))
+  yr2 <- as.numeric(format(as.Date(dates[2]), "%Y"))
   
   ## Get the station
   nr.st <- GSODR::nearest_stations(LAT = lonlat[2], LON = lonlat[1], distance = distance)
@@ -63,7 +66,9 @@ get_gsod_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
     }
     pwr <- get_power_apsim_met(lonlat = lonlat, 
                                dates = c(gsd$YEARMODA[1], gsd$YEARMODA[nrow(gsd)]))
-    pwr$date <- as.Date(1:nrow(pwr), origin = paste0(pwr$year[1],"-01-01"))
+    pwr <- add_column_apsim_met(pwr, 
+                                value = as.Date(c(1:nrow(pwr)-1), origin = paste0(yr1,"-01-01")),
+                                name = "date", units = "()")
     pwr <- subset(pwr, select = c("date", "radn"))
     names(pwr) <- c("date", "RADN")
     gsd$date <- gsd$YEARMODA

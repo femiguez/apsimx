@@ -42,8 +42,11 @@ get_chirps_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
   pwr <- get_power_apsim_met(lonlat = lonlat, dates = dates)
 
   pwr$rain <- chrp$chirps
-  pwr$rh <- NULL
-  pwr$wind_speed <- NULL
+  pwr[["rh"]] <- NULL
+  pwr[["windspeed"]] <- NULL
+  
+  attr(pwr, "units") <- c("()", "()", "(MJ/m2/day)", "(oC)", "(oC)", "(mm)")
+  attr(pwr, "colnames") <- c("year", "day", "radn", "maxt", "mint", "rain")
 
   chrp <- pwr
 
