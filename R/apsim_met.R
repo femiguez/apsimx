@@ -481,6 +481,7 @@ napad_apsim_met <- function(met){
     namet <- data.frame(date = dates)
     
     ## Create date column for merging
+    met <- as.data.frame(met)
     met$date <- as.Date(paste0(met$year, "-", met$day), format = "%Y-%j")
 
     ans <- merge(namet, met, by = "date", all.x = TRUE)
@@ -512,7 +513,6 @@ napad_apsim_met <- function(met){
                            day = 366,
                            fill.dat[, -c(1:2)])
     ans <- rbind(met, fill.row)
-    ans$date <- NULL
     fix2 <- TRUE
   }
   
@@ -1016,6 +1016,10 @@ pp_apsim_met <- function(metfile, lat, sun_angle=0){
 #' ## for rain
 #' plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)
 #' plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE, climatology = TRUE)
+#' ## It is possible to add ggplot elements
+#' library(ggplot2)
+#' p1 <- plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)
+#' p1 + ggtitle("Cumulative rain for 2012-2015")
 #' }
 #' 
 plot.met <- function(x, ..., years, met.var, 
@@ -1138,8 +1142,8 @@ plot.met <- function(x, ..., years, met.var,
           }else{
             x <- as.data.frame(x)
             gp1 <- ggplot2::ggplot(data = x) + 
-              ggplot2::geom_line(ggplot2::aes(day, maxt, color = Years)) +
-              ggplot2::geom_line(ggplot2::aes(day, mint, color = Years), linetype = 2) +
+              ggplot2::geom_line(ggplot2::aes(day, maxt, color = Years, linetype = "maxt")) +
+              ggplot2::geom_line(ggplot2::aes(day, mint, color = Years, linetype = "mint")) +
               ggplot2::geom_hline(yintercept = 0, linetype = 3) + 
               ggplot2::scale_linetype_manual(name = NULL, values = c(1, 2)) + 
               ggplot2::ylab("Temperature (degree C)")            
@@ -1147,7 +1151,8 @@ plot.met <- function(x, ..., years, met.var,
           print(gp1)        
         }
       }else{
-        if(met.var %in% c("rain", "radn", "vp", "rh", "maxt", "mint", "windspeed")){
+        if(met.var %in% c("rain", "radn", "vp", "rh", "maxt", "mint", "windspeed", 
+                          "Classic_TT", "HeatStress_TT", "CropHeatUnit_TT", "photoperiod")){
           
           met.var.units <- switch(met.var,
                                   rain = "(mm)",
@@ -1156,7 +1161,11 @@ plot.met <- function(x, ..., years, met.var,
                                   maxt = "(degrees C)",
                                   mint = "(degrees C)",
                                   vp = "(hPa)",
-                                  windspeed = "(m/s)")
+                                  windspeed = "(m/s)",
+                                  Classic_TT = "(Cd)",
+                                  HeatStress_TT = "(Cd)",
+                                  CropHeatUnit_TT = "(Cd)",
+                                  photoperiod = "(hours)")
 
           if(climatology){
             met.var.clima <- met.var.climatology[ ,c("day", met.var)]
@@ -1358,6 +1367,9 @@ add_column_apsim_met <- function(met, value, name, units){
 #' @param value value for the data.frame. It could be an integer, double or vector of length equal to the number of rows in x.
 #' @export
 `$<-.met` <- function(x, name, value){
+  
+  if(is.null(value) && !(name %in% names(x)))
+    stop("Trying to remove a column which is not present in object of class 'met'", call. = FALSE)
   
   if(is.null(value) && name %in% names(x)){
     ## The thing here is that I also need to remove units and column names

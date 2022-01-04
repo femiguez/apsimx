@@ -8,7 +8,11 @@ require(apsimx)
 
 run.apsim.met <- get(".run.local.tests", envir = apsimx.options)
 
-internet <- !is.null(utils::nsl("google.com"))
+if(.Platform$OS.type == "unix"){
+  internet <- !is.null(utils::nsl("google.com"))
+}else{
+  internet <- FALSE  
+}
   
 if(run.apsim.met && internet){
   
@@ -40,8 +44,8 @@ if(run.apsim.met && internet){
   check_apsim_met(gsd)
   gsd.np <- napad_apsim_met(gsd)
   gsd.imp <- impute_apsim_met(gsd.np)
-  check_apsim_met(gsd.imp)
-  plot(gsd.imp, met.var = "rain", years = 2010:2015, cumulative = TRUE, climatology = TRUE)
+  check_apsim_met(gsd.imp) ## Rain variable is missing
+  plot(gsd.imp, met.var = "radn", years = 2010:2015, cumulative = TRUE, climatology = TRUE)
   
   ## Test for Daymet data
   dmt <- get_daymet2_apsim_met(lonlat = c(-93, 42), years = c(2000, 2020))
@@ -56,7 +60,7 @@ if(run.apsim.met && internet){
 }
 
 ## Testing the feature for adding a column to a met file
-if(run.apsim.met){
+if(run.apsim.met && internet){
   
   ## Testing adding a column
   extd.dir <- system.file("extdata", package = "apsimx")
@@ -72,5 +76,13 @@ if(run.apsim.met){
   val <- abs(rnorm(nrow(ames), 2))
   nm <- "vp"
   ames <- add_column_apsim_met(ames, value = val, name = "vp", units = "(hPa)")
+  
+  ## Extra tests
+  ames <- ames[ames$year < 2018, ]
+  ames <- apsimx:::pp_apsim_met(ames)
+  ames <- tt_apsim_met(ames, dates = c("01-05", "30-10"), method = "Classic_TT")
+  
+  plot(ames, met.var = "photoperiod")
+  plot(ames, met.var = "Classic_TT")
     
 }

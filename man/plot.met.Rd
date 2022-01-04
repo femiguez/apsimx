@@ -54,6 +54,10 @@ plot(ames, years = 2012:2015, cumulative = TRUE)
 ## for rain
 plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)
 plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE, climatology = TRUE)
+## It is possible to add ggplot elements
+library(ggplot2)
+p1 <- plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)
+p1 + ggtitle("Cumulative rain for 2012-2015")
 }
 
 }
