@@ -1,5 +1,5 @@
 #'
-#' This function requires the \CRANpkg{chirps} package
+#' This function requires the \CRANpkg{chirps} package, version 0.1.4.
 #'
 #' @title Get CHIRPS data for an APSIM met file
 #' @description Uses \code{\link[chirps]{get_chirps}} from the \CRANpkg{chirps} package to download data to create an APSIM met file.
@@ -37,7 +37,7 @@ get_chirps_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
 
   objct <- data.frame(lon = lonlat[1], lat = lonlat[2])
 
-  chrp <- chirps::get_chirps(object = objct, dates = dates) ## This is only precipitation
+  chrp <- chirps::get_chirps(object = objct, dates = dates, server = "ClimateSERV") ## This is only precipitation
 
   pwr <- get_power_apsim_met(lonlat = lonlat, dates = dates)
 

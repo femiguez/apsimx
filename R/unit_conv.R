@@ -27,7 +27,8 @@
 #' \item \sQuote{g/m2} to \sQuote{lb/ac}
 #' \item \sQuote{decimal} to \sQuote{degrees}
 #' \item \sQuote{degrees} to \sQuote{decimal}
-#' 
+#' \item \sQuote{Fahrenheit} to \sQuote{Celsius}
+#' \item \sQuote{Celsius} to \sQuote{Fahrenheit} 
 #' }
 #' 
 #' This is for metric and Imperial conversions
@@ -59,10 +60,10 @@ unit_conv <- function(x, from, to, ...){
   
   from.table <- c("g/m2","Mg/ha","kg/m2","kg/ha","lb/ac","kg","lb",
                   "maize bu", "soy bu", "maize bu/ac", "soy bu/ac", "mm", "inches",
-                  "lb/ac", "degrees", "decimal")
+                  "lb/ac", "degrees", "decimal", "F", "Fahrenheit", "C", "Celsius")
   to.table <- c("g/m2","Mg/ha","kg/m2","kg/ha","lb/ac","kg","lb",
                 "maize bu", "soy bu", "maize bu/ac", "soy bu/ac", "mm", "inches",
-                "lb/ac", "degrees", "decimal")
+                "lb/ac", "degrees", "decimal", "F", "Fahrenheit", "C", "Celsius")
   
   from <- match.arg(from, from.table)
   to <- match.arg(to, to.table)
@@ -202,6 +203,16 @@ unit_conv <- function(x, from, to, ...){
   
   if(from == "g/m2" && to == "lb/ac"){
     ans <- (x / (0.453592 * 2.47105)) * 10
+    convs <- TRUE
+  }
+  
+  if((from == "Fahrenheit" && to == "Celsius") || (from == "F" && to == "C")){
+    ans <- (x - 32) * (5/9)
+    convs <- TRUE
+  }
+  
+  if((from == "Celsius" && to == "Fahrenheit") || (from == "C" && to == "F")){
+    ans <- (x * 9/5) + 32
     convs <- TRUE
   }
   

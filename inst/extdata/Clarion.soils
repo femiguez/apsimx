@@ -1,0 +1,388 @@
+<soils version="36">
+  <Soil name="Clarion soil series (Ames No1018)">
+    <RecordNumber>928</RecordNumber>
+    <ASCOrder />
+    <ASCSubOrder />
+    <SoilType>Other</SoilType>
+    <LocalName />
+    <Site>Iowa State University Experimental farm</Site>
+    <NearestTown>Ames</NearestTown>
+    <Region />
+    <State>Iowa</State>
+    <Country>USA</Country>
+    <NaturalVegetation>maize and soybean, native vegetation is tall grass prairie</NaturalVegetation>
+    <ApsoilNumber>1018</ApsoilNumber>
+    <Latitude>42.1</Latitude>
+    <Longitude>-93.45</Longitude>
+    <LocationAccuracy />
+    <YearOfSampling>0</YearOfSampling>
+    <DataSource>Agronomy Journal 106: 1025-1040 (Archontoulis et al., 2014 - Evaluating APSIM maize, soil water, soil nitrogen, manure and soil temperature modules in the midwestern united states). Initial soil information from web soil survey (http://websoilsurvey.sc.egov.usda.gov/App/HomePage.htm). </DataSource>
+    <Comments>Clarion soil series - Fine-loamy,  mixed,  superactive, mesic Typic Hapludolls, The Clarion series consists of very deep, moderately well drained soils on uplands. These soils formed in glacial till. Mean annual air temperature is about 9 degrees C (48 degrees F). Mean annual precipitation is about 760 mm (30 inches). </Comments>
+    <Water>
+      <Thickness>
+        <double>180</double>
+        <double>120</double>
+        <double>160</double>
+        <double>200</double>
+        <double>250</double>
+        <double>410</double>
+        <double>200</double>
+        <double>500</double>
+      </Thickness>
+      <BD>
+        <double>1.425</double>
+        <double>1.425</double>
+        <double>1.425</double>
+        <double>1.6</double>
+        <double>1.6</double>
+        <double>1.6</double>
+        <double>1.6</double>
+        <double>1.6</double>
+      </BD>
+      <AirDry>
+        <double>0.144</double>
+        <double>0.132</double>
+        <double>0.147</double>
+        <double>0.165</double>
+        <double>0.165</double>
+        <double>0.105</double>
+        <double>0.105</double>
+        <double>0.105</double>
+      </AirDry>
+      <LL15>
+        <double>0.16</double>
+        <double>0.147</double>
+        <double>0.147</double>
+        <double>0.165</double>
+        <double>0.165</double>
+        <double>0.105</double>
+        <double>0.105</double>
+        <double>0.105</double>
+      </LL15>
+      <DUL>
+        <double>0.297</double>
+        <double>0.289</double>
+        <double>0.289</double>
+        <double>0.293</double>
+        <double>0.293</double>
+        <double>0.25</double>
+        <double>0.25</double>
+        <double>0.25</double>
+      </DUL>
+      <SAT>
+        <double>0.412</double>
+        <double>0.412</double>
+        <double>0.412</double>
+        <double>0.346</double>
+        <double>0.346</double>
+        <double>0.346</double>
+        <double>0.346</double>
+        <double>0.346</double>
+      </SAT>
+      <BDMetadata>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+      </BDMetadata>
+      <AirDryMetadata>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+      </AirDryMetadata>
+      <LL15Metadata>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+      </LL15Metadata>
+      <DULMetadata>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+      </DULMetadata>
+      <SATMetadata>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+      </SATMetadata>
+      <SoilCrop name="maize">
+        <Thickness>
+          <double>180</double>
+          <double>120</double>
+          <double>160</double>
+          <double>200</double>
+          <double>250</double>
+          <double>410</double>
+          <double>200</double>
+          <double>500</double>
+        </Thickness>
+        <LL>
+          <double>0.16</double>
+          <double>0.147</double>
+          <double>0.147</double>
+          <double>0.165</double>
+          <double>0.165</double>
+          <double>0.105</double>
+          <double>0.105</double>
+          <double>0.105</double>
+        </LL>
+        <KL>
+          <double>0.08</double>
+          <double>0.08</double>
+          <double>0.08</double>
+          <double>0.08</double>
+          <double>0.08</double>
+          <double>0.06</double>
+          <double>0.03</double>
+          <double>0.01</double>
+        </KL>
+        <XF>
+          <double>1</double>
+          <double>1</double>
+          <double>1</double>
+          <double>1</double>
+          <double>1</double>
+          <double>0.9</double>
+          <double>0.5</double>
+          <double>0.4</double>
+        </XF>
+        <LLMetadata>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+        </LLMetadata>
+      </SoilCrop>
+      <SoilCrop name="soybean">
+        <Thickness>
+          <double>180</double>
+          <double>120</double>
+          <double>160</double>
+          <double>200</double>
+          <double>250</double>
+          <double>410</double>
+          <double>200</double>
+          <double>500</double>
+        </Thickness>
+        <LL>
+          <double>0.16</double>
+          <double>0.147</double>
+          <double>0.147</double>
+          <double>0.165</double>
+          <double>0.165</double>
+          <double>0.105</double>
+          <double>0.105</double>
+          <double>0.105</double>
+        </LL>
+        <KL>
+          <double>0.08</double>
+          <double>0.08</double>
+          <double>0.08</double>
+          <double>0.08</double>
+          <double>0.08</double>
+          <double>0.06</double>
+          <double>0.03</double>
+          <double>0.01</double>
+        </KL>
+        <XF>
+          <double>1</double>
+          <double>1</double>
+          <double>1</double>
+          <double>1</double>
+          <double>1</double>
+          <double>0.09</double>
+          <double>0.05</double>
+          <double>0.04</double>
+        </XF>
+        <LLMetadata>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+          <string>Unknown source or quality of data</string>
+        </LLMetadata>
+      </SoilCrop>
+    </Water>
+    <SoilWater>
+      <SummerCona>3.675</SummerCona>
+      <SummerU>7.975</SummerU>
+      <SummerDate>1-jun</SummerDate>
+      <WinterCona>3.675</WinterCona>
+      <WinterU>3.975</WinterU>
+      <WinterDate>1-dec</WinterDate>
+      <DiffusConst>40</DiffusConst>
+      <DiffusSlope>16</DiffusSlope>
+      <Salb>0.13</Salb>
+      <CN2Bare>73</CN2Bare>
+      <CNRed>20</CNRed>
+      <CNCov>0.8</CNCov>
+      <Slope>NaN</Slope>
+      <DischargeWidth>NaN</DischargeWidth>
+      <CatchmentArea>NaN</CatchmentArea>
+      <MaxPond>NaN</MaxPond>
+      <Thickness>
+        <double>180</double>
+        <double>120</double>
+        <double>160</double>
+        <double>200</double>
+        <double>250</double>
+        <double>410</double>
+        <double>200</double>
+        <double>500</double>
+      </Thickness>
+      <SWCON>
+        <double>0.358</double>
+        <double>0.375</double>
+        <double>0.375</double>
+        <double>0.261</double>
+        <double>0.261</double>
+        <double>0.369</double>
+        <double>0.369</double>
+        <double>0.37</double>
+      </SWCON>
+    </SoilWater>
+    <SoilOrganicMatter>
+      <RootCN>45</RootCN>
+      <RootWt>1000</RootWt>
+      <SoilCN>13</SoilCN>
+      <EnrACoeff>7.4</EnrACoeff>
+      <EnrBCoeff>0.2</EnrBCoeff>
+      <Thickness>
+        <double>180</double>
+        <double>120</double>
+        <double>160</double>
+        <double>200</double>
+        <double>250</double>
+        <double>410</double>
+        <double>200</double>
+        <double>500</double>
+      </Thickness>
+      <OC>
+        <double>2.035</double>
+        <double>1.453</double>
+        <double>1.453</double>
+        <double>0.727</double>
+        <double>0.727</double>
+        <double>0.145</double>
+        <double>0.145</double>
+        <double>0.1</double>
+      </OC>
+      <OCMetadata>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+      </OCMetadata>
+      <FBiom>
+        <double>0.035</double>
+        <double>0.018</double>
+        <double>0.014</double>
+        <double>0.01</double>
+        <double>0.01</double>
+        <double>0.01</double>
+        <double>0.01</double>
+        <double>0.01</double>
+      </FBiom>
+      <FInert>
+        <double>0.4</double>
+        <double>0.512</double>
+        <double>0.624</double>
+        <double>0.768</double>
+        <double>0.8</double>
+        <double>0.8</double>
+        <double>0.874</double>
+        <double>0.96</double>
+      </FInert>
+      <OCUnits>Total</OCUnits>
+    </SoilOrganicMatter>
+    <Analysis>
+      <Thickness>
+        <double>180</double>
+        <double>120</double>
+        <double>160</double>
+        <double>200</double>
+        <double>250</double>
+        <double>410</double>
+        <double>200</double>
+        <double>500</double>
+      </Thickness>
+      <PH>
+        <double>6.317</double>
+        <double>6.317</double>
+        <double>6.317</double>
+        <double>6.582</double>
+        <double>6.582</double>
+        <double>7.96</double>
+        <double>7.96</double>
+        <double>7.96</double>
+      </PH>
+      <PHMetadata>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+      </PHMetadata>
+      <ParticleSizeClay>
+        <double>21</double>
+        <double>21</double>
+        <double>21</double>
+        <double>27</double>
+        <double>27</double>
+        <double>17</double>
+        <double>17</double>
+        <double>17</double>
+      </ParticleSizeClay>
+      <ParticleSizeClayMetadata>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+        <string>Unknown source or quality of data</string>
+      </ParticleSizeClayMetadata>
+      <PHUnits>Water</PHUnits>
+      <BoronUnits>HotWater</BoronUnits>
+    </Analysis>
+  </Soil>
+</soils>

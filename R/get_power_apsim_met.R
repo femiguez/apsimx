@@ -1,5 +1,7 @@
 #'
 #' This function requires the \CRANpkg{nasapower} package version 4.0.0.
+#' 
+#' It looks like the earliest year you can request data for is 1984.
 #'
 #' @title Get NASA-POWER data for an APSIM met file
 #' @description Uses \code{\link[nasapower]{get_power}} from the \CRANpkg{nasapower} package to download data to create an APSIM met file.

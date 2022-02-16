@@ -6,7 +6,7 @@
 #' * If a the request is for a spatial polygon, then an object of class \sQuote{sf} is returned
 #' with gid, mukey and area_ac with GEOMETRY type: POLYGON.
 #' 
-#' @title Retrieve soil profile data and return a table with data
+#' @title Retrieve soil profile data and return a (list) with data frames (tables)
 #' @description This function does partially what get_ssurgo_soil_profile does, but it 
 #' returns a list with tables for mapunit, component, chorizon and mapunit.shp (object of class sf)
 #' @name get_ssurgo_tables
@@ -15,7 +15,7 @@
 #' lonlat by some amount of distance (e.g. 300 - in meters)
 #' @param aoi area of interest, if supplied the lonlat and shift arguments will be ignored. Should be
 #' of class \sQuote{sp::SpatialPolygons}.
-#' @param verbose whether to pring messages and warnings to the console default FALSE
+#' @param verbose whether to print messages and warnings to the console default FALSE
 #' @return a list with elements: mapunit, component, chorizon and mapunit.shp
 #' @export
 #' @examples 

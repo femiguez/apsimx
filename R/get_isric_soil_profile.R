@@ -168,24 +168,29 @@ get_isric_soil_profile <- function(lonlat,
   ## The soil texture class will be based on the first layer only
   txt_clss <- texture_class(soil_profile$soil$ParticleSizeClay[1] * 1e-2, soil_profile$soil$ParticleSizeSilt[1] * 1e-2)
   t2sp <- texture2soilParms(txt_clss)
-  soil_profile$soilwat <- soilwat_parms(Salb = t2sp$Albedo, CN2Bare = t2sp$CN2, 
-                                        SWCON = rep(t2sp$SWCON, nrow(soil_profile$soil)),
-                                        Thickness = thcknss)
   
-  if(requireNamespace("maps", quietly = TRUE)){
-    country <- maps::map.where(x = lon, y = lat)
-    if(country == "USA"){
-      state <- toupper(maps::map.where(database = "county", x = lon, y = lat)) 
+  if(missing(soil.profile) || (!missing(soil.profile) && !is.list(soil.profile$soilwat))){
+    soil_profile$soilwat <- soilwat_parms(Salb = t2sp$Albedo, CN2Bare = t2sp$CN2, 
+                                          SWCON = rep(t2sp$SWCON, nrow(soil_profile$soil)),
+                                          Thickness = thcknss)    
+  }
+
+  if(find.location.name){
+    if(requireNamespace("maps", quietly = TRUE)){
+      country <- maps::map.where(x = lon, y = lat)
+      if(country == "USA"){
+        state <- toupper(maps::map.where(database = "county", x = lon, y = lat)) 
+      }else{
+        url <- paste0("https://photon.komoot.io/reverse?lon=", lon, "&lat=", lat)
+        fgeo <- jsonlite::fromJSON(url)
+        state <- fgeo$feature$properties$state
+      }
     }else{
       url <- paste0("https://photon.komoot.io/reverse?lon=", lon, "&lat=", lat)
       fgeo <- jsonlite::fromJSON(url)
       state <- fgeo$feature$properties$state
-    }
-  }else{
-    url <- paste0("https://photon.komoot.io/reverse?lon=", lon, "&lat=", lat)
-    fgeo <- jsonlite::fromJSON(url)
-    state <- fgeo$feature$properties$state
-    country <- fgeo$features$properties$country
+      country <- fgeo$features$properties$country
+    }    
   }
 
   #### Attributes ####

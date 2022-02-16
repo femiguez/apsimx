@@ -1,6 +1,6 @@
 Package: apsimx
 Title: Inspect, Read, Edit and Run 'APSIM' "Next Generation" and 'APSIM' Classic
-Version: 2.3.1
+Version: 2.3.2
 Authors@R: person("Fernando", "Miguez", email = "femiguez@iastate.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-4627-8329"))
 Description: The functions in this package inspect, read, edit and run files for 'APSIM' "Next Generation" ('JSON')
              and 'APSIM' "Classic" ('XML'). The files with an 'apsim' extension correspond to
@@ -14,32 +14,32 @@ VignetteBuilder: knitr
 BugReports: https://github.com/femiguez/apsimx/issues
 Imports:
         DBI,
-	      jsonlite,
+        jsonlite,
         knitr,
         RSQLite,
-	      tools,
-	      utils,
-	      xml2
+        tools,
+        utils,
+        xml2
 Suggests:
         BayesianTools,
         chirps,
         datasets,
         daymetr,
         FedData,
-	      ggplot2,
-	      GSODR,
-	      listviewer,
-	      maps,
-	      mvtnorm,
-	      nasapower,
-	      nloptr,
-	      reactR,
-	      rmarkdown,
-	      sensitivity,
-	      soilDB,
-	      sp,
-	      spData,
-	      sf,
-	      ucminf
+        ggplot2,
+        GSODR,
+        listviewer,
+        maps,
+        mvtnorm,
+        nasapower,
+        nloptr,
+        reactR,
+        rmarkdown,
+        sensitivity,
+        soilDB,
+        sp,
+        spData,
+        sf,
+        ucminf
 LazyData: true
 RoxygenNote: 7.1.1

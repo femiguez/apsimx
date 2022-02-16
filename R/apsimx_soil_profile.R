@@ -729,6 +729,9 @@ check_apsimx_soil_profile <- function(x){
 #' @param soil.var meteorological variable to use in the comparison. Either \sQuote{all},
 #' \sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
 #' \sQuote{wind_speed} or \sQuote{vp}. 
+#' @param property meteorological variable to use in the comparison. Either \sQuote{all},
+#' \sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
+#' \sQuote{wind_speed} or \sQuote{vp}. 
 #' @param labels labels for plotting and identification of \sQuote{soil_profile} objects.
 #' @param check whether to check \sQuote{soil_profile} objects using \sQuote{check_apsimx_soil_profile}.
 #' @param verbose whether to print agreement values (default is FALSE).
@@ -758,6 +761,7 @@ compare_apsim_soil_profile <- function(...,
                                           "DUL", "SAT", "KS", "Carbon", "SoilCNRatio",
                                           "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
                                           "NH4N", "PH"),
+                                      property,
                                       labels,
                                       check = FALSE,
                                       verbose = FALSE){
@@ -767,6 +771,11 @@ compare_apsim_soil_profile <- function(...,
   n.soils <- length(soils)
   
   soil.var <- match.arg(soil.var)
+  
+  if(!missing(property)) soil.var <- property
+  
+  if(!missing(property) && soil.var == "all")
+    warning("Either use property or soil.var but not both. soil.var will be ignored.")
   
   if(n.soils < 2) stop("you should provide at least two soil_profiles", call. = FALSE)
   
@@ -1178,6 +1187,102 @@ carbon_stocks <- function(x, depth, area = c("m2", "ha"), method = c("linear", "
     ans <- total.carbon
     attr(ans, "units") <- "kg/m2"
   }
+  attr(ans, "depth (m)") <- depth 
+  return(ans)
+}
+
+#' Function to calculate available water content. The output units depend on the choice of area.
+#' If \sQuote{m} is used, then the output units will be \sQuote{mm}. If the \sQuote{area} is \sQuote{m2},
+#' then the output units will be in \sQuote{m3}. If the \sQuote{area} is \sQuote{ha}, then the output units will be \sQuote{kg/ha}.
+#' 
+#' @title Calculate available water content
+#' @description Calculation of available water content based on an object of class \sQuote{soil_profile}
+#' @name available_water_content
+#' @param x object of class \sQuote{soil_profile}
+#' @param depth soil depth (in meters). If missing then the whole soil profile is used.
+#' @param area either \sQuote{m} meter, \sQuote{m2} meter squared or \sQuote{ha}.
+#' @param method interpolation method. Either \sQuote{linear} or \sQuote{constant}.
+#' @param weights optional weights
+#' @param ... additional arguments passed to internal functions (none used at the moment).
+#' @return returns a value with attribute \sQuote{units} and \sQuote{depth}
+#' @export
+#' @examples 
+#' \dontrun{
+#' sp <- apsimx_soil_profile()
+#' available_water_content(sp)
+#' }
+
+available_water_content <- function(x, 
+                                    depth, 
+                                    area = c("m", "m2", "ha"), 
+                                    method = c("linear", "constant"), 
+                                    weights, ...){
+  
+  if(!inherits(x, "soil_profile")){
+    stop("This function is intended to be used with an object of class 'soil_profile'", call. = FALSE)
+  }
+  
+  bottom <- sum(x$soil$Thickness) * 1e-3 ## Thickness is in mm, so after conversion this is in meters
+  
+  if(!missing(depth)){
+    if(depth <= 0) stop("'depth' should be a positive number", call. = FALSE)
+    if(depth > bottom) stop("'depth' should be a lower number than the bottom of the soil profile ", call. = FALSE)
+    if(depth > 10){
+      warning("'depth' should be in meters and the value entered is larger than 10. Is this correct?")
+    }
+  }
+  
+  area <- match.arg(area)
+  method <- match.arg(method)
+  
+  ## Compute carbon for the whole profile
+  if(missing(depth)){
+    layer.depth <- x$soil$Thickness ## Thickness in mm
+    layer.awc <- x$soil$DUL - x$soil$LL15
+    total.awc <- sum(layer.depth * layer.awc)
+    depth <- bottom
+  }else{
+    ## If depth only includes the first layer
+    if(depth <= x$soil$Thickness[1] * 1e-3){
+      first.layer.awc <- x$soil$DUL[1] - x$soil$LL15[1]
+      total.awc <- first.layer.awc * (depth * 1e3) ## Depth is in meters, this answer is in mm
+    }else{
+      total.awc <- 0
+      cum.thick <- cumsum(x$soil$Thickness) * 1e-3 ## Cumulative thickness in meters
+      for(i in 1:nrow(x$soil)){
+        ## If the desired depth is greater than the current depth
+        ## then add the available water content as it is
+        if(depth >= cum.thick[i]){ 
+          layer.awc <- (x$soil$DUL[i] - x$soil$LL15[i]) * x$soil$Thickness[i] ## in mm
+          total.awc <- total.awc + layer.awc
+        }else{
+          ## In this case, we need to interpolate 
+          awc <- x$soil$DUL - x$soil$LL15
+          dat <- data.frame(depth = cum.thick, awc = awc)
+          tmp.awc <- stats::approx(dat$depth, y = dat$awc, xout = depth, method = method)
+          layer.awc <- tmp.awc$y * (depth - cum.thick[i - 1]) * 1e3 ## This is in mm
+          total.awc <- total.awc + layer.awc
+          break
+        }
+      }
+    }
+  }
+
+  if(area == "m"){
+    ans <- total.awc 
+    attr(ans, "units") <- "mm"
+  }
+  
+  if(area == "m2"){
+    ans <- total.awc * 1e-3 ## 1e-3 converts from mm to m3
+    attr(ans, "units") <- "m3"
+  }
+  
+  if(area == "ha"){
+    ans <- total.awc * 1e4 ## 1 mm is = 1 kg/m2, 1 ha = 10000m2
+    attr(ans, "units") <- "kg/ha"
+  }
+  
   attr(ans, "depth (m)") <- depth 
   return(ans)
 }
