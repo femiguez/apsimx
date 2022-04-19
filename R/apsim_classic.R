@@ -163,11 +163,13 @@ auto_detect_apsim <- function(){
   
   ## APSIM executable
   st3 <- "/Model/Apsim.exe" 
-  if(length(apsim.name) >= 1 && is.na(apsimx::apsim.options$exe.path)){
-    apsim_dir <- paste0(st1, apsim.name, st3)
-  }else{
-    stop("APSIM not found. Please try setting the path manually through 'apsim_optim'", call. = FALSE)
-  } 
+  if(is.na(apsimx::apsim.options$exe.path)){
+    if(length(apsim.name) >= 1){
+      apsim_dir <- paste0(st1, apsim.name, st3)  
+    }else{
+      stop("APSIM not found. Please try setting the path manually through 'apsim_options'", call. = FALSE)
+    }
+  }
   
   if(!is.na(apsimx::apsim.options$exe.path)){
     ## Windows paths can contain white spaces which are

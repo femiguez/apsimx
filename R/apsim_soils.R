@@ -355,6 +355,7 @@ write_apsim_soils <- function(x, wrt.dir = "."){
     }
     
     double.vars <- c("Thickness", "BD", "AirDry", "LL15", "DUL", "SAT")
+    metadata.vars <- c("BDMetadata", "AirDryMetadata", "LL15Metadata", "DULMetadata", "SATMetadata")
     ## Add soil water
     water.node <- xml2::read_xml("<Water></Water>")
     xml2::xml_add_child(curr.soil, water.node)
@@ -369,11 +370,24 @@ write_apsim_soils <- function(x, wrt.dir = "."){
           xml2::xml_add_child(soil.water.node, dbl.vr)
         }
       }
-      ## If metadata
+      ## If metadata, I don't know what to do
+      if(scn %in% metadata.vars){
+        for(k in seq_along(scv)){
+          mtd.vr <- xml2::read_xml(paste0("<string>", scv[k], "</string>")) ## string variable
+          xml2::xml_add_child(soil.water.node, mtd.vr)
+        }
+      }
+      
+      ## Add soil crop
       curr.water <- xml2::xml_child(curr.soil, ".//Water")
       xml2::xml_add_child(curr.water, soil.water.node)
-      
     }
+    ## Add soil carbon
+    
     
   }
+  ## Write to file
+  ## This is ugly at the moment, but do not know how to fix it
+  xml2::write_xml(curr.soil, file = "current_soil_whitespace.xml",
+                  options = "format_whitespace")
 }

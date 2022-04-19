@@ -15,7 +15,7 @@
 #' Do not use this and also the other node arguments. This argument will
 #' overwrite the other node specifications.
 #' @param root \sQuote{root} for the inspection of a replacement file (it gives flexibility to inspect other types of files).
-#' @param parm specific parameter to display
+#' @param parm specific parameter to display. It can be a regular expression.
 #' @param display.available logical. Whether to display available components to be inspected (default = FALSE)
 #' @param digits number of decimals to print (default 3)
 #' @param print.path print the path to the inspected parameter (default FALSE)

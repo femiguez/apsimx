@@ -19,7 +19,7 @@
 #' \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Report} or \sQuote{Other} 
 #' @param soil.child specific soil component to be edited
 #' @param manager.child specific manager component to be edited
-#' @param parm parameter to be edited
+#' @param parm parameter to be edited. It can be a regular expression.
 #' @param value new values for the parameter to be edited 
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
 #' @param edit.tag if the file is edited a different tag from the default \sQuote{-edited} can be used.
