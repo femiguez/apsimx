@@ -33,6 +33,9 @@ Calculation of carbon stocks based on an object of class \sQuote{soil_profile}
 Function to calculate carbon stocks. The output units depend on the choice of area.
 If \sQuote{m2} is used, then the output units will be \sQuote{kg/m2}. If the \sQuote{area}
 is \sQuote{ha}, then the output units will be \sQuote{Mg/ha}.
+
+Note that the bulk density (which is needed in the calculation) is
+available as part of the \sQuote{soil_profile} object.
 }
 \examples{
 \dontrun{

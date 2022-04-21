@@ -33,7 +33,7 @@ returns an object of class \sQuote{met} and writes a file to disk when filename 
 Uses \code{\link[chirps]{get_chirps}} from the \CRANpkg{chirps} package to download data to create an APSIM met file.
 }
 \details{
-This function requires the \CRANpkg{chirps} package
+This function requires the \CRANpkg{chirps} package, version 0.1.4.
 
 If the filename is not provided it will not write the file to disk,
 but it will return an object of class \sQuote{met}. This is useful in case manipulation

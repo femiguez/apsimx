@@ -49,7 +49,7 @@ overwrite the other node specifications.}
 
 \item{root}{\sQuote{root} for the inspection of a replacement file (it gives flexibility to inspect other types of files).}
 
-\item{parm}{specific parameter to display}
+\item{parm}{specific parameter to display. It can be a regular expression.}
 
 \item{display.available}{logical. Whether to display available components to be inspected (default = FALSE)}
 

@@ -8,7 +8,8 @@ read_apsim(
   file = "",
   src.dir = ".",
   value = c("report", "all"),
-  date.format = "\%d/\%m/\%Y"
+  date.format = "\%d/\%m/\%Y",
+  silent = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ read_apsim(
 \item{value}{either \sQuote{report} (data.frame) or \sQuote{all} (list)}
 
 \item{date.format}{format for adding \sQuote{Date} column}
+
+\item{silent}{whether to issue warnings or suppress them}
 }
 \value{
 This function returns a data frame with APSIM output or a list if value equals \sQuote{all}

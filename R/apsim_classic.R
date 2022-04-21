@@ -73,7 +73,8 @@ apsim <- function(file = "", src.dir = ".",
   ## always be the current one
   if(value != "none"){
     if(length(output.names) == 1){
-      ans <- read_apsim(file = output.names, src.dir = src.dir, value = value)
+      ans <- read_apsim(file = output.names, src.dir = src.dir, 
+                        value = value, silent = silent)
     }else{
       ## This will only work when output files have the same columns
       ans <- read_apsim_all(filenames = output.names, 
@@ -317,6 +318,7 @@ apsim_example <- function(example = "Millet", silent = FALSE, tmp.dir = NULL){
 #' @param src.dir source directory where file is located
 #' @param value either \sQuote{report} (data.frame) or \sQuote{all} (list)
 #' @param date.format format for adding \sQuote{Date} column 
+#' @param silent whether to issue warnings or suppress them
 #' @return This function returns a data frame with APSIM output or a list if value equals \sQuote{all}
 #' @export
 #' @examples 
@@ -329,7 +331,8 @@ apsim_example <- function(example = "Millet", silent = FALSE, tmp.dir = NULL){
 
 read_apsim <- function(file = "", src.dir = ".",
                        value = c("report", "all"),
-                       date.format = "%d/%m/%Y"){
+                       date.format = "%d/%m/%Y",
+                       silent = FALSE){
   
   if(file == "") stop("need to specify file name")
   
@@ -374,10 +377,23 @@ read_apsim <- function(file = "", src.dir = ".",
   }
   
   names(out.file) <- hdr
-  ## Read summary file
+  ## Read summary file, but fail more or less gracefully
   file.name.summary <- paste0(src.dir, "/", file, ".sum")
   sum.file <- try(readLines(con = file.name.summary), silent = TRUE)
-  if(inherits(sum.file, "try-error")) stop("Could not find summary file")
+  if(inherits(sum.file, "try-error")){
+    lf.sum <- list.files(path = src.dir, pattern = "sum$")
+    if(length(lf.sum) == 0){
+      if(!silent) warning("Could not find summary file.")  
+    }
+    if(length(lf.sum) == 1){
+      ## This means that this is likely the correct file
+      sum.file <- try(readLines(con = lf.sum), silent = TRUE)    
+      if(inherits(sum.file, "try-error"))
+        if(!silent) warning("Could not read summary file.")
+    }
+    if(length(lf.sum > 1))
+      if(!silent) warning("Multiple 'sum' files. Don't know which one is the correct one.")
+  }
   
   if(any(grepl("Date", hdr, ignore.case = TRUE))){
     wcid <- grep("Date", hdr, ignore.case = TRUE) ## The short name stands for 'which column is date'

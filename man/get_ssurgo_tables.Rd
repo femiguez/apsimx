@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_ssurgo_tables.R
 \name{get_ssurgo_tables}
 \alias{get_ssurgo_tables}
-\title{Retrieve soil profile data and return a table with data}
+\title{Retrieve soil profile data and return a (list) with data frames (tables)}
 \usage{
 get_ssurgo_tables(lonlat, shift = -1, aoi, verbose = FALSE)
 }
@@ -15,7 +15,7 @@ lonlat by some amount of distance (e.g. 300 - in meters)}
 \item{aoi}{area of interest, if supplied the lonlat and shift arguments will be ignored. Should be
 of class \sQuote{sp::SpatialPolygons}.}
 
-\item{verbose}{whether to pring messages and warnings to the console default FALSE}
+\item{verbose}{whether to print messages and warnings to the console default FALSE}
 }
 \value{
 a list with elements: mapunit, component, chorizon and mapunit.shp

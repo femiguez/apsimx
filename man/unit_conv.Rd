@@ -51,7 +51,8 @@ At the moment possible conversions are:
 \item \sQuote{g/m2} to \sQuote{lb/ac}
 \item \sQuote{decimal} to \sQuote{degrees}
 \item \sQuote{degrees} to \sQuote{decimal}
-
+\item \sQuote{Fahrenheit} to \sQuote{Celsius}
+\item \sQuote{Celsius} to \sQuote{Fahrenheit} 
 }
 
 This is for metric and Imperial conversions

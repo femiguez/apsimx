@@ -24,6 +24,8 @@ Uses \code{\link[nasapower]{get_power}} from the \CRANpkg{nasapower} package to 
 \details{
 This function requires the \CRANpkg{nasapower} package version 4.0.0.
 
+It looks like the earliest year you can request data for is 1984.
+
 If the filename is not provided it will not write the file to disk, 
 but it will return an object of class \sQuote{met}. This is useful in case manipulation
 is required before writing to disk.

@@ -36,7 +36,7 @@ edit_apsimx(
 
 \item{manager.child}{specific manager component to be edited}
 
-\item{parm}{parameter to be edited}
+\item{parm}{parameter to be edited. It can be a regular expression.}
 
 \item{value}{new values for the parameter to be edited}
 

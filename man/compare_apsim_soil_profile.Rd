@@ -10,6 +10,7 @@ compare_apsim_soil_profile(
   ...,
   soil.var = c("all", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS",
     "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH"),
+  property,
   labels,
   check = FALSE,
   verbose = FALSE
@@ -31,6 +32,10 @@ compare_apsim_soil_profile(
 \item{...}{\sQuote{soil_profile} objects. Should be of class \sQuote{soil_profile}}
 
 \item{soil.var}{soil variable to plot}
+
+\item{property}{meteorological variable to use in the comparison. Either \sQuote{all},
+\sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
+\sQuote{wind_speed} or \sQuote{vp}.}
 
 \item{labels}{labels for plotting and identification of \sQuote{soil_profile} objects.}
 
