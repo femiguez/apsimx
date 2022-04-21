@@ -51,7 +51,7 @@ apsim <- function(file = "", src.dir = ".",
     stop("There are no .apsim files in the specified directory to run.")
   }
   
-  file <- match.arg(file, file.names, several.ok=FALSE)
+  file <- match.arg(file, file.names, several.ok = FALSE)
   
   file.name.path <- file.path(src.dir, file)
   
@@ -79,7 +79,7 @@ apsim <- function(file = "", src.dir = ".",
       ## This will only work when output files have the same columns
       ans <- read_apsim_all(filenames = output.names, 
                             src.dir = src.dir, value = "report",
-                            simplify = simplify)
+                            simplify = simplify, silent = silent)
     }
   }else{
     if(value == "none" && !silent){
@@ -379,7 +379,7 @@ read_apsim <- function(file = "", src.dir = ".",
   names(out.file) <- hdr
   ## Read summary file, but fail more or less gracefully
   file.name.summary <- paste0(src.dir, "/", file, ".sum")
-  sum.file <- try(readLines(con = file.name.summary), silent = TRUE)
+  sum.file <- suppressWarnings(try(readLines(con = file.name.summary), silent = TRUE))
   if(inherits(sum.file, "try-error")){
     lf.sum <- list.files(path = src.dir, pattern = "sum$")
     if(length(lf.sum) == 0){
@@ -391,12 +391,18 @@ read_apsim <- function(file = "", src.dir = ".",
       if(inherits(sum.file, "try-error"))
         if(!silent) warning("Could not read summary file.")
     }
-    if(length(lf.sum > 1))
+    if(length(lf.sum) > 1)
       if(!silent) warning("Multiple 'sum' files. Don't know which one is the correct one.")
   }
   
   if(any(grepl("Date", hdr, ignore.case = TRUE))){
     wcid <- grep("Date", hdr, ignore.case = TRUE) ## The short name stands for 'which column is date'
+    ## If there is more than one, I will select the first one
+    if(length(wcid) > 1){
+      wcid <- wcid[1]
+      if(!silent) warning("More than one column with 'Date'. Picking the first one.")
+    }
+      
     try.date <- try(as.Date(out.file[,wcid], format = date.format), silent=TRUE)
     
     if(inherits(try.date, "try-error")){
@@ -426,13 +432,15 @@ read_apsim <- function(file = "", src.dir = ".",
 #' @param value either \sQuote{report} or \sQuote{all} (only \sQuote{report} implemented at the moment)
 #' @param date.format format for adding \sQuote{Date} column 
 #' @param simplify whether to return a single data frame or a list. 
+#' @param silent whether to issue warnings or suppress them
 #' @return returns a data frame or a list depending on the argument \sQuote{simplify} above.
 #' @note Warning: very simple function at the moment, not optimized for memory or speed.
 #' @export
 #' 
 
 read_apsim_all <- function(filenames, src.dir = ".", value = c("report", "all"),
-                           date.format = "%d/%m/%Y", simplify = TRUE){
+                           date.format = "%d/%m/%Y", simplify = TRUE,
+                           silent = FALSE){
   
   ## This is memory hungry and not efficient at all, but it might work 
   ## for now
@@ -441,7 +449,7 @@ read_apsim_all <- function(filenames, src.dir = ".", value = c("report", "all"),
   
   if(simplify && value == "all") stop("Cannot simplify when value = all")
   
-  file.names <- dir(path = src.dir, pattern=".out$", ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".out$", ignore.case = TRUE)
   
   if(!missing(filenames)){
    file.names <- filenames
@@ -453,7 +461,7 @@ read_apsim_all <- function(filenames, src.dir = ".", value = c("report", "all"),
   if(simplify){
     ans <- NULL
     for(i in file.names){
-      tmp <- read_apsim(i, value = value, date.format = date.format)
+      tmp <- read_apsim(i, value = value, date.format = date.format, silent = silent)
       tmp.d <- data.frame(outfile = i, tmp)
       ans <- try(rbind(ans, tmp.d), silent = TRUE)
       if(inherits(ans, "try-error")){
@@ -465,7 +473,7 @@ read_apsim_all <- function(filenames, src.dir = ".", value = c("report", "all"),
     ans <- vector("list", length = length(file.names))
     names(ans) <- file.names
     for(i in file.names){
-      ans[[i]] <- read_apsim(i, value = value, date.format = date.format)
+      ans[[i]] <- read_apsim(i, value = value, date.format = date.format, silent = silent)
     }    
   }
   return(ans)

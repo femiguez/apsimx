@@ -15,7 +15,7 @@
   
   .find.output <- xml2::xml_find_all(.apsim_xml, ".//outputfile/filename")
   
-  .ans <- xml_text(.find.output)
+  .ans <- xml2::xml_text(.find.output)
   
   return(.ans)
 }

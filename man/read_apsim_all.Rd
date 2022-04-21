@@ -9,7 +9,8 @@ read_apsim_all(
   src.dir = ".",
   value = c("report", "all"),
   date.format = "\%d/\%m/\%Y",
-  simplify = TRUE
+  simplify = TRUE,
+  silent = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ read_apsim_all(
 \item{date.format}{format for adding \sQuote{Date} column}
 
 \item{simplify}{whether to return a single data frame or a list.}
+
+\item{silent}{whether to issue warnings or suppress them}
 }
 \value{
 returns a data frame or a list depending on the argument \sQuote{simplify} above.
