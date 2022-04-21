@@ -466,7 +466,7 @@ read_apsim_all <- function(filenames, src.dir = ".", value = c("report", "all"),
       ans <- try(rbind(ans, tmp.d), silent = TRUE)
       if(inherits(ans, "try-error")){
         stop("Could not simplify output files into a single data.frame \n
-             Choose simplify = FALSE.")
+             Choose simplify = FALSE.", call. = FALSE)
       }
     }
   }else{
