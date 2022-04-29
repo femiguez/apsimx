@@ -7,7 +7,8 @@
 #' @param shift simple mechanism for creating an area of interest by displacing the point indicated in 
 #' lonlat by some amount of distance (e.g. 300 - in meters)
 #' @param nmapunit number of mapunits to select (see \code{\link{ssurgo2sp}})
-#' @param nsoil number of soils to select (see \code{\link{ssurgo2sp}})
+#' @param nsoil number of soils to select (see \code{\link{ssurgo2sp}}). If the 
+#' number of soils is negative or NA it will fetch all the soils in the mapunit
 #' @param xout see \code{\link{ssurgo2sp}}
 #' @param soil.bottom see \code{\link{ssurgo2sp}}
 #' @param method interpolation method see \code{\link{ssurgo2sp}}
@@ -100,6 +101,11 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
   }else{
     fSDA <- soilDB::fetchSDA(sql, duplicates = TRUE)
   } 
+  
+  ## Number of soils is the number of rows on fSDA@site
+  if(nsoil < 0 || is.na(nsoil)){
+    nsoil <- nrow(fSDA@site)
+  }
   
   ### Mapunit ### -- this might contain the iacornsr
   if(verbose == FALSE){
