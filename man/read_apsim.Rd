@@ -17,7 +17,7 @@ read_apsim(
 
 \item{src.dir}{source directory where file is located}
 
-\item{value}{either \sQuote{report} (data.frame) or \sQuote{all} (list)}
+\item{value}{either \sQuote{report} (data.frame), \sQuote{user-defined} or \sQuote{all} (list)}
 
 \item{date.format}{format for adding \sQuote{Date} column}
 

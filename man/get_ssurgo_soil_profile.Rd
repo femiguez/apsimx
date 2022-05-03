@@ -24,7 +24,8 @@ lonlat by some amount of distance (e.g. 300 - in meters)}
 
 \item{nmapunit}{number of mapunits to select (see \code{\link{ssurgo2sp}})}
 
-\item{nsoil}{number of soils to select (see \code{\link{ssurgo2sp}})}
+\item{nsoil}{number of soils to select (see \code{\link{ssurgo2sp}}). If the 
+number of soils is negative or NA it will fetch all the soils in the mapunit}
 
 \item{xout}{see \code{\link{ssurgo2sp}}}
 
