@@ -457,6 +457,7 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
 #' of the specific report that should be returned.
 #' If you select \sQuote{all} it will return all the components in the data base also as a list.
 #' @return normally it returns a data frame, but it depends on the argument \sQuote{value} above
+#' @seealso \code{\link{read_apsimx_all}}
 #' @export
 #' 
 

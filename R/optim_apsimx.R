@@ -104,6 +104,9 @@ optim_apsimx <- function(file, src.dir = ".",
     }
   }
   
+  ## Data needs to be a data.frame
+  if(!inherits(data, "data.frame"))
+    stop("Object 'data' should be of class 'data.frame'.", call. = FALSE)
   ## Setting up Date
   datami <- data[ ,-which(names(data) %in% index), drop = FALSE]
   if(any(grepl("Date", index))) data$Date <- as.Date(data$Date)

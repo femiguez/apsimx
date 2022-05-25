@@ -333,6 +333,7 @@ apsim_example <- function(example = "Millet", silent = FALSE, tmp.dir = NULL){
 #' @param date.format format for adding \sQuote{Date} column 
 #' @param silent whether to issue warnings or suppress them
 #' @return This function returns a data frame with APSIM output or a list if value equals \sQuote{all}
+#' @seealso \code{\link{read_apsim_all}}
 #' @export
 #' @examples 
 #' \dontrun{
