@@ -8,7 +8,7 @@
   ## For unix
   if(.Platform$OS.type == "unix"){
     ## Check for mono
-    mono <- suppressWarnings(system("which mono", intern = TRUE))
+    mono <- suppressWarnings(system("which mono", intern = TRUE, ignore.stderr = TRUE))
     if(length(mono) == 0){
       find.mono <- "Mono framework not found (only needed for pre-Sept 2021 versions of APSIM Next Gen) \n"
       ## In Ubuntu mono seems to be in /usr/bin/mono
