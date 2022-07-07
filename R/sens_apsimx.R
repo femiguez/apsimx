@@ -222,7 +222,8 @@ sens_apsimx <- function(file, src.dir = ".",
   
   attr(cdat, "summary") <- summary
   
-  ans <- structure(list(grid.sims = cdat, grid = grid, parm.paths = parm.paths), class = "sens_apsim")
+  ans <- structure(list(grid.sims = cdat, grid = grid, parm.paths = parm.paths), 
+                   class = "sens_apsim")
  
   return(ans) 
 }
@@ -236,11 +237,18 @@ sens_apsimx <- function(file, src.dir = ".",
 #' default is FALSE as some inputs might be characters or factors. In this
 #' case all inputs will be treated as factors in the sum of squares decomposition.
 #' @param select option for selecting specific variables in the APSIM output. It will be treated as a regular expression
+#' @param warning whether to issue a warning when applying this function to an object which has not been summarized
 #' @return prints to console
 #' @export
 #' 
-summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all"){
+summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all", warning = TRUE){
   
+  ## It probably does not make sense to compute this summary if the data were 
+  ## not previously summarized
+  smmry <- attr(object$grid.sims, "summary")
+  if(smmry == "none" && warning)
+    warning("It is unlikey that running 'summary' will be useful on a 
+    sensitivity analysis output which was not previously summarized.")
   ## Here I compute sensitivity indexes based on the grid.sims object
   ## There are potentially many variables for which sensitivity analysis is relevant
   nms.resp.var <- setdiff(names(object$grid.sims), names(object$grid))
