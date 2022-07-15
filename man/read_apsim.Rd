@@ -40,3 +40,6 @@ millet.out <- read_apsim("Millet", src.dir = extd.dir, value = "report")
 }
 
 }
+\seealso{
+\code{\link{read_apsim_all}}
+}

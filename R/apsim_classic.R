@@ -487,12 +487,12 @@ read_apsim_all <- function(filenames, src.dir = ".",
       stop("When 'value' is not 'all' or 'report' it should match at least one of the outfile names.", call. = FALSE)
   
     if(length(outfiles) == 1){
-      ans <- read_apsim(outfiles, value = "report", date.format = date.format, silent = silent)  
+      ans <- read_apsim(outfiles, src.dir = src.dir, value = "report", date.format = date.format, silent = silent)  
     }else{
       if(simplify){
         ans <- NULL
         for(i in outfiles){
-          tmp <- read_apsim(i, value = value, date.format = date.format, silent = silent)
+          tmp <- read_apsim(i, src.dir = src.dir, value = value, date.format = date.format, silent = silent)
           tmp.d <- data.frame(outfile = i, tmp)
           ans <- try(rbind(ans, tmp.d), silent = TRUE)
           if(inherits(ans, "try-error")){
@@ -512,7 +512,7 @@ read_apsim_all <- function(filenames, src.dir = ".",
     if(simplify){
       ans <- NULL
       for(i in file.names){
-        tmp <- read_apsim(i, value = value, date.format = date.format, silent = silent)
+        tmp <- read_apsim(i, src.dir = src.dir, value = value, date.format = date.format, silent = silent)
         tmp.d <- data.frame(outfile = i, tmp)
         ans <- try(rbind(ans, tmp.d), silent = TRUE)
         if(inherits(ans, "try-error")){

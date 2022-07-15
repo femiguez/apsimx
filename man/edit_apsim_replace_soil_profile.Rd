@@ -13,7 +13,8 @@ edit_apsim_replace_soil_profile(
   soilwat = NULL,
   edit.tag = "-edited",
   overwrite = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  root
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ edit_apsim_replace_soil_profile(
 \item{overwrite}{default FALSE}
 
 \item{verbose}{default TRUE. Will print messages indicating what was done.}
+
+\item{root}{supply the node postion in the case of multiple simulations such as factorials.}
 }
 \value{
 writes an APSIM file to disk with the supplied soil profile

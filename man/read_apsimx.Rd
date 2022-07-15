@@ -34,3 +34,6 @@ available by selecting \sQuote{value = ReportName}, where \sQuote{ReportName} is
 of the specific report that should be returned.
 If you select \sQuote{all} it will return all the components in the data base also as a list.
 }
+\seealso{
+\code{\link{read_apsimx_all}}
+}

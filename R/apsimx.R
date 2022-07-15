@@ -496,6 +496,15 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
         tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)  
       }
     }
+    ## Maybe include SimulationNames column here?
+    if(all(!grepl("SimulationName", names(tbl0)))){
+      tbl0$SimulationName <- NA
+      stn <- grep("Simulation", other.tables, value = TRUE) ## stn stands for simulation table name
+      SimulationNamesTable <- DBI::dbGetQuery(con, paste("SELECT * FROM ", stn))
+      for(i in seq_along(SimulationNamesTable$ID)){
+        tbl0[tbl0$SimulationID == i, "SimulationName"] <- SimulationNamesTable$Name[i]
+      }
+    } 
   }
     
   if(length(report.names) > 1L && value %in% c("report", "all")){
@@ -513,6 +522,17 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
             tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)  
           }
         }
+        
+        ## Maybe include SimulationNames column here?
+        if(all(!grepl("SimulationName", names(tbl0)))){
+          tbl0$SimulationName <- NA
+          stn <- grep("Simulation", other.tables, value = TRUE) ## stn stands for simulation table name
+          SimulationNamesTable <- DBI::dbGetQuery(con, paste("SELECT * FROM ", stn))
+          for(i in seq_along(SimulationNamesTable$ID)){
+            tbl0[tbl0$SimulationID == i, "SimulationName"] <- SimulationNamesTable$Name[i]
+          }
+        }
+        
         dat0 <- data.frame(report = report.names[i], tbl0)
         lst0 <- try(rbind(lst0, dat0), silent = TRUE)
         if(inherits(lst0, "try-error")){
@@ -527,6 +547,17 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
         if(any(grepl("Clock.Today", names(tbl0)))){
           tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)
         }
+        
+        ## Maybe include SimulationNames column here?
+        if(all(!grepl("SimulationName", names(tbl0)))){
+          tbl0$SimulationName <- NA
+          stn <- grep("Simulation", other.tables, value = TRUE) ## stn stands for simulation table name
+          SimulationNamesTable <- DBI::dbGetQuery(con, paste("SELECT * FROM ", stn))
+          for(i in seq_along(SimulationNamesTable$ID)){
+            tbl0[tbl0$SimulationID == i, "SimulationName"] <- SimulationNamesTable$Name[i]
+          }
+        }
+        
         lst0[[i]] <- tbl0   
       }
       names(lst0) <- report.names ## Name the lists with report names
@@ -542,6 +573,16 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
     tbl0 <- DBI::dbGetQuery(con, paste("SELECT * FROM ", value))
     if(any(grepl("Clock.Today", names(tbl0)))){
       tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)
+    }
+    
+    ## Maybe include SimulationNames column here?
+    if(all(!grepl("SimulationName", names(tbl0)))){
+      tbl0$SimulationName <- NA
+      stn <- grep("Simulation", other.tables, value = TRUE) ## stn stands for simulation table name
+      SimulationNamesTable <- DBI::dbGetQuery(con, paste("SELECT * FROM ", stn))
+      for(i in seq_along(SimulationNamesTable$ID)){
+        tbl0[tbl0$SimulationID == i, "SimulationName"] <- SimulationNamesTable$Name[i]
+      }
     }
   }
     

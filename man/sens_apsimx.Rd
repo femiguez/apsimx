@@ -18,7 +18,7 @@ sens_apsimx(
   ...
 )
 
-\method{summary}{sens_apsim}(object, ..., scale = FALSE, select = "all")
+\method{summary}{sens_apsim}(object, ..., scale = FALSE, select = "all", warning = TRUE)
 }
 \arguments{
 \item{file}{file name to be run (the extension .apsimx is optional)}
@@ -52,6 +52,8 @@ default is FALSE as some inputs might be characters or factors. In this
 case all inputs will be treated as factors in the sum of squares decomposition.}
 
 \item{select}{option for selecting specific variables in the APSIM output. It will be treated as a regular expression}
+
+\item{warning}{whether to issue a warning when applying this function to an object which has not been summarized}
 }
 \value{
 object of class \sQuote{sens_apsim}, but really just a list with results from the evaluations.
