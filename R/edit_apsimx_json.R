@@ -258,7 +258,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       
       crop.parms <- c("XF", "KL", "LL")
       
-      if(parm %in% crop.parms || any(sapply(crop.parms, function(x) grepl(x, parm)))){
+      if(parm %in% crop.parms || any(sapply(crop.parms, function(x) grepl(x, parm))) && parm != "LL15"){
         ## Maybe we are trying to edit the parameter for a specific crop
         ## The first options matches the parameter exactly 
         if(parm %in% crop.parms){
