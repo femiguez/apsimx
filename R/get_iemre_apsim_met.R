@@ -108,12 +108,13 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
   attr(iem.dat2, "latitude") <- paste("latitude =", lonlat[2])
   attr(iem.dat2, "longitude") <- paste("longitude =", lonlat[1])
   attr(iem.dat2, "tav") <- paste("tav =",mean(colMeans(iem.dat2[,c("maxt","mint")], na.rm=TRUE), na.rm=TRUE))
-  attr(iem.dat2, "amp") <- paste("amp =",mean(iem.dat2$maxt, na.rm=TRUE) - mean(iem.dat2$mint, na.rm = TRUE))
   attr(iem.dat2, "colnames") <- names(iem.dat2)
   attr(iem.dat2, "units") <- units
   attr(iem.dat2, "comments") <- comments
   ## No constants
   class(iem.dat2) <- c("met", "data.frame")
+  
+  iem.dat2 <- amp_apsim_met(iem.dat2)
   
   if(filename != "noname.met"){
     write_apsim_met(iem.dat2, wrt.dir = wrt.dir, filename = filename)

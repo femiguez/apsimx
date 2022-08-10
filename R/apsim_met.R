@@ -1326,7 +1326,7 @@ plot.met <- function(x, ..., years, met.var,
 #' ## This is also possible
 #' vp <- data.frame(vp = abs(rnorm(nrow(ames), 10)))
 #' attr(vp, "units") <- "(hPa)"
-#' ames$vp <- vp
+#' ames$vp <- vp$vp
 #' 
 #' ## This is needed to ensure that units and related attributes are also removed
 #' ames <- remove_column_apsim_met(ames, "vp")
@@ -1415,5 +1415,39 @@ remove_column_apsim_met <- function(met, name){
   attr(met, "units") <- attr(met, "units")[-which(names(met) == name)]   
   met[[name]] <- NULL
   attr(met, "colnames") <- names(met)
+  return(met)
+}
+
+#' This function can re-calculates annual mean monthly amplitude
+#' for an object of class \sQuote{met}
+#' @title Calculates attribute amp for an object of class \sQuote{met}
+#' @param met object of class \sQuote{met}
+#' @return an object of class \sQuote{met} with a recalculation of annual amplitude in mean monthly temperature 
+#' @export
+amp_apsim_met <- function(met){
+  
+  if(!inherits(met, "met"))
+    stop("Object should be of class 'met", call. = FALSE)
+  
+  ## Step 1: create date
+  date <- as.Date(paste(met$year, met$day, sep = "-"), format = "%Y-%j") 
+  ## Step 2: create month column
+  mnth <- as.numeric(format(date, "%m")) 
+  
+  met <- add_column_apsim_met(met = met, value = mnth, name = "month", units = "()")
+
+  mtemp <- (met$maxt + met$mint) / 2
+  met <- add_column_apsim_met(met = met, value = mtemp, name = "mean.temp", units = "(oC)")
+  
+  met.agg <- aggregate(mean.temp ~ mnth, data = met, FUN = mean)
+  
+  ans <- round(max(met.agg$mean.temp) - min(met.agg$mean.temp), 2)
+  
+  ## Clean up
+  met <- remove_column_apsim_met(met, "mean.temp")
+  met <- remove_column_apsim_met(met, "month")
+  
+  attr(met, "amp") <- paste("amp = ", ans)
+  
   return(met)
 }

@@ -95,12 +95,13 @@ get_gsod_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
   attr(gsd, "latitude") <- paste("latitude =", lati)
   attr(gsd, "longitude") <- paste("longitude =", longi)
   attr(gsd, "tav") <- paste("tav =", mean(colMeans(gsd[,c("maxt","mint")], na.rm=TRUE), na.rm=TRUE))
-  attr(gsd, "amp") <- paste("amp =", mean(gsd$maxt, na.rm=TRUE) - mean(gsd$mint, na.rm = TRUE))
   attr(gsd, "colnames") <- names(gsd)
   attr(gsd, "units") <- units
   attr(gsd, "comments") <- comments
   ## No constants
   class(gsd) <- c("met", "data.frame")
+  
+  gsd <- amp_apsim_met(gsd)
   
   if(filename != "noname.met"){
     write_apsim_met(gsd, wrt.dir = wrt.dir, filename = filename)

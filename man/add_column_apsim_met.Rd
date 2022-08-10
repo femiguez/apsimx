@@ -44,7 +44,7 @@ ames <- add_column_apsim_met(ames, value = val, name = "vp", units = "(hPa)")
 ## This is also possible
 vp <- data.frame(vp = abs(rnorm(nrow(ames), 10)))
 attr(vp, "units") <- "(hPa)"
-ames$vp <- vp
+ames$vp <- vp$vp
 
 ## This is needed to ensure that units and related attributes are also removed
 ames <- remove_column_apsim_met(ames, "vp")

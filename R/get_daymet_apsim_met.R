@@ -76,12 +76,13 @@ get_daymet2_apsim_met <- function(lonlat, years, wrt.dir = ".", filename, silent
   attr(dmet, "latitude") <- paste("latitude =",lonlat[2])
   attr(dmet, "longitude") <- paste("longitude =",lonlat[1])
   attr(dmet, "tav") <- paste("tav =",mean(colMeans(dmet[,c("maxt","mint")],na.rm=TRUE),na.rm=TRUE))
-  attr(dmet, "amp") <- paste("amp =",mean(dmet$maxt, na.rm=TRUE) - mean(dmet$mint, na.rm = TRUE))
   attr(dmet, "colnames") <- names(dmet)
   attr(dmet, "units") <- units
   attr(dmet, "comments") <- comments
   ## No constants
   class(dmet) <- c("met", "data.frame")
+  
+  dmet <- amp_apsim_met(dmet)
   
   if(filename != "noname.met"){
     write_apsim_met(dmet, wrt.dir = wrt.dir, filename = filename)
