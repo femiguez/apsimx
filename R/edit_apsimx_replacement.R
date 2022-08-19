@@ -310,6 +310,7 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
         ## Break it up and reassemble
         cmdstrng <- strsplit(rep.node.subsubchild$Command[[wrnsscc]],"=")[[1]][1]
         rep.node.subsubchild$Command[[wrnsscc]] <- paste0(cmdstrng,"=",value)
+        ## cat("New string:", rep.node.subsubchild$Command[[wrnsscc]], "\n")
         ## Now write back to list
         rep.node.subchild$Children[[wrnssc]] <- rep.node.subsubchild
         rep.node.child$Children[[wrnsc]] <- rep.node.subchild
