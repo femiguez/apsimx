@@ -88,7 +88,8 @@ apsimx <- function(file = "", src.dir = ".",
   }
 
   if(value != "none"){
-    ans <- read_apsimx(file = sub("apsimx","db",file), src.dir = src.dir, value = value, simplify = simplify)
+    ans <- read_apsimx(file = sub("apsimx$", "db", file), 
+                       src.dir = src.dir, value = value, simplify = simplify)
   }else{
     if(value == "none" && !silent){
       cat("APSIM created .db files, but nothing is returned \n")
@@ -528,8 +529,8 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
           tbl0$SimulationName <- NA
           stn <- grep("Simulation", other.tables, value = TRUE) ## stn stands for simulation table name
           SimulationNamesTable <- DBI::dbGetQuery(con, paste("SELECT * FROM ", stn))
-          for(i in seq_along(SimulationNamesTable$ID)){
-            tbl0[tbl0$SimulationID == i, "SimulationName"] <- SimulationNamesTable$Name[i]
+          for(j in seq_along(SimulationNamesTable$ID)){
+            tbl0[tbl0$SimulationID == j, "SimulationName"] <- SimulationNamesTable$Name[j]
           }
         }
         
@@ -553,11 +554,10 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
           tbl0$SimulationName <- NA
           stn <- grep("Simulation", other.tables, value = TRUE) ## stn stands for simulation table name
           SimulationNamesTable <- DBI::dbGetQuery(con, paste("SELECT * FROM ", stn))
-          for(i in seq_along(SimulationNamesTable$ID)){
-            tbl0[tbl0$SimulationID == i, "SimulationName"] <- SimulationNamesTable$Name[i]
+          for(j in seq_along(SimulationNamesTable$ID)){
+            tbl0[tbl0$SimulationID == j, "SimulationName"] <- SimulationNamesTable$Name[j]
           }
         }
-        
         lst0[[i]] <- tbl0   
       }
       names(lst0) <- report.names ## Name the lists with report names

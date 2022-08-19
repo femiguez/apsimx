@@ -254,6 +254,8 @@ optim_apsimx <- function(file, src.dir = ".",
       
       if(!is.null(data$report)) data$report <- as.factor(data$report)
       if(!is.null(sim$report)) sim$report <- as.factor(sim$report)
+      if(!is.null(sim$SimulationName)) sim$SimulationName <- as.factor(sim$SimulationName)
+      if(!is.null(data$SimulationName)) data$SimulationName <- as.factor(data$SimulationName)
       sim.s0 <- merge(sim, subset(data, select = index), by = index)  
       sim.s <- subset(sim.s0, select = names(data))
       ## However, they need to be in the exact same order
