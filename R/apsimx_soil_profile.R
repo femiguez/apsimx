@@ -590,16 +590,20 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
 
 #' Check an apsimx soil profile
 #' 
+#' The value of soil particle density (2.65 g/cm3) is hard coded in APSIM. 
+#' https://en.wikipedia.org/wiki/Bulk_density
+#' 
 #' @rdname apsimx_soil_profile
 #' @description checking an apsimx soil profile for reasonable values
 #' @param x object of class \sQuote{soil_profile} or the \sQuote{soil} 
 #' component within an object of class \sQuote{soil_profile}.
+#' @param particle.density default value for soil particle density (2.65 g/cm3)
 #' @return It does not produce output unless potential issues are found. Only warnings
 #' are produced and it returns an object of class \sQuote{soil_profile}.
 #' @export 
 #' 
 
-check_apsimx_soil_profile <- function(x){
+check_apsimx_soil_profile <- function(x, particle.density = 2.65){
   
   if(!inherits(x, "soil_profile"))
     stop("object should be of class 'soil_profile'", call. = FALSE)
@@ -719,19 +723,20 @@ check_apsimx_soil_profile <- function(x){
   
   ## This check is from APSIM Next Gen Models/Soils/Soil.cs line 250
   ## Compute max BD for each layer
-  max_bd <- (1 - soil$SAT) * 2.65
+  spd <- particle.density
+  max_bd <- (1 - soil$SAT) * spd
   bd_diff <- max_bd - soil$BD
 
   for(j in seq_along(max_bd)){
     if(bd_diff[j] <= 0){
-      warning(paste("Saturation of:", soil$SAT[j], "in layer:", j, "is above acceptable value of:", 1 - soil$BD[j] / 2.65, ".",
-                    "You must adjust bulk density to below", (1 - soil$SAT[j]) * 2.65, "OR saturation to below", 1 - soil$BD[j] / 2.65))      
+      warning(paste("Saturation of:", soil$SAT[j], "in layer:", j, "is above acceptable value of:", 1 - soil$BD[j] / spd, ".",
+                    "You must adjust bulk density to below", (1 - soil$SAT[j]) * spd, "OR saturation to below", 1 - soil$BD[j] / 2.65))      
     }
   }
   return(invisible(x))
 }
 
-fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), verbose = TRUE){
+fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), particle.density = 2.65, verbose = TRUE){
   
   if(!inherits(x, "soil_profile"))
     stop("object should be of class 'soil_profile'", call. = FALSE)

@@ -8,7 +8,9 @@ get_isric_soil_profile(
   lonlat,
   statistic = c("mean", "Q0.5"),
   soil.profile,
-  find.location.name = TRUE
+  find.location.name = TRUE,
+  fix = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -20,6 +22,10 @@ get_isric_soil_profile(
 
 \item{find.location.name}{default is TRUE. Use either maps package or photon API to find Country/State.
 If you are running this function many times it might be better to set this to FALSE.}
+
+\item{fix}{whether to fix compatibility between saturation and bulk density (default is FALSE).}
+
+\item{verbose}{argument passed to the fix function.}
 }
 \value{
 it generates an object of class \sQuote{soil_profile}.

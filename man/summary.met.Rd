@@ -63,7 +63,7 @@ in two halves. The first and last frosts in the first and second period are foun
 For the Northern hemisphere calendar days are used (1-365).
 For the Southern hemisphere the year is split in two halfs, but the second half of
 the year is used as the first part of the growing season.
-If not frost is found a zero is returned.
+If frost is not found a zero is returned.
 }
 \examples{
 

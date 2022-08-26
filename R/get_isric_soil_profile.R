@@ -19,6 +19,8 @@
 #' @param soil.profile a soil profile to fill in in case the default one is not appropriate
 #' @param find.location.name default is TRUE. Use either maps package or photon API to find Country/State.
 #' If you are running this function many times it might be better to set this to FALSE.
+#' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
+#' @param verbose argument passed to the fix function.
 #' @return it generates an object of class \sQuote{soil_profile}.
 #' @details Variable which are directly retrieved and a simple unit conversion is performed: \cr
 #' * Bulk density - bdod \cr
@@ -52,7 +54,9 @@
 get_isric_soil_profile <- function(lonlat, 
                                    statistic = c("mean", "Q0.5"),
                                    soil.profile,
-                                   find.location.name = TRUE){
+                                   find.location.name = TRUE,
+                                   fix = FALSE,
+                                   verbose = TRUE){
 
   statistic <- match.arg(statistic)
 
@@ -209,6 +213,8 @@ get_isric_soil_profile <- function(lonlat,
                           "- geomdesc =", NA)
   
   soil_profile$metadata <- alist
+  
+  if(fix) soil_profile <- fix_apsimx_soil_profile(soil_profile, verbose = verbose)
   
   check_apsimx_soil_profile(soil_profile)
   
