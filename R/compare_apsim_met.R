@@ -339,7 +339,7 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
 #' For the Northern hemisphere calendar days are used (1-365).
 #' For the Southern hemisphere the year is split in two halfs, but the second half of
 #' the year is used as the first part of the growing season.
-#' If not frost is found a zero is returned.
+#' If frost is not found a zero is returned.
 #'
 #' @title Summary for an APSIM met file
 #' @name summary.met

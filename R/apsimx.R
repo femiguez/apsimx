@@ -502,8 +502,8 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
       tbl0$SimulationName <- NA
       stn <- grep("Simulation", other.tables, value = TRUE) ## stn stands for simulation table name
       SimulationNamesTable <- DBI::dbGetQuery(con, paste("SELECT * FROM ", stn))
-      for(i in seq_along(SimulationNamesTable$ID)){
-        tbl0[tbl0$SimulationID == i, "SimulationName"] <- SimulationNamesTable$Name[i]
+      for(j in seq_along(SimulationNamesTable$ID)){
+        tbl0[tbl0$SimulationID == j, "SimulationName"] <- SimulationNamesTable$Name[j]
       }
     } 
   }
@@ -580,8 +580,8 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
       tbl0$SimulationName <- NA
       stn <- grep("Simulation", other.tables, value = TRUE) ## stn stands for simulation table name
       SimulationNamesTable <- DBI::dbGetQuery(con, paste("SELECT * FROM ", stn))
-      for(i in seq_along(SimulationNamesTable$ID)){
-        tbl0[tbl0$SimulationID == i, "SimulationName"] <- SimulationNamesTable$Name[i]
+      for(j in seq_along(SimulationNamesTable$ID)){
+        tbl0[tbl0$SimulationID == j, "SimulationName"] <- SimulationNamesTable$Name[j]
       }
     }
   }

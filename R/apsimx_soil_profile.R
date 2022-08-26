@@ -716,9 +716,45 @@ check_apsimx_soil_profile <- function(x){
   
   if(any(AirDryminuscrop.LL < 0))
     warning("crop.LL cannot be lower than AirDry")
+  
+  ## This check is from APSIM Next Gen Models/Soils/Soil.cs line 250
+  ## Compute max BD for each layer
+  max_bd <- (1 - soil$SAT) * 2.65
+  bd_diff <- max_bd - soil$BD
 
+  for(j in seq_along(max_bd)){
+    if(bd_diff[j] <= 0){
+      warning(paste("Saturation of:", soil$SAT[j], "in layer:", j, "is above acceptable value of:", 1 - soil$BD[j] / 2.65, ".",
+                    "You must adjust bulk density to below", (1 - soil$SAT[j]) * 2.65, "OR saturation to below", 1 - soil$BD[j] / 2.65))      
+    }
+  }
   return(invisible(x))
 }
+
+fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), verbose = TRUE){
+  
+  if(!inherits(x, "soil_profile"))
+    stop("object should be of class 'soil_profile'", call. = FALSE)
+  ## Heuristics for fixing soil profiles
+  
+  soil.var <- match.arg(soil.var)
+  
+  ## Bulk density and saturation issue
+  max_bd <- (1 - x$soil$SAT) * 2.65
+  bd_diff <- max_bd - x$soil$BD
+  
+  for(j in seq_along(max_bd)){
+    if(bd_diff[j] <= 0){
+      x$soil$SAT[j] <- 1 - x$soil$BD[j] / 2.65 - 0.001
+      if(verbose && soil.var == "SAT"){
+        cat("Saturation of:", x$soil$SAT[j], "in layer:", j, "was above acceptable value of:", 1 - x$soil$BD[j] / 2.65, ".",
+            "It was adjusted to:", 1 - x$soil$BD[j] / 2.65 - 0.001, "\n")              
+      }
+    }
+  }
+  return(x)
+}
+
 
 #' 
 #' @title Compare two or more soil profiles
