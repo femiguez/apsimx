@@ -736,6 +736,22 @@ check_apsimx_soil_profile <- function(x, particle.density = 2.65){
   return(invisible(x))
 }
 
+#'
+#' @title Fixing a soil profile
+#' @name fix_apsimx_soil_profile
+#' @param x object of class \sQuote{soil_profile}
+#' @param soil.var whether to change SAT or BD. At the moment it only changes SAT.
+#' @param particle.density soil particle density 
+#' @param verbose whether to print the changes made to the soil profile
+#' @noRd
+#' @author Fernando Miguez with input from Julien Morel
+#' @examples
+#' \donttest{
+#' sp <- get_isric_soil_profile(lonlat = c(1, 48))
+#' ## This produces a warning
+#' sp1 <- apsimx:::fix_apsimx_soil_profile(sp)
+#' check_apsimx_soil_profile(sp1)
+#' }
 fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), particle.density = 2.65, verbose = TRUE){
   
   if(!inherits(x, "soil_profile"))

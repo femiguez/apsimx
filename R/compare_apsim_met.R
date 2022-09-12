@@ -58,6 +58,9 @@ compare_apsim_met <- function(...,
   
   met1 <- mets[[1]]
   
+  if(!inherits(met1, "met"))
+    stop("The first object should be of class 'met'", call. = FALSE)
+  
   m.nms <- NULL
   if(!missing(labels)){
     m.nms <- labels
@@ -79,8 +82,14 @@ compare_apsim_met <- function(...,
 
   for(i in 2:n.mets){
     
-    met.i <- as.data.frame(mets[[i]])
+    if(!inherits(mets[[i]], "met")){
+      stp.mssg <- paste("Object in position:", i, "is of class:", class(met.i),
+                        ". Was expecting an object of class 'met'.")
+      stop(stp.mssg, call. = FALSE)
+    }
     
+    met.i <- as.data.frame(mets[[i]])
+
     if(ncol(met1) != ncol(met.i)) stop("met objects should have the same number of columns", call. = FALSE)
     if(all(!names(met1) %in% names(met.i))) stop("met objects should have the same column names", call. = FALSE)
     if(check) check_apsim_met(met.i)
@@ -95,7 +104,8 @@ compare_apsim_met <- function(...,
   }
   
   if(met.var == "all"){
-    ans <- data.frame(variable = setdiff(names(met1), c("year", "day")),
+    vrs <- rep(setdiff(names(met1), c("year", "day")), each = n.mets - 1)
+    ans <- data.frame(variable = vrs,
                       vs = NA, labels = NA,
                       bias = NA, slope = NA, corr = NA)
     if(missing(labels)) ans$labels <- NULL
@@ -112,8 +122,9 @@ compare_apsim_met <- function(...,
     gvar.sel <- paste0(met.var.sel, collapse = "|")
     idx.met.mrg <- grep(gvar.sel, names(met.mrg))
     met.mrg.s <- met.mrg[,idx.met.mrg]
-  
+
     k <- 1  
+    z <- 1
     ## Compute Bias matrix
     for(i in met.var.sel){
       if(verbose) cat("Variable: ", i, "\n")
@@ -139,8 +150,8 @@ compare_apsim_met <- function(...,
         ans$rss[k] <- deviance(fm0)
         if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
         ans$rmse[k] <- sigma(fm0)
+        k <- k + 1
       }
-      k <- k + 1
     }
   }
   
