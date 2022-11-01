@@ -185,8 +185,6 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
   if(!missing(lonlat)){
     lon <- as.numeric(lonlat[1])
     lat <- as.numeric(lonlat[2])
-    ## Need to find the state based on lonlat
-    pts <- sf::st_as_sf(data.frame(lon = lon, lat = lat), coords = 1:2, crs = 4326)
     
     if(!requireNamespace("sf",quietly = TRUE)){
       warning("The sf is required for this function")
@@ -197,6 +195,9 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
       warning("The spData is required for this function")
       return(NULL)
     }
+    
+    ## Need to find the state based on lonlat
+    pts <- sf::st_as_sf(data.frame(lon = lon, lat = lat), coords = 1:2, crs = 4326)
     
     states <- spData::us_states ## This object contains states and their geometries
     states <- sf::st_transform(states, crs = 3857)

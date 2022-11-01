@@ -40,6 +40,7 @@ sens_apsimx <- function(file, src.dir = ".",
                         summary = c("mean", "max", "var", "sd", "none"),
                         root,
                         verbose = TRUE,
+                        cores = 1L,
                         ...){
   
   if(missing(file))
@@ -47,6 +48,14 @@ sens_apsimx <- function(file, src.dir = ".",
   
   .check_apsim_name(file)
   .check_apsim_name(src.dir)
+  
+  if(cores > 1L){
+    if(cores > nrow(grid))
+       stop("'cores' should be an integer smaller than the number of simulations", call. = FALSE)
+    detect.cores <- parallel::detectCores()  
+    if(cores > detect.cores)
+      stop("'cores' argument should not be higher than the number of available cores", call. = FALSE)
+  }
   
   ## This might offer suggestions in case there is a typo in 'file'
   file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
@@ -93,6 +102,10 @@ sens_apsimx <- function(file, src.dir = ".",
 
   col.sim <- NULL
   start <- Sys.time()
+  
+  original.cores <- cores
+  core.counter <- 1L
+  sim.list <- vector("list", length = cores)
   
   for(.i in 1:dim(grid)[1]){
     
@@ -143,53 +156,205 @@ sens_apsimx <- function(file, src.dir = ".",
     }
     
     ## Run simulation  
-    sim <- try(apsimx(file = file, src.dir = src.dir,
-                      silent = TRUE, cleanup = TRUE, value = "report"),
-               silent = TRUE)
-    
-    if(inherits(sim, "try-error") && .i == 1){
-      stop("Simulation failed for initial parameter combination")
+    ## The first simulation should not be parallelized
+    if(cores == 1L || .i == 1){
+      sim <- try(apsimx(file = file, src.dir = src.dir,
+                        silent = TRUE, cleanup = TRUE, value = "report"),
+                 silent = TRUE)  
+      
+      if(inherits(sim, "try-error") && .i == 1){
+        stop("Simulation failed for initial parameter combination")
+      }
+      
+      ## Extract basic information from sim
+      if(.i == 1){
+        col.class.numeric <- which(sapply(sim, class) == "numeric") ## Which columns are numeric
+        nms.sim <- names(sim[, col.class.numeric]) ## Names of the columns
+        ncol.class.numeric <- ncol(sim[,col.class.numeric]) 
+      }
+      
+      if(inherits(sim, "try-error") && .i > 1){
+        ## This will skip to the next iteration
+        ## If summary is not equal to none, then we need just one row
+        ## If summary is equal to none we fill it with an empty data.frame
+        ## with number of rows equal to the number in sim
+        if(summary != "none"){
+          mat <- matrix(ncol = ncol.class.numeric)  
+        }else{
+          mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+        }
+        sim.sd <- as.data.frame(mat)
+        names(sim.sd) <- nms.sim
+        col.sim <- rbind(col.sim, sim.sd)
+        next
+      } 
+      sim.sd <- sens_summary(sim, summary = summary, grid = grid, col.class.numeric = col.class.numeric)
     }
     
-    ## Extract basic information from sim
-    if(.i == 1){
-      col.class.numeric <- which(sapply(sim, class) == "numeric") ## Which columns are numeric
-      nms.sim <- names(sim[, col.class.numeric]) ## Names of the columns
-      ncol.class.numeric <- ncol(sim[,col.class.numeric]) 
+    ## First trying this as a proof-of-concept
+    if(cores == 2L && .i > 1 && original.cores == 2L){
+      ## If the number of simulations fit well within the 
+      ## number of cores
+      num.sim.rem <- (dim(grid)[1] - 1) %% 2
+      ## The first simulation will not be parallelized
+      if(.Platform$OS.type == "unix"){
+        if(core.counter == 1L){
+          ## Maybe I should edit the file and then delete it 
+          ## to prevent conflicts with the file below
+          edit_apsimx(file = file,
+                      src.dir = src.dir,
+                      wrt.dir = src.dir,
+                      node = "Soil",
+                      parm = "RecordNumber",
+                      value = 1,
+                      edit.tag = "-1",
+                      verbose = FALSE)
+          sim1 <- parallel::mcparallel(apsimx(file = paste0(tools::file_path_sans_ext(file), "-1.apsimx"), 
+                                                  src.dir = src.dir,
+                                                  silent = TRUE, 
+                                                  cleanup = TRUE, value = "report"))
+          if(verbose > 1) cat("Started simulation on first core \n")
+          core.counter <- core.counter + 1
+          next          
+        }else{
+          if(verbose > 1) cat("Started simulation on second core \n")
+          sim2 <- parallel::mcparallel(apsimx(file = file, src.dir = src.dir,
+                                                  silent = TRUE, cleanup = TRUE, value = "report"))
+          core.counter <- 1L
+        }
+        if(verbose > 1) cat("About to merge simulations from the two cores \n")
+        simc <- parallel::mccollect(list(sim1, sim2), wait = TRUE)
+        if(verbose > 1){
+          cat("Class of object returned by mccollect:", class(simc), "\n")
+          cat("Class of object 1 returned by mccollect:", class(simc[[1]]), "\n")
+          cat("Class of object 2 returned by mccollect:", class(simc[[2]]), "\n")
+          cat("Completed simulation from both cores \n")
+          cat("Iteration:", .i, "\n")          
+        }
+        ## If both simulations fail then 'next'?
+        if(inherits(simc[[1]], "try-error") && inherits(simc[[2]], "try-error")){
+          if(verbose > 1) cat("Both simulations failed \n")
+          if(summary != "none"){
+            mat <- matrix(ncol = ncol.class.numeric)  
+          }else{
+            mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+          }
+          sim.sd <- as.data.frame(mat)
+          names(sim.sd) <- nms.sim
+          sim.sd <- rbind(sim.sd, sim.sd) ## This duplicates the empty data.frame result
+          col.sim <- rbind(col.sim, sim.sd)
+          next
+        }
+        ## If only the first simulation fails
+        if(inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
+          if(verbose > 1){
+            cat("Error type:", simc[[1]], "\n")
+            cat("First simulation failed \n")
+          }
+          if(summary != "none"){
+            mat <- matrix(ncol = ncol.class.numeric)  
+          }else{
+            mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+          }
+          sim.sd1 <- as.data.frame(mat)
+          names(sim.sd1) <- nms.sim
+          sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, col.class.numeric = col.class.numeric)
+          sim.sd <- rbind(sim.sd1, sim.sd2) 
+        }
+        ## If only the second simulation fails
+        if(!inherits(simc[[1]], "try-error") && inherits(simc[[2]], "try-error")){
+          if(verbose > 1){
+            cat("Error type:", simc[[2]], "\n")
+            cat("Second simulation failed \n")
+          }
+          if(summary != "none"){
+            mat <- matrix(ncol = ncol.class.numeric)  
+          }else{
+            mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+          }
+          sim.sd2 <- as.data.frame(mat)
+          names(sim.sd2) <- nms.sim
+          sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, col.class.numeric = col.class.numeric)
+          sim.sd <- rbind(sim.sd1, sim.sd2) 
+        }
+        ## If both simulations are successful
+        if(!inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
+          ## Before they are merged both should be data.frames
+          sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, col.class.numeric = col.class.numeric)
+          sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, col.class.numeric = col.class.numeric)
+          sim.sd <- do.call(rbind, list(sim.sd1, sim.sd2))
+        }
+        file.remove(file.path(src.dir, paste0(tools::file_path_sans_ext(file), "-1.apsimx")))
+      }
+    }
+    
+    cores.last.round <- 0
+    if(cores > 2L && .i > 1){
+      ## The first simulation will not be parallelized
+      if(.Platform$OS.type == "unix"){
+        ## How many simulations are remaining?
+        ## If the number of simulations remaining are less than the number of cores change a few things
+        num.sim.rem <- dim(grid)[1] - .i
+        if(num.sim.rem < cores && cores.last.round == 0){
+          ##if(verbose > 1) 
+          cat("Number of simulations remaining:", num.sim.rem, "\n")
+          cores <- num.sim.rem
+          sim.list <- vector("list", length = cores)
+          cores.last.round <- 1
+        }
+        while(core.counter <= cores){
+          ## Maybe I should edit the file and then delete it 
+          ## to prevent conflicts with the file below
+          edit_apsimx(file = file,
+                      src.dir = src.dir,
+                      wrt.dir = src.dir,
+                      node = "Soil",
+                      parm = "RecordNumber",
+                      value = core.counter,
+                      edit.tag = paste0("-", core.counter),
+                      verbose = FALSE)
+          
+          sim.list[[core.counter]] <- parallel::mcparallel(apsimx(file = paste0(tools::file_path_sans_ext(file), "-", core.counter, ".apsimx"), 
+                                                                  src.dir = src.dir,
+                                                                  silent = TRUE, 
+                                                                  cleanup = TRUE, value = "report"))
+          break           
+        }
+        if(core.counter <= cores){
+          cat("Core counter:", core.counter, "\n")
+          core.counter <- core.counter + 1
+          next
+        } 
+        
+        print(sapply(sim.list, class))
+
+        simc <- parallel::mccollect(sim.list, wait = TRUE)
+        core.counter <- 1L
+
+        ## Identify which simulations failed
+        sim.class <- sapply(simc, class)
+        
+        if(any(sim.class == "try-error")){
+          if(verbose > 1) cat("Simulations which failed:", which(sim.class == "try-error"), "\n")
+        }
+
+        ## If both simulations are successful
+        if(all(sim.class != "try-error")){
+          ## Before they are merged both should be data.frames
+          sims.lst <- vector("list", length = cores)
+          for(j in seq_len(cores)){
+            sims.lst[[j]] <- sens_summary(simc[[j]], summary = summary, grid = grid, col.class.numeric = col.class.numeric)
+          }
+          sim.sd <- do.call(rbind, sims.lst)
+        }
+        print(summary(sim.sd))
+        for(j in seq_len(cores)){
+          file.remove(file.path(src.dir, paste0(tools::file_path_sans_ext(file), "-", j, ".apsimx")))  
+        }
+      }
     }
 
-    if(inherits(sim, "try-error") && .i > 1){
-      mat <- matrix(ncol = ncol.class.numeric)
-      sim.sd <- as.data.frame(mat)
-      names(sim.sd) <- nms.sim
-      col.sim <- rbind(col.sim, sim.sd)
-      next
-    } 
-    
-    if(summary == "mean"){
-      sim.s <- colMeans(sim[, col.class.numeric], na.rm = TRUE)
-      sim.sd <- as.data.frame(t(sim.s))
-    }
-
-    if(summary == "max"){
-      sim.s <- apply(sim[, col.class.numeric], 2, max, na.rm = TRUE)
-      sim.sd <- as.data.frame(t(sim.s))
-    }
-    
-    if(summary == "var"){
-      sim.s <- apply(sim[, col.class.numeric], 2, var, na.rm = TRUE)
-      sim.sd <- as.data.frame(t(sim.s))
-    }
-    
-    if(summary == "sd"){
-      sim.s <- apply(sim[, col.class.numeric], 2, sd, na.rm = TRUE)
-      sim.sd <- as.data.frame(t(sim.s))
-    }
-    
-    if(summary == "none"){
-      sim.sd <- cbind(grid[.i, , drop = FALSE], sim, row.names = NULL)
-    }
-    
+    ## This combines the simulations regardless of cores argument
     col.sim <- rbind(col.sim, sim.sd)
     
     if(verbose){
@@ -210,9 +375,8 @@ sens_apsimx <- function(file, src.dir = ".",
           old.prev.div <- prev.div
         } 
       }
-    }
-
-  }
+    } ## End of verbose chunck
+  } ## End of big for loop
   
   if(summary != "none"){
     cdat <- cbind(grid, col.sim)  
@@ -228,6 +392,39 @@ sens_apsimx <- function(file, src.dir = ".",
   return(ans) 
 }
 
+## Function to apply summary 
+sens_summary <- function(sim, summary = c("mean", "max", "var", "sd", "none"),
+                         grid,
+                         col.class.numeric){
+  
+  summary <- match.arg(summary)
+  
+  if(summary == "mean"){
+    sim.s <- colMeans(sim[, col.class.numeric], na.rm = TRUE)
+    sim.sd <- as.data.frame(t(sim.s))
+  }
+  
+  if(summary == "max"){
+    sim.s <- apply(sim[, col.class.numeric], 2, max, na.rm = TRUE)
+    sim.sd <- as.data.frame(t(sim.s))
+  }
+  
+  if(summary == "var"){
+    sim.s <- apply(sim[, col.class.numeric], 2, var, na.rm = TRUE)
+    sim.sd <- as.data.frame(t(sim.s))
+  }
+  
+  if(summary == "sd"){
+    sim.s <- apply(sim[, col.class.numeric], 2, sd, na.rm = TRUE)
+    sim.sd <- as.data.frame(t(sim.s))
+  }
+  
+  if(summary == "none"){
+    sim.sd <- cbind(grid[.i, , drop = FALSE], sim, row.names = NULL)
+  }
+  
+  return(sim.sd)
+}
 
 #' @rdname sens_apsimx
 #' @description Summary computes variance-based sensitivity indexes from an object of class \sQuote{sens_apsim}

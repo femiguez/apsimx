@@ -104,7 +104,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   ## Where is the 'Core' simulation?
   wcore <- grep("Core.Simulation", apsimx_json$Children)
 
-  if(length(wcore) > 1){
+  if(length(wcore) > 1 || !missing(root)){
     if(missing(root)){
       cat("Simulation structure: \n")
       str_list(apsimx_json)
@@ -607,7 +607,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   if(node != "Other"){
     parent.node[wcz][[1]]$Children <- core.zone.node
     
-    if(length(wcore) > 1){
+    if(length(wcore) > 1 || !missing(root)){
       ## I have to assume that root was supplied 
       ## otherwise an error would have been triggered before
       if(length(root) == 1){

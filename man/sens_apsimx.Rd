@@ -15,6 +15,7 @@ sens_apsimx(
   summary = c("mean", "max", "var", "sd", "none"),
   root,
   verbose = TRUE,
+  cores = 1L,
   ...
 )
 

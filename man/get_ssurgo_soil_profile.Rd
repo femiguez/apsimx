@@ -13,6 +13,7 @@ get_ssurgo_soil_profile(
   soil.bottom = 200,
   method = c("constant", "linear"),
   nlayers = 10,
+  fix = FALSE,
   verbose = FALSE
 )
 }
@@ -34,6 +35,8 @@ number of soils is negative or NA it will fetch all the soils in the mapunit}
 \item{method}{interpolation method see \code{\link{ssurgo2sp}}}
 
 \item{nlayers}{number for layer for the new soil profile}
+
+\item{fix}{whether to fix compatibility between saturation and bulk density (default is FALSE).}
 
 \item{verbose}{default FALSE. Whether to print messages.}
 }

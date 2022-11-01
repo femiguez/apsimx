@@ -13,6 +13,7 @@
 #' @param soil.bottom see \code{\link{ssurgo2sp}}
 #' @param method interpolation method see \code{\link{ssurgo2sp}}
 #' @param nlayers number for layer for the new soil profile
+#' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
 #' @param verbose default FALSE. Whether to print messages.
 #' @return this function will always return a list. Each element of the list will
 #' be an object of class \sQuote{soil_profile}
@@ -36,6 +37,7 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
                                     xout = NULL, soil.bottom = 200,
                                     method = c("constant","linear"),
                                     nlayers = 10,
+                                    fix = FALSE,
                                     verbose = FALSE){
   
   if(!requireNamespace("soilDB", quietly = TRUE)){
@@ -178,6 +180,8 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
                                metadata = metadata)
     
     ## check_apsimx_soil_profile(asp)
+    
+    if(fix) asp <- fix_apsimx_soil_profile(asp, verbose = verbose)
     
     ans[[i]] <- asp
   }
