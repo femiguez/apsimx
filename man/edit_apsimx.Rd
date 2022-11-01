@@ -18,7 +18,7 @@ edit_apsimx(
   overwrite = FALSE,
   edit.tag = "-edited",
   parm.path = NULL,
-  root,
+  root = NULL,
   verbose = TRUE
 )
 }
@@ -95,7 +95,9 @@ edit_apsimx("Maize.apsimx", src.dir = extd.dir,
              parm = "Amount", value = 200, verbose = TRUE)
              
 ## Make sure it worked
-inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, node = "Manager")
+inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, 
+               node = "Manager",
+               parm = list("SowingFertiliser", NA))
 
 ## Remove the file
 file.remove(file.path(tmp.dir, "Maize-edited.apsimx"))

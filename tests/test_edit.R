@@ -12,10 +12,10 @@ if(run.apsimx.edit){
   
   ## Inspect manager, Let's look at fertiliser first
   inspect_apsimx("maize-manager.apsimx", src.dir = extd.dir, 
-                 node = "Manager", parm = list("SowingFert",NA))
+                 node = "Manager", parm = list("SowingFert", NA))
   ## Inspect the fertilizer
   inspect_apsimx("maize-manager.apsimx", src.dir = extd.dir, 
-                 node = "Manager", parm = list("SowingFert",1))
+                 node = "Manager", parm = list("SowingFert", 1))
   ## Generate the path
   pp <- inspect_apsimx("maize-manager.apsimx", src.dir = extd.dir, 
                        node = "Manager", parm = list("SowingFert",1),
@@ -27,7 +27,7 @@ if(run.apsimx.edit){
               parm = "Amount", value = 150)
   ## Inspect the new file to make sure it worked
   inspect_apsimx("maize-manager.apsimx", src.dir = tmp.dir, 
-                 node = "Manager", parm = list("SowingFert",1))
+                 node = "Manager", parm = list("SowingFert", 1))
   
   ## Test the maize manager folder
   edit_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 

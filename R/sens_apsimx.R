@@ -76,11 +76,15 @@ sens_apsimx <- function(file, src.dir = ".",
     if(!is.logical(convert))
       stop("convert should be logical", call. = FALSE)
   }
-  
+
   if(missing(replacement)) replacement <- rep(FALSE, length(parm.paths))
   
   ## If root is not present. Need to think more about this...
-  if(missing(root)) root <- list("Models.Core.Replacements", NA)
+  if(missing(root) && all(replacement)){
+    root <- list("Models.Core.Replacements", NA)
+  }else{
+    root <- NULL
+  }
   
   if(missing(grid))
     stop("grid argument is missing")
@@ -132,7 +136,7 @@ sens_apsimx <- function(file, src.dir = ".",
                                 root = root,
                                 verbose = FALSE) 
       }else{
-        if(missing(root)){
+        if(is.null(root)){
           edit_apsimx(file = file, 
                       src.dir = src.dir,
                       wrt.dir = src.dir,

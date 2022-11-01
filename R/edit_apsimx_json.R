@@ -57,7 +57,9 @@
 #'              parm = "Amount", value = 200, verbose = TRUE)
 #'              
 #' ## Make sure it worked
-#' inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, node = "Manager")
+#' inspect_apsimx("Maize-edited.apsimx", src.dir = tmp.dir, 
+#'                node = "Manager",
+#'                parm = list("SowingFertiliser", NA))
 #' 
 #' ## Remove the file
 #' file.remove(file.path(tmp.dir, "Maize-edited.apsimx"))
@@ -72,7 +74,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         overwrite = FALSE,
                         edit.tag = "-edited",
                         parm.path = NULL,
-                        root,
+                        root = NULL,
                         verbose = TRUE){
   
   .check_apsim_name(file)
@@ -104,8 +106,8 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   ## Where is the 'Core' simulation?
   wcore <- grep("Core.Simulation", apsimx_json$Children)
 
-  if(length(wcore) > 1 || !missing(root)){
-    if(missing(root)){
+  if(length(wcore) > 1 || !is.null(root)){
+    if(is.null(root)){
       cat("Simulation structure: \n")
       str_list(apsimx_json)
       stop("more than one simulation found and no root node label has been specified \n select one of the children names above")   
@@ -152,7 +154,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   }else{
     parent.node <- apsimx_json$Children[[wcore]]$Children  
   }
-
+  
   ## Edit the 'Clock'
   if(node == "Clock"){
     parm.choices <- c("Start","End")
@@ -607,7 +609,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   if(node != "Other"){
     parent.node[wcz][[1]]$Children <- core.zone.node
     
-    if(length(wcore) > 1 || !missing(root)){
+    if(length(wcore) > 1 || !is.null(root)){
       ## I have to assume that root was supplied 
       ## otherwise an error would have been triggered before
       if(length(root) == 1){
