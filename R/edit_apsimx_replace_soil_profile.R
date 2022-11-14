@@ -61,7 +61,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   parent.node <- apsimx_json$Children
   wcore <- grep("Models.Core.Simulation", parent.node)
   
-  if(length(wcore) > 1){
+  if(length(wcore) > 1 || !is.null(root)){
     if(missing(root)){
       cat("Simulation structure: \n")
       str_list(apsimx_json)

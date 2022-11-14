@@ -173,8 +173,8 @@ sens_apsimx <- function(file, src.dir = ".",
       ## Extract basic information from sim
       if(.i == 1){
         col.class.numeric <- which(sapply(sim, class) == "numeric") ## Which columns are numeric
-        nms.sim <- names(sim[, col.class.numeric]) ## Names of the columns
-        ncol.class.numeric <- ncol(sim[,col.class.numeric]) 
+        nms.sim <- names(sim[, col.class.numeric, drop = FALSE]) ## Names of the columns
+        ncol.class.numeric <- ncol(sim[, col.class.numeric, drop = FALSE]) 
       }
       
       if(inherits(sim, "try-error") && .i > 1){
@@ -192,7 +192,7 @@ sens_apsimx <- function(file, src.dir = ".",
         col.sim <- rbind(col.sim, sim.sd)
         next
       } 
-      sim.sd <- sens_summary(sim, summary = summary, grid = grid, col.class.numeric = col.class.numeric)
+      sim.sd <- sens_summary(sim, summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
     }
     
     ## First trying this as a proof-of-concept
@@ -262,7 +262,7 @@ sens_apsimx <- function(file, src.dir = ".",
           }
           sim.sd1 <- as.data.frame(mat)
           names(sim.sd1) <- nms.sim
-          sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, col.class.numeric = col.class.numeric)
+          sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
           sim.sd <- rbind(sim.sd1, sim.sd2) 
         }
         ## If only the second simulation fails
@@ -278,14 +278,14 @@ sens_apsimx <- function(file, src.dir = ".",
           }
           sim.sd2 <- as.data.frame(mat)
           names(sim.sd2) <- nms.sim
-          sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, col.class.numeric = col.class.numeric)
+          sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
           sim.sd <- rbind(sim.sd1, sim.sd2) 
         }
         ## If both simulations are successful
         if(!inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
           ## Before they are merged both should be data.frames
-          sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, col.class.numeric = col.class.numeric)
-          sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, col.class.numeric = col.class.numeric)
+          sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+          sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
           sim.sd <- do.call(rbind, list(sim.sd1, sim.sd2))
         }
         file.remove(file.path(src.dir, paste0(tools::file_path_sans_ext(file), "-1.apsimx")))
@@ -347,7 +347,7 @@ sens_apsimx <- function(file, src.dir = ".",
           ## Before they are merged both should be data.frames
           sims.lst <- vector("list", length = cores)
           for(j in seq_len(cores)){
-            sims.lst[[j]] <- sens_summary(simc[[j]], summary = summary, grid = grid, col.class.numeric = col.class.numeric)
+            sims.lst[[j]] <- sens_summary(simc[[j]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
           }
           sim.sd <- do.call(rbind, sims.lst)
         }
@@ -398,33 +398,33 @@ sens_apsimx <- function(file, src.dir = ".",
 
 ## Function to apply summary 
 sens_summary <- function(sim, summary = c("mean", "max", "var", "sd", "none"),
-                         grid,
+                         grid, i.index,
                          col.class.numeric){
   
   summary <- match.arg(summary)
   
   if(summary == "mean"){
-    sim.s <- colMeans(sim[, col.class.numeric], na.rm = TRUE)
+    sim.s <- colMeans(sim[, col.class.numeric, drop = FALSE], na.rm = TRUE)
     sim.sd <- as.data.frame(t(sim.s))
   }
   
   if(summary == "max"){
-    sim.s <- apply(sim[, col.class.numeric], 2, max, na.rm = TRUE)
+    sim.s <- apply(sim[, col.class.numeric, drop = FALSE], 2, max, na.rm = TRUE)
     sim.sd <- as.data.frame(t(sim.s))
   }
   
   if(summary == "var"){
-    sim.s <- apply(sim[, col.class.numeric], 2, var, na.rm = TRUE)
+    sim.s <- apply(sim[, col.class.numeric, drop = FALSE], 2, var, na.rm = TRUE)
     sim.sd <- as.data.frame(t(sim.s))
   }
   
   if(summary == "sd"){
-    sim.s <- apply(sim[, col.class.numeric], 2, sd, na.rm = TRUE)
+    sim.s <- apply(sim[, col.class.numeric, drop = FALSE], 2, sd, na.rm = TRUE)
     sim.sd <- as.data.frame(t(sim.s))
   }
   
   if(summary == "none"){
-    sim.sd <- cbind(grid[.i, , drop = FALSE], sim, row.names = NULL)
+    sim.sd <- cbind(grid[i.index, , drop = FALSE], sim, row.names = NULL)
   }
   
   return(sim.sd)

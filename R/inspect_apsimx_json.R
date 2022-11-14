@@ -355,8 +355,14 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     parm.path <- paste0(parm.path.2,".",som.node$Name)
     ## The relevant components might be unpredictable
     ## Will need to find a better method in the future
-    som.d <- data.frame(parm = names(som.node)[2:8],
-                        value = as.vector(unlist(som.node)[2:8]))
+    names.som.node0 <- names(som.node)
+    som.names.table <- c("InitialResidueName", "InitialResidueType", "InitialResidueMass",
+                         "InitialStandingFraction", "InitialCPR", "InitialCNR")
+    wsomnn <- names.som.node0 %in% som.names.table
+    values.som.node0 <- unlist(som.node)
+    wsomvn <- names(values.som.node0) %in% som.names.table
+    som.d <- data.frame(parm = names(som.node)[wsomnn],
+                        value = as.vector(values.som.node0[wsomvn]))
     
     if(missing(parm)){
       print(knitr::kable(som.d, digits = digits))  
