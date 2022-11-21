@@ -197,8 +197,9 @@ auto_detect_apsimx <- function(){
         len.fa <- length(find.apsim)
         ## This extracts the date from the APSIM name but I 
         ## only need this for debugging in case there is a problem
-        fa.dt <- as.numeric(sapply(laf[find.apsim], .favd))
-        newest.version <- laf[find.apsim][len.fa]
+        fa.dt <- as.numeric(sapply(laf[find.apsim], .favn))
+        newest.version.number <- max(fa.dt)
+        newest.version <- grep(newest.version.number, laf[find.apsim], value = TRUE)
         if(apsimx::apsimx.options$warn.versions &&
            is.na(apsimx::apsimx.options$exe.path)){
            warning(paste("Multiple versions of APSIM-X installed. \n
@@ -329,7 +330,9 @@ auto_detect_apsimx_examples <- function(){
       if(length(find.apsim) == 0) stop("APSIM-X examples not found")
       
       if(length(find.apsim) > 1){
-        newest.version <- laf[find.apsim][length(find.apsim)]
+        fa.dt <- as.numeric(sapply(laf[find.apsim], .favn))
+        newest.version.number <- max(fa.dt)
+        newest.version <- grep(newest.version.number, laf[find.apsim], value = TRUE)
         if(apsimx::apsimx.options$warn.versions && is.na(apsimx::apsimx.options$exe.path)){
           warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:", newest.version))

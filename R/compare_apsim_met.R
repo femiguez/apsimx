@@ -110,7 +110,7 @@ compare_apsim_met <- function(...,
                       bias = NA, slope = NA, corr = NA)
     if(missing(labels)) ans$labels <- NULL
   }else{
-    ans <- data.frame(variable = met.var,
+    ans <- data.frame(variable = rep(met.var, n.mets - 1),
                       vs = NA, labels = NA,
                       bias = NA, slope = NA, corr = NA)
     if(missing(labels)) ans$labels <- NULL
@@ -158,7 +158,7 @@ compare_apsim_met <- function(...,
   if(met.var != "all"){
     ## Just select the appropriate variable
     idx.met.mrg <- grep(met.var, names(met.mrg))
-    met.mrg.s <- met.mrg[,idx.met.mrg]
+    met.mrg.s <- met.mrg[, idx.met.mrg]
     
     if(verbose) cat("Variable ", met.var, "\n")
     ans$variable[1] <- met.var
@@ -166,20 +166,20 @@ compare_apsim_met <- function(...,
     tmp <- met.mrg.s
     for(j in 2:ncol(tmp)){
       if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
-      ans$vs[1] <- paste(names(tmp)[j - 1], "vs.", names(tmp)[j])
+      ans$vs[j - 1] <- paste(names(tmp)[j - 1], "vs.", names(tmp)[j])
       if(!missing(labels)){
         if(verbose) cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
-        ans$labels[1] <- paste(labels[j - 1], "vs.", labels[j])
+        ans$labels[j - 1] <- paste(labels[j - 1], "vs.", labels[j])
       }
       fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
       if(verbose) cat(" \t Bias: ", coef(fm0)[1], "\n")
-      ans$bias[1] <- coef(fm0)[1]
+      ans$bias[j - 1] <- coef(fm0)[1]
       if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
-      ans$slope[1] <- coef(fm0)[2]
+      ans$slope[j - 1] <- coef(fm0)[2]
       if(verbose) cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
-      ans$corr[1] <- cor(tmp[,j - 1], tmp[, j])
+      ans$corr[j - 1] <- cor(tmp[,j - 1], tmp[, j])
       if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
-      ans$rss[1] <- deviance(fm0)
+      ans$rss[j - 1] <- deviance(fm0)
       if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
       ans$rmse <- sigma(fm0)
     }

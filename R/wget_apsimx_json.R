@@ -92,12 +92,23 @@ insert_replacement_node <- function(file, src.dir, wrt.dir, rep.node,
     cat("Datastore(s) is/are in node(s)", wdatastore, "\n")
   }
   
-  if(rep.node.position == wdatastore)
-    warning("Replacement node will overwrite DataStore")
+  if(rep.node.position == wdatastore){
+    warning("Replacement node will overwrite DataStore. 
+            Moving DataStore down.")
+    lapsimx_json <- length(apsimx_json$Children)
+    apsimx_json$Children[[lapsimx_json + 1]] <- apsimx_json$Children[[wdatastore]]
+    warning(paste("New position for DataStore:", lapsimx_json + 1))
+  }
+    
   
-  if(new.core.position == wdatastore)
-    warning("Simulations node will overwrite DataStore")
-
+  if(new.core.position == wdatastore){
+    warning("Simulations node will overwrite DataStore. 
+            Moving DataStore down.")
+    lapsimx_json <- length(apsimx_json$Children)
+    apsimx_json$Children[[lapsimx_json + 1]] <- apsimx_json$Children[[wdatastore]]
+    warning(paste("New position for DataStore:", lapsimx_json + 1))
+  }
+    
   ## Need to modify the replacement node?
   rep.node$ExplorerWidth <- NULL
   rep.node$Version <- NULL

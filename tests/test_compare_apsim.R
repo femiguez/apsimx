@@ -30,7 +30,6 @@ if(run.test.compare.apsimx){
   obsPheno$Date <- as.Date(obsPheno$Date)
   simPheno$Date <- as.Date(simPheno$Date)
   
-  ## cmp0 <- compare_apsim(obsPheno, simPheno)
   cmp <- compare_apsim(obsPheno, simPheno, index = c("report", "Date"), labels = c("Obs", "Sim"))
   
   plot(cmp)

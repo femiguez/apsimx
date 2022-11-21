@@ -53,10 +53,12 @@ compare_apsim <- function(...,
   if(!missing(labels)){
     o.nms <- labels
     if(length(labels) != n.outs)
-      stop(" 'labels' lenght should be the same as the number of 'output' objects")
+      stop(" 'labels' lenght should be the same as the number of 'output' objects", call. = FALSE)
   } 
   
-  if(!inherits(out1, "data.frame")) stop("object should be of class 'data.frame' ")
+  if(!inherits(out1, "data.frame")) stop("object should be of class 'data.frame' ", call. = FALSE)
+  
+  if(length(variable) > 1) stop("Only one variable can be selected", call. = FALSE)
 
   ## Process out1
   nms1 <- names(out1)
@@ -172,7 +174,7 @@ compare_apsim <- function(...,
   
   if(!missing(variable)){
     ## Just select the appropriate variable
-    idx.out.mrg <- grep(variable, names(out.mrg))
+    idx.out.mrg <- grep(variable, names(out.mrg))  
     out.mrg.s <- out.mrg[, idx.out.mrg]
     
     if(verbose) cat("Variable:", variable, "\n")

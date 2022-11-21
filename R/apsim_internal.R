@@ -68,9 +68,25 @@
 #' @noRd
 #' 
 .favd <- function(x){
-  x1 <- gsub("APSIM","\\1",x) ## Remove 'APSIM'
+  x1 <- gsub("APSIM","\\1", x) ## Remove 'APSIM'
   x2 <- strsplit(x1, ".", fixed = TRUE)[[1]] ## Split by '.'
   x3 <- as.Date(paste(x2[1:3], collapse="-"), format = "%Y-%m-%d") ## Convert to 'Date'
+  return(x3)
+}
+
+#' This function extracts the APSIM-X Version number
+#' Find Apsim Version number
+#' @name .favn
+#' @description Extract the number from an APSIM binary name being used
+#' @param x an APISM binary name such as 'APSIM2020.06.5260.app'
+#' @return it returns a number for the APSIM version
+#' @noRd
+#' 
+.favn <- function(x){
+  x1 <- gsub("APSIM","\\1", x) ## Remove 'APSIM'
+  x2 <- strsplit(x1, ".", fixed = TRUE)[[1]] ## Split by '.'
+  # x3 <- as.Date(paste(x2[1:3], collapse="-"), format = "%Y-%m-%d") ## Convert to 'Date'
+  x3 <- as.numeric(x2[3]) + as.numeric(x2[4])
   return(x3)
 }
 

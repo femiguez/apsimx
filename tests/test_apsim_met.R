@@ -101,4 +101,12 @@ if(run.apsim.met){
   cmp <- compare_apsim_met(iem, pwr[, 1:6], dmt[, 1:6], 
                            labels = c("IEM", "POWER", "DAYMET"))
   
+  cmp <- compare_apsim_met(iem, pwr[, 1:6], dmt[, 1:6], 
+                           met.var = "rain",
+                           labels = c("IEM", "POWER", "DAYMET"))
+
+  plot(cmp)
+  plot(cmp, plot.type = "ts")
+  plot(cmp, plot.type = "ts", met.var = "rain", cumulative = TRUE)
+
 }
