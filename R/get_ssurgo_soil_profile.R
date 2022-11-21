@@ -13,6 +13,8 @@
 #' @param soil.bottom see \code{\link{ssurgo2sp}}
 #' @param method interpolation method see \code{\link{ssurgo2sp}}
 #' @param nlayers number for layer for the new soil profile
+#' @param check whether to check for reasonable values using \code{\link{check_apsimx_soil_profile}}.
+#' TRUE by default. If \sQuote{fix} is TRUE, it will be applied only after the fix attempt.
 #' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
 #' @param verbose default FALSE. Whether to print messages.
 #' @return this function will always return a list. Each element of the list will
@@ -26,6 +28,8 @@
 #' require(spData)
 #' ## Soil inforation for a single point
 #' sp <- get_ssurgo_soil_profile(lonlat = c(-93, 42))
+#' ## The initial attempt throws warnings, so better to use 'fix'
+#' sp <- get_ssurgo_soil_profile(lonlat = c(-93, 42), fix = TRUE)
 #' plot(sp[[1]])
 #' plot(sp[[1]], property = "water")
 #' }
@@ -35,8 +39,9 @@
 get_ssurgo_soil_profile <- function(lonlat, shift = -1,
                                     nmapunit = 1, nsoil = 1,
                                     xout = NULL, soil.bottom = 200,
-                                    method = c("constant","linear"),
+                                    method = c("constant", "linear"),
                                     nlayers = 10,
+                                    check = TRUE,
                                     fix = FALSE,
                                     verbose = FALSE){
   
@@ -162,6 +167,11 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
     metadata <- attributes(sp0[[i]])
     metadata$DataSource <- paste("SSURGO (https://sdmdataaccess.nrcs.usda.gov/) through R package soilDB, R package apsimx function ssurgo2sp. Timestamp",Sys.time())
     metadata$names <- NULL; metadata$class <- NULL; metadata$row.names <- NULL;
+
+    if(fix){
+      icheck <- check
+      check <- FALSE
+    } 
     
     asp <- apsimx_soil_profile(nlayers = nlayers,
                                Thickness = sp0[[i]]$Thickness * 10,
@@ -177,11 +187,14 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
                                ParticleSizeSilt = sp0[[i]]$ParticleSizeSilt,
                                ParticleSizeSand = sp0[[i]]$ParticleSizeSand,
                                soil.bottom = soil.bottom,
-                               metadata = metadata)
+                               metadata = metadata,
+                               check = check)
     
-    ## check_apsimx_soil_profile(asp)
-    
-    if(fix) asp <- fix_apsimx_soil_profile(asp, verbose = verbose)
+    if(fix){
+      asp <- fix_apsimx_soil_profile(asp, verbose = verbose)
+      if(icheck)
+        check_apsimx_soil_profile(asp)
+    } 
     
     ans[[i]] <- asp
   }

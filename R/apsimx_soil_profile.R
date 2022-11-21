@@ -49,6 +49,7 @@
 #' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
 #' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
 #' If a != 0 and b != 0 then the equation is \code{a*soil.layer*exp(-b*soil.layer)}.  
+#' @param check whether to check for reasonable values using \code{\link{check_apsimx_soil_profile}}
 #' @return a soil profile with class \sQuote{soil_profile} with elements \sQuote{soil}, \sQuote{crops}, \sQuote{metadata},
 #' \sQuote{soilwat} and \sQuote{swim}.
 #' @export
@@ -92,7 +93,8 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                  soilwat = NA,
                                  swim = NA,
                                  soilorganicmatter = NA,
-                                 dist.parms = list(a = 0, b = 0.2)){
+                                 dist.parms = list(a = 0, b = 0.2),
+                                 check = TRUE){
 
   if(!is.null(Depth) & !is.null(Thickness)){
     stop("Only specify Depth OR Thickness")
@@ -411,7 +413,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
     class(ans) <- "soil_profile"
     
     ## Check for reasonable values
-    check_apsimx_soil_profile(ans)
+    if(check) check_apsimx_soil_profile(ans)
     
     return(ans)
   }

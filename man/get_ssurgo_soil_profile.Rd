@@ -13,6 +13,7 @@ get_ssurgo_soil_profile(
   soil.bottom = 200,
   method = c("constant", "linear"),
   nlayers = 10,
+  check = TRUE,
   fix = FALSE,
   verbose = FALSE
 )
@@ -36,6 +37,9 @@ number of soils is negative or NA it will fetch all the soils in the mapunit}
 
 \item{nlayers}{number for layer for the new soil profile}
 
+\item{check}{whether to check for reasonable values using \code{\link{check_apsimx_soil_profile}}.
+TRUE by default. If \sQuote{fix} is TRUE, it will be applied only after the fix attempt.}
+
 \item{fix}{whether to fix compatibility between saturation and bulk density (default is FALSE).}
 
 \item{verbose}{default FALSE. Whether to print messages.}
@@ -58,6 +62,8 @@ require(sf)
 require(spData)
 ## Soil inforation for a single point
 sp <- get_ssurgo_soil_profile(lonlat = c(-93, 42))
+## The initial attempt throws warnings, so better to use 'fix'
+sp <- get_ssurgo_soil_profile(lonlat = c(-93, 42), fix = TRUE)
 plot(sp[[1]])
 plot(sp[[1]], property = "water")
 }

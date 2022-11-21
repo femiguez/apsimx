@@ -39,7 +39,8 @@ apsimx_soil_profile(
   soilwat = NA,
   swim = NA,
   soilorganicmatter = NA,
-  dist.parms = list(a = 0, b = 0.2)
+  dist.parms = list(a = 0, b = 0.2),
+  check = TRUE
 )
 
 \method{plot}{soil_profile}(
@@ -119,6 +120,8 @@ check_apsimx_soil_profile(x, particle.density = 2.65)
 \item{dist.parms}{parameter values for creating a profile. If a == 0 and b == 0 then \cr
 a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
 If a != 0 and b != 0 then the equation is \code{a*soil.layer*exp(-b*soil.layer)}.}
+
+\item{check}{whether to check for reasonable values using \code{\link{check_apsimx_soil_profile}}}
 
 \item{x}{object of class \sQuote{soil_profile} or the \sQuote{soil} 
 component within an object of class \sQuote{soil_profile}.}
