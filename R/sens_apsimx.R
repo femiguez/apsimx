@@ -50,6 +50,10 @@ sens_apsimx <- function(file, src.dir = ".",
   .check_apsim_name(src.dir)
   
   if(cores > 1L){
+    
+    if(.Platform$OS.type != "unix")
+      stop("This is only available in 'unix' OSs at the moment", call. = FALSE)
+    
     if(cores > (nrow(grid) - 1))
        stop("'cores' should be an integer smaller than the number of simulations minus one", call. = FALSE)
     detect.cores <- parallel::detectCores()  
