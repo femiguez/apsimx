@@ -199,6 +199,7 @@ sens_apsimx <- function(file, src.dir = ".",
     if(cores == 2L && .i > 1 && original.cores == 2L){
       ## If the number of simulations fit well within the 
       ## number of cores
+      if(verbose > 1) cat("Iteration:", .i, "\n")
       num.sim.rem <- (dim(grid)[1] - 1) %% 2
       ## The first simulation will not be parallelized
       if(.Platform$OS.type == "unix"){
@@ -219,7 +220,12 @@ sens_apsimx <- function(file, src.dir = ".",
                                                   cleanup = TRUE, value = "report"))
           if(verbose > 1) cat("Started simulation on first core \n")
           core.counter <- core.counter + 1
-          next          
+          if(verbose > 1) cat("Remaining simulations:", dim(grid)[1] - .i, "\n")
+          if(num.sim.rem == 0){
+            next
+          }else{
+            if(dim(grid)[1] - .i > 0) next            
+          }
         }else{
           if(verbose > 1) cat("Started simulation on second core \n")
           sim2 <- parallel::mcparallel(apsimx(file = file, src.dir = src.dir,
@@ -227,67 +233,146 @@ sens_apsimx <- function(file, src.dir = ".",
           core.counter <- 1L
         }
         if(verbose > 1) cat("About to merge simulations from the two cores \n")
-        simc <- parallel::mccollect(list(sim1, sim2), wait = TRUE)
+        if(num.sim.rem == 0){
+          simc <- parallel::mccollect(list(sim1, sim2), wait = TRUE)  
+        }else{
+          if(dim(grid)[1] - .i > 0){
+            simc <- parallel::mccollect(list(sim1, sim2), wait = TRUE)  
+          }else{
+            simc <- parallel::mccollect(sim1)  
+          }          
+        }
+
         if(verbose > 1){
           cat("Class of object returned by mccollect:", class(simc), "\n")
           cat("Class of object 1 returned by mccollect:", class(simc[[1]]), "\n")
-          cat("Class of object 2 returned by mccollect:", class(simc[[2]]), "\n")
+          if(dim(grid)[1] - .i > 0) cat("Class of object 2 returned by mccollect:", class(simc[[2]]), "\n")
           cat("Completed simulation from both cores \n")
           cat("Iteration:", .i, "\n")          
         }
         ## If both simulations fail then 'next'?
-        if(inherits(simc[[1]], "try-error") && inherits(simc[[2]], "try-error")){
-          if(verbose > 1) cat("Both simulations failed \n")
-          if(summary != "none"){
-            mat <- matrix(ncol = ncol.class.numeric)  
+        if(num.sim.rem == 0){
+            if(inherits(simc[[1]], "try-error") && inherits(simc[[2]], "try-error")){
+              if(verbose > 1) cat("Both simulations failed \n")
+              if(summary != "none"){
+                mat <- matrix(ncol = ncol.class.numeric)  
+              }else{
+                mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+              }
+              sim.sd <- as.data.frame(mat)
+              names(sim.sd) <- nms.sim
+              sim.sd <- rbind(sim.sd, sim.sd) ## This duplicates the empty data.frame result
+              col.sim <- rbind(col.sim, sim.sd)
+              next
+            }
+            ## If only the first simulation fails
+            if(inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
+              if(verbose > 1){
+                cat("Error type:", simc[[1]], "\n")
+                cat("First simulation failed \n")
+              }
+              if(summary != "none"){
+                mat <- matrix(ncol = ncol.class.numeric)  
+              }else{
+                mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+              }
+              sim.sd1 <- as.data.frame(mat)
+              names(sim.sd1) <- nms.sim
+              sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+              sim.sd <- rbind(sim.sd1, sim.sd2) 
+            }
+            ## If only the second simulation fails
+            if(!inherits(simc[[1]], "try-error") && inherits(simc[[2]], "try-error")){
+              if(verbose > 1){
+                cat("Error type:", simc[[2]], "\n")
+                cat("Second simulation failed \n")
+              }
+              if(summary != "none"){
+                mat <- matrix(ncol = ncol.class.numeric)  
+              }else{
+                mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+              }
+              sim.sd2 <- as.data.frame(mat)
+              names(sim.sd2) <- nms.sim
+              sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+              sim.sd <- rbind(sim.sd1, sim.sd2) 
+            }
+            ## If both simulations are successful
+            if(!inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
+              ## Before they are merged both should be data.frames
+              sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+              sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+              sim.sd <- do.call(rbind, list(sim.sd1, sim.sd2))
+            }         
+        }else{
+          if(dim(grid)[1] - .i > 0){
+            if(inherits(simc[[1]], "try-error") && inherits(simc[[2]], "try-error")){
+              if(verbose > 1) cat("Both simulations failed \n")
+              if(summary != "none"){
+                mat <- matrix(ncol = ncol.class.numeric)  
+              }else{
+                mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+              }
+              sim.sd <- as.data.frame(mat)
+              names(sim.sd) <- nms.sim
+              sim.sd <- rbind(sim.sd, sim.sd) ## This duplicates the empty data.frame result
+              col.sim <- rbind(col.sim, sim.sd)
+              next
+            }
+            ## If only the first simulation fails
+            if(inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
+              if(verbose > 1){
+                cat("Error type:", simc[[1]], "\n")
+                cat("First simulation failed \n")
+              }
+              if(summary != "none"){
+                mat <- matrix(ncol = ncol.class.numeric)  
+              }else{
+                mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+              }
+              sim.sd1 <- as.data.frame(mat)
+              names(sim.sd1) <- nms.sim
+              sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+              sim.sd <- rbind(sim.sd1, sim.sd2) 
+            }
+            ## If only the second simulation fails
+            if(!inherits(simc[[1]], "try-error") && inherits(simc[[2]], "try-error")){
+              if(verbose > 1){
+                cat("Error type:", simc[[2]], "\n")
+                cat("Second simulation failed \n")
+              }
+              if(summary != "none"){
+                mat <- matrix(ncol = ncol.class.numeric)  
+              }else{
+                mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+              }
+              sim.sd2 <- as.data.frame(mat)
+              names(sim.sd2) <- nms.sim
+              sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+              sim.sd <- rbind(sim.sd1, sim.sd2) 
+            }
+            ## If both simulations are successful
+            if(!inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
+              ## Before they are merged both should be data.frames
+              sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+              sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+              sim.sd <- do.call(rbind, list(sim.sd1, sim.sd2))
+            }         
           }else{
-            mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
-          }
-          sim.sd <- as.data.frame(mat)
-          names(sim.sd) <- nms.sim
-          sim.sd <- rbind(sim.sd, sim.sd) ## This duplicates the empty data.frame result
-          col.sim <- rbind(col.sim, sim.sd)
-          next
+            if(inherits(simc, "try-error")){
+              if(summary != "none"){
+                mat <- matrix(ncol = ncol.class.numeric)  
+              }else{
+                mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+              }
+              sim.sd <- as.data.frame(mat)
+              names(sim.sd) <- nms.sim
+            }else{
+              sim.sd <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+            }
+          }          
         }
-        ## If only the first simulation fails
-        if(inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
-          if(verbose > 1){
-            cat("Error type:", simc[[1]], "\n")
-            cat("First simulation failed \n")
-          }
-          if(summary != "none"){
-            mat <- matrix(ncol = ncol.class.numeric)  
-          }else{
-            mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
-          }
-          sim.sd1 <- as.data.frame(mat)
-          names(sim.sd1) <- nms.sim
-          sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
-          sim.sd <- rbind(sim.sd1, sim.sd2) 
-        }
-        ## If only the second simulation fails
-        if(!inherits(simc[[1]], "try-error") && inherits(simc[[2]], "try-error")){
-          if(verbose > 1){
-            cat("Error type:", simc[[2]], "\n")
-            cat("Second simulation failed \n")
-          }
-          if(summary != "none"){
-            mat <- matrix(ncol = ncol.class.numeric)  
-          }else{
-            mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
-          }
-          sim.sd2 <- as.data.frame(mat)
-          names(sim.sd2) <- nms.sim
-          sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
-          sim.sd <- rbind(sim.sd1, sim.sd2) 
-        }
-        ## If both simulations are successful
-        if(!inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
-          ## Before they are merged both should be data.frames
-          sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
-          sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
-          sim.sd <- do.call(rbind, list(sim.sd1, sim.sd2))
-        }
+
         file.remove(file.path(src.dir, paste0(tools::file_path_sans_ext(file), "-1.apsimx")))
       }
     }
