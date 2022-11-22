@@ -50,8 +50,8 @@ sens_apsimx <- function(file, src.dir = ".",
   .check_apsim_name(src.dir)
   
   if(cores > 1L){
-    if(cores > nrow(grid))
-       stop("'cores' should be an integer smaller than the number of simulations", call. = FALSE)
+    if(cores > (nrow(grid) - 1))
+       stop("'cores' should be an integer smaller than the number of simulations minus one", call. = FALSE)
     detect.cores <- parallel::detectCores()  
     if(cores > detect.cores)
       stop("'cores' argument should not be higher than the number of available cores", call. = FALSE)
@@ -108,6 +108,7 @@ sens_apsimx <- function(file, src.dir = ".",
   start <- Sys.time()
   
   original.cores <- cores
+  cores.last.round <- 0
   core.counter <- 1L
   sim.list <- vector("list", length = cores)
   
@@ -377,20 +378,18 @@ sens_apsimx <- function(file, src.dir = ".",
       }
     }
     
-    cores.last.round <- 0
-    if(cores > 2L && .i > 1){
+    if(original.cores > 2L && .i > 1){
       ## The first simulation will not be parallelized
       if(.Platform$OS.type == "unix"){
         ## How many simulations are remaining?
         ## If the number of simulations remaining are less than the number of cores change a few things
         num.sim.rem <- dim(grid)[1] - .i
-        if(num.sim.rem < cores && cores.last.round == 0){
-          ##if(verbose > 1) 
-          cat("Number of simulations remaining:", num.sim.rem, "\n")
-          cores <- num.sim.rem
-          sim.list <- vector("list", length = cores)
-          cores.last.round <- 1
+
+        if(verbose > 1){
+          cat("Iteration:", .i, "\n")
+          cat("Number of simulations remaining:", num.sim.rem, "\n")          
         }
+
         while(core.counter <= cores){
           ## Maybe I should edit the file and then delete it 
           ## to prevent conflicts with the file below
@@ -409,35 +408,68 @@ sens_apsimx <- function(file, src.dir = ".",
                                                                   cleanup = TRUE, value = "report"))
           break           
         }
-        if(core.counter <= cores){
-          cat("Core counter:", core.counter, "\n")
+        if(core.counter < cores){
+          if(verbose > 1) cat("Core counter :", core.counter, "\n")
           core.counter <- core.counter + 1
           next
         } 
         
-        print(sapply(sim.list, class))
+        if(core.counter >= cores){
+          if(verbose > 1) cat("Core counter :", core.counter, "\n")
+          core.counter <- core.counter + 1
+        } 
+        
+        if(verbose > 1){
+          print(sapply(sim.list, class))
+          
+          cat("Length sim.list:", length(sim.list), "\n")
+          cat("Number of simulations remaining:", num.sim.rem, "\n")          
+        }
 
         simc <- parallel::mccollect(sim.list, wait = TRUE)
         core.counter <- 1L
+        
+        if(num.sim.rem < cores && cores.last.round < 1){
+          cores <- num.sim.rem
+          sim.list <- vector("list", length = cores)
+          cores.last.round <- 2
+        }
 
         ## Identify which simulations failed
         sim.class <- sapply(simc, class)
         
         if(any(sim.class == "try-error")){
           if(verbose > 1) cat("Simulations which failed:", which(sim.class == "try-error"), "\n")
+          ## How can I handle it if some simulations failed?
+          sims.lst <- vector("list", length = length(simc))
+          for(j in seq_len(length(simc))){
+            if(inherits(simc[[j]], "try-error")){
+              if(summary != "none"){
+                mat <- matrix(ncol = ncol.class.numeric)  
+              }else{
+                mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+              }
+              sim.sd.na <- as.data.frame(mat)
+              names(sim.sd.na) <- nms.sim
+              sims.lst[[j]] <- sim.sd.na
+            }else{
+              sims.lst[[j]] <- sens_summary(simc[[j]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)  
+            }
+          }
+          sim.sd <- do.call(rbind, sims.lst)
         }
 
-        ## If both simulations are successful
+        ## If all simulations are successful
         if(all(sim.class != "try-error")){
           ## Before they are merged both should be data.frames
-          sims.lst <- vector("list", length = cores)
-          for(j in seq_len(cores)){
+          sims.lst <- vector("list", length = length(simc))
+          for(j in seq_len(length(simc))){
             sims.lst[[j]] <- sens_summary(simc[[j]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
           }
           sim.sd <- do.call(rbind, sims.lst)
         }
-        print(summary(sim.sd))
-        for(j in seq_len(cores)){
+
+        for(j in seq_len(length(simc))){
           file.remove(file.path(src.dir, paste0(tools::file_path_sans_ext(file), "-", j, ".apsimx")))  
         }
       }
@@ -464,7 +496,7 @@ sens_apsimx <- function(file, src.dir = ".",
           old.prev.div <- prev.div
         } 
       }
-    } ## End of verbose chunck
+    } ## End of verbose chunk
   } ## End of big for loop
   
   if(summary != "none"){
