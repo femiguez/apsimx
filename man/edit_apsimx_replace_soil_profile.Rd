@@ -12,7 +12,7 @@ edit_apsimx_replace_soil_profile(
   edit.tag = "-edited",
   overwrite = FALSE,
   verbose = TRUE,
-  root
+  root = NULL
 )
 }
 \arguments{

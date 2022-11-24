@@ -22,6 +22,10 @@
 #' @param summary function name to use to summarize the output to be a sinlge row (default is the mean).
 #' @param root root argument for \code{\link{edit_apsimx_replacement}}
 #' @param verbose whether to print progress in percent and elapsed time.
+#' @param cores number of cores to use for parallel evaluation
+#' @param save whether to save intermediate results. By default they will be saved as a
+#' \sQuote{csv} file using the name of the apsim file. This will replace \sQuote{apsimx} with \sQuote{csv}.
+#' It is also possible to provide the file name here (for example: \sQuote{Some_results.csv}).
 #' @param ... additional arguments (none used at the moment).
 #' @note The summary function is stored as an attribute of the data frame \sQuote{grid.sims}.
 #' @return object of class \sQuote{sens_apsim}, but really just a list with results from the evaluations.
@@ -41,6 +45,7 @@ sens_apsimx <- function(file, src.dir = ".",
                         root,
                         verbose = TRUE,
                         cores = 1L,
+                        save = FALSE,
                         ...){
   
   if(missing(file))
@@ -482,6 +487,24 @@ sens_apsimx <- function(file, src.dir = ".",
     ## This combines the simulations regardless of cores argument
     col.sim <- rbind(col.sim, sim.sd)
     
+    if(save != FALSE){
+      if(isTRUE(save)){
+        save.file.name <- paste0(tools::file_path_sans_ext(file), ".csv")
+        utils::write.csv(col.sim, 
+                         file = save.file.name,
+                         row.names = FALSE)
+      }else{
+        if(!is.character(save))
+          stop("'save' argument should be a character", call. = FALSE)
+        if(tools::file_ext(save) != "csv")
+          stop("'save' only accepts 'csv' as an extension", call. = FALSE)
+        save.file.name <- save
+        utils::write.csv(col.sim, 
+                         file = save.file.name,
+                         row.names = FALSE)
+      }
+    }
+    
     if(verbose){
       nrow.grid <- nrow(grid)
       old.prev.div <- 0
@@ -502,6 +525,9 @@ sens_apsimx <- function(file, src.dir = ".",
       }
     } ## End of verbose chunk
   } ## End of big for loop
+  
+  if(verbose && !isFALSE(save))
+    cat("Saved results as:", save.file.name, "\n")
   
   if(summary != "none"){
     cdat <- cbind(grid, col.sim)  

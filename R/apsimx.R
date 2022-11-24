@@ -722,7 +722,7 @@ assign('.run.local.tests', TRUE, apsimx.options)
 ## Import packages needed for apsimx to work correctly
 #' @import DBI jsonlite knitr RSQLite xml2 
 #' @importFrom utils read.table write.table packageVersion
-#' @importFrom tools file_path_sans_ext
+#' @importFrom tools file_path_sans_ext file_ext
 #' @importFrom stats aggregate anova coef cor cov2cor deviance lm optim qt var sd setNames sigma 
 NULL
 

@@ -35,7 +35,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
                                               edit.tag = "-edited",
                                               overwrite = FALSE,
                                               verbose = TRUE,
-                                              root){
+                                              root = NULL){
   
   .check_apsim_name(file)
   
