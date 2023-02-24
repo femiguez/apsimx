@@ -250,7 +250,10 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     if(soil.child == "Water" || soil.child == "Physical"){
       edited.child <- soil.child
       
-      wwn <- grep("^Water|Physical", sapply(soil.node[[1]]$Children, function(x) x$Name)) 
+      ## In older versions of APSIM Next Gen instead of 'Physical' it was called
+      ## 'Water'. Now "InitialWater" has been renamed to simply "Water"
+      ## So here we now just look for "Physical"
+      wwn <- grep("Physical", sapply(soil.node[[1]]$Children, function(x) x$Name)) 
       soil.water.node <- soil.node[[1]]$Children[[wwn]]
 
       if(soil.water.node$Name != "Water" && soil.water.node$Name != "Physical"){
