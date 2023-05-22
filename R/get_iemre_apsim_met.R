@@ -215,7 +215,7 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
     yr1 <- as.numeric(format(as.Date(dates[1]), "%Y"))
     yr2 <- as.numeric(format(as.Date(dates[2]), "%Y"))
     
-    ## This chucnk of code selects stations which have data in the desired range
+    ## This chunk of code selects stations which have data in the desired range
     start.year <- sapply(ftrs$properties$time_domain, function(x) as.numeric(gsub("(", "", strsplit(x, "-")[[1]][1], fixed = TRUE)))
     end.year0 <- sapply(ftrs$properties$time_domain, function(x) gsub("(", "", strsplit(x, "-")[[1]][2], fixed = TRUE))
     end.year <- ifelse(end.year0 == "Now)", 
@@ -238,6 +238,9 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
     station.coords <- sf::st_transform(station.coords, crs = 3857)
     near.station.index <- sf::st_nearest_feature(pts, station.coords)
     station <- ftrs[near.station.index, "id"]
+    
+    ## Compute distance between input point and station
+    pt.to.station.distance <- sf::st_distance(pts, station.coords[near.station.index, ])
     
   }else{
   
@@ -273,6 +276,8 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
   
   if(!missing(lonlat)){
     attr(iem.dat, "longitude") <- paste("longitude =", lonlat[1], "(DECIMAL DEGREES)")
+    ## Add distance as a comment
+    attr(iem.dat, "comment") <- paste("Distance from station to input point (meters):", round(pt.to.station.distance))
   }
   
   if(missing(lonlat)){

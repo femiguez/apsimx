@@ -75,6 +75,11 @@ compare_apsim <- function(...,
     stop("'report' and 'Date' found in first data frame but index length is equal to 1.
          Maybe index should be c('report', 'Date')?", call. = FALSE)
   }
+  
+  if(all(c("SimulationName", "Date") %in% nms1) && length(index) == 1){
+    stop("'SimulationName' and 'Date' found in first data frame but index length is equal to 1.
+         Maybe index should be c('SimulationName', 'Date')?", call. = FALSE)
+  }
 
   if(length(index) == 1){
     if(length(nms1.i) < 2) 
@@ -85,7 +90,8 @@ compare_apsim <- function(...,
   }
 
   ## The line below drops irrelevant columns and brings index to the first column
-  out1 <- subset(out1, select = c(index, nms1.i[-which(nms1 %in% index)]))
+  ##out1 <- subset(out1, select = c(index, nms1.i[-which(nms1 %in% index)]))
+  out1 <- subset(out1, select = c(index, setdiff(nms1.i, index)))
   new.nms1 <- paste0(names(out1), ".1") ## This simply adds a 1
   if(length(index) == 1){
     out1.new.names <- gsub(paste0(index, ".1"), index, new.nms1) ## Rename Date.1 to Date  
