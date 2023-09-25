@@ -141,6 +141,9 @@ optim_apsimx <- function(file, src.dir = ".",
   ## Set up replacement
   if(missing(replacement)) replacement <- rep(FALSE, length(parm.paths))
   
+  if(length(replacement) != length(parm.paths))
+    stop("Length of replacement vector should be equal to parm.paths", call. = FALSE)
+  
   ## If root is not present
   if(missing(root)) root <- list("Models.Core.Replacements", NA)
 

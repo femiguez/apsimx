@@ -774,7 +774,7 @@ fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), particle.densi
             "It was adjusted to:", 1 - x$soil$BD[j] / 2.65 - 0.001, "\n")              
       }
       ## Fixing LL and air dry issue
-      if(x$soil$LL15 < x$soil$AirDry){
+      if(x$soil$LL15[j] < x$soil$AirDry[j]){
         if(verbose){
           cat("LL15 cannot be lower than AirDry in layer:", j,".\n",
               "It was adjusted to the value of AirDry.\n")

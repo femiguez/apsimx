@@ -89,11 +89,11 @@ sens_apsimx <- function(file, src.dir = ".",
   if(missing(replacement)) replacement <- rep(FALSE, length(parm.paths))
   
   ## If root is not present. Need to think more about this...
-  if(missing(root) && all(replacement)){
-    root <- list("Models.Core.Replacements", NA)
-  }else{
-    root <- NULL
-  }
+  # if(is.null(root) && all(replacement)){
+  #   root <- list("Models.Core.Replacements", NA)
+  # }else{
+  #   root <- NULL
+  # }
   
   if(missing(grid))
     stop("grid argument is missing")
@@ -130,7 +130,7 @@ sens_apsimx <- function(file, src.dir = ".",
         par.val <- grid[.i, .j]  
       }else{
         ## Converting from character to numeric. Values need to be separated by spaces.
-        par.val <- as.numeric(strsplit(grid[.i, .j], " ")[[1]])
+        par.val <- as.numeric(strsplit(grid[.i, .j], " ")[[1]])  
       }
       
       if(replacement[.j]){

@@ -319,3 +319,62 @@ if(run.sens.apsimx){
   sns2$grid.sims[1:5, 1:5]  
   
 }
+
+#### Testing the cores argument ####
+
+run.sens.apsimx.cores <- FALSE
+
+if(run.sens.apsimx.cores){
+  
+  extd.dir <- system.file("extdata", package = "apsimx")
+  file.copy(file.path(extd.dir, "Wheat.apsimx"), ".")
+  ## Identify a parameter of interest
+  ## In this case we want to know the impact of varying the fertilizer amount
+  ## and the plant population
+  pp1 <- inspect_apsimx("Wheat.apsimx", src.dir = ".", 
+                        node = "Manager", parm = list("SowingFertiliser", 1))
+  pp1 <- paste0(pp1, ".Amount")
+  
+  pp2 <- inspect_apsimx("Wheat.apsimx", src.dir = tmp.dir, 
+                        node = "Manager", parm = list("SowingRule1", 9))
+  pp2 <- paste0(pp2, ".Population")
+  
+  grd <- expand.grid(parm1 = c(50, 100, 150), parm2 = c(100, 200, 300))
+  names(grd) <- c("Fertiliser", "Population")
+  
+  sns <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+                     parm.paths = c(pp1, pp2),
+                     grid = grd)
+  ## This takes 1.55 minutes
+  
+  summary(sns)
+  summary(sns, select = "Wheat.AboveGround.Wt")
+  summary(sns, select = "AboveGround")
+  
+  sns.c2 <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+                        parm.paths = c(pp1, pp2),
+                        grid = grd, cores = 2)
+  ## This takes 1.45 minutes
+  ## Are they the same?
+  diff.sns.vs.sns.c2 <- sum(colSums(sns$grid.sims - sns.c2$grid.sims))
+  
+  if(abs(diff.sns.vs.sns.c2) > 0.001)
+    stop("Simulations with 2 cores do not match")
+  
+  sns.c4 <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+                        parm.paths = c(pp1, pp2),
+                        grid = grd, cores = 4)
+  
+  diff.sns.vs.sns.c4 <- sum(colSums(sns$grid.sims - sns.c4$grid.sims))
+  
+  if(abs(diff.sns.vs.sns.c4) > 0.001)
+    stop("Simulations with 4 cores do not match")
+  
+  # sns.c8 <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+  #                       parm.paths = c(pp1, pp2),
+  #                       grid = grd, cores = 8)
+  # 
+  # (diff.sns.vs.sns.c8 <- sum(colSums(sns$grid.sims - sns.c8$grid.sims)))
+ 
+  
+}

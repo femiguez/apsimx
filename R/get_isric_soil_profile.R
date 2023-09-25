@@ -21,6 +21,7 @@
 #' If you are running this function many times it might be better to set this to FALSE.
 #' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
 #' @param verbose argument passed to the fix function.
+#' @param add.args additional arguments passed to \code{\link{apsimx_soil_profile}} function.
 #' @return it generates an object of class \sQuote{soil_profile}.
 #' @details Variable which are directly retrieved and a simple unit conversion is performed: \cr
 #' * Bulk density - bdod \cr
@@ -56,10 +57,11 @@ get_isric_soil_profile <- function(lonlat,
                                    soil.profile,
                                    find.location.name = TRUE,
                                    fix = FALSE,
-                                   verbose = TRUE){
+                                   verbose = TRUE,
+                                   add.args = NULL){
 
   statistic <- match.arg(statistic)
-
+  
   #### Create extent step ####
   lon <- as.numeric(lonlat[1])
   lat <- as.numeric(lonlat[2])
@@ -117,10 +119,18 @@ get_isric_soil_profile <- function(lonlat,
     soil_profile$soil$DUL <- NA
     soil_profile$soil$LL15 <- NA
     soil_profile$soil$SAT <- NA
+    
   }else{
     ## stop("This is not fully implemented yet. Submit a github issue if you need it.", call. = FALSE)
     soil_profile <- soil.profile
     new.soil <- TRUE
+  }
+  
+  ### If additional arguments are present
+  if(!is.null(add.args)){
+    if(!is.null(add.args$crops)){
+      soil_profile$crops <- add.args$crops
+    }
   }
 
   ### For some of the conversions see: https://www.isric.org/explore/soilgrids/faq-soilgrids
