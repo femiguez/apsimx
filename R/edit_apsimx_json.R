@@ -11,12 +11,15 @@
 #'  
 #'  When node equals Report, the editing allows to add variables, but not to remove them at the moment.
 #' 
+#'  When node equals Operations, \sQuote{parm} should have a list with two elements. The first should be the line to edit and 
+#'  the second should be the component to edit. Either \sQuote{Date}, \sQuote{Action} or \sQuote{Line}.
+#'  
 #' @name edit_apsimx
 #' @param file file ending in .apsimx to be edited (JSON)
 #' @param src.dir directory containing the .apsimx file to be edited; defaults to the current working directory
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
 #' @param node either \sQuote{Clock}, \sQuote{Weather}, \sQuote{Soil}, 
-#' \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Report} or \sQuote{Other} 
+#' \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Report}, \sQuote{Operations} or \sQuote{Other} 
 #' @param soil.child specific soil component to be edited
 #' @param manager.child specific manager component to be edited
 #' @param parm parameter to be edited. It can be a regular expression.
@@ -67,7 +70,7 @@
 #' 
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
-                        node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager", "Report", "Other"),
+                        node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager", "Report", "Operations", "Other"),
                         soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample"),
                         manager.child = NULL,
                         parm = NULL, value = NULL, 
@@ -451,6 +454,39 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       manager.node[[wmc]]$Parameters <- manager.child.node  
     }
     core.zone.node[wmmn] <- manager.node
+  }
+  
+  if(node == "Operations"){
+    won <- grepl("Models.Operations", core.zone.node)
+    operations.node <- core.zone.node[won]
+    
+    if(length(operations.node) > 1)
+      stop("Not ready to handle multiple 'Operations'", call. = FALSE)
+    
+    if(is.null(operations.node[[1]]$Operation))
+      stop("'Operation' child node not found", call. = FALSE)
+    
+    ## Here the assumption is that 'parm' is a line and a component to edit
+    if(length(parm) != 2)
+      stop("'parm' should be a list of length 2. The first should be the line and the second should be the component", call. = FALSE)
+    
+    if(parm[[2]] == "Date"){
+      operations.node[[1]]$Operation[[parm[[1]]]]$Date <- value  
+    }
+    
+    if(parm[[2]] == "Action"){
+      operations.node[[1]]$Operation[[parm[[1]]]]$Action <- value  
+    }
+    
+    if(parm[[2]] == "Line"){
+      operations.node[[1]]$Operation[[parm[[1]]]]$Line <- value  
+    }
+    
+    if(!parm[2] %in% c("Date", "Action", "Line"))
+      stop("The second 'parm' component should be either 'Date', 'Action', or 'Line'", call. = FALSE)
+
+    core.zone.node[won][[1]]$Operation <- operations.node[[1]]$Operation
+    parm <- unlist(parm)
   }
   
   if(node == "Report"){

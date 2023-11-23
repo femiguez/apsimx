@@ -781,6 +781,7 @@ fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), particle.densi
         }
         x$soil$LL15[j] <- x$soil$AirDry[j]
       }
+      ## Can't fix the initial water issue because it is not part of the soil profile
     }
   }
   return(x)
