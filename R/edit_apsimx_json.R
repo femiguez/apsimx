@@ -11,8 +11,10 @@
 #'  
 #'  When node equals Report, the editing allows to add variables, but not to remove them at the moment.
 #' 
-#'  When node equals Operations, \sQuote{parm} should have a list with two elements. The first should be the line to edit and 
-#'  the second should be the component to edit. Either \sQuote{Date}, \sQuote{Action} or \sQuote{Line}.
+#'  When node equals Operations, \sQuote{parm} should have a list with two elements. The first should be the line(s) to edit and 
+#'  the second should be the component(s) to edit. Either \sQuote{Date}, \sQuote{Action} or \sQuote{Line}.
+#'  When more than one line is edited, \sQuote{value} should be a character vector of the same length as the number of
+#'  lines to edit.
 #'  
 #' @name edit_apsimx
 #' @param file file ending in .apsimx to be edited (JSON)
@@ -470,19 +472,28 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     if(length(parm) != 2)
       stop("'parm' should be a list of length 2. The first should be the line and the second should be the component", call. = FALSE)
     
+    if(length(parm[[1]]) != length(value))
+      stop("lenght of the first 'parm' element should be equal to the length of 'value'", call. = FALSE)
+    
     if(parm[[2]] == "Date"){
-      operations.node[[1]]$Operation[[parm[[1]]]]$Date <- value  
+      for(i in seq_along(value)){
+        operations.node[[1]]$Operation[[parm[[1]][i]]]$Date <- value[i]    
+      }
     }
     
     if(parm[[2]] == "Action"){
-      operations.node[[1]]$Operation[[parm[[1]]]]$Action <- value  
+      for(i in seq_along(value)){
+        operations.node[[1]]$Operation[[parm[[1]][i]]]$Action <- value[i]    
+      }
     }
     
     if(parm[[2]] == "Line"){
-      operations.node[[1]]$Operation[[parm[[1]]]]$Line <- value  
+      for(i in seq_along(value)){
+        operations.node[[1]]$Operation[[parm[[1]][i]]]$Line <- value[i]    
+      }
     }
     
-    if(!parm[2] %in% c("Date", "Action", "Line"))
+    if(!parm[[2]] %in% c("Date", "Action", "Line"))
       stop("The second 'parm' component should be either 'Date', 'Action', or 'Line'", call. = FALSE)
 
     core.zone.node[won][[1]]$Operation <- operations.node[[1]]$Operation
