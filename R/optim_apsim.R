@@ -252,11 +252,11 @@ optim_apsim <- function(file, src.dir = ".",
     if(length(index) == 1 && index[1] == "Date"){
       sim.s <- subset(sim, sim$Date %in% data[[index]], select = names(data))  
       
-      sim.s <- sim.s[order(sim.s[, index[1]]),]
-      data <- data[order(data[, index[1]]),]
+      sim.s <- sim.s[order(sim.s[, index]),]
+      data <- data[order(data[, index]),]
       
-      if(!all(sim.s[[index[1]]] == data[[index[1]]]))
-        stop(paste("simulations and data for", index[1], "do not match"))   
+      if(!all(sim.s[[index]] == data[[index]]))
+        stop(paste("simulations and data for", index, "do not match"))   
       
     }else{
       if(!is.null(data$outfile)) data$outfile <- as.factor(data$outfile)

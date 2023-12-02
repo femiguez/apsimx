@@ -58,7 +58,10 @@ compare_apsim <- function(...,
   
   if(!inherits(out1, "data.frame")) stop("object should be of class 'data.frame' ", call. = FALSE)
   
-  if(length(variable) > 1) stop("Only one variable can be selected", call. = FALSE)
+  if(!missing(variable)){
+    if(length(variable) > 1) 
+      stop("Only one variable can be selected", call. = FALSE)    
+  }
 
   ## Process out1
   nms1 <- names(out1)
@@ -237,14 +240,14 @@ print.out_mrg <- function(x, ..., digits = 2){
 
 #' The by and facet arguments are only available for plot.type vs and ts for now
 #' 
-#' Plotting function for weather data
+#' Plotting function for observed and simulated data
 #' @rdname compare_apsim
 #' @description plotting function for compare_apsim, it requires ggplot2
 #' @param x object of class \sQuote{out_mrg}
 #' @param ... data frames with APSIM output or observed data. 
 #' @param plot.type either \sQuote{vs}, \sQuote{diff}, \sQuote{ts} - for time series or \sQuote{density}
 #' @param pairs pair of objects to compare, defaults to 1 and 2 but others are possible
-#' @param cumulative whether to plot cummulative values (default FALSE)
+#' @param cumulative whether to plot cumulative values (default FALSE)
 #' @param variable variable to plot 
 #' @param id identification (not implemented yet)
 #' @param by variable in \sQuote{index} used for plotting
@@ -364,9 +367,17 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
     prs0 <- paste0(variable, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
     tmp <- x[, grep(prs, names(x))]
-    tmp[[index]] <- x[[index]] ## Put it back in - kinda dumb 
+    if(length(index) == 1){
+      tmp[[index]] <- x[[index]] ## Put it back in - kinda dumb   
+    }else{
+      if(index[2] == 'Date'){
+        tmp[[index[2]]] <- x[[index[2]]] ## Put it back in - kinda dumb   
+      }else{
+        stop("I have not implemented this yet", call. = FALSE)
+      }
+    }
     
-    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = .data[[index]], 
+    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = .data[[index[2]]], 
                                                     y = eval(parse(text = eval(prs0[1]))),
                                                     color = paste(o.nms[pairs[1]], prs0[1]))) +
       
@@ -414,6 +425,9 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
   }
     
   if(plot.type == "ts" && cumulative){
+    
+    if(length(index) != 1)
+      stop("I have only implemented this when 'index' length is equal to 1")
     
     prs0 <- paste0(variable, ".", pairs)
     prs <- paste0(prs0, collapse = "|")
