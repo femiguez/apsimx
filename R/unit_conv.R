@@ -267,7 +267,7 @@ unit_conv <- function(x, from, to, ...){
 
 doy2date <- function(x, year = 2001, inverse = FALSE){
   
-  if(class(x) == "character" && inverse==FALSE){
+  if(inherits(x, "character") && inverse == FALSE){
     stop("Did you intend to use it in inverse mode?")
   }
   if(inverse == FALSE){
@@ -283,7 +283,7 @@ doy2date <- function(x, year = 2001, inverse = FALSE){
     dates <- seq(day1, dayn, by="day")
     doy <- dates[x]
   }else{
-    if(class(x) != "character") stop("x should be of 'character' class")
+    if(!inherits(x, "character")) stop("x should be of 'character' class")
     
     doy <- as.numeric(format(as.Date(paste0(year, "-", x)), "%j"))
   }

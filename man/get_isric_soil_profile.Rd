@@ -10,7 +10,8 @@ get_isric_soil_profile(
   soil.profile,
   find.location.name = TRUE,
   fix = FALSE,
-  verbose = TRUE
+  verbose = TRUE,
+  add.args = NULL
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ If you are running this function many times it might be better to set this to FA
 \item{fix}{whether to fix compatibility between saturation and bulk density (default is FALSE).}
 
 \item{verbose}{argument passed to the fix function.}
+
+\item{add.args}{additional arguments passed to \code{\link{apsimx_soil_profile}} function.}
 }
 \value{
 it generates an object of class \sQuote{soil_profile}.
@@ -65,7 +68,7 @@ FBiom does not depend on any soil property at the moment, should it? \cr
 \examples{
 \dontrun{
 ## Get soil profile properties for a single point
-sp1 <- get_isric_soil_profile(lonlat = c(-93, 42))
+sp1 <- get_isric_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
 
 ## Visualize
 plot(sp1)

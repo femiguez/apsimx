@@ -13,7 +13,7 @@ get_ssurgo_tables(lonlat, shift = -1, aoi, verbose = FALSE)
 lonlat by some amount of distance (e.g. 300 - in meters)}
 
 \item{aoi}{area of interest, if supplied the lonlat and shift arguments will be ignored. Should be
-of class \sQuote{sp::SpatialPolygons}.}
+of class \sQuote{sp::SpatialPolygons} or \sQuote{sf}.}
 
 \item{verbose}{whether to print messages and warnings to the console default FALSE}
 }

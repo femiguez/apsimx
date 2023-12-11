@@ -377,7 +377,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
       }
     }
     
-    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = .data[[index[2]]], 
+    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = .data[[index[1]]], 
                                                     y = eval(parse(text = eval(prs0[1]))),
                                                     color = paste(o.nms[pairs[1]], prs0[1]))) +
       

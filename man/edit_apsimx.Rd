@@ -9,7 +9,7 @@ edit_apsimx(
   src.dir = ".",
   wrt.dir = NULL,
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-    "Manager", "Report", "Other"),
+    "Manager", "Report", "Operations", "Other"),
   soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis",
     "Chemical", "InitialWater", "Sample"),
   manager.child = NULL,
@@ -30,7 +30,7 @@ edit_apsimx(
 \item{wrt.dir}{should be used if the destination directory is different from the src.dir}
 
 \item{node}{either \sQuote{Clock}, \sQuote{Weather}, \sQuote{Soil}, 
-\sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Report} or \sQuote{Other}}
+\sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop}, \sQuote{Manager}, \sQuote{Report}, \sQuote{Operations} or \sQuote{Other}}
 
 \item{soil.child}{specific soil component to be edited}
 
@@ -66,6 +66,11 @@ is a list that has the same number of elements as the length of the vector \code
  of the written file is returned. 
  
  When node equals Report, the editing allows to add variables, but not to remove them at the moment.
+
+ When node equals Operations, \sQuote{parm} should have a list with two elements. The first should be the line(s) to edit and 
+ the second should be the component(s) to edit. Either \sQuote{Date}, \sQuote{Action} or \sQuote{Line}.
+ When more than one line is edited, \sQuote{value} should be a character vector of the same length as the number of
+ lines to edit.
 }
 \examples{
 \donttest{

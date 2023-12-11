@@ -56,11 +56,11 @@ if(run.factorial.example2.inspect){
 
   ## Inspect factorial
   inspect_apsimx("Factorial", src.dir = ex.dir,
-                 root = c("RangeExperiment","Base2"),
+                 root = c("RangeExperiment","Base"),
                  node = "Weather")
 
   inspect_apsimx("Factorial", src.dir = ex.dir,
-                 root = c("RangeExperiment","Base2"),
+                 root = c("RangeExperiment","Base"),
                  node = "Clock")
   
   
@@ -77,8 +77,9 @@ if(run.factorial.example2.edit){
   file.copy(from = fact.ex,
             to = tmp.dir, copy.mode = FALSE)
   
-  factor.label <- c("^Experiment", "RangeExperiment", "OperationsExpt", "Compound", "ManagerExpt")
-  bases <- c("Base","Base2","Base3","Base4","Base5")
+  factor.label <- c("PropertyReplacement", "RangeExperiment", "CompositeFactor", 
+                    "ModelReplacement", "Permutation")
+  # bases <- c("Base","Base2","Base3","Base4","Base5")
   
   for(i in 1:5){
     edit_apsimx("Factorial.apsimx", 
@@ -86,7 +87,7 @@ if(run.factorial.example2.edit){
                 wrt.dir = tmp.dir,
                 node = "Weather",
                 overwrite = TRUE,
-                root = c(factor.label[i],bases[i]), 
+                root = c(factor.label[i], "Base"), 
                 value = paste0(ex.dir,"/WeatherFiles/lincoln.met"))
   }
   

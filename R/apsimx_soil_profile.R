@@ -1030,7 +1030,10 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
     warning("ggplot2 is required for this plotting function")
     return(NULL)
   }
-  
+
+  plot.type <- match.arg(plot.type)
+  soil.var <- match.arg(soil.var)
+    
   if(plot.type != "depth" && soil.var == "all")
     stop("Please select a soil variable for this type of plot", call. = FALSE)
   
@@ -1040,9 +1043,6 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
   
   m.nms <- attr(x, "soil.names")
   if(max(pairs) > attr(x, "length.soils")) stop("pairs index larger than length of soils")
-  
-  plot.type <- match.arg(plot.type)
-  soil.var <- match.arg(soil.var)
   
   if(soil.var == "all"){
     num.vars <- length(grep(".1", names(x), fixed = TRUE))

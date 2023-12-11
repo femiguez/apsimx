@@ -50,7 +50,7 @@ See the following for details
 
 This package has been tested on (latest version):
 
-**Mac**: ApsimX version (2021-10-11) 6842 (R 4.0.5)
+**Mac**: ApsimX version (2023-12-10) 7349 (R 4.3.0)
 
 **Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
 

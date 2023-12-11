@@ -47,7 +47,9 @@ inspect_apsimx_replacement(
 Do not use this and also the other node arguments. This argument will
 overwrite the other node specifications.}
 
-\item{root}{\sQuote{root} for the inspection of a replacement file (it gives flexibility to inspect other types of files).}
+\item{root}{\sQuote{root} for the inspection of a replacement file (it gives flexibility to inspect other types of files).
+In previous versions of APSIM (before mid 2023) this was \sQuote{Models.Core.Replacement}. In more recent versions, it needs
+to be \sQuote{Models.Core.Folder}.}
 
 \item{parm}{specific parameter to display. It can be a regular expression.}
 

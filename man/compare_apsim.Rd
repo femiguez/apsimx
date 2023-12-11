@@ -44,7 +44,7 @@ compare_apsim(..., variable, index = "Date", by, labels, verbose = FALSE)
 
 \item{pairs}{pair of objects to compare, defaults to 1 and 2 but others are possible}
 
-\item{cumulative}{whether to plot cummulative values (default FALSE)}
+\item{cumulative}{whether to plot cumulative values (default FALSE)}
 
 \item{id}{identification (not implemented yet)}
 
@@ -67,7 +67,7 @@ print method for \sQuote{out_mrg}
 plotting function for compare_apsim, it requires ggplot2
 }
 \details{
-Plotting function for weather data
+Plotting function for observed and simulated data
 }
 \note{
 \sQuote{Con Corr} is the concordance correlation coefficient (https://en.wikipedia.org/wiki/Concordance_correlation_coefficient);

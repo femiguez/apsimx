@@ -43,7 +43,7 @@
 #' @examples 
 #' \dontrun{
 #' ## Get soil profile properties for a single point
-#' sp1 <- get_isric_soil_profile(lonlat = c(-93, 42))
+#' sp1 <- get_isric_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
 #' 
 #' ## Visualize
 #' plot(sp1)

@@ -156,7 +156,7 @@ In addition, when loaded, the apsimx package will try to detect the presence of 
 
 ### Unix and Windows paths
 
-[Windows paths](https://docs.microsoft.com/en-us/dotnet/standard/io/file-path-formats)
+[Windows paths](https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats)
 
 To look at paths in Windows:
 

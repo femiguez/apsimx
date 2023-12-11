@@ -8,8 +8,8 @@
 \usage{
 compare_apsim_soil_profile(
   ...,
-  soil.var = c("all", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS",
-    "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH"),
+  soil.var = c("all", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", "Carbon",
+    "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH"),
   property,
   labels,
   check = FALSE,
@@ -23,8 +23,8 @@ compare_apsim_soil_profile(
   ...,
   plot.type = c("depth", "vs", "diff", "density"),
   pairs = c(1, 2),
-  soil.var = c("all", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS",
-    "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH"),
+  soil.var = c("all", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", "Carbon",
+    "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH"),
   span = 0.75
 )
 }

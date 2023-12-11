@@ -19,7 +19,7 @@
 #' @param verbose whether to print progress in percent and elapsed time.
 #' @param cores number of cores to use for parallel evaluation
 #' @param save whether to save intermediate results. By default they will be saved as a
-#' \sQuote{csv} file using the name of the apsim file. This will replace \sQuote{apsimx} with \sQuote{csv}.
+#' \sQuote{csv} file using the name of the apsim file. This will replace \sQuote{apsim} with \sQuote{csv}.
 #' It is also possible to provide the file name here (for example: \sQuote{Some_results.csv}).
 #' @param ... additional arguments (none used at the moment).
 #' @note The summary function is stored as an attribute of the data frame \sQuote{grid.sims}.
@@ -41,7 +41,7 @@ sens_apsim <- function(file, src.dir = ".",
                        root,
                        verbose = TRUE,
                        cores = 1L,
-                       
+                       save,
                        ...){
   
   if(missing(file))

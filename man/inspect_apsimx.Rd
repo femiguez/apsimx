@@ -8,10 +8,9 @@ inspect_apsimx(
   file = "",
   src.dir = ".",
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
-    "Manager", "Report", "Other"),
-  soil.child = c("Metadata", "Water", "InitialWater", "Chemical", "Physical",
-    "Analysis", "SoilWater", "InitialN", "CERESSoilTemperature", "Sample", "Nutrient",
-    "Organic"),
+    "Manager", "Report", "Operations", "Other"),
+  soil.child = c("Metadata", "Water", "InitialWater", "Chemical", "Physical", "Analysis",
+    "SoilWater", "InitialN", "CERESSoilTemperature", "Sample", "Nutrient", "Organic"),
   parm = NULL,
   digits = 3,
   print.path = FALSE,
@@ -25,7 +24,7 @@ inspect_apsimx(
 
 \item{node}{specific node to be inspected either \sQuote{Clock}, \sQuote{Weather}, 
 \sQuote{Soil}, \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop},
- \sQuote{Manager} or \sQuote{Other}}
+ \sQuote{Manager}, \sQuote{Operations} or \sQuote{Other}}
 
 \item{soil.child}{specific soil component to be inspected. The options vary depending on what is available (see details)}
 

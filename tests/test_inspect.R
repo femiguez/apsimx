@@ -14,6 +14,7 @@ if(run.inspect.tests){
   i <- "Barley.apsimx"
   inspect_apsimx(i, src.dir = ex.dir, node = "Clock")        
   inspect_apsimx(i, src.dir = ex.dir, node = "Weather")        
+  inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")  
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Physical")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater")
@@ -22,13 +23,10 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Organic")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialN") 
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "CERESSoilTemperature")
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
-  inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("SowingFertiliser", NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Fertilise", NA))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", NA))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 1))
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list("Sow on a fixed date", 2))
@@ -44,61 +42,59 @@ if(run.inspect.tests){
   i <- "Maize.apsimx"
   inspect_apsimx(i, src.dir = ex.dir, node = "Clock")        
   inspect_apsimx(i, src.dir = ex.dir, node = "Weather") 
+  inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")  
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Physical")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Organic")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialN")
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
-  inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule', NA))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingFertiliser', NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('Fertilise', NA))
   inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = "VariableNames")
   inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = "EventNames")
   
   ## Oats
   i <- "Oats"
   inspect_apsimx(i, src.dir = ex.dir, node = "Clock")        
-  inspect_apsimx(i, src.dir = ex.dir, node = "Weather")        
+  inspect_apsimx(i, src.dir = ex.dir, node = "Weather")   
+  inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")  
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Water")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater", parm = "SummerDate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Organic")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
-  inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingFert', NA))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', NA))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 1))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 2))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 3))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 4))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 5))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 6))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 7))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 8))
-  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('SowingRule1', 9))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('Fert', NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', NA))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', 1))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', 2))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', 3))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', 4))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', 5))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', 6))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', 7))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', 8))
+  inspect_apsimx(i, src.dir = ex.dir, node = "Manager", parm = list('variable', 9))
   inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = "VariableNames")
   inspect_apsimx(i, src.dir = ex.dir, node = "Report", parm = "EventNames")
   
   ## OilPalm is good for testing Report
   i <- "OilPalm.apsimx"
   inspect_apsimx(i, src.dir = ex.dir, node = "Clock")        
-  inspect_apsimx(i, src.dir = ex.dir, node = "Weather")        
+  inspect_apsimx(i, src.dir = ex.dir, node = "Weather")    
+  inspect_apsimx(i, src.dir = ex.dir, node = "MicroClimate")  
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Physical")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater", parm = "SummerDate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Organic")
-  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
@@ -175,11 +171,11 @@ if(run.inspect.print.path.tests){
   #### Soil - InitialWater ####
   pp <- inspect_apsimx(i, node = "Soil", soil.child = "InitialWater",
                        src.dir = ex.dir, print.path = TRUE)
-  if(pp != ".Simulations.Simulation.Field.Soil.InitialWater") 
+  if(pp != ".Simulations.Simulation.Field.Soil.Water") 
     stop("Error in inspect_apsimx, Barley, Soil, InitialWater, print.path")
-  pp <- inspect_apsimx(i, node = "Soil", soil.child = "InitialWater", parm = "FractionFull",
+  pp <- inspect_apsimx(i, node = "Soil", soil.child = "InitialWater", parm = "RelativeTo",
                        src.dir = ex.dir, print.path = TRUE)
-  if(pp != ".Simulations.Simulation.Field.Soil.InitialWater.FractionFull") 
+  if(pp != ".Simulations.Simulation.Field.Soil.Water.RelativeTo") 
     stop("Error in inspect_apsimx, Barley, Soil, InitialWater, FractionFull, print.path")
   #### Soil - Organic ####
   pp <- inspect_apsimx(i, node = "Soil", soil.child = "Organic",
@@ -191,10 +187,11 @@ if(run.inspect.print.path.tests){
   if(pp != ".Simulations.Simulation.Field.Soil.Organic.Carbon") 
     stop("Error in inspect_apsimx, Barley, Soil, Organic, Carbon, print.path")
   #### Soil - InitialN ####
-  pp <- inspect_apsimx(i, node = "Soil", soil.child = "InitialN",
-                       src.dir = ex.dir, print.path = TRUE)
-  if(pp != ".Simulations.Simulation.Field.Soil.InitialN") 
-    stop("Error in inspect_apsimx, Barley, Soil, InitialN, print.path")
+  ## Note (2023-12-10) Need to change this to NO3, NH3, Urea
+  # pp <- inspect_apsimx(i, node = "Soil", soil.child = "InitialN",
+  #                      src.dir = ex.dir, print.path = TRUE)
+  # if(pp != ".Simulations.Simulation.Field.Soil.InitialN") 
+  #   stop("Error in inspect_apsimx, Barley, Soil, InitialN, print.path")
   #### Soil - CERESSoilTemperature and Nutrient ####
   ## There is not much here to test or implement at the moment
 
@@ -202,14 +199,14 @@ if(run.inspect.print.path.tests){
   pp <- inspect_apsimx(i, node = "Manager", src.dir = ex.dir, print.path = TRUE)
   if(pp != ".Simulations.Simulation.Field") 
     stop("Error in inspect_apsimx, Barley, Manager, print.path")
-  pp <- inspect_apsimx(i, node = "Manager", parm = list("SowingFertiliser", NA),
+  pp <- inspect_apsimx(i, node = "Manager", parm = list("Fertilise", NA),
                        src.dir = ex.dir, print.path = TRUE)
-  if(pp != ".Simulations.Simulation.Field.SowingFertiliser") 
-    stop("Error in inspect_apsimx, Barley, Manager, SowingFertiliser, print.path")
-  pp <- inspect_apsimx(i, node = "Manager", parm = list("SowingFertiliser", 1),
+  if(pp != ".Simulations.Simulation.Field.Fertilise at sowing") 
+    stop("Error in inspect_apsimx, Barley, Manager, Fertilise at sowing, print.path")
+  pp <- inspect_apsimx(i, node = "Manager", parm = list("Fertilise", 3),
                        src.dir = ex.dir, print.path = TRUE)
-  if(pp != ".Simulations.Simulation.Field.SowingFertiliser.Amount") 
-    stop("Error in inspect_apsimx, Barley, Manager, SowingFertiliser, Amount, print.path")
+  if(pp != ".Simulations.Simulation.Field.Fertilise at sowing.Amount") 
+    stop("Error in inspect_apsimx, Barley, Manager, Fertilise at sowing, Amount, print.path")
   pp <- inspect_apsimx(i, node = "Surface", 
                        src.dir = ex.dir, print.path = TRUE)
   if(pp != ".Simulations.Simulation.Field.SurfaceOrganicMatter") 
@@ -220,7 +217,7 @@ if(run.inspect.print.path.tests){
     stop("Error in inspect_apsimx, Barley, SurfaceOrganicMatter, InitialResidueMass print.path")
   pp <- inspect_apsimx(i, node = "MicroClimate", 
                        src.dir = ex.dir, print.path = TRUE)
-  pp <- inspect_apsimx(i, node = "MicroClimate", parm = "soil_albedo",
+  pp <- inspect_apsimx(i, node = "MicroClimate", parm = "SoilHeatFluxFraction",
                        src.dir = ex.dir, print.path = TRUE)
 }
 
@@ -235,7 +232,7 @@ if(inspect.replacement.test){
                              node = "Base", node.child = "Clock")
   ## inspect_apsimx version
   inspect_apsimx("Factorial.apsimx", src.dir = ex.dir,
-                 root = c("^Experiment","Base"),
+                 root = c("Experiment", "Base"),
                  node = "Clock")
   
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
@@ -244,7 +241,7 @@ if(inspect.replacement.test){
   
   ## inspect_apsimx version
   inspect_apsimx("Factorial.apsimx", src.dir = ex.dir,
-                 root = c("^Experiment","Base"),
+                 root = c("Experiment", "Base"),
                  node = "Weather")
   
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
@@ -255,7 +252,7 @@ if(inspect.replacement.test){
   
   ## inspect_apsimx version
   inspect_apsimx("Factorial.apsimx", src.dir = ex.dir,
-                 root = c("^Experiment","Base"),
+                 root = c("Experiment", "Base"),
                  node = "Soil")
   
   ## If we want to look at the second Factorial 'Experiment'
@@ -268,7 +265,7 @@ if(inspect.replacement.test){
   ## Look at Water
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
                              root = list("Experiment", 2),
-                             node = "Base2", node.child = "Field",
+                             node = "Base", node.child = "Field",
                              node.subchild = "Soil",
                              node.subsubchild = "Water",
                              display.available = TRUE)
@@ -276,7 +273,7 @@ if(inspect.replacement.test){
   ## For a specific parameter
   inspect_apsimx_replacement("Factorial", src.dir = ex.dir, 
                              root = list("Experiment", 2),
-                             node = "Base2", node.child = "Field",
+                             node = "Base", node.child = "Field",
                              node.subchild = "Soil",
                              node.subsubchild = "Water",
                              parm = "Depth")

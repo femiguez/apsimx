@@ -1,16 +1,21 @@
 **NEWS**
 
-**apsimx 2.3**
+## apsimx 2.5.1 - 2023-12-10
+
+- Some of the changes are due to changes in APSIM Next Gen
+- Need to add alternative 'root' for replacements
+
+## apsimx 2.3
 
 - Fixed bug in napad_apsim_met and also wrote more extensive tests (test_apsim_met)
 - Added method confint for optim_apsim class and fixed bug related to this issue
 - Added package 'ucminf' as an additional optimization type
 - optim functions data argument data frame can contain missing data
-- function get_daymet_apsim_met (which used to depend on the FedData package) is depracated. 
+- function get_daymet_apsim_met (which used to depend on the FedData package) is deprecated. 
 It has been replaced by the previous get_daymet2_apsim_met function.
 - remove use of raster package
 
-**apsimx 2.2**
+## apsimx 2.2
 
 - By deault it runs for newer versions of APSIM Next Gen (Sep 2021 or newer) (Classic is unchanged)
 - For Mac and Linux, you might need to set 'mono = TRUE' for compatibility with older versions of APSIM Next Gen
@@ -21,7 +26,7 @@ It has been replaced by the previous get_daymet2_apsim_met function.
 - Edits to writing scripts vignette
 - Various bug fixes and improvements.
 
-**apsimx 2.0**
+## apsimx 2.0
 
 - Sensitivity analysis functions for APSIM Next Gen and Classic
 - Parameter Estimation functions for APSIM Next Gen and Classic
@@ -34,7 +39,7 @@ It has been replaced by the previous get_daymet2_apsim_met function.
 - Creating synthetic soil profile from SSURGO (**get_ssurgo_soil_profile** and **get_ssurgo_tables**)
 - Passing extra arguments to APSIM call through **xargs_apsimx**
 
-**apsimx 1.977**
+## apsimx 1.977
 
 - Much improved handling of APSIM-X output. However, this led to some default changes. Argument 'value' in function 'apsimx' and 'read_apsimx' is 'report' instead of 'all'. The default for 'apsim' was also changed for consitency. Hopefully, this will not impact too many scripts.
 

@@ -1,6 +1,7 @@
 ## Different behaviors of grep_json_list
 
 require(apsimx)
+apsimx_options(warn.versions = FALSE)
 
 run.grep.test <- get(".run.local.tests", envir = apsimx.options)
 
@@ -41,9 +42,9 @@ if(run.grep.test){
   
   pp6 <- inspect_apsimx_json("Wheat.apsimx", src.dir = src.dir, parm = "SWCON")
   
-  pp7 <- inspect_apsimx_json("Wheat.apsimx", src.dir = src.dir, parm = "LL15")
+  ## pp7 <- inspect_apsimx_json("Wheat.apsimx", src.dir = src.dir, parm = "LL15")
   
-  pp8 <- inspect_apsimx_json("Wheat.apsimx", src.dir = src.dir, parm = "SowingRule1") 
+  ## pp8 <- inspect_apsimx_json("Wheat.apsimx", src.dir = src.dir, parm = "Sow using") 
   
   pp9 <- inspect_apsimx_json("Wheat.apsimx", src.dir = src.dir, parm = "Hartog") 
 

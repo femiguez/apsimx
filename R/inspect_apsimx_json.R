@@ -219,7 +219,12 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }else{
       ## Pick which soil component we want to look at
       ## Which is not 'Metadata"
+      if(soil.child == "InitialWater") soil.child <- "Water"
+      
       wsc <- grep(soil.child, soil.children.names)
+      
+      if(soil.child == "Water" && length(wsc) == 2) wsc <- wsc[2]
+
       if(length(wsc) == 0) stop("soil.child likely not present")
     
       selected.soil.node.child <- soil.node[[1]]$Children[wsc]
@@ -240,7 +245,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       cnms <- setdiff(names(selected.soil.node.child[[1]]), enms)
       ## print(names(selected.soil.node.child[[1]]))
       
-      if(soil.child == "Physical" || soil.child == "Water")
+      if(soil.child == "Physical")
         cnms <- c(cnms, "Crop LL", "Crop KL", "Crop XF")
         
       soil.d1 <- NULL
@@ -377,13 +382,23 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   
   if(node == "MicroClimate"){
     ## Which is 'MicroClimate'
+    ## This only works if it is under Field (old versions, before 2023-12-10)
     wmcn <- grepl("Models.MicroClimate", core.zone.node)
+    mcincz <- TRUE ## MicroClimate in core.zone
     if(all(wmcn == FALSE)){
-      stop("MicroClimate not found")
+      wmcnf <- function(x) grepl("Models.MicroClimate", x$`$type`)
+      wmcn <- sapply(parent.node, FUN = wmcnf)
+      mcincz <- FALSE
+      if(all(wmcn == FALSE))
+         stop("MicroClimate not found")
     }
-    microclimate.node <- core.zone.node[wmcn][[1]]
+    if(mcincz){
+      microclimate.node <- core.zone.node[wmcn][[1]]  
+    }else{
+      microclimate.node <- parent.node[wmcn][[1]]  
+    }
     
-    parm.path <- paste0(parm.path.2,".",microclimate.node$Name)
+    parm.path <- paste0(parm.path.2,".", microclimate.node$Name)
 
     microclimate.d <- data.frame(parm = names(microclimate.node)[2:9],
                                  value = as.vector(unlist(microclimate.node)[2:9]))
