@@ -52,13 +52,13 @@ This package has been tested on (latest version):
 
 **Mac**: ApsimX version (2023-12-10) 7349 (R 4.3.0)
 
-**Debian**: ApsimX version (2020-01-29) 4007 (R 3.6.1)
+**Debian**: ApsimX version (2023-12-12) 7350 (R 4.3.0)
 
-**Windows**: ApsimX version (2021-11-16) 6943 and APSIM 7.10-r4207 (R 3.6.2)
+**Windows**: ApsimX version (2023-12-13) 7353 and APSIM Classic 7.10-r4207 (R 3.6.2)
 
 ## Installing APSIM (Next Generation)
 
-For most functions in this pacakge you need to have a version of APSIM-X (or 'Next Generation') installed (or APSIM 'Classic'). For Mac and Linux, for versions older than Sep 2021, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM (https://www.apsim.info/download-apsim/downloads/). **NOTE**: If you are using a version of APSIM Next Gen older than Sep 2021, you do **not** need to install mono. The **apsimx** package will try to detect both mono and APSIM (Classic and Next Generation). 
+For most functions in this package you need to have a version of APSIM-X (or 'Next Generation') installed (or APSIM 'Classic'). For Mac and Linux, for versions older than Sep 2021, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM (https://www.apsim.info/download-apsim/downloads/). **NOTE**: If you are using a version of APSIM Next Gen released after Sep 2021, you do **not** need to install mono. You will need the .NET Runtime 6.0 for Linux or Mac (https://dotnet.microsoft.com/en-us/download/dotnet/6.0). The **apsimx** package will try to detect both mono and APSIM (Classic and Next Generation). 
 
 **Mac**: For Mac it is also assumed that APSIM has been moved to 'Applications'.
 

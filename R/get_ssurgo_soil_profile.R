@@ -17,7 +17,7 @@
 #' TRUE by default. If \sQuote{fix} is TRUE, it will be applied only after the fix attempt.
 #' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
 #' @param verbose default FALSE. Whether to print messages.
-#' @param add.args additional arguments passed to \code{\link{apsimx_soil_profile}} function.
+#' @param xargs additional arguments passed to \code{\link{apsimx_soil_profile}} function.
 #' @return this function will always return a list. Each element of the list will
 #' be an object of class \sQuote{soil_profile}
 #' @export
@@ -45,7 +45,7 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
                                     check = TRUE,
                                     fix = FALSE,
                                     verbose = FALSE,
-                                    add.args = NULL){
+                                    xargs = NULL){
   
   if(!requireNamespace("soilDB", quietly = TRUE)){
     stop("The soilDB package is required for this function")
@@ -175,9 +175,9 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
       check <- FALSE
     } 
     
-    if(!is.null(add.args)){
-      if(!is.null(add.args$crops)){
-        crops <- add.args$crops
+    if(!is.null(xargs)){
+      if(!is.null(xargs$crops)){
+        crops <- xargs$crops
       }
     }else{
       crops <- c("Maize", "Soybean", "Wheat")

@@ -21,7 +21,7 @@
 #' If you are running this function many times it might be better to set this to FALSE.
 #' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
 #' @param verbose argument passed to the fix function.
-#' @param add.args additional arguments passed to \code{\link{apsimx_soil_profile}} function.
+#' @param xargs additional arguments passed to \code{\link{apsimx_soil_profile}} function.
 #' @return it generates an object of class \sQuote{soil_profile}.
 #' @details Variable which are directly retrieved and a simple unit conversion is performed: \cr
 #' * Bulk density - bdod \cr
@@ -58,7 +58,7 @@ get_isric_soil_profile <- function(lonlat,
                                    find.location.name = TRUE,
                                    fix = FALSE,
                                    verbose = TRUE,
-                                   add.args = NULL){
+                                   xargs = NULL){
 
   statistic <- match.arg(statistic)
   
@@ -127,9 +127,9 @@ get_isric_soil_profile <- function(lonlat,
   }
   
   ### If additional arguments are present
-  if(!is.null(add.args)){
-    if(!is.null(add.args$crops)){
-      soil_profile$crops <- add.args$crops
+  if(!is.null(xargs)){
+    if(!is.null(xargs$crops)){
+      soil_profile$crops <- xargs$crops
     }
   }
 
