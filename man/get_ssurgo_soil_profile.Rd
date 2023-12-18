@@ -16,7 +16,7 @@ get_ssurgo_soil_profile(
   check = TRUE,
   fix = FALSE,
   verbose = FALSE,
-  add.args = NULL
+  xargs = NULL
 )
 }
 \arguments{
@@ -45,7 +45,7 @@ TRUE by default. If \sQuote{fix} is TRUE, it will be applied only after the fix 
 
 \item{verbose}{default FALSE. Whether to print messages.}
 
-\item{add.args}{additional arguments passed to \code{\link{apsimx_soil_profile}} function.}
+\item{xargs}{additional arguments passed to \code{\link{apsimx_soil_profile}} function.}
 }
 \value{
 this function will always return a list. Each element of the list will

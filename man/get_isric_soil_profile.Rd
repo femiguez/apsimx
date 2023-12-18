@@ -11,7 +11,7 @@ get_isric_soil_profile(
   find.location.name = TRUE,
   fix = FALSE,
   verbose = TRUE,
-  add.args = NULL
+  xargs = NULL
 )
 }
 \arguments{
@@ -28,7 +28,7 @@ If you are running this function many times it might be better to set this to FA
 
 \item{verbose}{argument passed to the fix function.}
 
-\item{add.args}{additional arguments passed to \code{\link{apsimx_soil_profile}} function.}
+\item{xargs}{additional arguments passed to \code{\link{apsimx_soil_profile}} function.}
 }
 \value{
 it generates an object of class \sQuote{soil_profile}.

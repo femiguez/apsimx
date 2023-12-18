@@ -79,6 +79,11 @@ compare_apsim <- function(...,
          Maybe index should be c('report', 'Date')?", call. = FALSE)
   }
   
+  if(all(c("outfile", "Date") %in% nms1) && length(index) == 1){
+    stop("'outfile' and 'Date' found in first data frame but index length is equal to 1.
+         Maybe index should be c('outfile', 'Date')?", call. = FALSE)
+  }
+  
   if(all(c("SimulationName", "Date") %in% nms1) && length(index) == 1){
     stop("'SimulationName' and 'Date' found in first data frame but index length is equal to 1.
          Maybe index should be c('SimulationName', 'Date')?", call. = FALSE)
@@ -95,6 +100,15 @@ compare_apsim <- function(...,
   ## The line below drops irrelevant columns and brings index to the first column
   ##out1 <- subset(out1, select = c(index, nms1.i[-which(nms1 %in% index)]))
   out1 <- subset(out1, select = c(index, setdiff(nms1.i, index)))
+
+  ### Drop character or factor variables which are not in index
+  which.var.not.numeric <- sapply(subset(out1, select = setdiff(nms1.i, index)), is.numeric) 
+  ### Remove non-numeric variables and throw warning if verbose
+  if(any(isFALSE(which.var.not.numeric))){
+    out1 <- out1[, -c(which(which.var.not.numeric == 0) + length(index))]
+    if(verbose) warning("Removed non-numeric non-index variables from first data.frame")
+  }
+  
   new.nms1 <- paste0(names(out1), ".1") ## This simply adds a 1
   if(length(index) == 1){
     out1.new.names <- gsub(paste0(index, ".1"), index, new.nms1) ## Rename Date.1 to Date  
