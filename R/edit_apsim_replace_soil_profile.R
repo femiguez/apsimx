@@ -135,19 +135,14 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
   if(!is.null(initialwater) || !all(is.na(soil.profile$initialwater))){
     if(!inherits(initialwater, "initialwater_parms")) stop("object should be of class 'initialwater_parms'")
     
-    stop("I haven't implemented this for Classic yet", call. = FALSE)
     for(i in seq_along(initialwater)){
       prm.vl <- initialwater[[i]]
       if(is.na(prm.vl)) next
-      
-      if(grepl("^Swim", names(swim[i]))){
-        prm.nm <- strsplit(names(swim[i]),"_")[[1]][2]
-      }else{
-        prm.nm <- names(swim[i])
-      }
+
+      prm.nm <- names(initialwater[i])
       
       edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".",
-                 node = "Soil", soil.child = "SWIM", 
+                 node = "Soil", soil.child = "InitialWater", 
                  overwrite = TRUE, parm = prm.nm,
                  value = prm.vl,
                  root = root)
@@ -456,21 +451,22 @@ soilorganicmatter_parms <- function(RootCN = NA, RootWt = NA, EnrACoeff = NA, En
 #' @param Depth depth for soil layers (see APSIM documentation)
 #' @param Thickness soil thickness for layers (either enter Depth or Thickness, but not both)
 #' @param InitialValues initial values of soil water
-#' @param PAW Plant Available Water
+#' @param InitialPAWmm Initial Plant Available Water in mm
 #' @param PercentFull Percent full (0 - 100)
 #' @param RelativeTo usually LL15
 #' @param FilledFromTop either true or false
 #' @param DepthWetSoil depth of wet soil in mm
 #' @export
 
-initialwater_parms <- function(Depth = NA, Thickness = NA, InitialValues = NA, PAW = NA, 
+initialwater_parms <- function(Depth = NA, Thickness = NA, InitialValues = NA, InitialPAWmm = NA, 
                                PercentFull = NA, RelativeTo = NA, FilledFromTop = NA, DepthWetSoil = NA){
   
   initialwater.list <- list(Depth = Depth, Thickness = NA, InitialValues = InitialValues, 
-                            PAW = PAW, PercentFull = PercentFull, FilledFromTop = FilledFromTop,
-                            RelativeTo = RelativeTo, DepthWetSoil = DepthWetSoil)
+                            InitialPAWmm = InitialPAWmm, PercentFull = PercentFull, 
+                            FilledFromTop = FilledFromTop, RelativeTo = RelativeTo, 
+                            DepthWetSoil = DepthWetSoil)
   
-  if(!is.na(PAW) && PAW <= 0) warning("PAW should be a value greater than zero") 
+  if(!is.na(InitialPAWmm) && InitialPAWmm <= 0) warning("InitialPAWmm should be a value greater than zero") 
   if(!is.na(PercentFull) && PercentFull <= 0) warning("PercentFull should be a value greater than zero")
   if(!is.na(PercentFull) && PercentFull > 100) warning("PercentFull should be a value of less than 100")
   if(!is.na(DepthWetSoil) && DepthWetSoil <= 0) warning("DepthWetSoil should be a value greater than zero")
