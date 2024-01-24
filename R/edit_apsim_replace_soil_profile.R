@@ -8,6 +8,7 @@
 #' @param soil.profile a soil profile object with class \sQuote{soil_profile}
 #' @param swim list with SWIM specific parameters
 #' @param soilwat list with SoilWat specific parameters
+#' @param initialwater list with InitialWater specific parameters
 #' @param edit.tag default edit tag \sQuote{-edited}
 #' @param overwrite default FALSE
 #' @param verbose default TRUE. Will print messages indicating what was done.
@@ -44,6 +45,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
                                              soil.profile = NULL,
                                              swim = NULL,
                                              soilwat = NULL,
+                                             initialwater = NULL,
                                              edit.tag = "-edited",
                                              overwrite = FALSE,
                                              verbose = TRUE,
@@ -93,7 +95,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
   }
   
   ## Edit soil water parameters
-  if(!missing(soilwat) || !is.na(soil.profile$soilwat)){
+  if(!is.null(soilwat) || !all(is.na(soil.profile$soilwat))){
     if(!inherits(soilwat, "soilwat_parms")) stop("object should be of class 'soilwat_parms'")
     
     for(i in seq_along(soilwat)){
@@ -108,11 +110,34 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
     }
   }
   
-  if(!missing(swim) || !is.na(soil.profile$swim)){
+  if(!is.null(swim) || !all(is.na(soil.profile$swim))){
     if(!inherits(swim, "swim_parms")) stop("object should be of class 'swim_parms'")
     
     for(i in seq_along(swim)){
       prm.vl <- swim[[i]]
+      if(is.na(prm.vl)) next
+      
+      if(grepl("^Swim", names(swim[i]))){
+        prm.nm <- strsplit(names(swim[i]),"_")[[1]][2]
+      }else{
+        prm.nm <- names(swim[i])
+      }
+      
+      edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".",
+                 node = "Soil", soil.child = "SWIM", 
+                 overwrite = TRUE, parm = prm.nm,
+                 value = prm.vl,
+                 root = root)
+    }
+  }
+  
+  ## Edit Initial Water
+  if(!is.null(initialwater) || !all(is.na(soil.profile$initialwater))){
+    if(!inherits(initialwater, "initialwater_parms")) stop("object should be of class 'initialwater_parms'")
+    
+    stop("I haven't implemented this for Classic yet", call. = FALSE)
+    for(i in seq_along(initialwater)){
+      prm.vl <- initialwater[[i]]
       if(is.na(prm.vl)) next
       
       if(grepl("^Swim", names(swim[i]))){
@@ -420,6 +445,38 @@ soilorganicmatter_parms <- function(RootCN = NA, RootWt = NA, EnrACoeff = NA, En
   if(!is.na(EnrBCoeff) && EnrBCoeff <= 0) warning("EnrBCoeff should be a value greater than zero")
   
   ans <- structure(som.list, class = c("soilorganicmatter_parms","list"))
+  ans
+  
+}
+
+#'
+#' @title Helper function to supply additional Initial Soil Water parameters
+#' @name initialwater_parms
+#' @description Creates a list with specific components for the Initial Soil Water module
+#' @param Depth depth for soil layers (see APSIM documentation)
+#' @param Thickness soil thickness for layers (either enter Depth or Thickness, but not both)
+#' @param InitialValues initial values of soil water
+#' @param PAW Plant Available Water
+#' @param PercentFull Percent full (0 - 100)
+#' @param RelativeTo usually LL15
+#' @param FilledFromTop either true or false
+#' @param DepthWetSoil depth of wet soil in mm
+#' @export
+
+initialwater_parms <- function(Depth = NA, Thickness = NA, InitialValues = NA, PAW = NA, 
+                               PercentFull = NA, RelativeTo = NA, FilledFromTop = NA, DepthWetSoil = NA){
+  
+  initialwater.list <- list(Depth = Depth, Thickness = NA, InitialValues = InitialValues, 
+                            PAW = PAW, PercentFull = PercentFull, FilledFromTop = FilledFromTop,
+                            RelativeTo = RelativeTo, DepthWetSoil = DepthWetSoil)
+  
+  if(!is.na(PAW) && PAW <= 0) warning("PAW should be a value greater than zero") 
+  if(!is.na(PercentFull) && PercentFull <= 0) warning("PercentFull should be a value greater than zero")
+  if(!is.na(PercentFull) && PercentFull > 100) warning("PercentFull should be a value of less than 100")
+  if(!is.na(DepthWetSoil) && DepthWetSoil <= 0) warning("DepthWetSoil should be a value greater than zero")
+  if(!is.na(Thickness) && any(Thickness < 0)) warning("Thickness values should be greater than zero")
+  
+  ans <- structure(initialwater.list, class = c("initialwater_parms","list"))
   ans
   
 }

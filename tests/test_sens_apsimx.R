@@ -346,7 +346,7 @@ if(run.sens.apsimx.cores){
                      parm.paths = c(pp1, pp2),
                      grid = grd)
   ## This takes 1.55 minutes
-  
+  ## This now (Jan 2024) takes 2.14 minutes
   summary(sns)
   summary(sns, select = "Wheat.AboveGround.Wt")
   summary(sns, select = "AboveGround")
@@ -354,9 +354,9 @@ if(run.sens.apsimx.cores){
   sns.c2 <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
                         parm.paths = c(pp1, pp2),
                         grid = grd, cores = 2)
-  ## This takes 1.45 minutes
+  ## This takes 1.29 minutes (Jan 2024)
   ## Are they the same?
-  diff.sns.vs.sns.c2 <- sum(colSums(sns$grid.sims - sns.c2$grid.sims))
+  (diff.sns.vs.sns.c2 <- sum(colSums(sns$grid.sims - sns.c2$grid.sims)))
   
   if(abs(diff.sns.vs.sns.c2) > 0.001)
     stop("Simulations with 2 cores do not match")
@@ -364,8 +364,8 @@ if(run.sens.apsimx.cores){
   sns.c4 <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
                         parm.paths = c(pp1, pp2),
                         grid = grd, cores = 4)
-  
-  diff.sns.vs.sns.c4 <- sum(colSums(sns$grid.sims - sns.c4$grid.sims))
+  ## This takes 1.17 minutes
+  (diff.sns.vs.sns.c4 <- sum(colSums(sns$grid.sims - sns.c4$grid.sims)))
   
   if(abs(diff.sns.vs.sns.c4) > 0.001)
     stop("Simulations with 4 cores do not match")

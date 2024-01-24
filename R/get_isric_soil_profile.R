@@ -78,7 +78,8 @@ get_isric_soil_profile <- function(lonlat,
                            "property=clay", 
                            "property=sand", 
                            "property=nitrogen",
-                           "property=cec", sep = "&")
+                           "property=cec", 
+                           "property=wv1500", sep = "&")
   rest.depths <- paste("&depth=0-5cm", "depth=0-30cm", "depth=5-15cm", 
                        "depth=15-30cm", "depth=30-60cm", "depth=60-100cm", "depth=100-200cm", sep = "&")
   rest.statistic <- paste("&value", statistic, sep = "=")
@@ -88,9 +89,9 @@ get_isric_soil_profile <- function(lonlat,
   #### Process query
   sp.nms <- rest.data$properties$layers[["name"]]
   
-  if(!identical(sp.nms, c("bdod", "cec", "clay", "nitrogen", "phh2o", "sand", "soc"))){
+  if(!identical(sp.nms, c("bdod", "cec", "clay", "nitrogen", "phh2o", "sand", "soc", "wv1500"))){
     cat("Found these properties", sp.nms, "\n")
-    cat("Expected these properties", c("bdod", "cec", "clay", "nitrogen", "phh2o", "sand", "soc"), "\n")
+    cat("Expected these properties", c("bdod", "cec", "clay", "nitrogen", "phh2o", "sand", "soc", "wv1500"), "\n")
     stop("soil properties names do not match")
   }
     
@@ -101,6 +102,7 @@ get_isric_soil_profile <- function(lonlat,
   phh2o <- rest.data$properties$layers[5,3][[1]][,3]
   sand <- rest.data$properties$layers[6,3][[1]][,3]
   soc <- rest.data$properties$layers[7,3][[1]][,3]
+  wv1500 <- rest.data$properties$layers[8,3][[1]][,3]
   
   if(any(is.na(soc))) stop("No soil data available for this location. Did you specify the coordinates correctly?")
 
@@ -188,6 +190,11 @@ get_isric_soil_profile <- function(lonlat,
                                           SWCON = rep(t2sp$SWCON, nrow(soil_profile$soil)),
                                           Thickness = thcknss)    
   }
+  
+  ### Passing the initial soil water?
+  isw <- initialwater_parms(Thickness = thcknss, InitialValues = wv1500 * 1e-3)
+  
+  soil_profile$initialwater <- isw
 
   if(find.location.name){
     if(requireNamespace("maps", quietly = TRUE)){

@@ -131,6 +131,11 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     replacements.node <- apsimx_json$Children[[frn]]
   }
   
+  if(verbose){
+    if(!grepl("replace", replacements.node$Name, ignore.case = TRUE))
+      warning("Node does not appear to be a 'Replacements' node")
+  }
+  
   parm.path.0.1 <- paste0(parm.path.0, ".", replacements.node$Name)
   ## Print names of replacements
   replacements.node.names <- vapply(replacements.node$Children, function(x) x$Name, 

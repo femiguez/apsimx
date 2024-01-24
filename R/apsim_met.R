@@ -1023,7 +1023,7 @@ pp_apsim_met <- function(metfile, lat, sun_angle=0){
 #' }
 #' 
 plot.met <- function(x, ..., years, met.var, 
-                     plot.type = c("ts", "area", "col"), 
+                     plot.type = c("ts", "area", "col", "density"), 
                      cumulative = FALSE,
                      facet = FALSE,
                      climatology = FALSE,
@@ -1223,7 +1223,48 @@ plot.met <- function(x, ..., years, met.var,
           }
         }
       }
-    }    
+    }   
+    ### Density could work with summary FALSE
+    if(plot.type == "density" && isFALSE(climatology) && isFALSE(cumulative)){
+      x <- as.data.frame(x)
+      if(missing(met.var)){
+        gp1 <- ggplot2::ggplot(data = x, 
+                        ggplot2::aes(x = maxt, color = Years)) + 
+          ggplot2::geom_density() + 
+          ggplot2::xlim(c(min(x$maxt) * 0.25, max(x$maxt) * 1.5)) + 
+          ggplot2::xlab("Maximum temperature (C)")
+        print(gp1)    
+      }else{
+        gp1 <- ggplot2::ggplot(data = x) + 
+          ggplot2::geom_density(ggplot2::aes(x = eval(parse(text = eval(met.var))), color = Years)) +
+          ggplot2::xlim(c(min(x[[met.var]]) * 0.25, max(x[[met.var]]) * 1.5)) + 
+          ggplot2::xlab(met.var)
+        print(gp1)    
+      }
+    }
+    ### If climatology is true
+    if(plot.type == "density" && climatology && isFALSE(cumulative)){
+      x <- as.data.frame(x)
+      if(missing(met.var)){
+        gp1 <- ggplot2::ggplot() + 
+          ggplot2::geom_density(data = x, ggplot2::aes(x = maxt, color = Years)) + 
+          ggplot2::geom_density(ggplot2::aes(x = maxt.climatology$maxt), linewidth = 2) + 
+          ggplot2::xlim(c(min(x$maxt) * 0.25, max(x$maxt) * 1.5)) + 
+          ggplot2::xlab("Maximum temperature (C)")
+        print(gp1)    
+      }else{
+        gp1 <- ggplot2::ggplot() + 
+          ggplot2::geom_density(data = x, ggplot2::aes(x = eval(parse(text = eval(met.var))), color = Years)) + 
+          ggplot2::geom_density(ggplot2::aes(x = met.var.climatology[[met.var]]), linewidth = 2) + 
+          ggplot2::xlim(c(min(met.var.climatology[[met.var]]) * 0.25, max(met.var.climatology[[met.var]]) * 1.5)) + 
+          ggplot2::xlab(met.var)
+        print(gp1)    
+      }
+    }
+    ### The cumulative does not make much sense
+    ### If summary is FALSE at least
+    if(plot.type == "density" && cumulative)
+      stop("This is plot.type is not available", call. = FALSE)
   }else{
     
     if(missing(met.var)){
@@ -1297,6 +1338,14 @@ plot.met <- function(x, ..., years, met.var,
       gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = year, y = value, fill = met.var)) + 
         ggplot2::geom_col() + 
         ggplot2::ylab(ylabs)
+      print(gp1)      
+    }
+    
+    if(plot.type == "density"){
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = value)) + 
+        ggplot2::geom_density() + 
+        ggplot2::xlim(c(min(tmp$value) * 0.5, max(tmp$value) * 1.5)) + 
+        ggplot2::xlab(ylabs)
       print(gp1)      
     }
   }

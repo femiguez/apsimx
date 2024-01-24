@@ -437,4 +437,28 @@ if(inspect.replacement.test.parm.path){
                                    node.child = "Leaf",
                                    parm = "Gsmax350",
                                    print.path = TRUE)
+  
+  ### Testing replacement with new simulations (Dec 2023)
+  ### Not normal testing as these files are not distributed with APSIM
+  ### In the future, I will create some and distribute with the package
+  
+  if(FALSE){
+    
+    csm.dir <- "~/Desktop/csm/lab_05"
+    
+    pp1 <- inspect_apsimx_replacement("MaizeSoybean_replacement.apsimx",
+                                      src.dir = csm.dir,
+                                      node = "Maize",
+                                      node.child = "Leaf",
+                                      node.subchild = "Photosynthesis",
+                                      node.subsubchild = "RUE",
+                                      parm = "FixedValue",
+                                      display.available = FALSE,
+                                      print.path = TRUE)
+    
+    ### Need to look at whether I can edit this
+    
+    
+  }
 }
+

@@ -45,6 +45,7 @@
 #' @param metadata list with soil metadata. For possible parameters and values see an example of \code{\link{inspect_apsimx}} with soil.child = \dQuote{Metadata}.
 #' @param soilwat optional \sQuote{list} of class \sQuote{soilwat_parms}
 #' @param swim optional \sQuote{list} of class \sQuote{swim_parms}
+#' @param initialwater optional \sQuote{list} of class \sQuote(initialsoilwater_parms)
 #' @param soilorganicmatter optional \sQuote{list} of class \sQuote{soilorganicmatter_parms}
 #' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
 #' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
@@ -92,6 +93,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                  metadata = NULL,
                                  soilwat = NA,
                                  swim = NA,
+                                 initialwater = NA,
                                  soilorganicmatter = NA,
                                  dist.parms = list(a = 0, b = 0.2),
                                  check = TRUE){
@@ -409,7 +411,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
     
     soil <- cbind(soil, crop.soil)
     
-    ans <- list(soil=soil, crops = crops, metadata = metadata, soilwat = soilwat, swim = swim, soilorganicmatter = soilorganicmatter)
+    ans <- list(soil=soil, crops = crops, metadata = metadata, soilwat = soilwat, swim = swim, initialwater = initialwater, soilorganicmatter = soilorganicmatter)
     class(ans) <- "soil_profile"
     
     ## Check for reasonable values
@@ -735,6 +737,20 @@ check_apsimx_soil_profile <- function(x, particle.density = 2.65){
                     "You must adjust bulk density to below", (1 - soil$SAT[j]) * spd, "OR saturation to below", 1 - soil$BD[j] / 2.65))      
     }
   }
+  
+  ## Check for initial water
+  if(!is.na(initialwater)){
+    ## Initial Water can't be greater than DUL?
+    if(!is.na(initialwater$InitialValues)){
+      for(j in seq_along(initialwater$InitialValues)){
+        iwat <- initialwater$InitialValues[j] - soil$DUL[j]
+        if(iwat <= 0){
+          warning(paste("Initial Water in layer:", j, "is greater than DUL"))
+        }
+      }      
+    }
+  }
+  
   return(invisible(x))
 }
 
@@ -781,9 +797,25 @@ fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), particle.densi
         }
         x$soil$LL15[j] <- x$soil$AirDry[j]
       }
-      ## Can't fix the initial water issue because it is not part of the soil profile
     }
   }
+  
+  ## Trying to fix the initialwater issue
+  if(!is.na(x$initialwater)){
+    if(!is.na(x$initialwater$InitialValues)){
+      for(j in seq_along(x$initialwater$InitialValues)){
+        iwat <- x$initialwater$InitialValues[j] - x$soil$DUL[j]
+        if(iwat < 0){
+          x$initialwater$InitialValues[j] <- x$soil$DUL * 0.9  
+          if(verbose){
+            cat("InitialWater cannot be greater than DUL in layer:", j,".\n",
+                "It was adjusted to the value of 0.9 * DUL.\n")
+          }
+        }
+      }
+    }
+  }
+  
   return(x)
 }
 

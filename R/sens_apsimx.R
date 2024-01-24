@@ -136,17 +136,28 @@ sens_apsimx <- function(file, src.dir = ".",
       if(replacement[.j]){
         pp0 <- strsplit(parm.paths[.j], ".", fixed = TRUE)[[1]]
         mpp <- paste0(pp0[-length(pp0)], collapse = ".")
-        edit_apsimx_replacement(file = file, 
-                                src.dir = src.dir,
-                                wrt.dir = src.dir,
-                                node.string = mpp,
-                                overwrite = TRUE,
-                                parm = pp0[length(pp0)],
-                                value = par.val,
-                                root = root,
-                                verbose = FALSE) 
+        if(missing(root)){
+          edit_apsimx_replacement(file = file, 
+                                  src.dir = src.dir,
+                                  wrt.dir = src.dir,
+                                  node.string = mpp,
+                                  overwrite = TRUE,
+                                  parm = pp0[length(pp0)],
+                                  value = par.val,
+                                  verbose = FALSE) 
+        }else{
+          edit_apsimx_replacement(file = file, 
+                                  src.dir = src.dir,
+                                  wrt.dir = src.dir,
+                                  node.string = mpp,
+                                  overwrite = TRUE,
+                                  parm = pp0[length(pp0)],
+                                  value = par.val,
+                                  root = root,
+                                  verbose = FALSE)           
+        }
       }else{
-        if(is.null(root)){
+        if(missing(root)){
           edit_apsimx(file = file, 
                       src.dir = src.dir,
                       wrt.dir = src.dir,
