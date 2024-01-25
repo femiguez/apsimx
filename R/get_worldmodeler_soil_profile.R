@@ -39,7 +39,7 @@ get_worldmodeler_soil_profile <- function(lonlat, fix = TRUE, check = TRUE,
   soil.node <- xml2::read_xml('<folder version="37" name = "Soils"></folder>')
   
   for(i in 1:nrow(lonlat)){
-    x <- xml2::read_xml(sprintf('https://worldmodel.csiro.au/apsimsoil?lon=%s&lat=%s', lonlat[i, 1], lonlat[i, 2]))
+    x <- xml2::read_xml(paste0('https://worldmodel.csiro.au/apsimsoil?lon=', lonlat[i, 1], '&lat=',lonlat[i, 2]))
     x <- xml2::xml_find_all(x, 'Soil')[[1]]
     xml2::xml_set_attr(x, 'name', soil.name[i])
     xml2::xml_add_child(soil.node, x, .copy=F)
