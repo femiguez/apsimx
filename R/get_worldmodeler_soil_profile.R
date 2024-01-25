@@ -49,9 +49,17 @@ get_worldmodeler_soil_profile <- function(lonlat, fix = TRUE, check = TRUE,
   xml2::write_html(soil.node, file = file.path(tmpdir, 'temps.soils')) 
   soil_profile <- read_apsim_soils("temps.soils", src.dir = tmpdir, verbose = verbose)
   
-  if(fix) soil_profile <- fix_apsimx_soil_profile(soil_profile, verbose = verbose)
+  if(fix){
+    for(j in seq_len(nrow(lonlat))){
+      soil_profile[[j]] <- fix_apsimx_soil_profile(soil_profile[[j]], verbose = verbose)
+    }
+  } 
   
-  if(check) check_apsimx_soil_profile(soil_profile)
+  if(check){
+    for(j in seq_len(nrow(lonlat))){
+      if(check) check_apsimx_soil_profile(soil_profile[[j]])    
+    }
+  }
   
   if(cleanup) unlink(tmpdir)
   
