@@ -91,7 +91,8 @@ read_apsim_soils <- function(file, src.dir = ".", verbose = TRUE){
       }
     }
     
-    soil.soil.water.d0 <- as.data.frame(soil.soil.water)
+    wssw <- as.vector(which(sapply(soil.soil.water, length) > 0))
+    soil.soil.water.d0 <- as.data.frame(soil.soil.water[wssw])
     soil.soil.water.metadata <- soil.soil.water.d0[, grepl("Metadata", names(soil.soil.water.d0))]
     soil.soil.water.d <- soil.soil.water.d0[, !grepl("Metadata", names(soil.soil.water.d0))]
     
@@ -123,6 +124,17 @@ read_apsim_soils <- function(file, src.dir = ".", verbose = TRUE){
       soil.soilcrops.list[[j]] <- soilcrop.properties.list
     }
     
+    ## Remove metadata if empty
+    for(k in seq_along(soil.soilcrops.list)){
+      tmp.crop <- soil.soilcrops.list[k]
+      not.metadata <- !grepl("Metadata", sapply(tmp.crop, names))
+      if(length(tmp.crop[[1]][[which(not.metadata == 0)]]) < 1){
+        tmp.list <- vector("list", length = 1)
+        names(tmp.list) <- names(tmp.crop)
+        tmp.list[[1]] <- tmp.crop[[1]][not.metadata]
+        soil.soilcrops.list[k] <- tmp.list         
+      }
+    }
     soil.soilcrops.d0 <- data.frame(Thickness = soil.soilcrops.thickness, as.data.frame(soil.soilcrops.list))
     soil.soilcrops.metadata <- soil.soilcrops.d0[, grepl("Metadata", names(soil.soilcrops.d0))]
     soil.soilcrops.d <- soil.soilcrops.d0[, !grepl("Metadata", names(soil.soilcrops.d0))]
@@ -154,6 +166,7 @@ read_apsim_soils <- function(file, src.dir = ".", verbose = TRUE){
     
     for(j in seq_along(soilwat.var.names)){
       tmp <- xml2::xml_text(xml2::xml_find_first(soilwat.node, soilwat.var.names[j]))
+      if(is.na(tmp)) next
       if(tmp == "NaN") next
       if(soilwat.var.names[j] %in% c("SummerDate", "WinterDate")){
         soilwat[[soilwat.var.names[j]]] <- tmp

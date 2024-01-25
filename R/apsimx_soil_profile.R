@@ -45,7 +45,7 @@
 #' @param metadata list with soil metadata. For possible parameters and values see an example of \code{\link{inspect_apsimx}} with soil.child = \dQuote{Metadata}.
 #' @param soilwat optional \sQuote{list} of class \sQuote{soilwat_parms}
 #' @param swim optional \sQuote{list} of class \sQuote{swim_parms}
-#' @param initialwater optional \sQuote{list} of class \sQuote(initialsoilwater_parms)
+#' @param initialwater optional \sQuote{list} of class \sQuote{initialsoilwater_parms}
 #' @param soilorganicmatter optional \sQuote{list} of class \sQuote{soilorganicmatter_parms}
 #' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
 #' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr

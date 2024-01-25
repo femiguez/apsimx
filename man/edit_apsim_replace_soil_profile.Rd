@@ -11,6 +11,7 @@ edit_apsim_replace_soil_profile(
   soil.profile = NULL,
   swim = NULL,
   soilwat = NULL,
+  initialwater = NULL,
   edit.tag = "-edited",
   overwrite = FALSE,
   verbose = TRUE,
@@ -29,6 +30,8 @@ edit_apsim_replace_soil_profile(
 \item{swim}{list with SWIM specific parameters}
 
 \item{soilwat}{list with SoilWat specific parameters}
+
+\item{initialwater}{list with InitialWater specific parameters}
 
 \item{edit.tag}{default edit tag \sQuote{-edited}}
 

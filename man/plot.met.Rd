@@ -9,7 +9,7 @@
   ...,
   years,
   met.var,
-  plot.type = c("ts", "area", "col"),
+  plot.type = c("ts", "area", "col", "density"),
   cumulative = FALSE,
   facet = FALSE,
   climatology = FALSE,

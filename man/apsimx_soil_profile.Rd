@@ -38,6 +38,7 @@ apsimx_soil_profile(
   metadata = NULL,
   soilwat = NA,
   swim = NA,
+  initialwater = NA,
   soilorganicmatter = NA,
   dist.parms = list(a = 0, b = 0.2),
   check = TRUE
@@ -114,6 +115,8 @@ check_apsimx_soil_profile(x, particle.density = 2.65)
 \item{soilwat}{optional \sQuote{list} of class \sQuote{soilwat_parms}}
 
 \item{swim}{optional \sQuote{list} of class \sQuote{swim_parms}}
+
+\item{initialwater}{optional \sQuote{list} of class \sQuote{initialsoilwater_parms}}
 
 \item{soilorganicmatter}{optional \sQuote{list} of class \sQuote{soilorganicmatter_parms}}
 
