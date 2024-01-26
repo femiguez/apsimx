@@ -3,6 +3,8 @@
 #' @description Retrieves soil data from the World Modeler global database and converts it to an apsimx soil_profile object
 #' @name get_worldmodeler_soil_profile
 #' @param lonlat Longitude and latitude vector (e.g. c(-93, 42)) or matrix.
+#' @param fix whether to attempt to fix issues with the profile
+#' @param check whether to check the soil profile
 #' @param soil.name optional soil name
 #' @param verbose default is FALSE
 #' @param cleanup whether to delete temporary files
@@ -12,15 +14,18 @@
 #' @examples 
 #' \dontrun{
 #' ## Get soil profile properties for a single point
-#' sp1 <- get_worldmodel_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
+#' ## This causes a fatal error at the moment
+#' ## This is why I don't run it
+#' if(FALSE){
+#'   sp1 <- get_worldmodeler_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
 #' 
-#' ## Visualize
-#' plot(sp1)
-#' plot(sp1, property = "water")
-#' 
+#'   ## Visualize
+#'   plot(sp1)
+#'   plot(sp1, property = "water")
+#' }
 #' }
 
-get_worldmodeler_soil_profile <- function(lonlat, fix = TRUE, check = TRUE, 
+get_worldmodeler_soil_profile <- function(lonlat, fix = FALSE, check = FALSE, 
                                           soil.name, 
                                           verbose = FALSE, cleanup = FALSE){
   

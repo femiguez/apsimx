@@ -6,8 +6,8 @@
 \usage{
 get_worldmodeler_soil_profile(
   lonlat,
-  fix = TRUE,
-  check = TRUE,
+  fix = FALSE,
+  check = FALSE,
   soil.name,
   verbose = FALSE,
   cleanup = FALSE
@@ -15,6 +15,10 @@ get_worldmodeler_soil_profile(
 }
 \arguments{
 \item{lonlat}{Longitude and latitude vector (e.g. c(-93, 42)) or matrix.}
+
+\item{fix}{whether to attempt to fix issues with the profile}
+
+\item{check}{whether to check the soil profile}
 
 \item{soil.name}{optional soil name}
 
@@ -31,12 +35,15 @@ Retrieves soil data from the World Modeler global database and converts it to an
 \examples{
 \dontrun{
 ## Get soil profile properties for a single point
-sp1 <- get_worldmodel_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
+## This causes a fatal error at the moment
+## This is why I don't run it
+if(FALSE){
+  sp1 <- get_worldmodeler_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
 
-## Visualize
-plot(sp1)
-plot(sp1, property = "water")
-
+  ## Visualize
+  plot(sp1)
+  plot(sp1, property = "water")
+}
 }
 }
 \author{

@@ -1068,6 +1068,9 @@ plot.met <- function(x, ..., years, met.var,
       stop("Selected year is not within the range of the data", call. = FALSE)    
   }
 
+  ## Need to make a copy for at least this case
+  if(plot.type == "density" && climatology) x2 <- x
+
   if(!missing(years)){
     x <- x[x$year %in% years,]
   }
@@ -1302,13 +1305,22 @@ plot.met <- function(x, ..., years, met.var,
     if(any(grepl("frost", met.var)))
       ylabs <- "Days"
       
-    stmp <- summary(x, ...)
+    if(plot.type == "density" && climatology){
+      stmp2 <- summary(x2, ...) 
+      tmp2 <- NULL
+      for(i in seq_along(met.var)){
+        dat2 <- data.frame(year = stmp2$year, met.var = met.var[i], value = stmp2[[met.var[i]]])
+        tmp2 <- rbind(tmp2, dat2)
+      }
+    }
+      
+    stmp <- summary(x, ...)      
     tmp <- NULL
     for(i in seq_along(met.var)){
       dat <- data.frame(year = stmp$year, met.var = met.var[i], value = stmp[[met.var[i]]])
       tmp <- rbind(tmp, dat)
     }
-    
+
     if(plot.type == "ts" && !climatology){
       gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = year, y = value, color = met.var)) + 
         ggplot2::geom_point() + 
@@ -1341,12 +1353,47 @@ plot.met <- function(x, ..., years, met.var,
       print(gp1)      
     }
     
-    if(plot.type == "density"){
-      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = value)) + 
-        ggplot2::geom_density() + 
-        ggplot2::xlim(c(min(tmp$value) * 0.5, max(tmp$value) * 1.5)) + 
-        ggplot2::xlab(ylabs)
-      print(gp1)      
+    if(!climatology){
+      if(missing(years)){
+        if(plot.type == "density"){
+          gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = value)) + 
+            ggplot2::geom_density() + 
+            ggplot2::xlim(c(min(tmp$value) * 0.5, max(tmp$value) * 1.5)) + 
+            ggplot2::xlab(ylabs)
+          print(gp1)      
+        }      
+      }else{
+        if(plot.type == "density"){
+          tmp$Year <- as.factor(tmp$year)
+          gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = value)) + 
+            ggplot2::geom_density() +
+            ggplot2::geom_vline(ggplot2::aes(xintercept = value, color = Year)) + 
+            ggplot2::xlim(c(min(tmp$value) * 0.5, max(tmp$value) * 1.5)) + 
+            ggplot2::xlab(ylabs)
+          print(gp1)      
+        }
+      }      
+    }else{
+      if(missing(years)){
+        if(plot.type == "density"){
+          gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = value)) + 
+            ggplot2::geom_density() + 
+            ggplot2::xlim(c(min(tmp$value) * 0.5, max(tmp$value) * 1.5)) + 
+            ggplot2::xlab(ylabs)
+          print(gp1)      
+        }      
+      }else{
+        if(plot.type == "density"){
+          tmp2$Year <- as.factor(tmp2$year)
+          tmp$Year <- as.factor(tmp$year)
+          gp1 <- ggplot2::ggplot(data = tmp2, ggplot2::aes(x = value)) + 
+            ggplot2::geom_density() +
+            ggplot2::geom_vline(data = tmp, ggplot2::aes(xintercept = value, color = Year)) + 
+            ggplot2::xlim(c(min(tmp2$value) * 0.5, max(tmp2$value) * 1.5)) + 
+            ggplot2::xlab(ylabs)
+          print(gp1)      
+        }
+      }
     }
   }
   invisible(gp1)

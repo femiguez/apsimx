@@ -739,11 +739,11 @@ check_apsimx_soil_profile <- function(x, particle.density = 2.65){
   }
   
   ## Check for initial water
-  if(!is.na(initialwater)){
+  if(!is.null(soil$initialwater)){
     ## Initial Water can't be greater than DUL?
-    if(!is.na(initialwater$InitialValues)){
-      for(j in seq_along(initialwater$InitialValues)){
-        iwat <- initialwater$InitialValues[j] - soil$DUL[j]
+    if(!is.na(soil$initialwater$InitialValues)){
+      for(j in seq_along(soil$initialwater$InitialValues)){
+        iwat <- soil$initialwater$InitialValues[j] - soil$DUL[j]
         if(iwat <= 0){
           warning(paste("Initial Water in layer:", j, "is greater than DUL"))
         }

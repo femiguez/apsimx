@@ -49,7 +49,7 @@ if(FALSE){
   ### Testing inspired by a more complicated dataset?
   sim.wheat <- read_apsim_all(src.dir = "~/Dropbox/apsimx-other/KeLiu/mcmc_test/mcmc_test")
   sim.wheat$outfile <- as.factor(sim.wheat$outfile)
-  obs.wheat <- as.data.frame(readxl::read_excel("~/Dropbox/apsimx-other/KeLiu/mcmc_test/mcmc_test/Obs.xlsx"))
+  ## obs.wheat <- as.data.frame(readxl::read_excel("~/Dropbox/apsimx-other/KeLiu/mcmc_test/mcmc_test/Obs.xlsx"))
   obs.wheat$outfile <- as.factor(obs.wheat$outfile)
   obs.wheat$Date <- as.Date(obs.wheat$Date)
 

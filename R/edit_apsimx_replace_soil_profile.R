@@ -177,19 +177,21 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   soil.node0[wschn][[1]] <- soil.chemical.node
   soil.node[[1]]$Children <- soil.node0
   
-  ## Next edit the Solute component
+  ## Next edit the Solute component, this is not present in older versions of APSIM
   wssoln <- grepl("Models.Soils.Solute", soil.node0)
-  soil.solute.node <- soil.node0[wssoln][[1]]
-  
-  for(i in c("Depth", "Thickness", "NO3N", "NH4N")){
-    ## Format the variable
-    tmp <- as.vector(soil.profile$soil[[i]], mode = "list")
-    ## Replace the variable
-    soil.solute.node[[i]] <- tmp 
+  if(sum(wssoln) > 0){
+    soil.solute.node <- soil.node0[wssoln][[1]]
+    
+    for(i in c("Depth", "Thickness", "NO3N", "NH4N")){
+      ## Format the variable
+      tmp <- as.vector(soil.profile$soil[[i]], mode = "list")
+      ## Replace the variable
+      soil.solute.node[[i]] <- tmp 
+    }
+    soil.node0[wssoln][[1]] <- soil.solute.node
+    soil.node[[1]]$Children <- soil.node0    
   }
-  soil.node0[wssoln][[1]] <- soil.solute.node
-  soil.node[[1]]$Children <- soil.node0
-  
+
   ## Edit metadata
   if(!is.null(soil.profile$metadata)){
     soil.node.names <- names(soil.node[[1]])
