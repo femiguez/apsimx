@@ -1042,7 +1042,7 @@ plot.met <- function(x, ..., years, met.var,
   ## Global variables?
   day <- NULL; cum.maxt <- NULL; Years <- NULL; cum.mint <- NULL;
   value <- NULL; temperature <- NULL; maxt <- NULL; mint <- NULL;
-  cum.met.var <- NULL; year <- NULL; 
+  cum.met.var <- NULL; year <- NULL; Year <- NULL
   ## Calculate climatology before subsetting years
   if(climatology){
     maxt.climatology <- stats::aggregate(maxt ~ day, data = x, FUN = mean)
