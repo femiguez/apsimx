@@ -8,14 +8,17 @@ apsimx_options(warn.versions = FALSE)
 run.soil <- get(".run.local.tests", envir = apsimx.options)
 
 tmp.dir <- tempdir()
+setwd(tmp.dir)
 
 if(run.soil){
   
   ex.dir <- auto_detect_apsimx_examples()
 
-  wheat <- apsimx("Wheat.apsimx", src.dir = ex.dir)  
+  file.copy(file.path(ex.dir, "Wheat.apsimx"), tmp.dir)
   
-  inspect_apsimx("Wheat.apsimx", src.dir = ex.dir,
+  wheat <- apsimx("Wheat.apsimx")  
+  
+  inspect_apsimx("Wheat.apsimx", 
                  node = "Soil", soil.child = "Physical")
 
   duls <- c(0.52, 0.49, 0.488, 0.48, 0.47, 0.457, 0.452) * 1.05
@@ -28,7 +31,7 @@ if(run.soil){
   inspect_apsimx("Wheat-edited.apsimx", src.dir = tmp.dir,
                  node = "Soil", soil.child = "Physical")
   
-  wheat2 <- apsimx("Wheat-edited.apsimx", src.dir = tmp.dir)
+  wheat2 <- apsimx("Wheat-edited.apsimx")
 
   ggplot() + 
     geom_line(data = wheat, aes(x = Date, y = Wheat.AboveGround.Wt, color = "Original DUL")) + 

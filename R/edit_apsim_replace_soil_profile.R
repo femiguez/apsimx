@@ -96,8 +96,11 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
   
   ## Edit soil water parameters
   if(!is.null(soilwat) || !all(is.na(soil.profile$soilwat))){
-    if(!inherits(soilwat, "soilwat_parms")) stop("object should be of class 'soilwat_parms'")
-    
+    if(!is.null(soilwat)){
+      if(!inherits(soilwat, "soilwat_parms")) 
+        stop("object should be of class 'soilwat_parms'")
+    }
+
     for(i in seq_along(soilwat)){
       prm.vl <- soilwat[[i]]
       if(is.na(prm.vl)) next
@@ -105,13 +108,16 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
       edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".",
                  node = "Soil", soil.child = "Water", 
                  overwrite = TRUE, parm = names(soilwat[i]),
-                 value = prm.vl,
+                 value = prm.vl, verbose = verbose,
                  root = root)
     }
   }
   
   if(!is.null(swim) || !all(is.na(soil.profile$swim))){
-    if(!inherits(swim, "swim_parms")) stop("object should be of class 'swim_parms'")
+    if(!is.null(swim)){
+      if(!inherits(swim, "swim_parms")) 
+        stop("object should be of class 'swim_parms'")  
+    }
     
     for(i in seq_along(swim)){
       prm.vl <- swim[[i]]
@@ -126,15 +132,18 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
       edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".",
                  node = "Soil", soil.child = "SWIM", 
                  overwrite = TRUE, parm = prm.nm,
-                 value = prm.vl,
+                 value = prm.vl, verbose = verbose,
                  root = root)
     }
   }
   
   ## Edit Initial Water
   if(!is.null(initialwater) || !all(is.na(soil.profile$initialwater))){
-    if(!inherits(initialwater, "initialwater_parms")) stop("object should be of class 'initialwater_parms'")
-    
+    if(!is.null(initialwater)){
+      if(!inherits(initialwater, "initialwater_parms")) 
+        stop("object should be of class 'initialwater_parms'")      
+    }
+
     for(i in seq_along(initialwater)){
       prm.vl <- initialwater[[i]]
       if(is.na(prm.vl)) next
@@ -144,7 +153,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
       edit_apsim(file = new.file.path, src.dir = ".", wrt.dir = ".",
                  node = "Soil", soil.child = "InitialWater", 
                  overwrite = TRUE, parm = prm.nm,
-                 value = prm.vl,
+                 value = prm.vl, verbose = verbose,
                  root = root)
     }
   }
@@ -161,7 +170,7 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
       edit_apsim(file = new.file.path, 
                  src.dir = ".", wrt.dir = ".",
                  node = "Soil", soil.child = "Metadata", 
-                 overwrite = TRUE, 
+                 overwrite = TRUE, verbose = verbose,
                  parm = prm.nm,
                  value = prm.vl,
                  root = root)
