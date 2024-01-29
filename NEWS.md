@@ -1,5 +1,11 @@
 **NEWS**
 
+## apsimx 2.6.2 - 2024-01-28
+
+- Most change are to adjust to new structure in the APSIM simulations
+- soil profiles now can contain an object of class 'initialwater_parms' that can be used to set the initial water. This caused problems in the past because of changing 'physical' without changing the initial water
+- unexported function get_worldmodeler_soil_profile
+
 ## apsimx 2.5.1 - 2023-12-10
 
 - Some of the changes are due to changes in APSIM Next Gen

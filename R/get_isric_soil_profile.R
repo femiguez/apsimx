@@ -192,7 +192,7 @@ get_isric_soil_profile <- function(lonlat,
   }
   
   ### Passing the initial soil water?
-  isw <- initialwater_parms(Thickness = thcknss, InitialValues = wv1500 * 1e-3)
+  isw <- initialwater_parms(Thickness = thcknss, InitialValues = wv1500[[1]] * 1e-3)
   
   soil_profile$initialwater <- isw
 

@@ -739,9 +739,11 @@ check_apsimx_soil_profile <- function(x, particle.density = 2.65){
   }
   
   ## Check for initial water
-  if(!is.null(soil$initialwater)){
+  if(inherits(soil$initialwater, "initialwater_parms")){
     ## Initial Water can't be greater than DUL?
     if(!is.na(soil$initialwater$InitialValues)){
+      if(length(soil$initialwater$InitialValues) != length(soil$DUL))
+        warning("Number of layers in initialwater$InitialValues is different from number of layers in soil$DUL")
       for(j in seq_along(soil$initialwater$InitialValues)){
         iwat <- soil$initialwater$InitialValues[j] - soil$DUL[j]
         if(iwat <= 0){
@@ -801,21 +803,27 @@ fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), particle.densi
   }
   
   ## Trying to fix the initialwater issue
-  if(!is.na(x$initialwater)){
-    if(!is.na(x$initialwater$InitialValues)){
-      for(j in seq_along(x$initialwater$InitialValues)){
-        iwat <- x$initialwater$InitialValues[j] - x$soil$DUL[j]
-        if(iwat < 0){
-          x$initialwater$InitialValues[j] <- x$soil$DUL * 0.9  
-          if(verbose){
-            cat("InitialWater cannot be greater than DUL in layer:", j,".\n",
-                "It was adjusted to the value of 0.9 * DUL.\n")
+  if(inherits(x$initialwater, "initialwater_parms")){
+      if(!any(is.na(x$initialwater$InitialValues))){
+        for(j in seq_along(x$initialwater$InitialValues)){
+          iwat <- x$initialwater$InitialValues[j] - x$soil$DUL[j]
+          if(length(iwat < 0) > 1){
+            cat("Class of iwat", class(iwat), "\n")
+            cat("InitialValues:", x$initialwater$InitialValues[j] , "\n")
+            cat("DUL:", x$soil$DUL[j] , "\n")
+            cat("length of InitialWater:", length(iwat < 0), "layer", j, "\n")
+            stop("iwat length greater than one")
+          }
+          if(any(iwat < 0)){
+            x$initialwater$InitialValues[j] <- x$soil$DUL[j] * 0.9  
+            if(verbose){
+              cat("InitialWater cannot be greater than DUL in layer:", j,".\n",
+                  "It was adjusted to the value of", x$soil$DUL[j] * 0.9, ".\n")
+            }
           }
         }
       }
-    }
   }
-  
   return(x)
 }
 

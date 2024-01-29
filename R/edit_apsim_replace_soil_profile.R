@@ -461,7 +461,7 @@ soilorganicmatter_parms <- function(RootCN = NA, RootWt = NA, EnrACoeff = NA, En
 initialwater_parms <- function(Depth = NA, Thickness = NA, InitialValues = NA, InitialPAWmm = NA, 
                                PercentFull = NA, RelativeTo = NA, FilledFromTop = NA, DepthWetSoil = NA){
   
-  initialwater.list <- list(Depth = Depth, Thickness = NA, InitialValues = InitialValues, 
+  initialwater.list <- list(Depth = Depth, Thickness = Thickness, InitialValues = InitialValues, 
                             InitialPAWmm = InitialPAWmm, PercentFull = PercentFull, 
                             FilledFromTop = FilledFromTop, RelativeTo = RelativeTo, 
                             DepthWetSoil = DepthWetSoil)
@@ -470,8 +470,8 @@ initialwater_parms <- function(Depth = NA, Thickness = NA, InitialValues = NA, I
   if(!is.na(PercentFull) && PercentFull <= 0) warning("PercentFull should be a value greater than zero")
   if(!is.na(PercentFull) && PercentFull > 100) warning("PercentFull should be a value of less than 100")
   if(!is.na(DepthWetSoil) && DepthWetSoil <= 0) warning("DepthWetSoil should be a value greater than zero")
-  if(!is.na(Thickness) && any(Thickness < 0)) warning("Thickness values should be greater than zero")
-  
+  if(!any(is.na(Thickness)) && any(Thickness < 0)) warning("Thickness values should be greater than zero")
+
   ans <- structure(initialwater.list, class = c("initialwater_parms","list"))
   ans
   

@@ -10,7 +10,6 @@
 #' @param cleanup whether to delete temporary files
 #' @return it generates an object of class \sQuote{soil_profile}.
 #' @author Brian Collins (University of Southern Queensland) and Fernando Miguez
-#' @export
 #' @examples 
 #' \dontrun{
 #' ## Get soil profile properties for a single point
