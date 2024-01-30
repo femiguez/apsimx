@@ -952,7 +952,7 @@ compare_apsim_soil_profile <- function(...,
     for(i in soil.var.sel){
       if(verbose) cat("Variable ", i, "\n")
       ans$variable[k] <- i
-      tmp <- soil.mrg.s[, grep(i, names(soil.mrg.s))]
+      tmp <- soil.mrg.s[, grep(i, names(soil.mrg.s)), drop = FALSE]
       if(ncol(tmp) > 2){
         if(i == "FOM"){
           tmp <- soil.mrg.s[, grep("FOM.[1-9]", names(soil.mrg.s))]    
@@ -960,7 +960,9 @@ compare_apsim_soil_profile <- function(...,
           tmp <- soil.mrg.s[, grep("FOM.CN", names(soil.mrg.s))]   
         }
       }
-      if(ncol(tmp) < 2) stop("merged selected variables should be at least of length 2", call. = FALSE)
+      if(ncol(tmp) < 2){
+        stop("merged selected variables should be at least of length 2", call. = FALSE)
+      } 
       
       for(j in 2:ncol(tmp)){
         if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")

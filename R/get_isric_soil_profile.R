@@ -21,7 +21,7 @@
 #' If you are running this function many times it might be better to set this to FALSE.
 #' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
 #' @param verbose argument passed to the fix function.
-#' @param xargs additional arguments passed to \code{\link{apsimx_soil_profile}} function.
+#' @param xargs additional arguments passed to \code{\link{apsimx_soil_profile}} or \sQuote{apsimx:::approx_soil_variable} function.
 #' @return it generates an object of class \sQuote{soil_profile}.
 #' @details Variable which are directly retrieved and a simple unit conversion is performed: \cr
 #' * Bulk density - bdod \cr
@@ -109,6 +109,28 @@ get_isric_soil_profile <- function(lonlat,
   ## These are the default thicknesses in ISRIC
   thcknss <- c(50, 100, 150, 300, 400, 1000) ## in mm
   
+  ## Some variables can be passed to apsimx:::approx_soil_variable
+  if(!is.null(xargs)){
+    ### Soil bottom
+    if(!is.null(xargs$soil.bottom)){
+      soil.bottom <- xargs$soil.bottom
+    }else{
+      soil.bottom <- 200
+    }
+    ### Method
+    if(!is.null(xargs$method)){
+      method <- xargs$method
+    }else{
+      method <- "constant"
+    }
+    ### Number of layers
+    if(!is.null(xargs$nlayers)){
+      nlayers <- xargs$nlayers
+    }else{
+      nlayers <- 10
+    }
+  }
+  
   ## Create the empty soil profile
   if(missing(soil.profile)){
     new.soil <- FALSE
@@ -139,19 +161,21 @@ get_isric_soil_profile <- function(lonlat,
   if(new.soil){
     sp.xout <- cumsum(soil_profile$soil$Thickness)
     soil_profile$soil$BD <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = bdod[[1]] * 1e-2), 
-                                                 xout = sp.xout)$y    
+                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y    
     soil_profile$soil$Carbon <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = soc[[1]] * 1e-2), 
-                                                 xout = sp.xout)$y    
+                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y    
     soil_profile$soil$PH <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = phh2o[[1]] * 1e-1), 
-                                                     xout = sp.xout)$y    
+                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y    
     soil_profile$soil$ParticleSizeClay <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = clay[[1]] * 1e-1), 
-                                                 xout = sp.xout)$y   
+                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
     soil_profile$soil$ParticleSizeSand <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = sand[[1]] * 1e-1), 
-                                                   xout = sp.xout)$y 
+                                                   xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y 
     soil_profile$soil$Nitrogen <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = nitrogen[[1]]), 
-                                                   xout = sp.xout)$y   
+                                                   xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
     soil_profile$soil$CEC <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = cec[[1]]), 
-                                                       xout = sp.xout)$y   
+                                                       xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
+    soil_profile$soil$wv1500 <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv1500[[1]]), 
+                                                  xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
   }else{
     soil_profile$soil$BD <- bdod[[1]] * 1e-2
     soil_profile$soil$Carbon <- soc[[1]] * 1e-2
@@ -160,6 +184,7 @@ get_isric_soil_profile <- function(lonlat,
     soil_profile$soil$ParticleSizeSand <- sand[[1]] * 1e-1
     soil_profile$soil$Nitrogen <- nitrogen[[1]]
     soil_profile$soil$CEC <- cec[[1]]
+    soil_profile$soil$wv1500 <- wv1500[[1]]
   }
 
   soil_profile$soil$ParticleSizeSilt <- 100 - (soil_profile$soil$ParticleSizeSand + soil_profile$soil$ParticleSizeClay)
@@ -192,7 +217,13 @@ get_isric_soil_profile <- function(lonlat,
   }
   
   ### Passing the initial soil water?
-  isw <- initialwater_parms(Thickness = thcknss, InitialValues = wv1500[[1]] * 1e-3)
+  if(new.soil){
+    isw <- initialwater_parms(Thickness = soil_profile$soil$Thickness, 
+                              InitialValues = soil_profile$soil$wv1500 * 1e-3)
+  }else{
+    isw <- initialwater_parms(Thickness = thcknss, InitialValues = wv1500[[1]] * 1e-3)    
+  }
+
   
   soil_profile$initialwater <- isw
 
