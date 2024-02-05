@@ -465,7 +465,7 @@ soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
 #' @param property \dQuote{all} for plotting all soil properties, \dQuote{water} for just SAT, DUL and LL15
 #' @return it produces a plot
 #' @export 
-plot.soil_profile <- function(x,..., property = c("all", "water","BD",
+plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater", "BD",
                                               "AirDry","LL15","DUL","SAT",
                                               "KS", "Carbon", "SoilCNRatio", 
                                               "FOM","FOM.CN","FBiom",
@@ -486,7 +486,7 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
   
   property.in.crops <- try(match.arg(property, choices = crops.property, several.ok = TRUE), silent = TRUE)
   
-  properties <- c("all", "water","BD",
+  properties <- c("all", "water", "initialwater", "BD",
                   "AirDry","LL15","DUL","SAT",
                   "KS", "Carbon", "SoilCNRatio", 
                   "FOM","FOM.CN","FBiom",
@@ -506,7 +506,7 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
     }
   }
 
-  if(property != "all" && property != "water"){
+  if(property != "all" && !(property %in% c("water", "initialwater"))){
     
     tmp <- xsoil[,c(property,"Depth","soil.depth.bottom")]
     gp <- ggplot2::ggplot() + 
@@ -589,6 +589,37 @@ plot.soil_profile <- function(x,..., property = c("all", "water","BD",
               ggplot2::coord_flip()  
     print(gp)
   }
+  
+  if(property == "initialwater"){
+    
+    if(!inherits(x$initialwater, "initialwater_parms")){
+      stop("Could not find initial water", call. = FALSE)
+    }else{
+      if(any(is.na(iwat$Thickness))) stop("Thickness is missing in initial water", call. = FALSE)
+      if(any(is.na(iwat$InitialWater))) stop("InitialWater is missing in initial water", call. = FALSE)
+    }
+    
+    iwat <- x$initialwater
+    iwatd <- data.frame(Thickness = iwat$Thickness, InitialValues = iwat$InitialValues)
+    iwatd$Depth <- .t2d(iwat$Thickness)
+    iwatd$soil.depth.bottom <- sapply(as.character(iwatd$Depth), FUN = function(x) as.numeric(strsplit(x,"-")[[1]][2]))
+
+    ### Need to insert soil.depth.bottom
+    tmp <- xsoil
+    gp <- ggplot2::ggplot() +
+      ggplot2::xlab("Soil Depth (cm)") + 
+      ggplot2::ylab("proportion") + 
+      ggplot2::geom_line(data = tmp, ggplot2::aes(x = -soil.depth.bottom, y = SAT)) +
+      ggplot2::geom_line(data = tmp, ggplot2::aes(x = -soil.depth.bottom, y = AirDry), color = "red") + 
+      ggplot2::ggtitle("Soil water (AirDry, LL15, InitialWater, DUL, SAT)") +
+      ggplot2::geom_ribbon(data = tmp, ggplot2::aes(x = -soil.depth.bottom, ymin = LL15, ymax = DUL), 
+                           color = "blue",
+                           fill = "deepskyblue1") + 
+      ggplot2::geom_line(data = iwatd, ggplot2::aes(x = -soil.depth.bottom, y = InitialValues), color = "purple") + 
+      ggplot2::coord_flip()  
+    print(gp)
+  }
+  
   invisible(gp)
 }
 

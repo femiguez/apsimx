@@ -42,14 +42,16 @@
 #' @author Fernando E. Miguez, Eric Zurcher (CSIRO) and Andrew Moore (CSIRO)
 #' @examples 
 #' \dontrun{
+#' ## Only run this if rest.isric.org is working
+#' rest.isric.on <- suppressWarnings(try(readLines("http://rest.isric.org", n = 1, warn = FALSE), silent = TRUE))
+#'
 #' ## Get soil profile properties for a single point
-#' sp1 <- get_isric_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
-#' 
-#' ## Visualize
-#' plot(sp1)
-#' plot(sp1, property = "water")
-#' 
-#' 
+#' if(!inherits(rest.isric.on, "try-error")){
+#'   sp1 <- get_isric_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
+#'   #' ## Visualize
+#'   plot(sp1)
+#'   plot(sp1, property = "water")
+#'  }
 #' }
 
 get_isric_soil_profile <- function(lonlat, 
