@@ -73,7 +73,8 @@ is a list that has the same number of elements as the length of the vector \code
  lines to edit. It is possible to remove, say, line 10 by using \sQuote{parm = list(-10, NA)}. It is safer to remove
  lines at the end of \sQuote{Operations}. To remove several use the following \sQuote{parm = list(-c(10:12), NA)}. 
  This assumes that \sQuote{12} is the maximum number of lines present. Trying to remove lines in the middle will have 
- unexpected effects. At the moment it is not possible to add lines.
+ unexpected effects. It is possible to create additional lines, but only by using \sQuote{Date} first. This feature
+ has not been tested much so use it carefully.
 }
 \examples{
 \donttest{

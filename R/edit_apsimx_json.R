@@ -17,7 +17,8 @@
 #'  lines to edit. It is possible to remove, say, line 10 by using \sQuote{parm = list(-10, NA)}. It is safer to remove
 #'  lines at the end of \sQuote{Operations}. To remove several use the following \sQuote{parm = list(-c(10:12), NA)}. 
 #'  This assumes that \sQuote{12} is the maximum number of lines present. Trying to remove lines in the middle will have 
-#'  unexpected effects. At the moment it is not possible to add lines.
+#'  unexpected effects. It is possible to create additional lines, but only by using \sQuote{Date} first. This feature
+#'  has not been tested much so use it carefully.
 #'  
 #' @name edit_apsimx
 #' @param file file ending in .apsimx to be edited (JSON)
@@ -490,16 +491,15 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
             operations.node[[1]]$Operation[[parm[[1]][i]]]$Date <- value[i]      
           }else{
             ## Need to add Date if not present 
-            stop("Adding a row is not available yet", call. = FALSE)
+            ##stop("Adding a row is not available yet", call. = FALSE)
             if(verbose) cat("Added a new 'Date' element in position", parm[[1]][i], "\n")
             input.list <- vector("list", length = 1) ## Create empty list
-            names(input.list) <- as.character(parm[[1]][i]) ## giving it the proper number
             list.elements <- operations.node[[1]]$Operation[[1]] ## Copying the first one
             list.elements$Date <- value[i] ## replacing Date
             list.elements$Action <- "" 
             list.elements$Line <- ""
             input.list[[1]] <- list.elements
-            operations.node[[1]]$Operation <- append(operations.node[[1]]$Operation, input.list, after = parm[[1]][i] - 1) 
+            operations.node[[1]]$Operation <- append(operations.node[[1]]$Operation, input.list) 
           }
         }
       }

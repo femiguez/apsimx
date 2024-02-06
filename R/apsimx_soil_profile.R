@@ -607,16 +607,18 @@ plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater"
     ### Need to insert soil.depth.bottom
     tmp <- xsoil
     gp <- ggplot2::ggplot() +
-      ggplot2::xlab("Soil Depth (cm)") + 
-      ggplot2::ylab("proportion") + 
-      ggplot2::geom_line(data = tmp, ggplot2::aes(x = -soil.depth.bottom, y = SAT)) +
+      ggplot2::geom_line(data = tmp, ggplot2::aes(x = -soil.depth.bottom, y = SAT, color = "SAT")) +
       ggplot2::geom_line(data = tmp, ggplot2::aes(x = -soil.depth.bottom, y = AirDry), color = "red") + 
       ggplot2::ggtitle("Soil water (AirDry, LL15, InitialWater, DUL, SAT)") +
       ggplot2::geom_ribbon(data = tmp, ggplot2::aes(x = -soil.depth.bottom, ymin = LL15, ymax = DUL), 
                            color = "blue",
                            fill = "deepskyblue1") + 
-      ggplot2::geom_line(data = iwatd, ggplot2::aes(x = -soil.depth.bottom, y = InitialValues), color = "purple") + 
-      ggplot2::coord_flip()  
+      ggplot2::geom_line(data = iwatd, ggplot2::aes(x = -soil.depth.bottom, y = InitialValues, color = "InitialWater")) + 
+      ggplot2::labs(x = "Soil Depth (cm)", y = "proportion", color = "Legend") + 
+      ggplot2::scale_color_manual(name = "Water", 
+                                  breaks = c("SAT", "InitialWater"),
+                                  values = c(SAT = "black", InitialWater = "purple")) + 
+      ggplot2::coord_flip()
     print(gp)
   }
   
