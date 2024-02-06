@@ -49,7 +49,7 @@
 #' ## Get soil profile properties for a single point
 #' if(!inherits(rest.isric.on, "try-error")){
 #'   sp1 <- get_isric_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
-#'   #' ## Visualize
+#'   ## Visualize
 #'   plot(sp1)
 #'   plot(sp1, property = "water")
 #'  }
@@ -119,24 +119,21 @@ get_isric_soil_profile <- function(lonlat,
   thcknss <- c(50, 100, 150, 300, 400, 1000) ## in mm
   
   ## Some variables can be passed to apsimx:::approx_soil_variable
+  soil.bottom <- 200
+  method <- "constant"
+  nlayers <- 10
   if(!is.null(xargs)){
     ### Soil bottom
     if(!is.null(xargs$soil.bottom)){
       soil.bottom <- xargs$soil.bottom
-    }else{
-      soil.bottom <- 200
     }
     ### Method
     if(!is.null(xargs$method)){
       method <- xargs$method
-    }else{
-      method <- "constant"
     }
     ### Number of layers
     if(!is.null(xargs$nlayers)){
       nlayers <- xargs$nlayers
-    }else{
-      nlayers <- 10
     }
   }
   
@@ -227,10 +224,14 @@ get_isric_soil_profile <- function(lonlat,
   txt_clss <- texture_class(soil_profile$soil$ParticleSizeClay[1] * 1e-2, soil_profile$soil$ParticleSizeSilt[1] * 1e-2)
   t2sp <- texture2soilParms(txt_clss)
   
-  if(missing(soil.profile) || (!missing(soil.profile) && !is.list(soil.profile$soilwat))){
+  if(missing(soil.profile)){
     soil_profile$soilwat <- soilwat_parms(Salb = t2sp$Albedo, CN2Bare = t2sp$CN2, 
                                           SWCON = rep(t2sp$SWCON, nrow(soil_profile$soil)),
                                           Thickness = thcknss)    
+  }else{
+    soil_profile$soilwat <- soilwat_parms(Salb = t2sp$Albedo, CN2Bare = t2sp$CN2, 
+                                          SWCON = rep(t2sp$SWCON, length(soil_profile$soil$Thickness)),
+                                          Thickness = soil_profile$soil$Thickness)    
   }
   
   ### Passing the initial soil water?

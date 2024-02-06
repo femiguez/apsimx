@@ -76,7 +76,7 @@ rest.isric.on <- suppressWarnings(try(readLines("http://rest.isric.org", n = 1, 
 ## Get soil profile properties for a single point
 if(!inherits(rest.isric.on, "try-error")){
   sp1 <- get_isric_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
-  #' ## Visualize
+  ## Visualize
   plot(sp1)
   plot(sp1, property = "water")
  }
