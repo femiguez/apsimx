@@ -11,6 +11,7 @@ get_isric_soil_profile(
   find.location.name = TRUE,
   fix = FALSE,
   verbose = TRUE,
+  physical = c("default", "SR"),
   xargs = NULL
 )
 }
@@ -28,7 +29,9 @@ If you are running this function many times it might be better to set this to FA
 
 \item{verbose}{argument passed to the fix function.}
 
-\item{xargs}{additional arguments passed to \code{\link{apsimx_soil_profile}} function.}
+\item{physical}{whether soil physical properties are obtained from the data base or through \sQuote{SR}, Saxton and Rawls pedotransfer functions.}
+
+\item{xargs}{additional arguments passed to \code{\link{apsimx_soil_profile}} or \sQuote{apsimx:::approx_soil_variable} function.}
 }
 \value{
 it generates an object of class \sQuote{soil_profile}.
@@ -57,7 +60,7 @@ Variable which are directly retrieved and a simple unit conversion is performed:
 * Sand - sand \cr
 * PH - phh2o \cr
 * Nitrogen - nitrogen \cr
-Variables which are estimated using pedotransfer functions: \cr
+Variables which are optionally estimated using pedotransfer functions: \cr
 LL15, DUL, SAT, KS, AirDry \cr
 TO-DO: \cr
 What do I do with nitrogen? \cr
@@ -67,14 +70,16 @@ FBiom does not depend on any soil property at the moment, should it? \cr
 }
 \examples{
 \dontrun{
+## Only run this if rest.isric.org is working
+rest.isric.on <- suppressWarnings(try(readLines("http://rest.isric.org", n = 1, warn = FALSE), silent = TRUE))
+
 ## Get soil profile properties for a single point
-sp1 <- get_isric_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
-
-## Visualize
-plot(sp1)
-plot(sp1, property = "water")
-
-
+if(!inherits(rest.isric.on, "try-error")){
+  sp1 <- get_isric_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
+  #' ## Visualize
+  plot(sp1)
+  plot(sp1, property = "water")
+ }
 }
 }
 \seealso{

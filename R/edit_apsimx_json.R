@@ -9,12 +9,15 @@
 #' \sQuote{file} \emph{-edited.apsimx} will be created.  If (verbose = TRUE) then the name
 #'  of the written file is returned. 
 #'  
-#'  When node equals Report, the editing allows to add variables, but not to remove them at the moment.
+#'  When node equals \sQuote{Report}, the editing allows to add variables, but not to remove them at the moment.
 #' 
 #'  When node equals Operations, \sQuote{parm} should have a list with two elements. The first should be the line(s) to edit and 
 #'  the second should be the component(s) to edit. Either \sQuote{Date}, \sQuote{Action} or \sQuote{Line}.
 #'  When more than one line is edited, \sQuote{value} should be a character vector of the same length as the number of
-#'  lines to edit.
+#'  lines to edit. It is possible to remove, say, line 10 by using \sQuote{parm = list(-10, NA)}. It is safer to remove
+#'  lines at the end of \sQuote{Operations}. To remove several use the following \sQuote{parm = list(-c(10:12), NA)}. 
+#'  This assumes that \sQuote{12} is the maximum number of lines present. Trying to remove lines in the middle will have 
+#'  unexpected effects. At the moment it is not possible to add lines.
 #'  
 #' @name edit_apsimx
 #' @param file file ending in .apsimx to be edited (JSON)
@@ -472,29 +475,71 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     if(length(parm) != 2)
       stop("'parm' should be a list of length 2. The first should be the line and the second should be the component", call. = FALSE)
     
-    if(length(parm[[1]]) != length(value))
-      stop("lenght of the first 'parm' element should be equal to the length of 'value'", call. = FALSE)
+    if(all(parm[[1]] > 0)){
+      if(length(parm[[1]]) != length(value))
+        stop("lenght of the first 'parm' element should be equal to the length of 'value'", call. = FALSE)      
+    }
+
+    length.operation <- length(operations.node[[1]]$Operation)
     
-    if(parm[[2]] == "Date"){
-      for(i in seq_along(value)){
-        operations.node[[1]]$Operation[[parm[[1]][i]]]$Date <- value[i]    
+    if(all(parm[[1]] > 0)){
+      if(parm[[2]] == "Date"){
+        for(i in seq_along(value)){
+          date.exists <- try(operations.node[[1]]$Operation[[parm[[1]][i]]]$Date, silent = TRUE)
+          if(!inherits(date.exists, 'try-error')){
+            operations.node[[1]]$Operation[[parm[[1]][i]]]$Date <- value[i]      
+          }else{
+            ## Need to add Date if not present 
+            stop("Adding a row is not available yet", call. = FALSE)
+            if(verbose) cat("Added a new 'Date' element in position", parm[[1]][i], "\n")
+            input.list <- vector("list", length = 1) ## Create empty list
+            names(input.list) <- as.character(parm[[1]][i]) ## giving it the proper number
+            list.elements <- operations.node[[1]]$Operation[[1]] ## Copying the first one
+            list.elements$Date <- value[i] ## replacing Date
+            list.elements$Action <- "" 
+            list.elements$Line <- ""
+            input.list[[1]] <- list.elements
+            operations.node[[1]]$Operation <- append(operations.node[[1]]$Operation, input.list, after = parm[[1]][i] - 1) 
+          }
+        }
+      }
+      
+      if(parm[[2]] == "Action"){
+        for(i in seq_along(value)){
+          action.exists <- try(operations.node[[1]]$Operation[[parm[[1]][i]]]$Action, silent = TRUE)
+          if(!inherits(action.exists, 'try-error')){
+            operations.node[[1]]$Operation[[parm[[1]][i]]]$Action <- value[i]      
+          }else{
+            stop("Trying to edit an 'Action' item but it is not present. Add 'Date' first.", call. = FALSE)
+          }
+        }
+      }
+      
+      if(parm[[2]] == "Line"){
+        for(i in seq_along(value)){
+          line.exists <- try(operations.node[[1]]$Operation[[parm[[1]][i]]]$Date, silent = TRUE)
+          if(!inherits(line.exists, 'try-error')){
+            operations.node[[1]]$Operation[[parm[[1]][i]]]$Line <- value[i]      
+          }else{
+            stop("Trying to edit a 'Line' item but it is not present. Add 'Date' first.", call. = FALSE)
+          }
+        }
+      }      
+    }else{
+      ### In this case the format should be parm = list(-10, 'NA')
+      if(!is.na(parm[[2]][1]))
+        stop("Second element of the 'parm' list should be 'NA'", call. = FALSE)
+      
+      for(i in rev(seq_along(parm[[1]]))){
+        idx.rm <- abs(parm[[1]][i])
+        operations.node[[1]]$Operation[[idx.rm]] <- NULL      
       }
     }
-    
-    if(parm[[2]] == "Action"){
-      for(i in seq_along(value)){
-        operations.node[[1]]$Operation[[parm[[1]][i]]]$Action <- value[i]    
-      }
+      
+    if(all(parm[[1]] > 0)){
+      if(!parm[[2]] %in% c("Date", "Action", "Line"))
+        stop("The second 'parm' component should be either 'Date', 'Action', or 'Line'", call. = FALSE)      
     }
-    
-    if(parm[[2]] == "Line"){
-      for(i in seq_along(value)){
-        operations.node[[1]]$Operation[[parm[[1]][i]]]$Line <- value[i]    
-      }
-    }
-    
-    if(!parm[[2]] %in% c("Date", "Action", "Line"))
-      stop("The second 'parm' component should be either 'Date', 'Action', or 'Line'", call. = FALSE)
 
     core.zone.node[won][[1]]$Operation <- operations.node[[1]]$Operation
     parm <- unlist(parm)

@@ -47,8 +47,9 @@ apsimx_soil_profile(
 \method{plot}{soil_profile}(
   x,
   ...,
-  property = c("all", "water", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", "Carbon",
-    "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH")
+  property = c("all", "water", "initialwater", "BD", "AirDry", "LL15", "DUL", "SAT",
+    "KS", "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N",
+    "PH")
 )
 
 check_apsimx_soil_profile(x, particle.density = 2.65)

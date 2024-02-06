@@ -21,6 +21,7 @@
 #' If you are running this function many times it might be better to set this to FALSE.
 #' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
 #' @param verbose argument passed to the fix function.
+#' @param physical whether soil physical properties are obtained from the data base or through \sQuote{SR}, Saxton and Rawls pedotransfer functions.
 #' @param xargs additional arguments passed to \code{\link{apsimx_soil_profile}} or \sQuote{apsimx:::approx_soil_variable} function.
 #' @return it generates an object of class \sQuote{soil_profile}.
 #' @details Variable which are directly retrieved and a simple unit conversion is performed: \cr
@@ -30,7 +31,7 @@
 #' * Sand - sand \cr
 #' * PH - phh2o \cr
 #' * Nitrogen - nitrogen \cr
-#' Variables which are estimated using pedotransfer functions: \cr
+#' Variables which are optionally estimated using pedotransfer functions: \cr
 #' LL15, DUL, SAT, KS, AirDry \cr
 #' TO-DO: \cr
 #' What do I do with nitrogen? \cr
@@ -60,9 +61,11 @@ get_isric_soil_profile <- function(lonlat,
                                    find.location.name = TRUE,
                                    fix = FALSE,
                                    verbose = TRUE,
+                                   physical = c("default", "SR"),
                                    xargs = NULL){
 
   statistic <- match.arg(statistic)
+  physical <- match.arg(physical)
   
   #### Create extent step ####
   lon <- as.numeric(lonlat[1])
@@ -81,6 +84,8 @@ get_isric_soil_profile <- function(lonlat,
                            "property=sand", 
                            "property=nitrogen",
                            "property=cec", 
+                           "property=wv0010",
+                           "property=wv0033",
                            "property=wv1500", sep = "&")
   rest.depths <- paste("&depth=0-5cm", "depth=0-30cm", "depth=5-15cm", 
                        "depth=15-30cm", "depth=30-60cm", "depth=60-100cm", "depth=100-200cm", sep = "&")
@@ -91,9 +96,9 @@ get_isric_soil_profile <- function(lonlat,
   #### Process query
   sp.nms <- rest.data$properties$layers[["name"]]
   
-  if(!identical(sp.nms, c("bdod", "cec", "clay", "nitrogen", "phh2o", "sand", "soc", "wv1500"))){
+  if(!identical(sp.nms, c("bdod", "cec", "clay", "nitrogen", "phh2o", "sand", "soc", "wv0010", "wv0033", "wv1500"))){
     cat("Found these properties", sp.nms, "\n")
-    cat("Expected these properties", c("bdod", "cec", "clay", "nitrogen", "phh2o", "sand", "soc", "wv1500"), "\n")
+    cat("Expected these properties", c("bdod", "cec", "clay", "nitrogen", "phh2o", "sand", "soc", "wv0010", "wv0033", "wv1500"), "\n")
     stop("soil properties names do not match")
   }
     
@@ -104,7 +109,9 @@ get_isric_soil_profile <- function(lonlat,
   phh2o <- rest.data$properties$layers[5,3][[1]][,3]
   sand <- rest.data$properties$layers[6,3][[1]][,3]
   soc <- rest.data$properties$layers[7,3][[1]][,3]
-  wv1500 <- rest.data$properties$layers[8,3][[1]][,3]
+  wv0010 <- rest.data$properties$layers[8,3][[1]][,3]
+  wv0033 <- rest.data$properties$layers[9,3][[1]][,3]
+  wv1500 <- rest.data$properties$layers[10,3][[1]][,3]
   
   if(any(is.na(soc))) stop("No soil data available for this location. Did you specify the coordinates correctly?")
 
@@ -176,6 +183,10 @@ get_isric_soil_profile <- function(lonlat,
                                                    xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
     soil_profile$soil$CEC <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = cec[[1]]), 
                                                        xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
+    soil_profile$soil$wv0010 <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv0010[[1]]), 
+                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
+    soil_profile$soil$wv0033 <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv0033[[1]]), 
+                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
     soil_profile$soil$wv1500 <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv1500[[1]]), 
                                                   xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
   }else{
@@ -186,16 +197,20 @@ get_isric_soil_profile <- function(lonlat,
     soil_profile$soil$ParticleSizeSand <- sand[[1]] * 1e-1
     soil_profile$soil$Nitrogen <- nitrogen[[1]]
     soil_profile$soil$CEC <- cec[[1]]
-    soil_profile$soil$wv1500 <- wv1500[[1]]
+    soil_profile$soil$SAT <- wv0010[[1]] * 1e-3
+    soil_profile$soil$DUL <- wv0033[[1]] * 1e-3
+    soil_profile$soil$LL15 <- wv1500[[1]] * 1e-3
   }
 
   soil_profile$soil$ParticleSizeSilt <- 100 - (soil_profile$soil$ParticleSizeSand + soil_profile$soil$ParticleSizeClay)
   ## Populating DUL and LL. These are equations from Table 1 in Saxton and Rawls 2006
-  soil_profile$soil$DUL <- sr_dul(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
-  soil_profile$soil$LL15 <- sr_ll(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
-  DUL_S <- sr_dul_s(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
-  soil_profile$soil$SAT <- sr_sat(soil_profile$soil$ParticleSizeSand, soil_profile$soil$DUL, DUL_S)
-  
+  if(physical == "SR"){
+    soil_profile$soil$DUL <- sr_dul(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
+    soil_profile$soil$LL15 <- sr_ll(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
+    DUL_S <- sr_dul_s(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
+    soil_profile$soil$SAT <- sr_sat(soil_profile$soil$ParticleSizeSand, soil_profile$soil$DUL, DUL_S)    
+  }
+
   B <- (log(1500) - log(33))/(log(soil_profile$soil$DUL) - log(soil_profile$soil$LL15))
   Lambda <- 1/B
   soil_profile$soil$KS <- (1930 * (soil_profile$soil$SAT - soil_profile$soil$DUL)^(3 - Lambda)) * 100
@@ -220,13 +235,14 @@ get_isric_soil_profile <- function(lonlat,
   
   ### Passing the initial soil water?
   if(new.soil){
+    ini.wat <- (soil_profile$soil$DUL + soil_profile$soil$LL15) / 2
     isw <- initialwater_parms(Thickness = soil_profile$soil$Thickness, 
-                              InitialValues = soil_profile$soil$wv1500 * 1e-3)
+                              InitialValues = ini.wat)
   }else{
-    isw <- initialwater_parms(Thickness = thcknss, InitialValues = wv1500[[1]] * 1e-3)    
+    ini.wat <- (soil_profile$soil$DUL + soil_profile$soil$LL15) / 2
+    isw <- initialwater_parms(Thickness = thcknss, InitialValues = ini.wat)    
   }
 
-  
   soil_profile$initialwater <- isw
 
   if(find.location.name){

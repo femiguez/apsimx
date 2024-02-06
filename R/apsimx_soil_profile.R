@@ -487,10 +487,10 @@ plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater"
   property.in.crops <- try(match.arg(property, choices = crops.property, several.ok = TRUE), silent = TRUE)
   
   properties <- c("all", "water", "initialwater", "BD",
-                  "AirDry","LL15","DUL","SAT",
+                  "AirDry", "LL15","DUL","SAT",
                   "KS", "Carbon", "SoilCNRatio", 
-                  "FOM","FOM.CN","FBiom",
-                  "FInert","NO3N","NH4N","PH")
+                  "FOM", "FOM.CN", "FBiom",
+                  "FInert", "NO3N", "NH4N", "PH")
     
   if(inherits(property.in.crops, "try-error")){
     property <- try(match.arg(property), silent = TRUE) 
@@ -591,7 +591,8 @@ plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater"
   }
   
   if(property == "initialwater"){
-    
+
+    iwat <- x$initialwater
     if(!inherits(x$initialwater, "initialwater_parms")){
       stop("Could not find initial water", call. = FALSE)
     }else{
@@ -599,7 +600,6 @@ plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater"
       if(any(is.na(iwat$InitialWater))) stop("InitialWater is missing in initial water", call. = FALSE)
     }
     
-    iwat <- x$initialwater
     iwatd <- data.frame(Thickness = iwat$Thickness, InitialValues = iwat$InitialValues)
     iwatd$Depth <- .t2d(iwat$Thickness)
     iwatd$soil.depth.bottom <- sapply(as.character(iwatd$Depth), FUN = function(x) as.numeric(strsplit(x,"-")[[1]][2]))
