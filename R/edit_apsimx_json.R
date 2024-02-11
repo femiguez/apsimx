@@ -400,7 +400,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.node[[1]]$Children[wswimn][[1]] <- soil.swim.node
     }
     
-    core.zone.node[wswimn] <- soil.node
+    core.zone.node[wsn] <- soil.node
   }
   
   if(node == "SurfaceOrganicMatter"){
