@@ -77,7 +77,7 @@
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager", "Report", "Operations", "Other"),
-                        soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample"),
+                        soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample", "Swim3"),
                         manager.child = NULL,
                         parm = NULL, value = NULL, 
                         overwrite = FALSE,
@@ -389,7 +389,18 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.node[[1]]$Children[wsn][[1]] <- soil.sample.node
     }
     
-    core.zone.node[wsn] <- soil.node
+    if(soil.child == "Swim3"){
+      edited.child <- "Swim3"
+      wswimn <- grepl("Swim3", soil.node0)
+      soil.swim.node <- soil.node0[wswimn][[1]]
+      
+      for(i in 1:length(soil.swim.node[[parm]])){
+        soil.swim.node[[parm]][[i]] <- value[i]
+      }
+      soil.node[[1]]$Children[wswimn][[1]] <- soil.swim.node
+    }
+    
+    core.zone.node[wswimn] <- soil.node
   }
   
   if(node == "SurfaceOrganicMatter"){

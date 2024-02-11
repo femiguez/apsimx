@@ -51,7 +51,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                            soil.child = c("Metadata", "Water", "InitialWater",
                                           "Chemical", "Physical", "Analysis", "SoilWater",
                                           "InitialN", "CERESSoilTemperature", "Sample",
-                                          "Nutrient", "Organic"),
+                                          "Nutrient", "Organic", "Swim3"),
                            parm = NULL,
                            digits = 3,
                            print.path = FALSE,
@@ -236,11 +236,11 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     first.level.soil <- c("Water", "Physical",
                           "Chemical", "Analysis", "InitialWater",
                           "InitialN", "SoilWater", "Analysis",
-                          "CERESSoilTemperature", "Organic")
+                          "CERESSoilTemperature", "Organic", "Swim3")
     if(soil.child %in% first.level.soil){
       ## Assuming there is only one 'relevant' level here
       ## This parameter level would be 2.1.1
-      parm.path <- paste0(parm.path.2.1,".",selected.soil.node.child[[1]]$Name) 
+      parm.path <- paste0(parm.path.2.1, ".", selected.soil.node.child[[1]]$Name) 
       enms <- c("IncludeInDocumentation", "Enabled", "ReadOnly", "Children", "Name", "$type")
       cnms <- setdiff(names(selected.soil.node.child[[1]]), enms)
       ## print(names(selected.soil.node.child[[1]]))
