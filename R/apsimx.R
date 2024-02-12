@@ -70,7 +70,7 @@ apsimx <- function(file = "", src.dir = ".",
       run.strng <- paste(mono, ada, file.name.path) 
     }
     if(isFALSE(dotnet.flag) && isFALSE(mono.flag)){
-      run.strng <- paste(ada, file.name.path) 
+      run.strng <- paste(ada, "run", file.name.path) 
     }
     ## Run APSIM-X on the command line
     if(!missing(xargs)) run.strng <- paste(run.strng, xargs$xargs.string)
