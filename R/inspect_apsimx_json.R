@@ -111,6 +111,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             stop("no root node label in position 2 found or root is not unique")
           parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children        
           parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[wcore1]]$Children[[wcore2]])
+          ## Is this only a problem for factorials?
+          if(length(parm.path.1) > 1){
+            parm.path.1 <- paste(parm.path.0, apsimx_json$Children[[wcore1]]$Name, apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Name, sep = ".")
+          }
         }
         if(length(root) == 3){
           root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
@@ -129,6 +133,11 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             stop("no root node label in position 3 found or root is not unique")
           parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children[[wcore3]]$Children
           parm.path.1 <- paste0(parm.path.0,".",apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children[[wcore3]])
+          ### Is this a problem for factorials only?
+          if(length(parm.path.1) > 1){
+            parm.path.1 <- paste(parm.path.0, apsimx_json$Children[[wcore1]]$Name, apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Name, 
+                                 apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children[[wcore3]]$Name, sep = ".")
+          }
         }
       }
     }

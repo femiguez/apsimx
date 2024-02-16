@@ -2,7 +2,7 @@
 #' 
 #' @title fetches the json file for a specific model from APSIMX github
 #' @name get_apsimx_json
-#' @description Retreives the json replacement file for a specific model
+#' @description Retrieves the json replacement file for a specific model
 #' @param model a model (e.g. \sQuote{Wheat} or \sQuote{Maize})
 #' @param wrt.dir directory to save the JSON file (default is the current directory)
 #' @param cleanup whether to delete the JSON file
@@ -37,9 +37,6 @@ get_apsimx_json <- function(model = "Wheat", wrt.dir = ".", cleanup = FALSE){
 #' @param src.dir directory containing the .apsimx file to be edited; defaults to the current working directory
 #' @param wrt.dir should be used if the destination directory is different from the src.dir
 #' @param rep.node replacement node as obtained by the \code{\link{get_apsimx_json}} function
-#' @param rep.node.position position where the replacement node will be inserted, default is 1
-#' @param new.core.position this by default will place the core simulation below the replacement node position. 
-#' With this option, this can be modified.
 #' @param edit.tag if the file is edited a different tag from the default \sQuote{-edited} can be used.
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
 #' @param verbose whether to print information about successful edit
@@ -58,12 +55,9 @@ get_apsimx_json <- function(model = "Wheat", wrt.dir = ".", cleanup = FALSE){
 #' 
 
 insert_replacement_node <- function(file, src.dir, wrt.dir, rep.node, 
-                                    rep.node.position = 1,
-                                    new.core.position = rep.node.position + 1,
                                     edit.tag = "-edited", 
                                     overwrite = FALSE,
-                                    verbose = TRUE,
-                                    root){
+                                    verbose = FALSE){
   
   .check_apsim_name(file)
   
@@ -75,7 +69,6 @@ insert_replacement_node <- function(file, src.dir, wrt.dir, rep.node,
     stop("There are no .apsimx files in the specified directory to edit.")
   }
   
-    ## For now we just edit one file at a time
   file <- match.arg(file, file.names)
   
   if(apsimx_filetype(file = file, src.dir = src.dir) != "json")
@@ -84,46 +77,36 @@ insert_replacement_node <- function(file, src.dir, wrt.dir, rep.node,
   ## Parse apsimx file (JSON)
   apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
   
-  wcore <- grep("Core.Simulation", apsimx_json$Children)
-  wdatastore <- grep("Models.Storage.DataStore", apsimx_json$Children)
+  ## Replacement version and APSIMX version need to match
+  replacement.node.version <- rep.node$Version
+  apsimx.file.version <- apsimx_json$Version
   
+  if(replacement.node.version != apsimx.file.version)
+    stop("Replacement node version and apsimx version should match")
+
+  wcore <- grep("Core.Simulation", apsimx_json$Children)
+
   if(verbose){
     cat("Simulation(s) is/are in node(s)", wcore, "\n")
-    cat("Datastore(s) is/are in node(s)", wdatastore, "\n")
+    cat("Adding node", rep.node$Children[[1]]$Name, "\n")
   }
   
-  if(rep.node.position == wdatastore){
-    warning("Replacement node will overwrite DataStore. 
-            Moving DataStore down.")
-    lapsimx_json <- length(apsimx_json$Children)
-    apsimx_json$Children[[lapsimx_json + 1]] <- apsimx_json$Children[[wdatastore]]
-    warning(paste("New position for DataStore:", lapsimx_json + 1))
-  }
-    
+  replacements.folder <- vector("list", length = 1)
+  rep.node.list <- vector("list", length = 1)
+  rep.node.list[[1]] <- rep.node$Children[[1]]
   
-  if(new.core.position == wdatastore){
-    warning("Simulations node will overwrite DataStore. 
-            Moving DataStore down.")
-    lapsimx_json <- length(apsimx_json$Children)
-    apsimx_json$Children[[lapsimx_json + 1]] <- apsimx_json$Children[[wdatastore]]
-    warning(paste("New position for DataStore:", lapsimx_json + 1))
-  }
-    
-  ## Need to modify the replacement node?
-  rep.node$ExplorerWidth <- NULL
-  rep.node$Version <- NULL
-  rep.node$Name <- "Replacements"
-  rep.node$`$type` <- "Models.Core.Replacements, Models"
+  replacements.folder.elements <- list(`$type` = "Models.Core.Folder, Models",
+                              ShowInDocs = FALSE,
+                              GraphsPerPage = 6,
+                              Name = "Replacements",
+                              ResourceName = NULL,
+                              Children = rep.node.list,
+                              Enabled = TRUE,
+                              ReadOnly = FALSE)
   
-  if(length(wcore) != length(new.core.position))
-    stop("length of new.core.position should be equal to the number of core simulations")
+  replacements.folder[[1]] <- replacements.folder.elements
   
-  ## Move core simulation nodes down to make room for replacement node
-  for(i in seq_along(new.core.position)){
-      apsimx_json$Children[[new.core.position[i]]] <- apsimx_json$Children[[wcore[i]]]    
-  }
-  
-  apsimx_json$Children[[rep.node.position]] <- rep.node
+  apsimx_json$Children <- append(apsimx_json$Children, replacements.folder, after = 0)
   
   ## Write to file
   if(overwrite == FALSE){

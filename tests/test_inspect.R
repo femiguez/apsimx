@@ -462,3 +462,67 @@ if(inspect.replacement.test.parm.path){
   }
 }
 
+inspect.factorial.test.parm.path <- get(".run.local.tests", envir = apsimx.options)
+
+if(inspect.factorial.test.parm.path){
+  
+  tmp.dir <- tempdir()
+  ex.dir <- auto_detect_apsimx_examples()
+  
+  ### Test with all examples
+  ex.dir.list <- dir(ex.dir, pattern = "apsimx$")
+
+  ### Simple inspecting
+  for(i in ex.dir.list){
+  
+    file.copy(from = file.path(ex.dir, i), to = tmp.dir)  
+
+    inspect_apsimx(i, src.dir = tmp.dir,
+                   print.path = TRUE)    
+  }
+  
+  
+
+
+
+
+  inspect_apsimx_json("Factorial.apsimx", src.dir = tmp.dir,
+                      parm = "Clock",
+                      print.path = TRUE)
+  
+  inspect_apsimx_json("Factorial.apsimx", src.dir = tmp.dir,
+                      parm = "Permutation",
+                      print.path = TRUE)
+  
+  ## Also test: AgPasture, SCRUM, ManagerExamples/RegressionExample, Rotation
+
+  file.copy(from = file.path(ex.dir, "AgPasture.apsimx"), to = tmp.dir)
+  
+  inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
+                 root = list("AgPastureExample"),
+                 node = "Weather",
+                 print.path = TRUE)
+
+  inspect_apsimx_json("AgPasture.apsimx", src.dir = tmp.dir,
+                 parm = "CO2xBaseTemperature",
+                 print.path = TRUE)
+  
+  inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
+                 root = list("CO2xBaseTemperature", "CO2xTb"),
+                 print.path = TRUE)
+
+  inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
+                 root = list("PastureByWaterAndNitrogen", "Base"),
+                 print.path = TRUE)
+  
+  # inspect_apsimx_replacement("AgPasture.apsimx", src.dir = tmp.dir,
+  #                root = list("CO2xBaseTemperature", 6),
+  #                display.available = TRUE)
+
+  # inspect_apsimx_replacement("AgPasture.apsimx", src.dir = tmp.dir,
+  #                            root = list("CO2xHeatOnset"),
+  #                            display.available = TRUE)
+  
+    
+    
+}
