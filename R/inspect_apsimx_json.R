@@ -1,7 +1,11 @@
 #' 
-#' In general, this function is used to edit one parameter at a time. There are some exceptions. \cr
+#' In general, this function is used to inspect one parameter at a time. There are some exceptions. \cr
 #' 
-#'  - For the Clock, both the \sQuote{Start} and \sQuote{End} can be edited in one call.
+#' When node equals \sQuote{Other} there are some options. If \sQuote{parm} is not specified the structure 
+#' of the simulation file will be returned. In this case, there is no parameter to print, so setting 
+#' \sQuote{print.path} will have no effect. This option is useful when the intention is to show the 
+#' simulation structure to pick a root presumably. \sQuote{parm} can be set as 0, 1, or 2 for different levels
+#' of detail. If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied. 
 #' 
 #' @title Inspect an .apsimx (JSON) file
 #' @name inspect_apsimx
@@ -76,13 +80,109 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   
   apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
   
+  find.root <- TRUE
+  other.parm.flag <- 1
+  if(node == "Other" && is.numeric(parm)) parm <- as.integer(parm)
   parm.path.0 <- paste0(".", apsimx_json$Name) ## Root
   ## I think that everything I might want to look at 
   ## is under this Children/Children node
   ## It looks like I need to 'find' the "Models.Core.Simulation" node
   fcsn <- grep("Models.Core.Simulation", apsimx_json$Children, fixed = TRUE)
-  
-  if(length(fcsn) > 1 || !missing(root)){
+
+  ## When node == "Other" root should always be missing
+  if((node == "Other" && length(fcsn) > 1) || (node == "Other" && (is.null(parm) || is.integer(parm)))){
+    parm.path <- NA
+    other.parm.flag <- -1
+    find.root <- FALSE
+    ## Process 'parm'
+    if(is.null(parm) || is.integer(parm)){
+      if(is.null(parm)) parm <- 1L
+      if(parm == 0){
+        cat("Level 0:", gsub(".", "", parm.path.0, fixed = TRUE), "\n")
+      }
+      ## If parm is null there are different levels of display
+      if(parm == 1){
+        first.column.name <- gsub(".", "", parm.path.0, fixed = TRUE)
+        root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                                     FUN.VALUE = "character")
+        pdat <- data.frame(first_level = c(first.column.name, rep(".", length(root.names.level.1) - 1)),
+                           second_level = root.names.level.1)
+        print(knitr::kable(pdat))
+      }
+      ## If parm == 2
+      if(parm == 2){
+        first.column.name <- gsub(".", "", parm.path.0, fixed = TRUE)
+        root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                                     FUN.VALUE = "character")
+        ## This tries to guess how many times I need to repeat the second_level
+        ## rep.each <- sapply(apsimx_json$Children, FUN = function(x) length(x$Children))
+        ## rep.each <- numeric(length(root.names.level.1))
+        second.level.names <- NULL
+        third.level.names <- NULL
+        for(i in seq_along(root.names.level.1)){
+          chld.len <- length(apsimx_json$Children[[i]]$Children)
+          rep.times <- ifelse(chld.len == 0, 1, chld.len)
+          second.level.names <- c(second.level.names, c(root.names.level.1[i], rep(".", times = rep.times - 1)))
+          ## Need to generate third level names
+          third.level.names.0 <- sapply(apsimx_json$Children[[i]]$Children, FUN = function(x) x$Name)
+          if(length(third.level.names.0) == 0) third.level.names.0 <- "."
+          third.level.names.1 <- c(third.level.names, third.level.names.0)
+          third.level.names <- unlist(third.level.names.1)
+        }
+        ### Is this table good enough?
+        pdat <- data.frame(first_level = c(first.column.name, rep(".", length(second.level.names) - 1)),
+                           second_level = second.level.names,
+                           third_level = third.level.names)
+        print(knitr::kable(pdat))
+      }
+    }else{
+      if(!is.list(parm)){
+        if(!is.character(parm))
+          stop("parm should be a character string when node = 'Other' and is not an number", call. = FALSE)
+        pparm <- strsplit(parm, split = ".", fixed = TRUE)[[1]]
+        root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
+        if(pparm[2] != root.name.level.0)
+          stop(paste("First parm element does not match:", root.name.level.0), call. = FALSE)
+        root1 <- pparm[3]
+        ## Guess if 'root' is contained in the first level of names
+        root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                                     FUN.VALUE = "character")
+        wroot1 <- grep(as.character(root1), root.names.level.1)    
+        if(length(wroot1) == 0)
+          stop(paste("Second element of parm did not match:", root.names.level.1), call. = FALSE)
+        ## Need to test if the fourth element of pparm is a node
+        nodes <- c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Report", "Operations", "Other")
+        if(pparm[4] %in% nodes){
+          ## This amounts to guessing that root should be of length 1
+          root <- list(pparm[3])
+        }else{
+          ## This amounts to guessing that pparm[4] should be the second element in 
+          root.names.level.2 <- vapply(apsimx_json$Children[[wroot1]]$Children, 
+                                       FUN = function(x) x$Name, 
+                                       FUN.VALUE = "character")
+          root2 <- pparm[4]
+          wroot2 <- grep(as.character(root2), root.names.level.2)    
+          if(length(wroot2) == 0)
+            stop(paste("Third element of parm did not match:", root.names.level.2), call. = FALSE)
+          if(pparm[5] %in% nodes){
+            root <- list(pparm[3], pparm[4])
+          }else{
+            root.names.level.3 <- vapply(apsimx_json$Children[[wroot1]]$Children[[wroot2]]$Children, 
+                                         FUN = function(x) x$Name, 
+                                         FUN.VALUE = "character")
+            root3 <- pparm[5]
+            wroot3 <- grep(as.character(root3), root.names.level.3)    
+            if(length(wroot3) == 0)
+              stop(paste("Fourth element of parm did not match:", root.names.level.3), call. = FALSE)
+          }
+        }        
+      }else{
+        other.parm.flag <- 1
+      }
+    }
+  }
+    
+  if((length(fcsn) > 1 || !missing(root)) && find.root){
     if(missing(root)){
       cat("Simulation structure: \n")
       str_list(apsimx_json)
@@ -94,16 +194,20 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         nms <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
                       FUN.VALUE = "character")
         fcsn <- grep(as.character(root), nms)
+        if(length(fcsn) == 0 || length(fcsn) > 1){
+          cat("Children:", nms, "\n")
+          stop("'root' not found. Choose one of the options above", call. = FALSE)
+        }
         parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name)
         parent.node <- apsimx_json$Children[[fcsn]]$Children
-        if(length(fcsn) == 0 || length(fcsn) > 1)
-          stop("no root node label found or root is not unique")
       }else{
         if(length(root) == 2){
           root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
           wcore1 <- grep(as.character(root[1]), root.node.0.names)
-          if(length(wcore1) == 0 || length(wcore1) > 1)
-            stop("no root node label in position 1 found or root is not unique")
+          if(length(wcore1) == 0 || length(wcore1) > 1){
+            cat("Children:", root.node.0.names, "\n")  
+            stop("no root node label in position 1 found or root is not unique", call. = FALSE)
+          }
           root.node.0 <- apsimx_json$Children[[wcore1]]
           root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)  
           wcore2 <- grep(as.character(root[2]), root.node.0.child.names)
@@ -142,8 +246,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       }
     }
   }else{
-    parent.node <- apsimx_json$Children[[fcsn]]$Children  
-    parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name)
+    if(find.root){
+      parent.node <- apsimx_json$Children[[fcsn]]$Children  
+      parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name)      
+    }
   }
   
   if(node == "Clock"){
@@ -182,11 +288,13 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   
   ## From here on there is an important component that lives inside
   ## 'Models.Core.Zone'
-  wcz <- grepl("Models.Core.Zone", parent.node)
-  core.zone.node <- parent.node[wcz][[1]]$Children
-  
-  parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)
-  
+  if(find.root){
+    wcz <- grepl("Models.Core.Zone", parent.node)
+    core.zone.node <- parent.node[wcz][[1]]$Children
+    
+    parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)    
+  }
+
   if(node == "Soil"){
     ## Which soils node
     wsn <- grepl("Models.Soils.Soil", core.zone.node)
@@ -600,13 +708,17 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }
   }
 
-  if(node == "Other"){
-    
+  if(node == "Other" && other.parm.flag > 0){
+    fcsn <- 3
+    parent.node <- apsimx_json$Children[[fcsn]]$Children  
+    wcz <- grepl("Models.Core.Zone", parent.node)
+    core.zone.node <- parent.node[wcz][[1]]$Children
+    parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)  
     tmp <- core.zone.node
     parm.path.2.1 <- parm.path.2
     ## Check for parm
-    if(is.null(parm)) stop("'parm' should be provided when node = 'Other'")
-    if(length(parm) == 1L) stop("'parm' should be a list of length 2 or more")
+    ## if(is.null(parm)) stop("'parm' cannot be null in this case")
+    ##if(length(parm) == 1L) stop("'parm' should be of length 2 or more")
     ## This extracts a node
     for(i in 1:(length(parm) - 1)){
       nms <- sapply(tmp, function(x) x$Name)

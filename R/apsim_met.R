@@ -1514,7 +1514,7 @@ remove_column_apsim_met <- function(met, name){
   return(met)
 }
 
-#' This function can re-calculates annual mean monthly amplitude
+#' This function can re-calculate annual mean monthly amplitude
 #' for an object of class \sQuote{met}
 #' @title Calculates attribute amp for an object of class \sQuote{met}
 #' @param met object of class \sQuote{met}

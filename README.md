@@ -81,3 +81,35 @@ or other languages
 > vignette("apsimx-scripts")
 
 If you have any questions contact Fernando E. Miguez (femiguez *at* iastate.edu)
+
+Some papers that cite this package:
+
+12\. Francisco Palmero, Ana J.P. Carcedo, Ricardo J. Haro, Ezequiel D. Bigatton, Fernando Salvagiotti, Ignacio A. Ciampitti. Modeling drought stress impacts under current and future climate for peanut in the semiarid pampas region of Argentina. Field Crops Research. 2022. https://doi.org/10.1016/j.fcr.2022.108615.
+
+11\. Elsa Lagerquist, Iris Vogeler, Uttam Kumar, Göran Bergkvist, Marcos Lana, Christine A. Watson, David Parsons,
+Assessing the effect of intercropped leguminous service crops on main crops and soil processes using APSIM NG.
+Agricultural Systems. 2024. https://doi.org/10.1016/j.agsy.2024.103884.
+
+10\. Daniel Pasquel, Davide Cammarano, Sébastien Roux, Annamaria Castrignanò, Bruno Tisseyre, Michele Rinaldi, Antonio Troccoli, James A. Taylor. Downscaling the APSIM crop model for simulation at the within-field scale,
+Agricultural Systems. 2023. https://doi.org/10.1016/j.agsy.2023.103773.
+
+9\. Tommaso Tadiello, Mara Gabbrielli, Marco Botta, Marco Acutis, Luca Bechini, Giorgio Ragaglini, Andrea Fiorini, Vincenzo Tabaglio, Alessia Perego. A new module to simulate surface crop residue decomposition: Description and sensitivity analysis. Ecological Modelling. Volume 480. 2023. https://doi.org/10.1016/j.ecolmodel.2023.110327.
+
+8\. Lopez-Cruz, M., Aguate, F.M., Washburn, J.D. et al. Leveraging data from the Genomes-to-Fields Initiative to investigate genotype-by-environment interactions in maize in North America. Nat Commun 14, 6904 (2023). https://doi.org/10.1038/s41467-023-42687-4
+
+7\. Ignacio Massigoge, Ana Carcedo, Jane Lingenfelser, Trevor Hefley, P.V. Vara Prasad, Dan Berning, Sara Lira, Carlos D. Messina, Charles W. Rice, Ignacio Ciampitti. Maize planting date and maturity in the US central Great Plains: Exploring windows for maximizing yields. European Journal of Agronomy. Volume 149. 2023. 
+https://doi.org/10.1016/j.eja.2023.126905.
+
+6\. Yang, Xuening and Zhang, Xuanze and Zhao, Zhigan and Ma, Ning and Tian, Jing and Xu, Zhenwu and Zhang, Junmei and Zhang, Yongqiang, Rainfall and Maximum Temperature are Dominant Climatic Factors Influencing Apsim-Maize Cultivar Parameters Sensitivity in Semiarid Regions. Available at SSRN: https://ssrn.com/abstract=4693866 or http://dx.doi.org/10.2139/ssrn.4693866
+
+5\. Determining site-specific corn nitrogen rate over time with APSIM model. L.J. Thompson, S. Archontoulis, and L.A. Puntel. https://doi.org/10.3920/978-90-8686-947-3_138
+
+4\. Kheir, A. M. S., Mkuhlani, S., Mugo, J. W., Elnashar, A., Nangia, V., Devare, M., & Govind, A. (2023). Integrating APSIM model with machine learning to predict wheat yield spatial distribution. Agronomy Journal, 115, 3188–3196. https://doi.org/10.1002/agj2.21470
+
+3\. Acceptability and Evaluation of APSIM-Qryza for Promoting Water and Nitrogen Productivity in Paddy Fields. 
+Shayan Hosseinpour, Hemmatollah Pirdashti, Mohammad Kaveh, Hamze Dokoohaki. https://doi.org/10.21203/rs.3.rs-2677879/v1
+
+2\. Augmenting agroecosystem models with remote sensing data and machine learning increases overall estimates of nitrate-nitrogen leaching. Matthew Nowatzke, Luis Damiano, Fernando E Miguez, Gabe S McNunn, Jarad Niemi, Lisa A Schulte, Emily A Heaton and Andy VanLoocke. 20 October 2022. Environmental Research Letters, Volume 17, Number 11
+DOI: 10.1088/1748-9326/ac998b
+
+1\. Laurent, A., Cleveringa, A., Fey, S. et al. Late-season corn stalk nitrate measurements across the US Midwest from 2006 to 2018. Sci Data 10, 192 (2023). https://doi.org/10.1038/s41597-023-02071-9

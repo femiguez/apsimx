@@ -45,12 +45,15 @@ get_apsimx_json <- function(model = "Wheat", wrt.dir = ".", cleanup = FALSE){
 #' @export
 #' @examples
 #' \dontrun{
-#' tmp.dir <- tempdir()
-#' wheat <- get_apsimx_json(model = "Wheat", wrt.dir = tmp.dir)
-#' extd.dir <- system.file("extdata", package = "apsimx")
-#' insert_replacement_node("Wheat.apsimx", 
-#'                         src.dir = extd.dir, wrt.dir = tmp.dir,
-#'                         rep.node = wheat)
+#' ## It is not trivial to produce a reproducible example
+#' ## because the model and file versions need to align.
+#' ## The steps are:
+#' ## 1. Get model: 
+#' ##    wheat <- get_apsimx_json(model = "Wheat", wrt.dir = tmp.dir)
+#' ## 2. Create file that matches current model version
+#' ## 3. Edit the file by inserting the 'replacements' node
+#' ##    insert_replacement_node("Wheat.apsimx", rep.node = wheat)
+#'                         
 #' }
 #' 
 

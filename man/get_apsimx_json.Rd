@@ -17,7 +17,7 @@ get_apsimx_json(model = "Wheat", wrt.dir = ".", cleanup = FALSE)
 a list read through the jsonlite package
 }
 \description{
-Retreives the json replacement file for a specific model
+Retrieves the json replacement file for a specific model
 }
 \details{
 Get APSIM-X Model Replacement from github

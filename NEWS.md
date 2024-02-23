@@ -1,5 +1,11 @@
 **NEWS**
 
+## apsimx 2.X.X
+
+- inspect_apsimx is a bit more robust. When node = "Other" the simulation structure will be displayed
+according to the value of parm (0, 1, 2). If 'parm' is a parameter path, the root elements will be 'guessed'
+from the string.
+
 ## apsimx 2.6.2 - 2024-01-28
 
 - Most change are to adjust to new structure in the APSIM simulations

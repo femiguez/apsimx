@@ -462,6 +462,7 @@ if(inspect.replacement.test.parm.path){
   }
 }
 
+#### Test inspect Other ----
 inspect.factorial.test.parm.path <- get(".run.local.tests", envir = apsimx.options)
 
 if(inspect.factorial.test.parm.path){
@@ -470,23 +471,62 @@ if(inspect.factorial.test.parm.path){
   ex.dir <- auto_detect_apsimx_examples()
   
   ### Test with all examples
-  ex.dir.list <- dir(ex.dir, pattern = "apsimx$")
+  ex.dir.list <- dir(ex.dir, recursive = FALSE, pattern = "apsimx$")
 
-  ### Simple inspecting
+  ## Trying node = "Other"
   for(i in ex.dir.list){
-  
     file.copy(from = file.path(ex.dir, i), to = tmp.dir)  
-
-    inspect_apsimx(i, src.dir = tmp.dir,
-                   print.path = TRUE)    
+    cat("Simulation:", i, "\n")
+    inspect_apsimx(i, src.dir = tmp.dir, node = "Other")  
+    cat("\n")
   }
   
+  for(i in ex.dir.list){
+    ## file.copy(from = file.path(ex.dir, i), to = tmp.dir)  
+    cat("Simulation:", i, "\n")
+    inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = 2)  
+  }
   
+  ## Next need to test if inspect_apsimx works well when parm is a string
+  
+  ### Remove first the ones with factorials
+  multiple.simulation.examples <- c()
+  ### Simple inspecting
+  j <- 1
+  for(i in ex.dir.list){
+    file.copy(from = file.path(ex.dir, i), to = tmp.dir)  
+    try.inspect <- try(inspect_apsimx(i, src.dir = tmp.dir, print.path = TRUE), silent = TRUE)    
+    if(inherits(try.inspect, 'try-error')){
+      multiple.simulation.examples[j] <- i
+      j <- j + 1
+    }
+    did.it.work <- ifelse(inherits(try.inspect, 'try-error'), 'no', 'yes')  
+    cat("Inspecting:", i, "did it work?", did.it.work, "\n")
+  }
+  
+  ms.paths <- list(AgPasture = c("AgPastureExample", "Harvested"))
+  # for(i in multiple.simulation.examples){
+  # 
+  #   if(i == "AgPasture.apsimx")
+  #     sparm <- ""
+  # }
 
-
-
+  inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
+                 print.path = TRUE)
+  
+  inspect_apsimx("Factorial.apsimx", src.dir = tmp.dir,
+                 root = list("RangeExperiment", "Base1"),
+                 node = "Soil",
+                 soil.child = "Physical",
+                 print.path = TRUE)
+  
+  inspect_apsimx_replacement("Factorial.apsimx", src.dir = tmp.dir,
+                             root = list("RangeExperiment"),
+                             display.available = TRUE,
+                             print.path = TRUE)
 
   inspect_apsimx_json("Factorial.apsimx", src.dir = tmp.dir,
+                      root = list("RangeExperiment"),
                       parm = "Clock",
                       print.path = TRUE)
   
@@ -494,14 +534,6 @@ if(inspect.factorial.test.parm.path){
                       parm = "Permutation",
                       print.path = TRUE)
   
-  ## Also test: AgPasture, SCRUM, ManagerExamples/RegressionExample, Rotation
-
-  file.copy(from = file.path(ex.dir, "AgPasture.apsimx"), to = tmp.dir)
-  
-  inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
-                 root = list("AgPastureExample"),
-                 node = "Weather",
-                 print.path = TRUE)
 
   inspect_apsimx_json("AgPasture.apsimx", src.dir = tmp.dir,
                  parm = "CO2xBaseTemperature",
@@ -514,15 +546,4 @@ if(inspect.factorial.test.parm.path){
   inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
                  root = list("PastureByWaterAndNitrogen", "Base"),
                  print.path = TRUE)
-  
-  # inspect_apsimx_replacement("AgPasture.apsimx", src.dir = tmp.dir,
-  #                root = list("CO2xBaseTemperature", 6),
-  #                display.available = TRUE)
-
-  # inspect_apsimx_replacement("AgPasture.apsimx", src.dir = tmp.dir,
-  #                            root = list("CO2xHeatOnset"),
-  #                            display.available = TRUE)
-  
-    
-    
 }

@@ -114,6 +114,49 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   
   ## Where is the 'Core' simulation?
   wcore <- grep("Core.Simulation", apsimx_json$Children)
+  
+  ## When node == "Other" root should always be missing
+  ## The problem is that I have to guess it
+  if(node == "Other" && length(wcore) > 1){
+    ## Process 'parm'
+    pparm <- strsplit(parm, split = ".", fixed = TRUE)[[1]]
+    root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
+    if(pparm[2] != root.name.level.0)
+      stop(paste("First parm element does not match:", root.name.level.0), call. = FALSE)
+    root1 <- pparm[3]
+    ## Guess if 'root' is contained in the first level of names
+    root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                                 FUN.VALUE = "character")
+    wroot1 <- grep(as.character(root1), root.names.level.1)    
+    if(length(wroot1) == 0)
+      stop(paste("Second element of parm did not match:", root.names.level.1), call. = FALSE)
+    ## Need to test if the fourth element of pparm is a node
+    nodes <- c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Report", "Operations", "Other")
+    if(pparm[4] %in% nodes){
+      ## This amounts to guessing that root should be of length 1
+      root <- list(pparm[3])
+    }else{
+      ## This amounts to guessing that pparm[4] should be the second element in 
+      root.names.level.2 <- vapply(apsimx_json$Children[[wroot1]]$Children, 
+                                   FUN = function(x) x$Name, 
+                                   FUN.VALUE = "character")
+      root2 <- pparm[4]
+      wroot2 <- grep(as.character(root2), root.names.level.2)    
+      if(length(wroot2) == 0)
+        stop(paste("Third element of parm did not match:", root.names.level.2), call. = FALSE)
+      if(pparm[5] %in% nodes){
+        root <- list(pparm[3], pparm[4])
+      }else{
+        root.names.level.3 <- vapply(apsimx_json$Children[[wroot1]]$Children[[wroot2]]$Children, 
+                                     FUN = function(x) x$Name, 
+                                     FUN.VALUE = "character")
+        root3 <- pparm[5]
+        wroot3 <- grep(as.character(root3), root.names.level.3)    
+        if(length(wroot3) == 0)
+          stop(paste("Fourth element of parm did not match:", root.names.level.3), call. = FALSE)
+      }
+    }
+  }
 
   if(length(wcore) > 1 || !is.null(root)){
     if(is.null(root)){
