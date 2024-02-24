@@ -1518,13 +1518,14 @@ remove_column_apsim_met <- function(met, name){
 #' for an object of class \sQuote{met}
 #' @title Calculates attribute amp for an object of class \sQuote{met}
 #' @param met object of class \sQuote{met}
+#' @param by.year whether to perform calculations by year (default is TRUE)
 #' @return an object of class \sQuote{met} with a recalculation of annual amplitude in mean monthly temperature 
 #' @export
-amp_apsim_met <- function(met){
+amp_apsim_met <- function(met, by.year = TRUE){
   
   if(!inherits(met, "met"))
     stop("Object should be of class 'met", call. = FALSE)
-  
+
   ## Step 1: create date
   date <- as.Date(paste(met$year, met$day, sep = "-"), format = "%Y-%j") 
   ## Step 2: create month column
@@ -1532,15 +1533,31 @@ amp_apsim_met <- function(met){
   
   met <- add_column_apsim_met(met = met, value = mnth, name = "month", units = "()")
 
-  mtemp <- (met$maxt + met$mint) / 2
-  met <- add_column_apsim_met(met = met, value = mtemp, name = "mean.temp", units = "(oC)")
-  
-  met.agg <- aggregate(mean.temp ~ mnth, data = met, FUN = mean)
-  
-  ans <- round(max(met.agg$mean.temp) - min(met.agg$mean.temp), 2)
-  
+  ## Step 3: This is how APSIM does it
+  if(by.year){
+    Year <- as.numeric(format(date, "%Y"))   
+    met <- add_column_apsim_met(met = met, value = Year, name = "Year", units = "()")  
+    amp.vec <- numeric(length(unique(Year)))
+    for(i in seq_along(unique(met$Year))){
+      tmp <- subset(met, Year == unique(met$Year)[i])
+      mtemp <- (tmp$maxt + tmp$mint) / 2
+      tmp <- add_column_apsim_met(met = tmp, value = mtemp, name = "m.temp", units = "(oC)")
+      tmp.agg <- aggregate(m.temp ~ month, data = tmp, FUN = mean)
+      amp.vec[i] <- round(max(tmp.agg$m.temp) - min(tmp.agg$m.temp), 2) 
+    }
+    ans <- mean(amp.vec)
+  }else{
+    ## Alternative simpler method
+    if(method == "mean"){
+      mtemp <- (met$maxt + met$mint) / 2
+      met <- add_column_apsim_met(met = met, value = mtemp, name = "m.temp", units = "(oC)")
+      met.agg <- aggregate(m.temp ~ mnth, data = met, FUN = mean)
+      ans <- round(max(met.agg$m.temp) - min(met.agg$m.temp), 2)    
+    }    
+  }
+
   ## Clean up
-  met <- remove_column_apsim_met(met, "mean.temp")
+  met <- remove_column_apsim_met(met, "m.temp")
   met <- remove_column_apsim_met(met, "month")
   
   attr(met, "amp") <- paste("amp = ", ans)
