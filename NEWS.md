@@ -2,6 +2,9 @@
 
 ## apsimx 2.X.X
 
+- check_apsim_met checks presence and values of tav and amp. New tav_apsim_met function
+can be used to calculate and insert tav in an APSIM met file
+
 - inspect_apsimx is a bit more robust. When node = "Other" the simulation structure will be displayed
 according to the value of parm (0, 1, 2). If 'parm' is a parameter path, the root elements will be 'guessed'
 from the string.

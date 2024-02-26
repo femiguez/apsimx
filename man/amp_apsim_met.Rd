@@ -4,15 +4,17 @@
 \alias{amp_apsim_met}
 \title{Calculates attribute amp for an object of class \sQuote{met}}
 \usage{
-amp_apsim_met(met)
+amp_apsim_met(met, by.year = TRUE)
 }
 \arguments{
 \item{met}{object of class \sQuote{met}}
+
+\item{by.year}{whether to perform calculations by year (default is TRUE)}
 }
 \value{
 an object of class \sQuote{met} with a recalculation of annual amplitude in mean monthly temperature
 }
 \description{
-This function can re-calculates annual mean monthly amplitude
+This function can re-calculate annual mean monthly amplitude
 for an object of class \sQuote{met}
 }

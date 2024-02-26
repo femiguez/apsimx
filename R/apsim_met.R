@@ -329,7 +329,28 @@ check_apsim_met <- function(met){
   
   if(nrow(met) == 0)
     stop("No rows of data present in this object.", call. = FALSE)
+  
+  if(is.null(attr(met, 'amp')))
+    warning("'amp' is missing")
 
+  if(is.null(attr(met, 'tav')))
+    warning("'tav' is missing")
+  
+  if(!is.null(attr(met, 'amp'))){
+    amp.value <- as.numeric(strsplit(attr(met, 'amp'), split = "\\s+")[[1]][3])
+    met0 <- amp_apsim_met(met) 
+    amp.value.calc <- as.numeric(strsplit(attr(met0, 'amp'), split = "\\s+")[[1]][3])
+    if(abs(amp.value - amp.value.calc) > 0.5)
+      warning(paste("'amp' value", amp.value, "in file is different from calculated", amp.value.calc))
+  }
+
+  if(!is.null(attr(met, 'tav'))){
+    tav.value <- as.numeric(strsplit(attr(met, 'tav'), split = "\\s+")[[1]][3])
+    met0 <- tav_apsim_met(met) 
+    tav.value.calc <- as.numeric(strsplit(attr(met0, 'tav'), split = "\\s+")[[1]][3])
+    if(abs(tav.value - tav.value.calc) > 0.5)
+      warning(paste("'tav' value", tav.value, "in file is different from calculated", tav.value.calc))
+  }
   
   if(length(colnames(met)) != length(attr(met, "colnames")))
     stop("Length of column names does not match the length of 'colnames' in the attributes", call. = FALSE)
@@ -601,15 +622,9 @@ as_apsim_met <- function(x,
   
   if(is.na(tav)){
     tav <- mean(colMeans(x[,c("maxt","mint")], na.rm=TRUE), na.rm=TRUE)
-    attr(x, "tav") <- paste("tav =", tav, "(oC) ! annual average ambient temperature")  
+    attr(x, "tav") <- paste("tav =", tav, "(oC) ! calculated annual average ambient temperature", Sys.time())  
   }else{
     attr(x, "tav") <- tav
-  }
-  
-  if(is.na(amp)){
-    attr(x, "amp") <- paste("amp =", mean(x$maxt, na.rm=TRUE) - mean(x$mint, na.rm = TRUE), "(oC) ! annual amplitude in mean monthly temperature")  
-  }else{
-    attr(x, "amp") <- amp  
   }
   
   attr(x, "colnames") <- colnames
@@ -618,7 +633,13 @@ as_apsim_met <- function(x,
   attr(x, "comments") <- comments
   class(x) <- c("met","data.frame")
   
-  if(check) apsimx::check_apsim_met(x)
+  if(is.na(amp)){
+    x <- amp_apsim_met(x)
+  }else{
+    attr(x, "amp") <- amp  
+  }
+  
+  if(check) check_apsim_met(x)
   
   return(x) 
 }
@@ -1530,7 +1551,6 @@ amp_apsim_met <- function(met, by.year = TRUE){
   date <- as.Date(paste(met$year, met$day, sep = "-"), format = "%Y-%j") 
   ## Step 2: create month column
   mnth <- as.numeric(format(date, "%m")) 
-  
   met <- add_column_apsim_met(met = met, value = mnth, name = "month", units = "()")
 
   ## Step 3: This is how APSIM does it
@@ -1548,6 +1568,51 @@ amp_apsim_met <- function(met, by.year = TRUE){
     ans <- mean(amp.vec)
   }else{
     ## Alternative simpler method
+    mtemp <- (met$maxt + met$mint) / 2
+    met <- add_column_apsim_met(met = met, value = mtemp, name = "m.temp", units = "(oC)")
+    met.agg <- aggregate(m.temp ~ mnth, data = met, FUN = mean)
+    ans <- round(max(met.agg$m.temp) - min(met.agg$m.temp), 2)    
+  }
+
+  ## Clean up
+  met <- remove_column_apsim_met(met, "m.temp")
+  met <- remove_column_apsim_met(met, "month")
+  if(by.year){
+    met <- remove_column_apsim_met(met, "Year")
+  }
+  
+  attr(met, "amp") <- paste("amp =", ans, "!calculated with the apsimx R package:", Sys.time())
+  
+  return(met)
+}
+
+#' This function can re-calculate annual mean temperature
+#' for an object of class \sQuote{met}
+#' @title Calculates attribute amp for an object of class \sQuote{met}
+#' @param met object of class \sQuote{met}
+#' @return an object of class \sQuote{met} with a recalculation of annual mean temperature amplitude 
+#' @export
+tav_apsim_met <- function(met, by.year = TRUE, na.rm = TRUE){
+  
+  if(!inherits(met, "met"))
+    stop("Object should be of class 'met", call. = FALSE)
+  
+  ## Step 1: create date
+  date <- as.Date(paste(met$year, met$day, sep = "-"), format = "%Y-%j") 
+
+  ## Step 3: This is how APSIM does it
+  if(by.year){
+    Year <- as.numeric(format(date, "%Y"))   
+    met <- add_column_apsim_met(met = met, value = Year, name = "Year", units = "()")  
+    tav.vec <- numeric(length(unique(Year)))
+    for(i in seq_along(unique(met$Year))){
+      tmp <- subset(met, Year == unique(met$Year)[i])
+      mtemp <- mean(colMeans(tmp[, c("maxt", "mint")], na.rm = na.rm), na.rm = na.rm)
+      tav.vec[i] <- mtemp
+    }
+    ans <- mean(tav.vec)
+  }else{
+    ## Alternative simpler method
     if(method == "mean"){
       mtemp <- (met$maxt + met$mint) / 2
       met <- add_column_apsim_met(met = met, value = mtemp, name = "m.temp", units = "(oC)")
@@ -1555,12 +1620,14 @@ amp_apsim_met <- function(met, by.year = TRUE){
       ans <- round(max(met.agg$m.temp) - min(met.agg$m.temp), 2)    
     }    
   }
-
+  
   ## Clean up
   met <- remove_column_apsim_met(met, "m.temp")
-  met <- remove_column_apsim_met(met, "month")
+  if(by.year){
+    met <- remove_column_apsim_met(met, "Year")
+  }
   
-  attr(met, "amp") <- paste("amp = ", ans)
+  attr(met, "tav") <- paste("tav =", ans, "! calculated average annual temperature", Sys.time())
   
   return(met)
 }
