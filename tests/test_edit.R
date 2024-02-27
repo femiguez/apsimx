@@ -196,14 +196,14 @@ if(run.apsimx.edit){
   
 }
 
-## Testing edit when node = "Other"
+#### Testing edit when node = "Other" ----
 
 if(run.apsimx.edit){
   
   extd.dir <- system.file("extdata", package = "apsimx")
   
   pp <- inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager",
-                       parm = list("SowingFert", NA))
+                       parm = list("Fert", NA))
   
   edit_apsimx("Wheat.apsimx", node = "Other",
               src.dir = extd.dir, wrt.dir = tmp.dir,
@@ -211,9 +211,20 @@ if(run.apsimx.edit){
               overwrite = TRUE)
 
   inspect_apsimx("Wheat.apsimx", src.dir = tmp.dir, node = "Manager",
-                 parm = list("SowingFertiliser", NA))  
+                 parm = list("Fert", NA))  
   
   file.copy(file.path(tmp.dir, "Wheat.apsimx"), ".")
+  
+  #### Testing edit when node == "Other" and there are multiple simulations
+  ex.dir <- auto_detect_apsimx_examples()
+  file.copy(file.path(ex.dir, "AgPasture.apsimx"), ".")
+  
+  inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir, node = "Other")
+  
+  edit_apsimx("AgPasture.apsimx", src.dir = tmp.dir, 
+              node = "Other",
+              parm.path = ".Simulations.AgPastureExample")
+  
   
 }
 

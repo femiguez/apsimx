@@ -341,7 +341,7 @@ check_apsim_met <- function(met){
     met0 <- amp_apsim_met(met) 
     amp.value.calc <- as.numeric(strsplit(attr(met0, 'amp'), split = "\\s+")[[1]][3])
     if(abs(amp.value - amp.value.calc) > 0.5)
-      warning(paste("'amp' value", amp.value, "in file is different from calculated", amp.value.calc))
+      warning(paste("'amp' value", amp.value, "in met file is different from calculated", amp.value.calc))
   }
 
   if(!is.null(attr(met, 'tav'))){

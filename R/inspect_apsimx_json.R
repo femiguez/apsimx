@@ -2,10 +2,10 @@
 #' In general, this function is used to inspect one parameter at a time. There are some exceptions. \cr
 #' 
 #' When node equals \sQuote{Other} there are some options. If \sQuote{parm} is not specified the structure 
-#' of the simulation file will be returned. In this case, there is no parameter to print, so setting 
-#' \sQuote{print.path} will have no effect. This option is useful when the intention is to show the 
-#' simulation structure to pick a root presumably. \sQuote{parm} can be set as 0, 1, or 2 for different levels
-#' of detail. If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied. 
+#' of the simulation file will be returned. In this case, the parameter to print is typically just \sQuote{Simulations}.
+#' This option is useful when the intention is to show the simulation structure to pick a root presumably. \sQuote{parm} 
+#' can be set as 0, 1, or 2 for different levels of detail. 
+#' If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied. 
 #' 
 #' @title Inspect an .apsimx (JSON) file
 #' @name inspect_apsimx
@@ -91,7 +91,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
 
   ## When node == "Other" root should always be missing
   if((node == "Other" && length(fcsn) > 1) || (node == "Other" && (is.null(parm) || is.integer(parm)))){
-    parm.path <- NA
+    parm.path <- parm.path.0
     other.parm.flag <- -1
     find.root <- FALSE
     ## Process 'parm'
@@ -107,7 +107,12 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                                      FUN.VALUE = "character")
         pdat <- data.frame(first_level = c(first.column.name, rep(".", length(root.names.level.1) - 1)),
                            second_level = root.names.level.1)
+        pdat <- cbind(data.frame(row_number = 1:nrow(pdat)), pdat)
         print(knitr::kable(pdat))
+        ## Here is an idea for the future
+        # if(length(parm) > 1){
+        #   parm.path <- paste0(parm.path.0, ".", pdat[parm[2], "second_level"])
+        # }
       }
       ## If parm == 2
       if(parm == 2){
@@ -133,6 +138,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         pdat <- data.frame(first_level = c(first.column.name, rep(".", length(second.level.names) - 1)),
                            second_level = second.level.names,
                            third_level = third.level.names)
+        pdat <- cbind(data.frame(row_number = 1:nrow(pdat)), pdat)
         print(knitr::kable(pdat))
       }
     }else{
@@ -709,6 +715,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   }
 
   if(node == "Other" && other.parm.flag > 0){
+    ## I will develop this option assuming parm is a list
+    stop("This option is not developed yet")
     fcsn <- 3
     parent.node <- apsimx_json$Children[[fcsn]]$Children  
     wcz <- grepl("Models.Core.Zone", parent.node)

@@ -47,10 +47,10 @@ inspect a JSON apsimx file. It does not replace the GUI, but it can save time by
 In general, this function is used to inspect one parameter at a time. There are some exceptions. \cr
 
 When node equals \sQuote{Other} there are some options. If \sQuote{parm} is not specified the structure 
-of the simulation file will be returned. In this case, there is no parameter to print, so setting 
-\sQuote{print.path} will have no effect. This option is useful when the intention is to show the 
-simulation structure to pick a root presumably. \sQuote{parm} can be set as 0, 1, or 2 for different levels
-of detail. If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied.
+of the simulation file will be returned. In this case, the parameter to print is typically just \sQuote{Simulations}.
+This option is useful when the intention is to show the simulation structure to pick a root presumably. \sQuote{parm} 
+can be set as 0, 1, or 2 for different levels of detail. 
+If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied.
 
 This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
          To investigate the available \sQuote{soil.childs} specify \sQuote{Soil} for \sQuote{node} and do not specify the \sQuote{soil.child}.
