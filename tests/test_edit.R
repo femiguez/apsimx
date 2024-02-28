@@ -217,13 +217,20 @@ if(run.apsimx.edit){
   
   #### Testing edit when node == "Other" and there are multiple simulations
   ex.dir <- auto_detect_apsimx_examples()
-  file.copy(file.path(ex.dir, "AgPasture.apsimx"), ".")
+  file.copy(file.path(ex.dir, "AgPasture.apsimx"), tmp.dir)
   
   inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir, node = "Other")
+  inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir, node = "Other", parm = 2)
   
   edit_apsimx("AgPasture.apsimx", src.dir = tmp.dir, 
               node = "Other",
-              parm.path = ".Simulations.AgPastureExample")
+              parm.path = ".Simulations.AgPastureExample.Clock.Start",
+              value = "2024-12-31T00:00:00")
+  
+  inspect_apsimx("AgPasture-edited.apsimx", src.dir = tmp.dir, 
+                 root = list("AgPastureExample"))
+  ### It might have worked?
+  file.remove(file.path(tmp.dir, "AgPasture-edited.apsimx"))
   
   
 }

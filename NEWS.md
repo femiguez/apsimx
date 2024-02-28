@@ -2,6 +2,10 @@
 
 ## apsimx 2.X.X
 
+- edit_apsimx Editing different simulations used to require specifying 'root'. 
+Now if the parameter path is complete, this is not required. In this case
+node should equal "Other"
+
 - check_apsim_met checks presence and values of tav and amp. New tav_apsim_met function
 can be used to calculate and insert tav in an APSIM met file
 

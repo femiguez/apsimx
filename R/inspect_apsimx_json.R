@@ -97,6 +97,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     ## Process 'parm'
     if(is.null(parm) || is.integer(parm)){
       if(is.null(parm)) parm <- 1L
+      if(length(parm) > 1)
+        stop("'parm' should be of length = 1", call. = FALSE)
       if(parm == 0){
         cat("Level 0:", gsub(".", "", parm.path.0, fixed = TRUE), "\n")
       }
@@ -109,10 +111,6 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                            second_level = root.names.level.1)
         pdat <- cbind(data.frame(row_number = 1:nrow(pdat)), pdat)
         print(knitr::kable(pdat))
-        ## Here is an idea for the future
-        # if(length(parm) > 1){
-        #   parm.path <- paste0(parm.path.0, ".", pdat[parm[2], "second_level"])
-        # }
       }
       ## If parm == 2
       if(parm == 2){
@@ -141,6 +139,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         pdat <- cbind(data.frame(row_number = 1:nrow(pdat)), pdat)
         print(knitr::kable(pdat))
       }
+      if(parm == 3) stop("Not implemented yet")
     }else{
       if(!is.list(parm)){
         if(!is.character(parm))
@@ -714,43 +713,104 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }
   }
 
+  #### Option for 'Other' character or 'list' ----
   if(node == "Other" && other.parm.flag > 0){
-    ## I will develop this option assuming parm is a list
-    stop("This option is not developed yet")
-    fcsn <- 3
-    parent.node <- apsimx_json$Children[[fcsn]]$Children  
-    wcz <- grepl("Models.Core.Zone", parent.node)
-    core.zone.node <- parent.node[wcz][[1]]$Children
-    parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)  
-    tmp <- core.zone.node
-    parm.path.2.1 <- parm.path.2
-    ## Check for parm
-    ## if(is.null(parm)) stop("'parm' cannot be null in this case")
-    ##if(length(parm) == 1L) stop("'parm' should be of length 2 or more")
-    ## This extracts a node
-    for(i in 1:(length(parm) - 1)){
-      nms <- sapply(tmp, function(x) x$Name)
-      wcp <- grep(parm[[i]], nms)
-      if(length(wcp) == 0){
-        cat("Names: ", nms, "\n")
-        cat("parm[[i]]", parm[[i]], "\n")
-        stop("Parameter not found")
+    ## I will develop this option assuming parm is a list or a character
+    if(is.null(parm))
+      stop("'parm' is missing", call. = FALSE)
+    
+    if(is.character(parm)){
+      if(!grepl(".", parm, fixed = TRUE))
+        stop("'parm' needs to be a json path")
+      parm.path <- parm
+      pparm <- strsplit(parm, split = ".", fixed = TRUE)[[1]]
+      root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
+      if(pparm[2] != root.name.level.0)
+        stop(paste("First 'parm' element does not match:", root.name.level.0), call. = FALSE)
+      children.names <- sapply(apsimx_json$Children, FUN = function(x) x$Name)
+      if(length(pparm) == 2){
+        cat("Simulation children names:")
+        print(children.names)
+        cat("\n")
       }
-      tmp <- tmp[[wcp]]
-      if(!is.null(tmp$Children)) tmp <- tmp$Children
-      ## Build the parm.path
-      parm.path.2.1 <- paste0(parm.path.2.1, ".", nms[wcp])
+      if(length(pparm) == 3){
+        root1 <- pparm[3]
+        ## Guess if 'root' is contained in the first level of names
+        root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                                     FUN.VALUE = "character")
+        wroot1 <- grep(as.character(root1), root.names.level.1)    
+        if(length(wroot1) == 0)
+          stop(paste("Second 'parm' element did not match:", root.names.level.1), call. = FALSE)
+        root.names.level.2 <- vapply(apsimx_json$Children[[wroot1]]$Children, 
+                                     FUN = function(x) x$Name, 
+                                     FUN.VALUE = "character")
+        cat(paste(root1, "Names level 2:"))
+        print(root.names.level.2)
+        cat("\n")
+      }
+      if(length(pparm) == 4){
+        root1 <- pparm[3]
+        ## Guess if 'root' is contained in the first level of names
+        root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                                     FUN.VALUE = "character")
+        wroot1 <- grep(as.character(root1), root.names.level.1)    
+        if(length(wroot1) == 0)
+          stop(paste("Second 'parm' element did not match:", root.names.level.1), call. = FALSE)
+        root.names.level.2 <- vapply(apsimx_json$Children[[wroot1]]$Children, 
+                                     FUN = function(x) x$Name, 
+                                     FUN.VALUE = "character")
+        root2 <- pparm[4]
+        wroot2 <- grep(as.character(root2), root.names.level.2)    
+        if(length(wroot2) == 0)
+          stop(paste("Third 'parm' element did not match:", root.names.level.2), call. = FALSE)
+        root.names.level.3 <- vapply(apsimx_json$Children[[wroot1]]$Children[[wroot2]]$Children, 
+                                     FUN = function(x) x$Name, 
+                                     FUN.VALUE = "character")
+        cat(paste(root1, root2, "Names level 3:"))
+        print(root.names.level.3)
+        cat("\n")
+
+      }
+      if(length(pparm) > 4) stop("Not implemented yet")
     }
     
-    if(!is.null(tmp$Parameters)){
-      wp <- grep(parm[[length(parm)]], tmp$Parameters)
-      tmp2 <- tmp$Parameters[[wp]]
-      ## Process parameter path
-      parm.path <- paste0(parm.path.2.1, ".", tmp2$Key)
-      print(knitr::kable(as.data.frame(tmp2)))
-    }else{
-      parm.path <- parm.path.2.1
-      unpack_node(tmp)
+    if(is.list(parm)){
+      if(length(fcsn) > 1)
+        stop("This does not yet work for multiple simulations")
+      parent.node <- apsimx_json$Children[[fcsn]]$Children  
+      wcz <- grepl("Models.Core.Zone", parent.node)
+      core.zone.node <- parent.node[wcz][[1]]$Children
+      parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)  
+      tmp <- core.zone.node
+      parm.path.2.1 <- parm.path.2
+      ## Check for parm
+      ## if(is.null(parm)) stop("'parm' cannot be null in this case")
+      ##if(length(parm) == 1L) stop("'parm' should be of length 2 or more")
+      ## This extracts a node
+      for(i in 1:(length(parm) - 1)){
+        nms <- sapply(tmp, function(x) x$Name)
+        wcp <- grep(parm[[i]], nms)
+        if(length(wcp) == 0){
+          cat("Names: ", nms, "\n")
+          cat("parm[[i]]", parm[[i]], "\n")
+          stop("Parameter not found")
+        }
+        tmp <- tmp[[wcp]]
+        if(!is.null(tmp$Children)) tmp <- tmp$Children
+        ## Build the parm.path
+        parm.path.2.1 <- paste0(parm.path.2.1, ".", nms[wcp])
+      }
+      
+      if(!is.null(tmp$Parameters)){
+        wp <- grep(parm[[length(parm)]], tmp$Parameters)
+        tmp2 <- tmp$Parameters[[wp]]
+        ## Process parameter path
+        parm.path <- paste0(parm.path.2.1, ".", tmp2$Key)
+        print(knitr::kable(as.data.frame(tmp2)))
+      }else{
+        parm.path <- parm.path.2.1
+        unpack_node(tmp)
+      }
     }
   }
   

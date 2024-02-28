@@ -94,22 +94,37 @@ insert_replacement_node <- function(file, src.dir, wrt.dir, rep.node,
     cat("Adding node", rep.node$Children[[1]]$Name, "\n")
   }
   
-  replacements.folder <- vector("list", length = 1)
-  rep.node.list <- vector("list", length = 1)
-  rep.node.list[[1]] <- rep.node$Children[[1]]
+  ## Test if Replacements folder is already present
+  simulation.names <- sapply(apsimx_json$Children, FUN = function(x) x$Name)
+  wreplace <- grep("Replacements", simulation.names)
   
-  replacements.folder.elements <- list(`$type` = "Models.Core.Folder, Models",
-                              ShowInDocs = FALSE,
-                              GraphsPerPage = 6,
-                              Name = "Replacements",
-                              ResourceName = NULL,
-                              Children = rep.node.list,
-                              Enabled = TRUE,
-                              ReadOnly = FALSE)
-  
-  replacements.folder[[1]] <- replacements.folder.elements
-  
-  apsimx_json$Children <- append(apsimx_json$Children, replacements.folder, after = 0)
+  if(length(wreplace) == 0){
+    replacements.folder <- vector("list", length = 1)
+    rep.node.list <- vector("list", length = 1)
+    rep.node.list[[1]] <- rep.node$Children[[1]]
+    
+    replacements.folder.elements <- list(`$type` = "Models.Core.Folder, Models",
+                                         ShowInDocs = FALSE,
+                                         GraphsPerPage = 6,
+                                         Name = "Replacements",
+                                         ResourceName = NULL,
+                                         Children = rep.node.list,
+                                         Enabled = TRUE,
+                                         ReadOnly = FALSE)
+    
+    replacements.folder[[1]] <- replacements.folder.elements
+    
+    apsimx_json$Children <- append(apsimx_json$Children, replacements.folder, after = 0)    
+  }else{
+    if(verbose)
+      cat("Replacement folder already present. Adding model")
+    replacements.folder <- apsimx_json$Children[[wreplace]]
+    rep.node.list <- vector("list", length = 1)
+    rep.node.list[[1]] <- rep.node$Children[[1]]
+    replacements.folder$Children <- append(replacements.folder$Children, rep.node.list)
+    apsimx_json$Children[[wreplace]] <- replacements.folder
+  }
+
   
   ## Write to file
   if(overwrite == FALSE){
