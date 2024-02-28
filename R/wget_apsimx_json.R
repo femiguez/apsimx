@@ -77,6 +77,9 @@ insert_replacement_node <- function(file, src.dir, wrt.dir, rep.node,
   if(apsimx_filetype(file = file, src.dir = src.dir) != "json")
     stop("This function only edits JSON files")
   
+  ## I should check that 'rep.node' is a proper 'replacements' node
+  ## but I'm not sure how to do that, because there are many different types
+  
   ## Parse apsimx file (JSON)
   apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
   
