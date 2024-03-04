@@ -245,7 +245,8 @@ get_isric_soil_profile <- function(lonlat,
   }
 
   soil_profile$initialwater <- isw
-
+  country <- state <- ""
+  
   if(find.location.name){
     if(requireNamespace("maps", quietly = TRUE)){
       country <- maps::map.where(x = lon, y = lat)
