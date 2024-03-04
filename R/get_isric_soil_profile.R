@@ -262,6 +262,9 @@ get_isric_soil_profile <- function(lonlat,
       state <- fgeo$feature$properties$state
       country <- fgeo$features$properties$country
     }    
+  }else{
+    state <- ""
+    country <- ""
   }
 
   #### Attributes ####
