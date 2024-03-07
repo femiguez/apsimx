@@ -115,7 +115,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
   ## Parse apsimx file (JSON)
   apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
   
-  apsimx_json <<- apsimx_json
+  ## apsimx_json <<- apsimx_json
   ## Where is the 'Core' simulation?
   children.names <- sapply(apsimx_json$Children, FUN = function(x) x$`$type`)
   wcore <- grep("Core.Simulation", children.names)

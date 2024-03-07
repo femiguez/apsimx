@@ -84,6 +84,10 @@ If you have any questions contact Fernando E. Miguez (femiguez *at* iastate.edu)
 
 Some papers that cite this package:
 
+14\. van Versendaal et al.  Integrating Field Data and a Modeling Approach to Inform Optimum Planting Date × Maturity Group for Soybeans under Current and Future Weather Conditions in Kansas. Sustainability 2023, 15(2), 1081; https://doi.org/10.3390/su15021081
+
+13\. R. H. K. Rathnappriya et al. Global Sensitivity Analysis of Key Parameters in the APSIMX-Sugarcane Model to Evaluate Nitrate Balance via Treed Gaussian Process. Agronomy 2022, 12(8), 1979; https://doi.org/10.3390/agronomy12081979
+
 12\. Francisco Palmero, Ana J.P. Carcedo, Ricardo J. Haro, Ezequiel D. Bigatton, Fernando Salvagiotti, Ignacio A. Ciampitti. Modeling drought stress impacts under current and future climate for peanut in the semiarid pampas region of Argentina. Field Crops Research. 2022. https://doi.org/10.1016/j.fcr.2022.108615.
 
 11\. Elsa Lagerquist, Iris Vogeler, Uttam Kumar, Göran Bergkvist, Marcos Lana, Christine A. Watson, David Parsons,

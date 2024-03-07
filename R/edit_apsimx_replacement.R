@@ -113,8 +113,14 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
     frn <- grep(root[[1]], apsimx_json$Children, fixed = gfixed, ignore.case = gignore.case)  
   }
   
-  if(length(frn) == 0) stop(paste0(root," not found"))
-
+  if(length(frn) == 0){
+    ### Here we try a different root
+    root <- list('Models.Core.Folder', NA)
+    frn <- grep(root[[1]], apsimx_json$Children, fixed = TRUE)  
+    if(length(frn) == 0)
+      stop("Could not find 'root' for replacements", call. = FALSE)
+  }
+  
   if(length(frn) > 1){
     if(is.na(root[[2]])){
       cat("These positions matched ",root[[1]]," ",frn, "\n")

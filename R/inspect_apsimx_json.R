@@ -144,6 +144,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       if(!is.list(parm)){
         if(!is.character(parm))
           stop("parm should be a character string when node = 'Other' and is not an number", call. = FALSE)
+        if(!grepl(".", parm, fixed = TRUE))
+          stop("'parm' needs to be a json path")
         pparm <- strsplit(parm, split = ".", fixed = TRUE)[[1]]
         root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
         if(pparm[2] != root.name.level.0)
@@ -153,7 +155,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
                                      FUN.VALUE = "character")
         wroot1 <- grep(as.character(root1), root.names.level.1)    
-        if(length(wroot1) == 0)
+        if(length(wroot1) == 0 || all(is.na(wroot1)))
           stop(paste("Second element of parm did not match:", root.names.level.1), call. = FALSE)
         ## Need to test if the fourth element of pparm is a node
         nodes <- c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Report", "Operations", "Other")
@@ -166,8 +168,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                                        FUN = function(x) x$Name, 
                                        FUN.VALUE = "character")
           root2 <- pparm[4]
-          wroot2 <- grep(as.character(root2), root.names.level.2)    
-          if(length(wroot2) == 0)
+          wroot2 <- grep(as.character(root2), root.names.level.2)   
+          if(length(wroot2) == 0 || all(is.na(wroot2)))
             stop(paste("Third element of parm did not match:", root.names.level.2), call. = FALSE)
           if(pparm[5] %in% nodes){
             root <- list(pparm[3], pparm[4])
@@ -180,7 +182,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             if(length(wroot3) == 0)
               stop(paste("Fourth element of parm did not match:", root.names.level.3), call. = FALSE)
           }
-        }        
+        }
+        parm.path <- parm
       }else{
         other.parm.flag <- 1
       }

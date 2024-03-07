@@ -488,28 +488,10 @@ if(inspect.factorial.test.parm.path){
   }
   
   ## Next need to test if inspect_apsimx works well when parm is a string
-  
-  # ### Remove first the ones with factorials
-  # multiple.simulation.examples <- c()
-  # ### Simple inspecting
-  # j <- 1
-  # for(i in ex.dir.list){
-  #   file.copy(from = file.path(ex.dir, i), to = tmp.dir)  
-  #   try.inspect <- try(inspect_apsimx(i, src.dir = tmp.dir, print.path = TRUE), silent = TRUE)    
-  #   if(inherits(try.inspect, 'try-error')){
-  #     multiple.simulation.examples[j] <- i
-  #     j <- j + 1
-  #   }
-  #   did.it.work <- ifelse(inherits(try.inspect, 'try-error'), 'no', 'yes')  
-  #   cat("Inspecting:", i, "did it work?", did.it.work, "\n")
-  # }
-  # 
-  # ms.paths <- list(AgPasture = c("AgPastureExample", "Harvested"))
-  # for(i in multiple.simulation.examples){
-  # 
-  #   if(i == "AgPasture.apsimx")
-  #     sparm <- ""
-  # }
+  ## pp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(".Simulations.AgPastureExample.Field"))
+  ## Would like to implement list(1, 2, 3)
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 2, 3))
+
 
   ## Below I'm including spefici instances of inspect_apsimx
   inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,

@@ -88,13 +88,6 @@ sens_apsimx <- function(file, src.dir = ".",
 
   if(missing(replacement)) replacement <- rep(FALSE, length(parm.paths))
   
-  ## If root is not present. Need to think more about this...
-  # if(is.null(root) && all(replacement)){
-  #   root <- list("Models.Core.Replacements", NA)
-  # }else{
-  #   root <- NULL
-  # }
-  
   if(missing(grid))
     stop("grid argument is missing")
   
@@ -104,12 +97,33 @@ sens_apsimx <- function(file, src.dir = ".",
       stop("Number of columns in grid should be equal to the number of parameters")
   
   ## Check that the name in the grid appears somewhere in the parameter path
-  for(.i in seq_along(parm.paths)){
-    ippgn <- grepl(names(grid)[.i], parm.paths[.i], ignore.case = TRUE)
-    if(!ippgn){
-      cat("Name in grid:", names(grid)[.i], "\n")
-      cat("parameter name", parm.paths[.i], "\n")
-      warning("names in grid object do not match parameter path name")  
+  for(.ii in seq_along(parm.paths)){
+    is.dot.present <- grepl(".", names(grid)[.ii], fixed = TRUE)
+    if(is.dot.present){
+      ## The first element should match simulation names
+      fspe <- strsplit(names(grid)[.ii], ".", fixed = TRUE)[[1]] 
+      ## First and second parameter elements
+      apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
+      simulation.names <- sapply(apsimx_json$Children, FUN = function(x) x$Name)
+      ippgn1 <- grepl(fspe[1], parm.paths[.ii], ignore.case = TRUE)
+      if(!ippgn1){
+        cat("Name in first elelment grid name:", fspe[1], "\n")
+        cat("parameter name", parm.paths[.ii], "\n")
+        warning("names in first element of grid object name do not match parameter path name")  
+      }
+      ippgn2 <- grepl(fspe[2], parm.paths[.ii], ignore.case = TRUE)
+      if(!ippgn2){
+        cat("Name in second element grid names:", fspe[2], "\n")
+        cat("parameter name", parm.paths[.ii], "\n")
+        warning("names in second element of grid object name do not match parameter path name")  
+      }
+    }else{
+      ippgn <- grepl(names(grid)[.ii], parm.paths[.ii], ignore.case = TRUE)
+      if(!ippgn){
+        cat("Name in grid:", names(grid)[.ii], "\n")
+        cat("parameter name", parm.paths[.ii], "\n")
+        warning("names in grid object do not match parameter path name")  
+      }
     }
   }
 
@@ -227,18 +241,15 @@ sens_apsimx <- function(file, src.dir = ".",
         if(core.counter == 1L){
           ## Maybe I should edit the file and then delete it 
           ## to prevent conflicts with the file below
-          edit_apsimx(file = file,
-                      src.dir = src.dir,
-                      wrt.dir = src.dir,
-                      node = "Soil",
-                      parm = "RecordNumber",
-                      value = 1,
-                      edit.tag = "-1",
-                      verbose = FALSE)
-          sim1 <- parallel::mcparallel(apsimx(file = paste0(tools::file_path_sans_ext(file), "-1.apsimx"), 
-                                                  src.dir = src.dir,
-                                                  silent = TRUE, 
-                                                  cleanup = TRUE, value = "report"))
+          file.to.run <- file.path(src.dir, paste0(tools::file_path_sans_ext(file),"-", .i, "-1.apsimx"))
+          
+          file.copy(from = file.path(src.dir, file), to = file.to.run)
+          file.to.delete1 <- file.to.run
+          
+          sim1 <- parallel::mcparallel(apsimx(file = paste0(tools::file_path_sans_ext(file),"-",.i, "-1.apsimx"), 
+                                              src.dir = src.dir,
+                                              silent = TRUE, 
+                                              cleanup = TRUE, value = "report"))
           if(verbose > 1) cat("Started simulation on first core \n")
           core.counter <- core.counter + 1
           if(verbose > 1) cat("Remaining simulations:", dim(grid)[1] - .i, "\n")
@@ -249,7 +260,14 @@ sens_apsimx <- function(file, src.dir = ".",
           }
         }else{
           if(verbose > 1) cat("Started simulation on second core \n")
-          sim2 <- parallel::mcparallel(apsimx(file = file, src.dir = src.dir,
+          
+          file.to.run <- file.path(src.dir, paste0(tools::file_path_sans_ext(file),"-", .i, "-2.apsimx"))
+          
+          file.copy(from = file.path(src.dir, file),
+                    to = file.to.run)
+          
+          sim2 <- parallel::mcparallel(apsimx(file = paste0(tools::file_path_sans_ext(file),"-",.i, "-2.apsimx"), 
+                                              src.dir = src.dir,
                                                   silent = TRUE, cleanup = TRUE, value = "report"))
           core.counter <- 1L
         }
@@ -262,6 +280,17 @@ sens_apsimx <- function(file, src.dir = ".",
           }else{
             simc <- parallel::mccollect(sim1)  
           }          
+        }
+        
+        ## Clean up here
+        if(file.exists(file.to.delete1)){
+          if(verbose > 1) cat("File to delete 1:", file.to.delete1, "\n")
+          file.remove(file.to.delete1)          
+        }
+
+        if(file.exists(file.to.run)){
+          if(verbose > 1) cat("File to delete 2:", file.to.run, "\n")
+          file.remove(file.to.run)          
         }
 
         if(verbose > 1){
@@ -393,8 +422,6 @@ sens_apsimx <- function(file, src.dir = ".",
             }
           }          
         }
-
-        file.remove(file.path(src.dir, paste0(tools::file_path_sans_ext(file), "-1.apsimx")))
       }
     }
     
@@ -413,15 +440,10 @@ sens_apsimx <- function(file, src.dir = ".",
         while(core.counter <= cores){
           ## Maybe I should edit the file and then delete it 
           ## to prevent conflicts with the file below
-          edit_apsimx(file = file,
-                      src.dir = src.dir,
-                      wrt.dir = src.dir,
-                      node = "Soil",
-                      parm = "RecordNumber",
-                      value = core.counter,
-                      edit.tag = paste0("-", core.counter),
-                      verbose = FALSE)
+          file.to.run <- file.path(src.dir, paste0(tools::file_path_sans_ext(file),"-", core.counter, ".apsimx"))
           
+          file.copy(from = file.path(src.dir, file), to = file.to.run)
+
           sim.list[[core.counter]] <- parallel::mcparallel(apsimx(file = paste0(tools::file_path_sans_ext(file), "-", core.counter, ".apsimx"), 
                                                                   src.dir = src.dir,
                                                                   silent = TRUE, 
