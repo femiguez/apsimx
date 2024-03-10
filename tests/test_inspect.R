@@ -487,11 +487,25 @@ if(inspect.factorial.test.parm.path){
     inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = 2)  
   }
   
+  for(i in ex.dir.list){
+    ## file.copy(from = file.path(ex.dir, i), to = tmp.dir)  
+    cat("Simulation:", i, "\n")
+    inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = 3)  
+  }
+  
   ## Next need to test if inspect_apsimx works well when parm is a string
   ## pp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(".Simulations.AgPastureExample.Field"))
   ## Would like to implement list(1, 2, 3)
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 2, 3))
-
+  i <- "AgPasture.apsimx"
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 0))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 8, 0))
+  i <- "WhiteClover.apsimx"
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = 3)
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 2, 5, 6, 2, 0))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = ".Simulations.Simulation.Field")
+  ## Developing/Testing list/grep
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list("WhiteClover"))
 
   ## Below I'm including spefici instances of inspect_apsimx
   inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,

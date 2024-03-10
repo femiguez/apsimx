@@ -1,10 +1,12 @@
 #' 
 #' In general, this function is used to inspect one parameter at a time. There are some exceptions. \cr
 #' 
-#' When node equals \sQuote{Other} there are some options. If \sQuote{parm} is not specified the structure 
+#' When node equals \sQuote{Other} there are several options. If \sQuote{parm} is not specified the structure 
 #' of the simulation file will be returned. In this case, the parameter to print is typically just \sQuote{Simulations}.
 #' This option is useful when the intention is to show the simulation structure to pick a root presumably. \sQuote{parm} 
-#' can be set as 0, 1, or 2 for different levels of detail. 
+#' can be set as 0, 1, 2 or 3 for different levels. 
+#' \sQuote{parm} can also be a list with integers, such as \sQuote{list(1, 2, 3)}. If zero is included, available elements
+#  will be displayed.
 #' If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied. 
 #' 
 #' @title Inspect an .apsimx (JSON) file
@@ -109,17 +111,13 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                                      FUN.VALUE = "character")
         pdat <- data.frame(first_level = c(first.column.name, rep(".", length(root.names.level.1) - 1)),
                            second_level = root.names.level.1)
-        pdat <- cbind(data.frame(row_number = 1:nrow(pdat)), pdat)
-        print(knitr::kable(pdat))
+        print(knitr::kable(pdat, row.names = TRUE))
       }
       ## If parm == 2
       if(parm == 2){
         first.column.name <- gsub(".", "", parm.path.0, fixed = TRUE)
         root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
                                      FUN.VALUE = "character")
-        ## This tries to guess how many times I need to repeat the second_level
-        ## rep.each <- sapply(apsimx_json$Children, FUN = function(x) length(x$Children))
-        ## rep.each <- numeric(length(root.names.level.1))
         second.level.names <- NULL
         third.level.names <- NULL
         for(i in seq_along(root.names.level.1)){
@@ -136,10 +134,60 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         pdat <- data.frame(first_level = c(first.column.name, rep(".", length(second.level.names) - 1)),
                            second_level = second.level.names,
                            third_level = third.level.names)
-        pdat <- cbind(data.frame(row_number = 1:nrow(pdat)), pdat)
-        print(knitr::kable(pdat))
+        print(knitr::kable(pdat, row.names = TRUE))
       }
-      if(parm == 3) stop("Not implemented yet")
+      ## If parm == 3
+      if(parm == 3){
+        first.column.name <- gsub(".", "", parm.path.0, fixed = TRUE)
+        root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                                     FUN.VALUE = "character")
+        second.level.names <- NULL
+        third.level.names <- NULL
+        fourth.level.names <- NULL
+        k <- 1
+        for(i in seq_along(root.names.level.1)){
+          chld.len <- length(apsimx_json$Children[[i]]$Children)
+          rep.times <- ifelse(chld.len == 0, 1, chld.len)
+          second.level.names <- c(second.level.names, c(root.names.level.1[i], rep(".", times = rep.times - 1)))
+          ## Need to generate third level names
+          third.level.names.0 <- sapply(apsimx_json$Children[[i]]$Children, FUN = function(x) x$Name)
+          if(length(third.level.names.0) == 0) third.level.names.0 <- "."
+          ## third.level.names.1 <- c(third.level.names, third.level.names.0)
+          ## third.level.names <- unlist(third.level.names.1)
+          for(j in seq_along(third.level.names.0)){
+            if(length(third.level.names.0) == 1){
+              if(third.level.names.0 == "."){
+                third.level.names <- c(third.level.names, ".")
+                fourth.level.names <- c(fourth.level.names, ".")
+                next 
+              } 
+            }
+            fourth.level <- apsimx_json$Children[[i]]$Children
+            if(length(fourth.level[[j]]) == 0){
+              third.level.names <- c(third.level.names, ".")
+              fourth.level.names <- c(fourth.level.names, ".")
+              next
+            } 
+            if(length(fourth.level[[j]]$Children) == 0){
+              fourth.level.names <- c(fourth.level.names, names(fourth.level[[j]]))
+              second.level.names <- c(second.level.names, rep(".", times = length(names(fourth.level[[j]])) - 1))
+              ## print(third.level.names.0)
+              ## print(third.level.names)
+              third.level.names <- c(third.level.names, c(third.level.names.0[j], rep(".", times = length(names(fourth.level[[j]])) - 1)))
+            }else{
+              fourth.level.names <- c(fourth.level.names, fourth.level[[j]]$Name)
+              third.level.names <- c(third.level.names, ".")
+            }
+          }
+        }
+        ### Is this table good enough?
+        pdat <- data.frame(first_level = c(first.column.name, rep(".", length(fourth.level.names) - 1)),
+                           second_level = second.level.names,
+                           third_level = third.level.names,
+                           fourth_level = fourth.level.names)
+        print(knitr::kable(pdat, row.names = TRUE))
+      }      
+      if(parm == 4) stop("Not implemented yet")
     }else{
       if(!is.list(parm)){
         if(!is.character(parm))
@@ -149,14 +197,16 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         pparm <- strsplit(parm, split = ".", fixed = TRUE)[[1]]
         root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
         if(pparm[2] != root.name.level.0)
-          stop(paste("First parm element does not match:", root.name.level.0), call. = FALSE)
+          stop(paste("First parm element does not match:", 
+                     paste(root.name.level.0, collapse = " ")), call. = FALSE)
         root1 <- pparm[3]
         ## Guess if 'root' is contained in the first level of names
         root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
                                      FUN.VALUE = "character")
         wroot1 <- grep(as.character(root1), root.names.level.1)    
         if(length(wroot1) == 0 || all(is.na(wroot1)))
-          stop(paste("Second element of parm did not match:", root.names.level.1), call. = FALSE)
+          stop(paste("Second element of parm did not match:", 
+                     paste(root.names.level.1, collapse = " ")), call. = FALSE)
         ## Need to test if the fourth element of pparm is a node
         nodes <- c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Report", "Operations", "Other")
         if(pparm[4] %in% nodes){
@@ -170,7 +220,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           root2 <- pparm[4]
           wroot2 <- grep(as.character(root2), root.names.level.2)   
           if(length(wroot2) == 0 || all(is.na(wroot2)))
-            stop(paste("Third element of parm did not match:", root.names.level.2), call. = FALSE)
+            stop(paste("Third element of parm did not match:", 
+                       paste(root.names.level.2, collapse = " ")), call. = FALSE)
           if(pparm[5] %in% nodes){
             root <- list(pparm[3], pparm[4])
           }else{
@@ -180,7 +231,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             root3 <- pparm[5]
             wroot3 <- grep(as.character(root3), root.names.level.3)    
             if(length(wroot3) == 0)
-              stop(paste("Fourth element of parm did not match:", root.names.level.3), call. = FALSE)
+              stop(paste("Fourth element of parm did not match:", 
+                         paste(root.names.level.3, collapse = " ")), call. = FALSE)
           }
         }
         parm.path <- parm
@@ -729,7 +781,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       pparm <- strsplit(parm, split = ".", fixed = TRUE)[[1]]
       root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
       if(pparm[2] != root.name.level.0)
-        stop(paste("First 'parm' element does not match:", root.name.level.0), call. = FALSE)
+        stop(paste("First 'parm' element does not match:", 
+                   paste(root.name.level.0, collapse = " ")), call. = FALSE)
       children.names <- sapply(apsimx_json$Children, FUN = function(x) x$Name)
       if(length(pparm) == 2){
         cat("Simulation children names:")
@@ -743,7 +796,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                                      FUN.VALUE = "character")
         wroot1 <- grep(as.character(root1), root.names.level.1)    
         if(length(wroot1) == 0)
-          stop(paste("Second 'parm' element did not match:", root.names.level.1), call. = FALSE)
+          stop(paste("Second 'parm' element did not match:", 
+                     paste(root.names.level.1, collapse = " ")), call. = FALSE)
         root.names.level.2 <- vapply(apsimx_json$Children[[wroot1]]$Children, 
                                      FUN = function(x) x$Name, 
                                      FUN.VALUE = "character")
@@ -758,14 +812,16 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                                      FUN.VALUE = "character")
         wroot1 <- grep(as.character(root1), root.names.level.1)    
         if(length(wroot1) == 0)
-          stop(paste("Second 'parm' element did not match:", root.names.level.1), call. = FALSE)
+          stop(paste("Second 'parm' element did not match:", 
+                     paste(root.names.level.1, collapse = " ")), call. = FALSE)
         root.names.level.2 <- vapply(apsimx_json$Children[[wroot1]]$Children, 
                                      FUN = function(x) x$Name, 
                                      FUN.VALUE = "character")
         root2 <- pparm[4]
         wroot2 <- grep(as.character(root2), root.names.level.2)    
         if(length(wroot2) == 0)
-          stop(paste("Third 'parm' element did not match:", root.names.level.2), call. = FALSE)
+          stop(paste("Third 'parm' element did not match:", 
+                     paste(root.names.level.2, collapse = " ")), call. = FALSE)
         root.names.level.3 <- vapply(apsimx_json$Children[[wroot1]]$Children[[wroot2]]$Children, 
                                      FUN = function(x) x$Name, 
                                      FUN.VALUE = "character")
@@ -774,45 +830,113 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         cat("\n")
 
       }
-      if(length(pparm) > 4) stop("Not implemented yet")
+      if(length(pparm) > 4) stop("Not implemented yet", call. = FALSE)
     }
     
     if(is.list(parm)){
-      if(length(fcsn) > 1)
-        stop("This does not yet work for multiple simulations")
-      parent.node <- apsimx_json$Children[[fcsn]]$Children  
-      wcz <- grepl("Models.Core.Zone", parent.node)
-      core.zone.node <- parent.node[wcz][[1]]$Children
-      parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)  
-      tmp <- core.zone.node
-      parm.path.2.1 <- parm.path.2
-      ## Check for parm
-      ## if(is.null(parm)) stop("'parm' cannot be null in this case")
-      ##if(length(parm) == 1L) stop("'parm' should be of length 2 or more")
-      ## This extracts a node
-      for(i in 1:(length(parm) - 1)){
-        nms <- sapply(tmp, function(x) x$Name)
-        wcp <- grep(parm[[i]], nms)
-        if(length(wcp) == 0){
-          cat("Names: ", nms, "\n")
-          cat("parm[[i]]", parm[[i]], "\n")
-          stop("Parameter not found")
+      if(is.numeric(parm[[1]])){
+        ### In this case the list will be used to create a parameter path
+        if(parm[[1]] != 1)
+          stop("First element of list should be equal to 1", call. = FALSE)
+        parm.path.0 <- paste0(".", apsimx_json$Name) ## Root
+        if(length(parm) >= 2){
+          root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                                       FUN.VALUE = "character")
+          if(parm[[2]] > 0){
+            wlevel1 <- apsimx_json$Children[[parm[[2]]]]
+            parm.path <- paste0(parm.path.0, ".", root.names.level.1[parm[[2]]])
+          }else{
+            parm.path <- parm.path.0
+            pdat <- data.frame(second_level = root.names.level.1)
+            print(knitr::kable(pdat, row.names = TRUE))
+          }
         }
-        tmp <- tmp[[wcp]]
-        if(!is.null(tmp$Children)) tmp <- tmp$Children
-        ## Build the parm.path
-        parm.path.2.1 <- paste0(parm.path.2.1, ".", nms[wcp])
-      }
-      
-      if(!is.null(tmp$Parameters)){
-        wp <- grep(parm[[length(parm)]], tmp$Parameters)
-        tmp2 <- tmp$Parameters[[wp]]
-        ## Process parameter path
-        parm.path <- paste0(parm.path.2.1, ".", tmp2$Key)
-        print(knitr::kable(as.data.frame(tmp2)))
+        if(length(parm) >= 3){
+          root.names.level.2 <- vapply(wlevel1$Children, FUN = function(x) x$Name, 
+                                       FUN.VALUE = "character")
+          if(parm[[3]] > 0){
+            wlevel2 <- apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]
+            parm.path <- paste0(parm.path, ".", root.names.level.2[parm[[3]]]) 
+          }else{
+            pdat <- data.frame(third_level = root.names.level.2)
+            print(knitr::kable(pdat, row.names = TRUE))
+          }
+        }
+        if(length(parm) >= 4){
+          root.names.level.3 <- vapply(wlevel2$Children, FUN = function(x) x$Name, 
+                                       FUN.VALUE = "character")
+          if(parm[[4]] > 0){
+            wlevel3 <- apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]
+            parm.path <- paste0(parm.path, ".", root.names.level.3[parm[[4]]])            
+          }else{
+            pdat <- data.frame(fourth_level = root.names.level.3)
+            print(knitr::kable(pdat, row.names = TRUE))
+          }
+        }
+        if(length(parm) >= 5){
+          root.names.level.4 <- vapply(wlevel3$Children, FUN = function(x) x$Name, 
+                                       FUN.VALUE = "character")
+          if(parm[[5]] > 0){
+            wlevel4 <- apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]$Children[[parm[[5]]]]
+            parm.path <- paste0(parm.path, ".", root.names.level.4[parm[[5]]])            
+          }else{
+            pdat <- data.frame(fifth_level = root.names.level.4)
+            print(knitr::kable(pdat, row.names = TRUE))
+          }
+        }
+        if(length(parm) >= 6){
+          root.names.level.5 <- vapply(wlevel4$Children, FUN = function(x) x$Name, 
+                                       FUN.VALUE = "character")
+          if(parm[[6]] > 0){
+            wlevel5 <- apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]$Children[[parm[[5]]]]$Children[[parm[[6]]]]
+            parm.path <- paste0(parm.path, ".", root.names.level.5[parm[[6]]])            
+          }else{
+            pdat <- data.frame(sixth_level = root.names.level.5)
+            print(knitr::kable(pdat, row.names = TRUE))
+          }
+        }
+        if(length(parm) >= 7)  
+          stop("Have not developed this yet", call. = FALSE)
       }else{
-        parm.path <- parm.path.2.1
-        unpack_node(tmp)
+        if(length(parm) == 1){
+          grep_json_list(parm[[1]], apsimx_json)
+        }
+        if(length(fcsn) > 1)
+          stop("This does not yet work for multiple simulations")
+        parent.node <- apsimx_json$Children[[fcsn]]$Children  
+        wcz <- grepl("Models.Core.Zone", parent.node)
+        core.zone.node <- parent.node[wcz][[1]]$Children
+        parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)  
+        tmp <- core.zone.node
+        parm.path.2.1 <- parm.path.2
+        ## Check for parm
+        ## if(is.null(parm)) stop("'parm' cannot be null in this case")
+        ##if(length(parm) == 1L) stop("'parm' should be of length 2 or more")
+        ## This extracts a node
+        for(i in 1:(length(parm) - 1)){
+          nms <- sapply(tmp, function(x) x$Name)
+          wcp <- grep(parm[[i]], nms)
+          if(length(wcp) == 0){
+            cat("Names: ", nms, "\n")
+            cat("parm[[i]]", parm[[i]], "\n")
+            stop("Parameter not found")
+          }
+          tmp <- tmp[[wcp]]
+          if(!is.null(tmp$Children)) tmp <- tmp$Children
+          ## Build the parm.path
+          parm.path.2.1 <- paste0(parm.path.2.1, ".", nms[wcp])
+        }
+        
+        if(!is.null(tmp$Parameters)){
+          wp <- grep(parm[[length(parm)]], tmp$Parameters)
+          tmp2 <- tmp$Parameters[[wp]]
+          ## Process parameter path
+          parm.path <- paste0(parm.path.2.1, ".", tmp2$Key)
+          print(knitr::kable(as.data.frame(tmp2)))
+        }else{
+          parm.path <- parm.path.2.1
+          unpack_node(tmp)
+        }        
       }
     }
   }
@@ -823,7 +947,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         parm.path <- paste0(parm.path, ".", parm)
       }else{
         if(!is.na(position)){
-          parm.path <- paste0(parm.path,".",parm2)
+          parm.path <- paste0(parm.path, ".", parm2)
         }
       }
     }
