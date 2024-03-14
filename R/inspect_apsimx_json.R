@@ -44,10 +44,33 @@
 #' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
 #' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Report")
 #' 
-#' ## Manager folder present
+#' ## Examples of using node = "Other"
 #' extd.dir <- system.file("extdata", package = "apsimx")
+#' 
+#' ## When parm is not provided
+#' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, node = "Other")
+#' ## When parm = 2
+#' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
+#'                node = "Other", parm = 2)
+#' ## When parm = 3
+#' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
+#'                node = "Other", parm = 3)
+#' ## When parm is a path
+#' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
+#'                node = "Other", parm = ".Simulations.Simulation")
+#' ## When parm is a list with numbers (integers)
+#' pp <- inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
+#'                      node = "Other", parm = list(1, 1, 5), 
+#'                      print.path = TRUE)
+#' ## Same as above, but with zero prints possible options
+#' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
+#'                 node = "Other", parm = list(1, 1, 5, 0))
+#' 
+#' ## This still works           
 #' inspect_apsimx("maize-manager-folder.apsimx", node = "Other", src.dir = extd.dir,
 #'                parm = list("Manager", "Fertiliser", "Amount"))
+#' 
+#' 
 #'                
 #' }
 #'
@@ -91,7 +114,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## It looks like I need to 'find' the "Models.Core.Simulation" node
   fcsn <- grep("Models.Core.Simulation", apsimx_json$Children, fixed = TRUE)
 
-  ## When node == "Other" root should always be missing
+  ## When node == "Other" root should always be missing (not sure)
   if((node == "Other" && length(fcsn) > 1) || (node == "Other" && (is.null(parm) || is.integer(parm)))){
     parm.path <- parm.path.0
     other.parm.flag <- -1
@@ -152,8 +175,6 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           ## Need to generate third level names
           third.level.names.0 <- sapply(apsimx_json$Children[[i]]$Children, FUN = function(x) x$Name)
           if(length(third.level.names.0) == 0) third.level.names.0 <- "."
-          ## third.level.names.1 <- c(third.level.names, third.level.names.0)
-          ## third.level.names <- unlist(third.level.names.1)
           for(j in seq_along(third.level.names.0)){
             if(length(third.level.names.0) == 1){
               if(third.level.names.0 == "."){
@@ -169,14 +190,14 @@ inspect_apsimx <- function(file = "", src.dir = ".",
               next
             } 
             if(length(fourth.level[[j]]$Children) == 0){
-              fourth.level.names <- c(fourth.level.names, names(fourth.level[[j]]))
               second.level.names <- c(second.level.names, rep(".", times = length(names(fourth.level[[j]])) - 1))
-              ## print(third.level.names.0)
-              ## print(third.level.names)
               third.level.names <- c(third.level.names, c(third.level.names.0[j], rep(".", times = length(names(fourth.level[[j]])) - 1)))
+              fourth.level.names <- c(fourth.level.names, names(fourth.level[[j]]))
             }else{
-              fourth.level.names <- c(fourth.level.names, fourth.level[[j]]$Name)
-              third.level.names <- c(third.level.names, ".")
+              second.level.names <- c(second.level.names, rep(".", times = length(names(fourth.level[[j]])) - 1))
+              fourth.level.names <- c(fourth.level.names, names(fourth.level[[j]]))
+              third.level.names <- c(third.level.names, third.level.names.0[j], 
+                                     rep(".", times = length(names(fourth.level[[j]])) - 1))
             }
           }
         }
@@ -189,11 +210,16 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       }      
       if(parm == 4) stop("Not implemented yet")
     }else{
+      ## This gets triggered if there are multiple simulations
+      ## and parm is a character. If it is a list it will be 
+      ## handled by the code in the section at the bottom
       if(!is.list(parm)){
         if(!is.character(parm))
-          stop("parm should be a character string when node = 'Other' and is not an number", call. = FALSE)
+          stop("parm should be a character string when node = 'Other' and is not a number", call. = FALSE)
         if(!grepl(".", parm, fixed = TRUE))
           stop("'parm' needs to be a json path")
+        if(parm == ".")
+          stop("'parm' needs to be a proper json path")
         pparm <- strsplit(parm, split = ".", fixed = TRUE)[[1]]
         root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
         if(pparm[2] != root.name.level.0)
@@ -776,8 +802,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     
     if(is.character(parm)){
       if(!grepl(".", parm, fixed = TRUE))
-        stop("'parm' needs to be a json path")
+        stop("'parm' needs to be a proper json path")
       parm.path <- parm
+      if(parm == ".")
+        stop("'parm' path is empty")
       pparm <- strsplit(parm, split = ".", fixed = TRUE)[[1]]
       root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
       if(pparm[2] != root.name.level.0)
@@ -840,42 +868,87 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           stop("First element of list should be equal to 1", call. = FALSE)
         parm.path.0 <- paste0(".", apsimx_json$Name) ## Root
         if(length(parm) >= 2){
+          if(!is.numeric(parm[[2]]))
+            stop("Second element of 'parm' should be numeric")
           root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
                                        FUN.VALUE = "character")
-          if(parm[[2]] > 0){
-            wlevel1 <- apsimx_json$Children[[parm[[2]]]]
-            parm.path <- paste0(parm.path.0, ".", root.names.level.1[parm[[2]]])
+          if(length(root.names.level.1) == 0)
+            stop("'parm' index parm[[2]] not found at this level")
+          if(length(parm[[2]]) == 1){
+            if(parm[[2]] > 0){
+              wlevel1 <- apsimx_json$Children[[parm[[2]]]]
+              parm.path <- paste0(parm.path.0, ".", root.names.level.1[parm[[2]]])
+            }else{
+              parm.path <- parm.path.0
+              pdat <- data.frame(second_level = root.names.level.1)
+              print(knitr::kable(pdat, row.names = TRUE))
+            } 
           }else{
-            parm.path <- parm.path.0
+            ### Here I assume that parm[[2]] is a vector
+            if(length(parm[[2]]) > length(root.names.level.1))
+              stop("Length of parm[[2]] should be less than number of elements in the second level")
+            selected.levels <- root.names.level.1[parm[[2]]]
+            parm.path <- paste0(parm.path, ".", selected.levels)
             pdat <- data.frame(second_level = root.names.level.1)
-            print(knitr::kable(pdat, row.names = TRUE))
+            print(knitr::kable(pdat[parm[[2]],, drop = FALSE], row.names = TRUE))
           }
         }
         if(length(parm) >= 3){
           root.names.level.2 <- vapply(wlevel1$Children, FUN = function(x) x$Name, 
                                        FUN.VALUE = "character")
-          if(parm[[3]] > 0){
-            wlevel2 <- apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]
-            parm.path <- paste0(parm.path, ".", root.names.level.2[parm[[3]]]) 
+          if(length(root.names.level.2) == 0){
+            ## This means that Children are empty
+            ## Need to pass this to the next step
+            root.names.level.2 <- names(wlevel1)
+          }
+          if(length(parm[[3]]) == 1){
+            if(parm[[3]] > 0){
+              wlevel2 <- apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]
+              parm.path <- paste0(parm.path, ".", root.names.level.2[parm[[3]]]) 
+            }else{
+              pdat <- data.frame(third_level = root.names.level.2)
+              print(knitr::kable(pdat, row.names = TRUE))
+            }            
           }else{
+            ### Here I assume that parm[[3]] is a vector
+            if(length(parm[[3]]) > length(root.names.level.2))
+              stop("Length of parm[[3]] should be less than number of elements in the third level")
+            selected.levels <- root.names.level.2[parm[[3]]]
+            parm.path <- paste0(parm.path.0, ".", selected.levels)
             pdat <- data.frame(third_level = root.names.level.2)
-            print(knitr::kable(pdat, row.names = TRUE))
+            print(knitr::kable(pdat[parm[[3]],, drop = FALSE], row.names = TRUE))
           }
         }
         if(length(parm) >= 4){
           root.names.level.3 <- vapply(wlevel2$Children, FUN = function(x) x$Name, 
                                        FUN.VALUE = "character")
-          if(parm[[4]] > 0){
-            wlevel3 <- apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]
-            parm.path <- paste0(parm.path, ".", root.names.level.3[parm[[4]]])            
+          if(length(root.names.level.3) == 0)
+            root.names.level.3 <- names(wlevel2)
+          if(length(parm[[4]]) == 1){
+            if(parm[[4]] > 0){
+              wlevel3 <- apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]
+              parm.path <- paste0(parm.path, ".", root.names.level.3[parm[[4]]])            
+            }else{
+              pdat <- data.frame(fourth_level = root.names.level.3)
+              print(knitr::kable(pdat, row.names = TRUE))
+            }            
           }else{
+            ### Here I assume that parm[[4]] is a vector
+            if(length(parm[[4]]) > length(root.names.level.3))
+              stop("Length of parm[[4]] should be less than number of elements in the fourth level")
+            selected.levels <- root.names.level.3[parm[[4]]]
+            parm.path <- paste0(parm.path.0, ".", selected.levels)
             pdat <- data.frame(fourth_level = root.names.level.3)
-            print(knitr::kable(pdat, row.names = TRUE))
+            print(knitr::kable(pdat[parm[[4]],, drop = FALSE], row.names = TRUE))
           }
         }
         if(length(parm) >= 5){
           root.names.level.4 <- vapply(wlevel3$Children, FUN = function(x) x$Name, 
                                        FUN.VALUE = "character")
+          if(length(root.names.level.4) == 0)
+            root.names.level.4 <- names(wlevel3)
+          if(length(parm[[5]]) > 1)
+            stop("Have not implemented this yet")
           if(parm[[5]] > 0){
             wlevel4 <- apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]$Children[[parm[[5]]]]
             parm.path <- paste0(parm.path, ".", root.names.level.4[parm[[5]]])            
@@ -887,6 +960,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         if(length(parm) >= 6){
           root.names.level.5 <- vapply(wlevel4$Children, FUN = function(x) x$Name, 
                                        FUN.VALUE = "character")
+          if(length(parm[[6]]) > 1)
+            stop("Have not implemented this yet")
           if(parm[[6]] > 0){
             wlevel5 <- apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]$Children[[parm[[5]]]]$Children[[parm[[6]]]]
             parm.path <- paste0(parm.path, ".", root.names.level.5[parm[[6]]])            
@@ -898,21 +973,35 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         if(length(parm) >= 7)  
           stop("Have not developed this yet", call. = FALSE)
       }else{
-        if(length(parm) == 1){
-          grep_json_list(parm[[1]], apsimx_json)
+        # if(length(parm) == 1){
+        #   tmpr <- grep_json_list(parm, apsimx_json$Children)
+        #   print(tmpr)
+        # }
+        if(length(fcsn) > 1){
+          ## In this case the first element of the list should
+          if(length(parm) == 1)
+            stop("'parm' should be at least length equal to 2", call. = FALSE)
+          ## select one of the simulations
+          simulation.names <- sapply(apsimx_json$Children, FUN = function(x) x$Name)
+          wsim <- grep(parm[[1]], simulation.names)
+          if(length(wsim) == 0){
+            cat("Simulation names:", paste(simulation.names, collpse = " "), "\n")
+            stop("First element of 'parm' list does not match Simulation names", call. = FALSE)
+          }else{
+            fcsn <- wsim
+            parm <- parm[2:length(parm)]
+            if(parm[[1]] == "")
+              stop("'parm' is empty")
+          }
         }
-        if(length(fcsn) > 1)
-          stop("This does not yet work for multiple simulations")
         parent.node <- apsimx_json$Children[[fcsn]]$Children  
         wcz <- grepl("Models.Core.Zone", parent.node)
         core.zone.node <- parent.node[wcz][[1]]$Children
+        parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name) 
         parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)  
         tmp <- core.zone.node
         parm.path.2.1 <- parm.path.2
-        ## Check for parm
-        ## if(is.null(parm)) stop("'parm' cannot be null in this case")
-        ##if(length(parm) == 1L) stop("'parm' should be of length 2 or more")
-        ## This extracts a node
+
         for(i in 1:(length(parm) - 1)){
           nms <- sapply(tmp, function(x) x$Name)
           wcp <- grep(parm[[i]], nms)
@@ -964,14 +1053,12 @@ inspect_apsimx <- function(file = "", src.dir = ".",
 #'  
 #'  It will probably only find the first instance that matches.
 #'  
-#'  A future feature will be to search for a jspath instead of simply a regular expression
-#'  
 #' @title Inspect an .apsimx or .json (JSON) file
 #' @name inspect_apsimx_json
 #' @description inspect an .apsimx or .json (JSON) file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
 #' @param file file ending in .apsimx or .json to be inspected (JSON)
 #' @param src.dir directory containing the .apsimx or .json file to be inspected; defaults to the current working directory
-#' @param parm string or regular expression for partial matching.
+#' @param parm string or regular expression for partial matching. It can be two strings separated by a period to search within a node (child).
 #' @param search.depth default is 15. How deep should the algorithm explore the structure of the list.
 #' @param print.path whether to print the parameter path (default is FALSE)
 #' @param verbose whether to print additional information (mostly used for debugging)
@@ -1015,6 +1102,24 @@ inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
   jsonpath <- "$"
   
   x <- apsimx_json
+  
+  ### This means that parm could be used as a jspath
+  if(grepl(".", parm, fixed = TRUE)){
+    pparm <- strsplit(parm, ".", fixed = TRUE)[[1]]
+    if(pparm[1] == "") pparm <- pparm[2:length(pparm)]
+    if(length(pparm) == 2){
+      ## Find the 'root' to extract new x
+      first.level.names <- sapply(X = x$Children, FUN = function(xlist) xlist$Name)
+      wfirst <- grep(pparm[1], first.level.names)
+      if(length(wfirst) > 1){
+        stop(paste("More than one node found", paste(first.level.names, collapse = " ")), call. = FALSE)
+      }else{
+        jsonpath <- paste0(jsonpath, ".", x$Name)
+        x <- x$Children[[wfirst]]
+        parm <- pparm[2]
+      }
+    }
+  }
   
   ## This handles parameters at the first level
   if(any(grepl(parm, names(x)))){

@@ -475,14 +475,13 @@ if(inspect.factorial.test.parm.path){
 
   ## Trying node = "Other"
   for(i in ex.dir.list){
-    file.copy(from = file.path(ex.dir, i), to = tmp.dir)  
+    if(!file.exists(file.path(tmp.dir, i))) file.copy(from = file.path(ex.dir, i), to = tmp.dir)  
     cat("Simulation:", i, "\n")
     inspect_apsimx(i, src.dir = tmp.dir, node = "Other")  
     cat("\n")
   }
   
   for(i in ex.dir.list){
-    ## file.copy(from = file.path(ex.dir, i), to = tmp.dir)  
     cat("Simulation:", i, "\n")
     inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = 2)  
   }
@@ -497,19 +496,43 @@ if(inspect.factorial.test.parm.path){
   ## pp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(".Simulations.AgPastureExample.Field"))
   ## Would like to implement list(1, 2, 3)
   i <- "AgPasture.apsimx"
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3), print.path = TRUE)
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 0))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 1:3))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, c(3, 5)))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, c(3, 5)), print.path = TRUE)
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 0))
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 8, 0))
+  pp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = ".Simulations.AgPasture.Field", print.path = TRUE)
   i <- "WhiteClover.apsimx"
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = 3)
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 2, 5, 6, 2, 0))
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = ".Simulations.Simulation.Field")
   ## Developing/Testing list/grep
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list("WhiteClover"))
-
-  ## Below I'm including spefici instances of inspect_apsimx
-  inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
-                 print.path = TRUE)
+  ## This should work for SimpleGrazing and it doesn't at the moment
+  i <- "AgPasture.apsimx"
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 0)) ## This works now
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 2)) ## This works now
+  rootp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3))
+  inspect_apsimx(i, src.dir = tmp.dir, root = rootp, 
+                 node = "Other", parm = list("AgPastureExample", "Field", "SimpleGrazing"))
+  
+  ## This does not work because parameter is not unique
+  inspect_apsimx_json(i, src.dir = tmp.dir, parm = "AgPastureExample.SimpleGrazingFrequencyString")
+  # inspect_apsimx_json(i, src.dir = tmp.dir, parm = "SimpleMinGrazable")
+  
+  ## Inspect Replacement version
+  inspect_apsimx_replacement(i, src.dir = tmp.dir,
+                             root = list("AgPastureExample", 2),
+                             display.available = TRUE)
+  
+  pp <- inspect_apsimx_replacement(i, src.dir = tmp.dir,
+                                   root = list("AgPastureExample", 2),
+                                   node = "Field",
+                                   node.child = "SimpleGrazing",
+                                   parm = "SimpleGrazingFrequencyString",
+                                   display.available = TRUE,
+                                   verbose = FALSE)
   
   inspect_apsimx("Factorial.apsimx", src.dir = tmp.dir,
                  root = list("RangeExperiment", "Base1"),
