@@ -4,7 +4,13 @@
 \alias{grep_json_list}
 \title{grep but for json list}
 \usage{
-grep_json_list(pattern, x, ignore.case = FALSE, search.depth = 10)
+grep_json_list(
+  pattern,
+  x,
+  ignore.case = FALSE,
+  search.depth = 10,
+  how = c("unlist", "replace", "list")
+)
 }
 \arguments{
 \item{pattern}{as in grep}
@@ -14,6 +20,8 @@ grep_json_list(pattern, x, ignore.case = FALSE, search.depth = 10)
 \item{ignore.case}{as in grep}
 
 \item{search.depth}{search depth for the list (to prevent endless search)}
+
+\item{how}{argument passed to \link{rapply}}
 }
 \value{
 It returns a list with the found object, the json path and the positions in the list.

@@ -457,8 +457,6 @@ if(inspect.replacement.test.parm.path){
                                       print.path = TRUE)
     
     ### Need to look at whether I can edit this
-    
-    
   }
 }
 
@@ -468,6 +466,7 @@ inspect.factorial.test.parm.path <- get(".run.local.tests", envir = apsimx.optio
 if(inspect.factorial.test.parm.path){
   
   tmp.dir <- tempdir()
+  dir(tmp.dir)
   ex.dir <- auto_detect_apsimx_examples()
   
   ### Test with all examples
@@ -512,14 +511,21 @@ if(inspect.factorial.test.parm.path){
   ## This should work for SimpleGrazing and it doesn't at the moment
   i <- "AgPasture.apsimx"
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 0)) ## This works now
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 2)) ## This works now
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 2)) ## This does not work
   rootp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3))
-  inspect_apsimx(i, src.dir = tmp.dir, root = rootp, 
-                 node = "Other", parm = list("AgPastureExample", "Field", "SimpleGrazing"))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list("SimpleGrazingFrequencyString")) 
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", 
+                 parm = list("AgPastureExample", "SimpleGrazingFrequencyString")) 
   
-  ## This does not work because parameter is not unique
+  inspect_apsimx(i, src.dir = tmp.dir, root = "AgPastureExample") 
+  inspect_apsimx(i, src.dir = tmp.dir, root = "AgPastureExample", 
+                 node = "Other", parm = list("SimpleGrazingFrequencyString", "SimpleGrazingResidual"))
+  
+  ## This works now, but not for all parameters, not sure why
   inspect_apsimx_json(i, src.dir = tmp.dir, parm = "AgPastureExample.SimpleGrazingFrequencyString")
-  # inspect_apsimx_json(i, src.dir = tmp.dir, parm = "SimpleMinGrazable")
+  inspect_apsimx_json(i, src.dir = tmp.dir, parm = "AgPastureExample.SimpleMin")
+  inspect_apsimx_json(i, src.dir = tmp.dir, parm = "AgPastureExample.GrazingRotationType")
+  
   
   ## Inspect Replacement version
   inspect_apsimx_replacement(i, src.dir = tmp.dir,

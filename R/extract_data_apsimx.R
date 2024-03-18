@@ -1,90 +1,51 @@
-#' 
-#' In general, this function is used to inspect one parameter at a time. There are some exceptions. \cr
-#' 
-#' When node equals \sQuote{Other} there are several options. If \sQuote{parm} is not specified the structure 
-#' of the simulation file will be returned. In this case, the parameter to print is typically just \sQuote{Simulations}.
-#' This option is useful when the intention is to show the simulation structure to pick a root presumably. \sQuote{parm} 
-#' can be set as 0, 1, 2 or 3 for different levels. 
-#' \sQuote{parm} can also be a list with integers, such as \sQuote{list(1, 2, 3)}. If zero is included, available elements
-#  will be displayed.
-#' If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied. 
-#' 
-#' @title Inspect an .apsimx (JSON) file
-#' @name inspect_apsimx
-#' @description inspect a JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
+#'
+#' This function does not print anything (compared to inpsect_apsimx). The purpose is to return data
+#' contained in the APSIM simulation as a data.frame.
+#'
+#' @title Extract data from an .apsimx (JSON) file
+#' @name extract_data_apsimx
+#' @description Extract data from a JSON apsimx file. 
 #' @param file file ending in .apsimx to be inspected (JSON)
 #' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
-#' @param node specific node to be inspected either \sQuote{Clock}, \sQuote{Weather}, 
+#' @param node specific node to be used either \sQuote{Clock}, \sQuote{Weather}, 
 #' \sQuote{Soil}, \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop},
 #'  \sQuote{Manager}, \sQuote{Operations} or \sQuote{Other}
 #' @param soil.child specific soil component to be inspected. The options vary depending on what is available (see details)
-#' @param parm parameter to refine the inspection of the \sQuote{manager} list(\sQuote{parm},\sQuote{position}), use \sQuote{NA} for all the positions. \sQuote{parm} can be a regular expression for partial matching.
+#' @param parm parameter to refine the extraction of the \sQuote{manager} list(\sQuote{parm},\sQuote{position}), use \sQuote{NA} for all the positions. \sQuote{parm} can be a regular expression for partial matching.
 #' @param digits number of decimals to print (default 3). Not used now because everything is a character.
-#' @param print.path whether to print the path to the specific parameter. Useful to give the later editing. (Also returned as \sQuote{invisible})
 #' @param root root node label. In simulation structures such as factorials there will be multiple possible nodes. This can be specified by supplying an appropriate character.
-#' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
-#'          To investigate the available \sQuote{soil.childs} specify \sQuote{Soil} for \sQuote{node} and do not specify the \sQuote{soil.child}.
-#' @return prints a table with inspected parameters and values (and \sQuote{parm path} when \sQuote{print.path} = TRUE).
+#' @details Have not written this section yet
+#' @return a \link{data.frame} or a \link{list}. It does not return a path.
 #' @export
 #' @examples 
 #' \donttest{
 #' extd.dir <- system.file("extdata", package = "apsimx")
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Clock") 
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Weather")
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Metadata") 
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Physical") 
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "SoilWater") 
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Organic")
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Chemical")
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialN")
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "SurfaceOrganicMatter")
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "MicroClimate")
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop")
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")
-#' inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Report")
-#' 
-#' ## Examples of using node = "Other"
-#' extd.dir <- system.file("extdata", package = "apsimx")
-#' 
-#' ## When parm is not provided
-#' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, node = "Other")
-#' ## When parm = 2
-#' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
-#'                node = "Other", parm = 2)
-#' ## When parm = 3
-#' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
-#'                node = "Other", parm = 3)
-#' ## When parm is a path
-#' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
-#'                node = "Other", parm = ".Simulations.Simulation")
-#' ## When parm is a list with numbers (integers)
-#' pp <- inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
-#'                      node = "Other", parm = list(1, 1, 5), 
-#'                      print.path = TRUE)
-#' ## Same as above, but with zero prints possible options
-#' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
-#'                 node = "Other", parm = list(1, 1, 5, 0))
-#' 
-#' ## This still works           
-#' inspect_apsimx("maize-manager-folder.apsimx", node = "Other", src.dir = extd.dir,
-#'                parm = list("Manager", "Fertiliser", "Amount"))
-#' 
-#' 
-#'                
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Clock")) 
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Weather"))
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Metadata")) 
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Physical")) 
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "SoilWater")) 
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Organic"))
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Chemical"))
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater"))
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialN"))
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "SurfaceOrganicMatter"))
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "MicroClimate"))
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop")) 
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")) 
+#' (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Report")) 
 #' }
 #'
 
-inspect_apsimx <- function(file = "", src.dir = ".", 
-                           node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Report", "Operations", "Other"),
-                           soil.child = c("Metadata", "Water", "InitialWater",
+extract_data_apsimx <- function(file = "", src.dir = ".", 
+                                node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Report", "Operations", "Other"),
+                                soil.child = c("Metadata", "Water", "InitialWater",
                                           "Chemical", "Physical", "Analysis", "SoilWater",
                                           "InitialN", "CERESSoilTemperature", "Sample",
                                           "Nutrient", "Organic", "Swim3"),
-                           parm = NULL,
-                           digits = 3,
-                           print.path = FALSE,
-                           root){
+                                parm = NULL,
+                                digits = 3,
+                                root){
   #### Beginning of function ----
   .check_apsim_name(file)
   
@@ -113,7 +74,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## is under this Children/Children node
   ## It looks like I need to 'find' the "Models.Core.Simulation" node
   fcsn <- grep("Models.Core.Simulation", apsimx_json$Children, fixed = TRUE)
-
+  
+  ret_df <- NULL ## This is the returned data frame
+  ret_lst <- NULL
   ## When node == "Other" root should always be missing (not sure)
   if((node == "Other" && length(fcsn) > 1) || (node == "Other" && (is.null(parm) || is.integer(parm)))){
     parm.path <- parm.path.0
@@ -125,7 +88,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       if(length(parm) > 1)
         stop("'parm' should be of length = 1", call. = FALSE)
       if(parm == 0){
-        cat("Level 0:", gsub(".", "", parm.path.0, fixed = TRUE), "\n")
+        ret_df <- data.frame(Level_0 = gsub(".", "", parm.path.0, fixed = TRUE))
       }
       ## If parm is null there are different levels of display
       if(parm == 1){
@@ -134,7 +97,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                                      FUN.VALUE = "character")
         pdat <- data.frame(first_level = c(first.column.name, rep(".", length(root.names.level.1) - 1)),
                            second_level = root.names.level.1)
-        print(knitr::kable(pdat, row.names = TRUE))
+        ret_df <- pdat
       }
       ## If parm == 2
       if(parm == 2){
@@ -157,7 +120,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         pdat <- data.frame(first_level = c(first.column.name, rep(".", length(second.level.names) - 1)),
                            second_level = second.level.names,
                            third_level = third.level.names)
-        print(knitr::kable(pdat, row.names = TRUE))
+        ret_df <- pdat
       }
       ## If parm == 3
       if(parm == 3){
@@ -206,7 +169,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                            second_level = second.level.names,
                            third_level = third.level.names,
                            fourth_level = fourth.level.names)
-        print(knitr::kable(pdat, row.names = TRUE))
+        ret_df <- pdat
       }      
       if(parm == 4) stop("Not implemented yet")
     }else{
@@ -267,7 +230,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       }
     }
   }
-    
+
   if((length(fcsn) > 1 || !missing(root)) && find.root){
     if(missing(root)){
       cat("Simulation structure: \n")
@@ -337,7 +300,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name)      
     }
   }
-  
+
   if(node == "Clock"){
     wlc <- function(x) grepl("Models.Clock", x$`$type`, ignore.case = TRUE)
     wlcl <- sapply(parent.node, FUN = wlc)
@@ -347,14 +310,14 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     clock.node <- as.list(parent.node[wlcl])[[1]]
     start.name <- grep("start", names(clock.node), ignore.case = TRUE, value = TRUE)
     end.name <- grep("end", names(clock.node), ignore.case = TRUE, value = TRUE)
-    cat("Start:", clock.node[[start.name]], "\n")
-    cat("End:",  clock.node[[end.name]], "\n")
+    ret_df <- data.frame(Start = clock.node[[start.name]],
+                      End = clock.node[[end.name]])
     ## It is possible for the 'start' and 'end' to be called: 'Start' and 'End'
     ## It is also possible for them to be called 'StartDate' and 'EndDate'
     ## I think APSIM-X is in a state of change and eventually this will
     ## stabilize. At the moment 'Maize' and 'Barley' do not agree.
     ## Final name is 'parm.path', but this is 1.2
-    parm.path <- paste0(parm.path.1,".",parent.node[wlcl][[1]]$Name)
+    ## parm.path <- paste0(parm.path.1,".",parent.node[wlcl][[1]]$Name)
   }
   
   ## The previous creates a list
@@ -368,8 +331,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     weather.node <- parent.node[wlwl]
     ## Select the string which has a met file
     gf1 <- function(x) grep(".met$", x, value = TRUE)
-    cat("Met file:", as.character(sapply(weather.node, gf1)), "\n")
-    parm.path <- paste0(parm.path.1, ".", parent.node[wlwl][[1]]$Name)
+    ret_df <- data.frame(Met_file = as.character(sapply(weather.node, gf1)))
+    ## parm.path <- paste0(parm.path.1, ".", parent.node[wlwl][[1]]$Name)
   }
   
   ## From here on there is an important component that lives inside
@@ -380,27 +343,27 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     
     parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)    
   }
-
+  
   if(node == "Soil"){
-    ## Which soils node
+    #### Soil node ----
     wsn <- grepl("Models.Soils.Soil", core.zone.node)
     if(all(wsn == FALSE)){
       stop("Soil not found")
     }
     soil.node <- core.zone.node[wsn]
     
-    parm.path.2.1 <- paste0(parm.path.2, ".", soil.node[[1]]$Name)
+   parm.path.2.1 <- paste0(parm.path.2, ".", soil.node[[1]]$Name)
     
-    ## Print some basic soil information
-    cat("Soil Type: ", soil.node[[1]]$SoilType, "\n")
-    cat("Latitude: ", soil.node[[1]]$Latitude, "\n")
-    cat("Longitude: ", soil.node[[1]]$Longitude, "\n")
+   ## Print some basic soil information
+   ret_df1 <- data.frame(Soil_Type = soil.node[[1]]$SoilType,
+                      Latitude = soil.node[[1]]$Latitude,
+                      Longitude = soil.node[[1]]$Longitude)
     
-    if(length(soil.node) != 1) stop("soil.node not equal to one")
+   if(length(soil.node) != 1) stop("soil.node not equal to one")
     
-    soil.children.names <- sapply(soil.node[[1]]$Children, function(x) x$Name)
+   soil.children.names <- sapply(soil.node[[1]]$Children, function(x) x$Name)
     
-    cat("Soil children:", soil.children.names, "\n")
+   ## cat("Soil children:", soil.children.names, "\n")
     
     if(soil.child == "Metadata"){
       parm.path <- parm.path.2.1
@@ -413,10 +376,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       }
       
       if(missing(parm)){
-        print(knitr::kable(metadata, longtable = FALSE))  
+        ret_lst <- list(soil = ret_df1, metadata = metadata)
       }else{
         if(!(parm %in% metadata[["parm"]])) stop("parm does not match a parameter in metadata")
-        print(knitr::kable(metadata[metadata$parm == parm,]))  
+        ret_df <- metadata[metadata$parm == parm,]
       }
       
     }else{
@@ -427,15 +390,15 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       wsc <- grep(soil.child, soil.children.names)
       
       if(soil.child == "Water" && length(wsc) == 2) wsc <- wsc[2]
-
+      
       if(length(wsc) == 0) stop("soil.child likely not present")
-    
+      
       selected.soil.node.child <- soil.node[[1]]$Children[wsc]
     }
     
-      ## For some variables now it is the time to print
-      ## The code below is not strictly needed but it is here
-      ## in case I need a second level of soil in the future
+    ## For some variables now it is the time to print
+    ## The code below is not strictly needed but it is here
+    ## in case I need a second level of soil in the future
     first.level.soil <- c("Water", "Physical",
                           "Chemical", "Analysis", "InitialWater",
                           "InitialN", "SoilWater", "Analysis",
@@ -450,7 +413,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       
       if(soil.child == "Physical")
         cnms <- c(cnms, "Crop LL", "Crop KL", "Crop XF")
-        
+      
       soil.d1 <- NULL
       soil.d2 <- NULL
       soil.d3 <- NULL
@@ -489,19 +452,31 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       
       if(missing(parm)){
         ## Print first set of soil parameters
-        if(!is.null(soil.d1)) print(knitr::kable(soil.d1, digits = digits))  
+        if(!is.null(soil.d1)) ret_df <- soil.d1
         ## Print second set of soil parameters
         if(!is.null(soil.d2)){ 
           soil.d2 <- as.data.frame(soil.d2)
           names(soil.d2) <- col.nms
-          print(knitr::kable(soil.d2, digits = digits))
+          if(is.null(soil.d1)){
+            ret_df <- soil.d2
+          }else{
+            ret_lst <- list(first = soil.d1, second = soil.d2)
+          } 
         }
         ## Print third set of crop-soil parameters
         if(!is.null(soil.d3)){ 
           soil.d3 <- as.data.frame(soil.d3)
           names(soil.d3) <- d3.col.nms
           soil.d3 <- subset(soil.d3, select = sort(names(soil.d3)))
-          print(knitr::kable(soil.d3, digits = digits))
+          if(!is.null(soil.d1) && !is.null(soil.d2)){
+           ret_lst <- list(first = soil.d1, soil.layers = soil.d2, crop = soil.d3) 
+          }else{
+            if(is.null(soil.d1) && !is.null(soil.d2)){
+              ret_df <- list(soil.layers = soil.d2, crop = soil.d3) 
+            }else{
+              ret_df <- soil.d3              
+            }
+          }
         }
       }else{
         parm.physical.found <- FALSE
@@ -509,11 +484,11 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         if(!is.null(soil.d1)){
           if(parm %in% names(soil.d1)){
             ##print(knitr::kable(soil.d1[soil.d1$parm == parm,], digits = digits))    
-            print(knitr::kable(soil.d1[, parm, drop = FALSE], digits = digits))    
+            ret_df <- soil.d1[, parm, drop = FALSE]
             parm.physical.found <- TRUE
           }
           if(parm %in% soil.d1$parm){
-            print(knitr::kable(soil.d1[soil.d1$parm == parm,], digits = digits))    
+            ret_df <- soil.d1[soil.d1$parm == parm,]
             parm.physical.found <- TRUE
           }
         } 
@@ -523,11 +498,11 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           names(soil.d2) <- col.nms
           ## print(knitr::kable(soil.d2[soil.d2$parm == parm,], digits = digits))
           if(parm %in% names(soil.d2)){
-            print(knitr::kable(soil.d2[, parm, drop = FALSE], digits = digits))  
+            ret_df <- soil.d2[, parm, drop = FALSE]
             parm.physical.found <- TRUE
           }
           if(parm %in% soil.d2$parm){
-            print(knitr::kable(soil.d2[soil.d2$parm == parm,], digits = digits))    
+            ret_df <- soil.d2[soil.d2$parm == parm,]
             parm.physical.found <- TRUE
           }
         }
@@ -538,11 +513,11 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           soil.d3 <- subset(soil.d3, select = sort(names(soil.d3)))
           ##print(knitr::kable(soil.d3[soil.d3$parm == parm,], digits = digits))
           if(parm %in% names(soil.d3)){
-            print(knitr::kable(soil.d3[, parm, drop = FALSE], digits = digits))  
+            ret_df <- soil.d3[, parm, drop = FALSE]
             parm.physical.found <- TRUE
           }
           if(parm %in% soil.d3$parm){
-            print(knitr::kable(soil.d3[soil.d3$parm == parm,], digits = digits))    
+            ret_df <- soil.d3[soil.d3$parm == parm,]
             parm.physical.found <- TRUE
           }
         }
@@ -560,7 +535,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }
     som.node <- core.zone.node[wsomn][[1]]
     
-    parm.path <- paste0(parm.path.2,".",som.node$Name)
+    ## parm.path <- paste0(parm.path.2,".",som.node$Name)
     ## The relevant components might be unpredictable
     ## Will need to find a better method in the future
     names.som.node0 <- names(som.node)
@@ -573,10 +548,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                         value = as.vector(values.som.node0[wsomvn]))
     
     if(missing(parm)){
-      print(knitr::kable(som.d, digits = digits))  
+      ret_df <- som.d
     }else{
       if(parm %in% som.d$parm){
-        print(knitr::kable(som.d[som.d$parm == parm, ], digits = digits))  
+        ret_df <- som.d[som.d$parm == parm, ]
       }else{
         stop("Surface OM parameter not found", call. = FALSE)
       }
@@ -593,7 +568,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       wmcn <- sapply(parent.node, FUN = wmcnf)
       mcincz <- FALSE
       if(all(wmcn == FALSE))
-         stop("MicroClimate not found")
+        stop("MicroClimate not found")
     }
     if(mcincz){
       microclimate.node <- core.zone.node[wmcn][[1]]  
@@ -602,15 +577,15 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }
     
     parm.path <- paste0(parm.path.2,".", microclimate.node$Name)
-
+    
     microclimate.d <- data.frame(parm = names(microclimate.node)[2:9],
                                  value = as.vector(unlist(microclimate.node)[2:9]))
     
     if(missing(parm)){
-      print(knitr::kable(microclimate.d, digits = digits))  
+      ret_df <- microclimate.d
     }else{
       if(parm %in% microclimate.d$parm){
-        print(knitr::kable(microclimate.d[microclimate.d$parm == parm, ], digits = digits))  
+        ret_df <- microclimate.d[microclimate.d$parm == parm, ]
       }else{
         stop("MicroClimate parameter not found", call. = FALSE)
       }
@@ -632,7 +607,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     
     ## This would be 2.1.1
     parm.path <- paste0(parm.path.2,".",manager.node[wcn][[1]]$Name)
-      
+    
     mat <- matrix(NA, nrow = length(crop.node), ncol = 2,
                   dimnames = list(NULL,c("parm","value")))
     j <- 1
@@ -642,7 +617,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       j <- j + 1
     }
     
-    print(knitr::kable(as.data.frame(mat), digits = digits))
+    ret_df <- as.data.frame(mat)
   }
   
   if(node == "Manager"){
@@ -654,7 +629,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     parm.path <- parm.path.2
     ## Print available Manager components
     manager.node.names <- sapply(manager.node, FUN = function(x) x$Name)
-    cat("Management Scripts: ", manager.node.names,"\n\n")
+    ## cat("Management Scripts: ", manager.node.names,"\n")
     
     if(!is.null(parm)){
       parm1 <- parm[[1]]
@@ -676,9 +651,9 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             mat[j,2] <- ms.params[[j]]$Value
           }
         }
-        cat("Name: ", selected.manager.node, "\n")
-        print(knitr::kable(as.data.frame(mat), digits = digits))
-        cat("\n") 
+        ## cat("Name: ", selected.manager.node, "\n")
+        ret_df <- as.data.frame(mat)
+        ## cat("\n") 
       }
       
       if(!is.na(position)){
@@ -695,11 +670,17 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             k <- k + 1
           }
         }
-        cat("Name: ", selected.manager.node,"\n")
+        ## cat("Name: ", selected.manager.node,"\n")
         parm2 <- ms.params[[position]]$Key
-        cat("Key:", ms.params[[position]]$Key, "\n")
-        print(knitr::kable(as.data.frame(mat), digits = digits))
-        cat("\n")
+        ## cat("Key:", ms.params[[position]]$Key, "\n")
+        ret_df <- as.data.frame(mat)
+        ## cat("\n")
+      }
+    }else{
+      ret_lst <- vector("list", length = length(manager.node))
+      for(i in seq_along(manager.node)){
+        ret_lst[[i]] <- manager.node[[i]]
+        names(ret_lst) <- manager.node.names
       }
     }
   }
@@ -728,13 +709,13 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     
     if(is.null(parm)){
       parm.path <- paste0(parm.path.2, ".Operations")
-      print(knitr::kable(as.data.frame(op.mat), digits = digits))
+      ret_df <- as.data.frame(op.mat)
     }else{
       parm.path.3 <- paste0(parm.path.2, ".Operations")
       parm.path <- paste(parm.path.3, parm[[1]], parm[[2]], sep = ".")
       op.mat.dat <- as.data.frame(op.mat) 
       op.mat.dat.parm <- op.mat.dat[parm[[1]], parm[[2]], drop = FALSE] 
-      print(knitr::kable(op.mat.dat.parm, digits = digits))
+      ret_df <- op.mat.dat.parm
     }
   }
   
@@ -747,7 +728,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     parm.path <- parm.path.2
     ## Print available Manager components
     report.node.names <- sapply(report.node, FUN = function(x) x$Name)
-
+    
     tmp <- vector("list", length = length(report.node.names))
     for(i in 1:length(report.node)){
       ## Variable Names
@@ -759,43 +740,43 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }
     
     if(missing(parm)){
+      ret_lst <- vector("list", length = length(tmp))
       for(i in 1:length(tmp)){
         cat("Report name:", report.node[[i]]$Name, "\n")
-        print(knitr::kable(tmp[[i]]$vn))
-        print(knitr::kable(tmp[[i]]$en))   
+        ret_lst[[i]] <- list(VariableNames = tmp[[i]]$vn, EventNames = tmp[[i]]$en)
         cat("\n")
       }
       parm.path <- paste0(parm.path.2,".", report.node.names)
     }else{
-        if(!is.list(parm)){
-          if(length(report.node.names) > 1)
-            stop("More than one Report is present. Use a list to choose one.")
-          if(!grepl(parm, "VariableNames") && !grepl(parm, "EventNames"))
-            stop("parm should contain either VariableNames or EventNames")
-          if(parm == "VariableNames") print(knitr::kable(tmp[[i]]$vn))
-          if(parm == "EventNames") print(knitr::kable(tmp[[i]]$en))
-          parm.path <- paste0(parm.path.2,".", report.node.names)
-       }else{
-          if(!any(grepl(parm[[1]], report.node.names)))
-            stop("the first element of parm should match a report name")
-          wr2p <- grep(parm[[1]], report.node.names)
-          if(is.na(parm[[2]])){
-            print(knitr::kable(tmp[[wr2p]]$vn))
-            print(knitr::kable(tmp[[wr2p]]$en))
-            parm.path <- paste0(parm.path.2,".", report.node.names[wr2p])
-            position <- NA
-          }else{
-            if(grepl(parm[[2]],"VariableNames")) print(knitr::kable(tmp[[wr2p]]$vn))
-            if(grepl(parm[[2]], "EventNames")) print(knitr::kable(tmp[[wr2p]]$en)) 
-            parm.path <- paste0(parm.path.2,".", report.node.names[wr2p])
-            parm1 <- grep(parm[[1]], report.node.names, value = TRUE)
-            parm2 <- grep(parm[[2]], c("VariableNames", "EventNames"), value = TRUE)
-            position <- wr2p
-          }
-       }
+      if(!is.list(parm)){
+        if(length(report.node.names) > 1)
+          stop("More than one Report is present. Use a list to choose one.")
+        if(!grepl(parm, "VariableNames") && !grepl(parm, "EventNames"))
+          stop("parm should contain either VariableNames or EventNames")
+        if(parm == "VariableNames") ret_df <- as.data.frame(tmp[[i]]$vn)
+        if(parm == "EventNames") ret_df <- as.data.frame(tmp[[i]]$en)
+        parm.path <- paste0(parm.path.2,".", report.node.names)
+      }else{
+        if(!any(grepl(parm[[1]], report.node.names)))
+          stop("the first element of parm should match a report name")
+        wr2p <- grep(parm[[1]], report.node.names)
+        if(is.na(parm[[2]])){
+          print(knitr::kable(tmp[[wr2p]]$vn))
+          print(knitr::kable(tmp[[wr2p]]$en))
+          parm.path <- paste0(parm.path.2,".", report.node.names[wr2p])
+          position <- NA
+        }else{
+          if(grepl(parm[[2]],"VariableNames")) print(knitr::kable(tmp[[wr2p]]$vn))
+          if(grepl(parm[[2]], "EventNames")) print(knitr::kable(tmp[[wr2p]]$en)) 
+          parm.path <- paste0(parm.path.2,".", report.node.names[wr2p])
+          parm1 <- grep(parm[[1]], report.node.names, value = TRUE)
+          parm2 <- grep(parm[[2]], c("VariableNames", "EventNames"), value = TRUE)
+          position <- wr2p
+        }
+      }
     }
   }
-
+  
   #### Option for 'Other' character or 'list' ----
   if(node == "Other" && other.parm.flag > 0){
     ## I will develop this option assuming parm is a list or a character
@@ -858,7 +839,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         cat(paste(root1, root2, "Names level 3:"))
         print(root.names.level.3)
         cat("\n")
-
+        
       }
       if(length(pparm) > 4) stop("Not implemented yet", call. = FALSE)
     }
@@ -885,7 +866,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             }else{
               parm.path <- parm.path.0
               pdat <- data.frame(second_level = root.names.level.1)
-              print(knitr::kable(pdat, row.names = TRUE))
+              ret_df <- pdat
             } 
           }else{
             ### Here I assume that parm[[2]] is a vector
@@ -894,7 +875,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             selected.levels <- root.names.level.1[parm[[2]]]
             parm.path <- paste0(parm.path, ".", selected.levels)
             pdat <- data.frame(second_level = root.names.level.1)
-            print(knitr::kable(pdat[parm[[2]],, drop = FALSE], row.names = TRUE))
+            ret_df <- pdat[parm[[2]],, drop = FALSE]
           }
         }
         if(length(parm) >= 3){
@@ -911,7 +892,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
               parm.path <- paste0(parm.path, ".", root.names.level.2[parm[[3]]]) 
             }else{
               pdat <- data.frame(third_level = root.names.level.2)
-              print(knitr::kable(pdat, row.names = TRUE))
+              ret_df <- pdat
             }            
           }else{
             ### Here I assume that parm[[3]] is a vector
@@ -920,7 +901,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             selected.levels <- root.names.level.2[parm[[3]]]
             parm.path <- paste0(parm.path.0, ".", selected.levels)
             pdat <- data.frame(third_level = root.names.level.2)
-            print(knitr::kable(pdat[parm[[3]],, drop = FALSE], row.names = TRUE))
+            ret_df <- pdat[parm[[3]],, drop = FALSE]
           }
         }
         if(length(parm) >= 4){
@@ -934,7 +915,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
               parm.path <- paste0(parm.path, ".", root.names.level.3[parm[[4]]])            
             }else{
               pdat <- data.frame(fourth_level = root.names.level.3)
-              print(knitr::kable(pdat, row.names = TRUE))
+              ret_df <- pdat
             }            
           }else{
             ### Here I assume that parm[[4]] is a vector
@@ -943,7 +924,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             selected.levels <- root.names.level.3[parm[[4]]]
             parm.path <- paste0(parm.path.0, ".", selected.levels)
             pdat <- data.frame(fourth_level = root.names.level.3)
-            print(knitr::kable(pdat[parm[[4]],, drop = FALSE], row.names = TRUE))
+            ret_df <- pdat[parm[[4]],, drop = FALSE]
           }
         }
         if(length(parm) >= 5){
@@ -958,7 +939,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             parm.path <- paste0(parm.path, ".", root.names.level.4[parm[[5]]])            
           }else{
             pdat <- data.frame(fifth_level = root.names.level.4)
-            print(knitr::kable(pdat, row.names = TRUE))
+            ret_df <- pdat
           }
         }
         if(length(parm) >= 6){
@@ -971,7 +952,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             parm.path <- paste0(parm.path, ".", root.names.level.5[parm[[6]]])            
           }else{
             pdat <- data.frame(sixth_level = root.names.level.5)
-            print(knitr::kable(pdat, row.names = TRUE))
+            ret_df <- pdat
           }
         }
         if(length(parm) >= 7)  
@@ -1061,7 +1042,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             }
           }
         }
-
+        
         if(!is.null(tmp$Parameters)){
           wp <- grep(parm[[length(parm)]], tmp$Parameters)
           tmp2 <- tmp$Parameters[[wp]]
@@ -1076,361 +1057,174 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }
   }
   
-  if(print.path && node != "Other" && node != "Operations"){
-    if(!missing(parm)){
-      if(length(parm) == 1){
-        parm.path <- paste0(parm.path, ".", parm)
-      }else{
-        if(!is.na(position)){
-          parm.path <- paste0(parm.path, ".", parm2)
-        }
-      }
-    }
-    cat("Parm path:", parm.path,"\n")
+  # if(print.path && node != "Other" && node != "Operations"){
+  #   if(!missing(parm)){
+  #     if(length(parm) == 1){
+  #       parm.path <- paste0(parm.path, ".", parm)
+  #     }else{
+  #       if(!is.na(position)){
+  #         parm.path <- paste0(parm.path, ".", parm2)
+  #       }
+  #     }
+  #   }
+  #   cat("Parm path:", parm.path,"\n")
+  # }else{
+  #   if(print.path) cat("Parm path:", parm.path,"\n")  
+  # }
+  #### Return ----
+  if(!is.null(ret_lst)){
+    ret <- ret_lst
   }else{
-    if(print.path) cat("Parm path:", parm.path,"\n")  
+    ret <- ret_df
   }
-  
-  invisible(parm.path)
+  return(ret)
 }
 
-#' 
-#'  This function is a work in progress. There are many instances for which it will not work.
-#'  
-#'  It will probably only find the first instance that matches.
-#'  
-#' @title Inspect an .apsimx or .json (JSON) file
-#' @name inspect_apsimx_json
-#' @description inspect an .apsimx or .json (JSON) file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
-#' @param file file ending in .apsimx or .json to be inspected (JSON)
-#' @param src.dir directory containing the .apsimx or .json file to be inspected; defaults to the current working directory
-#' @param parm string or regular expression for partial matching. It can be two strings separated by a period to search within a node (child).
-#' @param search.depth default is 15. How deep should the algorithm explore the structure of the list.
-#' @param print.path whether to print the parameter path (default is FALSE)
-#' @param verbose whether to print additional information (mostly used for debugging)
-#' @return prints a table with inspected parameters and values (and the path when \sQuote{print.path} = TRUE).
+#'
+#' Extract initial values from a parameter path
+#' @title Extract values from a parameter path
+#' @name extract_values_apsimx
+#' @param file file name to be run (the extension .apsimx is optional)
+#' @param src.dir directory containing the .apsimx file to be run (defaults to the current directory)
+#' @param parm.path parameter path either use inspect_apsimx or see example below
+#' @return a vector with extracted parameter values from an APSIM file.
 #' @export
 #' @examples 
 #' \donttest{
+#' ## Find examples
 #' extd.dir <- system.file("extdata", package = "apsimx")
-#' ## It seems to work for simple search
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Version")
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Simulations")
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Clock")
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Weather")
-#' ## Does return soil components
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "DUL")
-#' ## Or cultivar
-#' inspect_apsimx_json("Wheat.apsimx", src.dir = extd.dir, parm = "Hartog")
-#' 
+#' ## Extract parameter path
+#' pp <- inspect_apsimx("Maize.apsimx", src.dir = extd.dir,
+#'                      node = "Manager", parm = list("Fert", 1))
+#' ppa <- paste0(pp, ".Amount")
+#' ## Extract value
+#' extract_values_apsimx("Maize.apsimx", src.dir = extd.dir, parm.path = ppa)
 #' }
-
-inspect_apsimx_json <- function(file = "", src.dir = ".", parm,
-                                search.depth = 15,
-                                print.path = FALSE,
-                                verbose = FALSE){
+extract_values_apsimx <- function(file, src.dir, parm.path){
   
   .check_apsim_name(file)
-  .check_apsim_name(src.dir)
   
-  if(missing(parm))
-    stop("You need to specify the parm argument", call. = FALSE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
   
-  file.names.apsimx <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
-  file.names.json <- dir(path = src.dir, pattern = ".json$", ignore.case = TRUE)
-  
-  if(length(file.names.apsimx) == 0 && length(file.names.json) == 0){
-    stop("There are no .json or .apsimx files in the specified directory to inspect.")
+  if(length(file.names) == 0){
+    stop("There are no .apsimx files in the specified directory to inspect.")
   }
   
-  apsimx_json <- jsonlite::read_json(file.path(src.dir, file)) ### This is a list
+  file <- match.arg(file, file.names)
   
-  jsonpath <- "$"
+  apsimx_json <- jsonlite::read_json(paste0(src.dir, "/", file))
   
-  x <- apsimx_json
-  
-  ### This means that parm could be used as a jspath
-  if(grepl(".", parm, fixed = TRUE)){
-    pparm <- strsplit(parm, ".", fixed = TRUE)[[1]]
-    if(pparm[1] == "") pparm <- pparm[2:length(pparm)]
-    if(length(pparm) == 2){
-      ## Find the 'root' to extract new x
-      first.level.names <- sapply(X = x$Children, FUN = function(xlist) xlist$Name)
-      wfirst <- grep(pparm[1], first.level.names)
-      if(length(wfirst) > 1){
-        stop(paste("More than one node found", paste(first.level.names, collapse = " ")), call. = FALSE)
-      }else{
-        jsonpath <- paste0(jsonpath, ".", x$Name)
-        x <- x$Children[[wfirst]]
-        parm <- pparm[2]
-      }
-    }
-  }
-  
-  ## This handles parameters at the first level
-  if(any(grepl(parm, names(x)))){
-    wpi <- grep(parm, names(x))
-    jsonpath <- paste0(jsonpath, ".", names(x)[wpi])
-    print(knitr::kable(as.data.frame(x[wpi])))
-    if(print.path) print(jsonpath)
-    if(verbose) cat("Level: 0 \n")
-    return(invisible(jsonpath))
-  }
-
-  jsonpath <- paste0(jsonpath, ".", x$Name)
-  
-  for(i in 1:search.depth){
-    
-    ## First try to see if parameter is in names
-    nms <- names(x)
-    
-    if(!is.null(nms) && any(grepl(parm, nms))){
-      wpi <- grep(parm, nms)
-      jsonpath <- paste0(jsonpath, ".", names(x)[wpi])
-      xd0 <- x[wpi]
-      xd1 <- jsonlist2dataframe(xd0)
-      
-      print(knitr::kable(xd1))
-      if(print.path) print(jsonpath)
-      if(verbose) cat("Level: 1 \n")
-      return(invisible(jsonpath))
-    }
-
-    ## It is possible for parm to be in Name
-    if(!is.atomic(x)) nm <- x$Name
-      
-    if(!is.null(nm)){
-      if(grepl(parm, nm)){
-        wpn <- grep(parm, nm)  
-        jsonpath <- paste0(jsonpath, ".", nm)
-        xd0 <- x[wpn]
-        xd1 <- jsonlist2dataframe(xd0)
-        names(xd1) <- nm
-        print(knitr::kable(xd1))
-        if(print.path) print(jsonpath)
-        return(invisible(jsonpath))
-      }        
-    }
-
-    if(any(grepl(parm, x))){
-      
-      wgpx <- grep(parm, x)
-      
-      if(length(wgpx) > 1){
-        cat("Parameter found in more than one postion\n")
-        for(i in wgpx){
-          cat("Position:", i, "\n")
-          print(names(x)[i])
-        }
-        stop("Parameter is not unique", call. = FALSE)
-      }
-        
-      
-      nms <- try(sapply(x[[wgpx]], function(x) x$Name), silent = TRUE)
-      
-      if(verbose){
-        print(i)
-        print(wgpx)
-        print(jsonpath)
-        print(nms)
-      }
-      
-      if(inherits(nms, "try-error")) nms <- NULL
-      
-      if(any(sapply(nms, is.null))) nms <- NULL
-      
-      if(!is.null(nms)){
-        if(any(grepl(parm, nms))){
-          wpn <- grep(parm, nms)  
-          jsonpath <- paste0(jsonpath, ".", nms[wpn])
-          xd0 <- x[[wgpx]][wpn]
-          xd1 <- jsonlist2dataframe(xd0)
-          print(knitr::kable(xd1))
-          if(print.path) print(jsonpath)
-          return(invisible(jsonpath))
-        }        
-      }
-      
-      wgpx2 <- grep(parm, x[[wgpx]])
-      
-      if(length(wgpx2) > 1){
-        cat("Parameter found in more than one postion\n")
-        for(i in wgpx2){
-          cat("Position:", i, "\n")
-          print(names(x)[i])
-        }
-        stop("Parameter is not unique", call. = FALSE)
-      }
-      
-      if(!is.null(nms)){
-        
-        if(!is.null(nms[wgpx2]))
-          jsonpath <- paste0(jsonpath, ".", nms[wgpx2])
-
-        if(wgpx2 <= length(x[[wgpx]])){
-          x <- x[[wgpx]][[wgpx2]]
-        }else{
-          if(verbose){
-            cat("x length:", length(x), "\n")
-            cat("wgpx2", wgpx2, "\n")
-            cat("length x[[wgpx]]", length(x[[wgpx]]), "\n")
-          }
-        }
-        
-      }else{
-
-        gjl <- grep_json_list(parm, x)
-        gjlm <- strsplit(gjl$positions, ".", fixed = TRUE)[[1]]
-        gjlms <- as.numeric(gjlm[2:(length(gjlm) - 1)])
-
-        for(i in gjlms) x <- x[[i]]
-        
-        ## Need to bring back the code I wrote before to extract the right stuff
-        if(!is.null(x$Key))
-          jsonpath <- paste0(jsonpath, ".", x$Key)
-          
-        print(knitr::kable(as.data.frame(x)))
-        if(print.path) print(jsonpath)
-        return(invisible(jsonpath))
-      }
-    }
-  }
-  
-  if(i == search.depth) stop("Parameter not found")
-
-  invisible(jsonpath)
-}
-
-## Convert a json list to a data.frame
-## This needs to handle a variety of cases
-## 1. Simple approach (unlist and data.frame return no error)
-##    In this case all the list elements have equal length
-## 2. 
-jsonlist2dataframe <- function(x){
-  
-  nms0 <- names(x)
-  if(is.list(x) && length(x) == 1) x <- x[[1]]
-  
-  if(length(unique(sapply(x, length))) == 1){
-    dt0 <- try(as.data.frame(unlist(x)), silent = TRUE)
-    if(!inherits(dt0, "try-error")){
-      if(!is.null(nms0)) names(dt0) <- nms0
-      return(dt0)    
+  upp <- strsplit(parm.path, ".", fixed = TRUE)[[1]]
+  upp.lngth <- length(upp)
+  if(upp.lngth < 5) stop("Parameter path too short?")
+  if(upp.lngth > 10) stop("Cannot handle this yet")
+  ## upp[2] is typically "Simulations"
+  if(apsimx_json$Name != upp[2])
+    stop("Simulation root name does not match")
+  wl3 <- which(upp[3] == sapply(apsimx_json$Children, function(x) x$Name))
+  ## At this level I select among simulation children
+  ## upp[3] is typically "Simulation"
+  n3 <- apsimx_json$Children[[wl3]]
+  ## Look for the first reasonable parameter
+  wl4 <- which(upp[4] == sapply(n3$Children, function(x) x$Name))
+  ## This is super dumb but I do not know how to do it otherwise
+  ## Length is equal to 5
+  if(upp.lngth == 5){
+    if(upp[5] %in% names(n3$Children[[wl4]])){
+      value <- n3$Children[[wl4]][[upp[5]]]
     }else{
-      print(str_list(x))
-      stop("Can't convert list to data.frame")
-    } 
-  }
-
-  ## The problem is that some elements might be null
-  winn <- !sapply(x, function(x) is.null(x)) ## which is not null
-  x0 <- x[winn]
-  tmp <- NULL
-  for(i in seq_along(x0)){
-    nms.x0 <- names(x0)[i]
-    if(!names(x0)[i] %in% c("Children", "Code", "Parameters")){
-      tmp <- rbind(tmp, as.data.frame(unlist(x0[i])))
-    }
-    
-    if(names(x0)[i] == "Children"){
-      lchildren <- length(x0$Children)
-      tmp <- rbind(tmp, paste0("List of length: ", lchildren))
-      rnms <- row.names(tmp)
-      rnms[i] <- "Children"
-      row.names(tmp) <- rnms
-    }
-    
-    if(names(x0)[i] == "Code"){
-      tmp <- rbind(tmp, paste0("C# code..."))
-      rnms <- row.names(tmp)
-      rnms[i] <- "C# code"
-      row.names(tmp) <- rnms
-    }
-    
-    if(names(x0)[i] == "Parameters"){
-      tmp <- rbind(tmp, paste0("Parameters..."))
-      rnms <- row.names(tmp)
-      rnms[i] <- "Parameters"
-      row.names(tmp) <- rnms
+      wl5 <- which(upp[5] == sapply(n3$Children[[wl4]]$Children, function(x) x$Name))
+      if(length(wl5) == 0) stop("Parameter not found at level 5")
+      value <- n3$Children[[wl4]]$Children[[wl5]][[upp[5]]]
     }
   }
-  
-  if(!is.null(x0$Name)){
-    names(tmp) <- x$Name
-  }else{
-    if(!is.null(names(x)[winn])) names(tmp) <- names(x)[winn]
-  } 
-  tmp
-}
-
-
-## The idea of this function is that it will return the position where the 
-## pattern is found and also the node
-## The trick is that the previous function does not quite give me what I want
-#' @title grep but for json list
-#' @name grep_json_list
-#' @description recursive grep adapted for a json list
-#' @param pattern as in grep
-#' @param x object (a list)
-#' @param ignore.case as in grep
-#' @param search.depth search depth for the list (to prevent endless search)
-#' @param how argument passed to \link{rapply}
-#' @return It returns a list with the found object, the json path and the positions in the list.
-#' @export
-grep_json_list <- function(pattern, x, ignore.case = FALSE, search.depth = 10, 
-                           how = c("unlist", "replace", "list")){
-  
-  ## Check first
-  hw <- match.arg(how)
-  rar <- rapply(x, function(x) grep(pattern, x, ignore.case = ignore.case),
-                how = hw)
-  # rar2 <- rapply(x, function(x) grep(pattern, names(x), ignore.case = ignore.case))
-  
-  # if(length(rar) == 0L && length(rar2) == 0)
-  #   stop("pattern not found")
-  if(length(rar) == 0L)
-    stop("pattern not found")
-  
-  positions <- ""
-  jsonpath <- ""
-  
-  for(i in 1:search.depth){
-    
-    if(is.list(x) && length(x) == 1) x <- x[[1]]
-    wgnp <- grep(pattern, x, ignore.case = ignore.case)
-    
-    if(length(wgnp) < 0.5) break
-    
-    if(!is.atomic(x) && !is.null(x$Name))
-      jsonpath <- paste0(jsonpath, ".", x$Name)
-    
-    if(!is.atomic(x) && length(wgnp) > 0)
-      positions <- paste0(positions, ".", wgnp)
-    
-    if(length(wgnp) == 1){
-      x <- x[[wgnp]]  
+  ## Length is equal to 6
+  if(upp.lngth == 6){
+    n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+    wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
+    if(upp[6] %in% names(n4$Children[[wl5]])){
+      value <- n4$Children[[wl5]][[upp[6]]]
     }else{
-      xn <- list()
-      for(i in seq_along(wgnp)){
-        xn[[i]] <- x[[i]]
+      if("Parameters" %in% names(n4$Children[[wl5]])){
+        wp <- grep(upp[6], n4$Children[[wl5]]$Parameters)
+        if(length(wp) == 0) stop("Could not find parameter")
+        value <- n4$Children[[wl5]]$Parameters[[wp]]$Value
+      }else{
+        wl6 <- which(upp[6] == sapply(n4$Children[[wl5]]$Children, function(x) x$Name))
+        if(length(wl6) == 0) stop("Could not find parameter")
+        value <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]][[upp[6]]]          
       }
-      x <- xn
     }
   }
-  
-  return(list(x = x, jsonpath = jsonpath, positions = positions))
+  if(upp.lngth == 7){
+    n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+    wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
+    n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
+    wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
+    value <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]][[upp[7]]]
+    if(is.null(value)){
+      n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
+      if("Command" %in% names(n6)){
+        gpv <- grep(upp[7], n6$Command, value = TRUE)
+        value <- as.numeric(strsplit(gpv, "=")[[1]][2])
+      }
+    }
+  }
+  if(upp.lngth == 8){
+    n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+    wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
+    n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
+    wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
+    n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
+    wl7 <- which(upp[7] == sapply(n6$Children, function(x) x$Name))
+    value <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]][[upp[8]]]
+    if(is.null(value)){
+      n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
+      if("Command" %in% names(n7)){
+        gpv <- grep(upp[8], n7$Command, value = TRUE)
+        value <- as.numeric(strsplit(gpv, "=")[[1]][2])
+      }
+    }
+  }
+  if(upp.lngth == 9){
+    n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+    wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
+    n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
+    wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
+    n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
+    wl7 <- which(upp[7] == sapply(n6$Children, function(x) x$Name))
+    n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
+    wl8 <- which(upp[8] == sapply(n7$Children, function(x) x$Name))
+    value <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]][[upp[9]]] 
+    if(is.null(value)){
+      n8 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]
+      if("Command" %in% names(n8)){
+        gpv <- grep(upp[9], n8$Command, value = TRUE)
+        value <- as.numeric(strsplit(gpv, "=")[[1]][2])
+      }
+    }
+  }
+  if(upp.lngth == 10){
+    n4 <- apsimx_json$Children[[wl3]]$Children[[wl4]]
+    wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
+    n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
+    wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
+    n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
+    wl7 <- which(upp[7] == sapply(n6$Children, function(x) x$Name))
+    n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
+    wl8 <- which(upp[8] == sapply(n7$Children, function(x) x$Name))
+    n8 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]
+    wl9 <- which(upp[9] == sapply(n8$Children, function(x) x$Name))
+    value <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]$Children[[wl9]][[upp[10]]]
+    if(is.null(value)){
+      n9 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]$Children[[wl9]]
+      if("Command" %in% names(n9)){
+        gpv <- grep(upp[10], n9$Command, value = TRUE)
+        value <- as.numeric(strsplit(gpv, "=")[[1]][2])
+      }
+    }
+  }
+  return(value)
 }
 
-## This version of grep is not exposed at the moment
-grep_json_list1 <- function(pattern, x, ...){
-  
-  tmp <- rapply(x, function(x,...) grep(pattern = pattern, x = x, value = TRUE, ...), ...)
-  
-  ans <- vector("list", length = length(tmp))
-  
-  for(i in seq_along(tmp)){
-    ans[[i]] <- tmp[[i]]
-  }
-  
-  return(ans)
-}
+

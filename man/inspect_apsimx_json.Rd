@@ -18,7 +18,7 @@ inspect_apsimx_json(
 
 \item{src.dir}{directory containing the .apsimx or .json file to be inspected; defaults to the current working directory}
 
-\item{parm}{string or regular expression for partial matching.}
+\item{parm}{string or regular expression for partial matching. It can be two strings separated by a period to search within a node (child).}
 
 \item{search.depth}{default is 15. How deep should the algorithm explore the structure of the list.}
 
@@ -36,8 +36,6 @@ inspect an .apsimx or .json (JSON) file. It does not replace the GUI, but it can
 This function is a work in progress. There are many instances for which it will not work.
  
  It will probably only find the first instance that matches.
- 
- A future feature will be to search for a jspath instead of simply a regular expression
 }
 \examples{
 \donttest{
