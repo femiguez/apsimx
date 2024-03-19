@@ -1,6 +1,8 @@
 #'
-#' This function does not print anything (compared to inpsect_apsimx). The purpose is to return data
-#' contained in the APSIM simulation as a data.frame.
+#' This function does not print anything (compared to inspect_apsimx). The purpose is to return data
+#' contained in the APSIM simulation as a data.frame. It will return a \sQuote{list} when a data frame
+#' does not naturally accommodate the result. For example, the complete manager node does not naturally
+#' fit into a data frame structure. In some cases, multiple data frames are returned as part of lists.
 #'
 #' @title Extract data from an .apsimx (JSON) file
 #' @name extract_data_apsimx
@@ -10,7 +12,7 @@
 #' @param node specific node to be used either \sQuote{Clock}, \sQuote{Weather}, 
 #' \sQuote{Soil}, \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop},
 #'  \sQuote{Manager}, \sQuote{Operations} or \sQuote{Other}
-#' @param soil.child specific soil component to be inspected. The options vary depending on what is available (see details)
+#' @param soil.child specific soil component to be inspected. The options vary depending on what is available (see \link{inspect_apsimx})
 #' @param parm parameter to refine the extraction of the \sQuote{manager} list(\sQuote{parm},\sQuote{position}), use \sQuote{NA} for all the positions. \sQuote{parm} can be a regular expression for partial matching.
 #' @param digits number of decimals to print (default 3). Not used now because everything is a character.
 #' @param root root node label. In simulation structures such as factorials there will be multiple possible nodes. This can be specified by supplying an appropriate character.
@@ -237,6 +239,8 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
       str_list(apsimx_json)
       stop("more than one simulation found and no root node label has been specified \n select one of the children names above", call. = FALSE)   
     }else{
+      ## Parse root
+      root <- parse_root(root)
       if(length(root) > 3)
         stop("At the moment 3 is the maximum length for root for this function", call. = FALSE)
       if(length(root) == 1){
@@ -339,6 +343,8 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
   ## 'Models.Core.Zone'
   if(find.root){
     wcz <- grepl("Models.Core.Zone", parent.node)
+    if(sum(wcz) < 0.5)
+      stop("Core Zone Simulation not found", call. = FALSE)
     core.zone.node <- parent.node[wcz][[1]]$Children
     
     parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)    
@@ -1002,6 +1008,8 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
           parent.node <- apsimx_json$Children[[fcsn]]$Children            
         }
         wcz <- grepl("Models.Core.Zone", parent.node)
+        if(sum(wcz) < 0.5)
+          stop("Core Simulation not found", call. = FALSE)
         core.zone.node <- parent.node[wcz][[1]]$Children
         parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name) 
         parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)  

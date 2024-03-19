@@ -67,6 +67,8 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
       str_list(apsimx_json)
       stop("more than one simulation found and no root node label has been specified \n select one of the children names above")   
     }else{
+      ### Parse root
+      root <- parse_root(root)
       if(length(root) > 3)
         stop("At the moment 3 is the maximum length for root", call. = TRUE)
       

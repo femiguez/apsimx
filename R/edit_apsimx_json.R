@@ -180,9 +180,10 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       str_list(apsimx_json)
       stop("more than one simulation found and no root node label has been specified \n select one of the children names above")   
     }else{
+      ## Parse root
+      root <- parse_root(root)
       if(length(root) > 3)
         stop("At the moment 3 is the maximum length for root", call. = TRUE)
-      
       if(length(root) == 1){
         root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
         wcore1 <- grep(as.character(root), root.node.0.names)

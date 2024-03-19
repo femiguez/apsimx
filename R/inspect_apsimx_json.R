@@ -274,6 +274,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       str_list(apsimx_json)
       stop("more than one simulation found and no root node label has been specified \n select one of the children names above", call. = FALSE)   
     }else{
+      ### Parse root
+      root <- parse_root(root)
       if(length(root) > 3)
         stop("At the moment 3 is the maximum length for root for this function", call. = FALSE)
       if(length(root) == 1){
@@ -376,6 +378,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## 'Models.Core.Zone'
   if(find.root){
     wcz <- grepl("Models.Core.Zone", parent.node)
+    if(sum(wcz) < 0.5)
+      stop("Core Zone Simulation not found", call. = FALSE)
     core.zone.node <- parent.node[wcz][[1]]$Children
     
     parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)    
@@ -871,6 +875,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         if(parm[[1]] != 1)
           stop("First element of list should be equal to 1", call. = FALSE)
         parm.path.0 <- paste0(".", apsimx_json$Name) ## Root
+        if(length(parm) == 1)
+          stop("Length of 'parm' should be greated than 1", call. = FALSE)
         if(length(parm) >= 2){
           if(!is.numeric(parm[[2]]))
             stop("Second element of 'parm' should be numeric")
@@ -1021,6 +1027,8 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           parent.node <- apsimx_json$Children[[fcsn]]$Children            
         }
         wcz <- grepl("Models.Core.Zone", parent.node)
+        if(sum(wcz) < 0.5)
+          stop("Core Simulation not found", call. = FALSE)
         core.zone.node <- parent.node[wcz][[1]]$Children
         parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name) 
         parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)  
@@ -1433,4 +1441,25 @@ grep_json_list1 <- function(pattern, x, ...){
   }
   
   return(ans)
+}
+
+#### Parse 'root' ----
+parse_root <- function(root){
+  ## Add flexibility to what can be passed as 'root'
+  ## If root is a json path
+  if(!all(sapply(root, is.character)))
+    stop("'root' should be a character", call. = FALSE)
+  if(length(root) == 1){
+    if(grepl(".", root, fixed = TRUE)){
+      ## Split the root 
+      proot <- strsplit(root, ".", fixed = TRUE)[[1]]
+      wec <- which(proot == "") ## which empty character
+      if(length(wec) > 0){
+        root <- proot[-wec]  
+      }else{
+        root <- proot
+      }
+    }    
+  }
+  root
 }

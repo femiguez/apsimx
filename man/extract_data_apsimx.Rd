@@ -26,7 +26,7 @@ extract_data_apsimx(
 \sQuote{Soil}, \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop},
  \sQuote{Manager}, \sQuote{Operations} or \sQuote{Other}}
 
-\item{soil.child}{specific soil component to be inspected. The options vary depending on what is available (see details)}
+\item{soil.child}{specific soil component to be inspected. The options vary depending on what is available (see \link{inspect_apsimx})}
 
 \item{parm}{parameter to refine the extraction of the \sQuote{manager} list(\sQuote{parm},\sQuote{position}), use \sQuote{NA} for all the positions. \sQuote{parm} can be a regular expression for partial matching.}
 
@@ -41,8 +41,10 @@ a \link{data.frame} or a \link{list}. It does not return a path.
 Extract data from a JSON apsimx file.
 }
 \details{
-This function does not print anything (compared to inpsect_apsimx). The purpose is to return data
-contained in the APSIM simulation as a data.frame.
+This function does not print anything (compared to inspect_apsimx). The purpose is to return data
+contained in the APSIM simulation as a data.frame. It will return a \sQuote{list} when a data frame
+does not naturally accommodate the result. For example, the complete manager node does not naturally
+fit into a data frame structure. In some cases, multiple data frames are returned as part of lists.
 
 Have not written this section yet
 }
