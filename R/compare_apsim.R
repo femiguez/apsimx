@@ -8,6 +8,8 @@
 #' @param index index for merging objects. Default is \sQuote{Date}
 #' @param by factor for splitting the comparison, such as a treatment effect.
 #' @param labels labels for plotting and identification of objects.
+#' @param cRSS compute (weighted) combined residual sum of squares using some or all variables
+#' @param weights optional weights for computing the (weighted) combined sum of squares
 #' @param verbose whether to print indexes to console (default is FALSE).
 #' @note \sQuote{Con Corr} is the concordance correlation coefficient (https://en.wikipedia.org/wiki/Concordance_correlation_coefficient);
 #' \sQuote{ME} is the model efficiency (https://en.wikipedia.org/wiki/Nash%E2%80%93Sutcliffe_model_efficiency_coefficient)
@@ -39,6 +41,8 @@ compare_apsim <- function(...,
                           index = "Date",
                           by,
                           labels, 
+                          cRSS = FALSE,
+                          weights,
                           verbose = FALSE){
   
   outs <- list(...)
@@ -193,6 +197,18 @@ compare_apsim <- function(...,
       }
       k <- k + 1
     }
+    #### Compute cRSS (combined Residual Sum of Squares) ----
+    if(cRSS){
+      sndout1 <- grep(".1", names(out.mrg), fixed = TRUE, value = TRUE)
+      sndout2 <- grep(".2", names(out.mrg), fixed = TRUE, value = TRUE)
+      dout1 <- subset(out.mrg, select = sndout1)
+      dout2 <- subset(out.mrg, select = sndout2)
+      diffs <- as.matrix(dout1) - as.matrix(dout2)
+      if(missing(weights)) weights <- rep(1, ncol(diffs))
+      crss <- sum(weights * colSums(diffs^2, na.rm = TRUE)) 
+    }else{
+      crss <- NA
+    }
   }
   
   if(!missing(variable)){
@@ -235,7 +251,7 @@ compare_apsim <- function(...,
   attr(out.mrg, "out.names") <- o.nms
   attr(out.mrg, "length.outs") <- n.outs
   attr(out.mrg, "index") <- index
-  out.mrg <- structure(list(out.mrg = out.mrg, index.table = ans),
+  out.mrg <- structure(list(out.mrg = out.mrg, index.table = ans, cRSS = crss),
                        class = "out_mrg")
   invisible(out.mrg)
 }

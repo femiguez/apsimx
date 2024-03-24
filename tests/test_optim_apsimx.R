@@ -13,6 +13,7 @@ extd.dir <- system.file("extdata", package = "apsimx")
 ## extd.dir <- "~/Dropbox/apsimx/inst/extdata"
 
 ## I won't routinely run this
+#### First set of tests ----
 if(FALSE){
   
   ## One model run takes ~4 seconds
@@ -41,7 +42,7 @@ if(FALSE){
                                     display.available = FALSE, 
                                     verbose = FALSE)
   
-  edit_apsimx_replacement("Wheat-opt-ex.apsimx")
+  ## edit_apsimx_replacement("Wheat-opt-ex.apsimx")
   
   ## Visualize the data
   ggplot(sim0, aes(Date, Wheat.AboveGround.Wt)) + 
@@ -206,7 +207,7 @@ if(FALSE){
   
 }
 
-#### Classic ####
+#### Classic #### 
 if(FALSE){
 
   tmp <- tempdir()
@@ -450,4 +451,123 @@ if(FALSE){
                         hessian = TRUE,
                         initial.values = c(1.2, 120))
   end <- Sys.time() ## It took 28.97 minutes and it did not find the right answer
+}
+
+#### Testing grid method ----
+if(FALSE){
+  
+  data(obsWheat)
+  
+  system.time(sim0 <- apsimx("Wheat-opt-ex.apsimx", src.dir = extd.dir)) 
+  
+  cmp.b4 <- compare_apsim(obsWheat, sim0, labels = c("obs", "sim"), cRSS = TRUE)
+  ### pre-optimized log-RSS
+  log(cmp.b4$cRSS)
+  
+  ## Creating a grid for two parameters
+  pp1 <- inspect_apsimx_replacement("Wheat-opt-ex.apsimx", 
+                                    src.dir = extd.dir, 
+                                    node = "Wheat", 
+                                    node.child = "Leaf",
+                                    node.subchild = "Photosynthesis",
+                                    node.subsubchild = "RUE",
+                                    parm = "FixedValue",
+                                    print.path = TRUE,
+                                    display.available = FALSE, 
+                                    verbose = FALSE)
+  
+  pp2 <- inspect_apsimx_replacement("Wheat-opt-ex.apsimx", 
+                                    src.dir = extd.dir, 
+                                    node = "Wheat", 
+                                    node.child = "Cultivars",
+                                    node.subchild = "USA",
+                                    node.subsubchild = "Yecora",
+                                    parm = "BasePhyllochron",
+                                    print.path = TRUE,
+                                    display.available = FALSE, 
+                                    verbose = FALSE)
+
+  pgrd <- expand.grid(RUE = c(0.8, 1, 1.2, 1.4, 1.6, 1.8, 2.0), 
+                      BasePhyllochron = c(40, 60, 80, 100, 120, 140, 160))  
+  
+  tmp <- tempdir()
+  setwd(tmp)
+  file.copy(file.path(extd.dir, "Ames.met"), ".")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+  
+  system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp)) ## This takes 4-5 seconds
+
+  start <- Sys.time()
+  wop.grd <- optim_apsimx("Wheat-opt-ex.apsimx",
+                          src.dir = tmp,
+                          parm.paths = c(pp1, pp2),
+                          data = obsWheat, 
+                          type = "grid",
+                          replacement = c(TRUE, TRUE),
+                          initial.values = list(RUE = 1.9, BasePhyllochron = 100),
+                          verbose = TRUE,
+                          grid = pgrd)
+  end <- Sys.time() ## It took 6.1 minutes 
+  
+  ggplot(wop.grd$res, aes(x = RUE, y = lrss)) + 
+    facet_wrap(~BasePhyllochron) + 
+    geom_point() + 
+    geom_line()
+  
+  pp1 <- inspect_apsimx_replacement("Wheat-opt-ex.apsimx", 
+                                    src.dir = ".", 
+                                    node = "Wheat", 
+                                    node.child = "Leaf",
+                                    node.subchild = "Photosynthesis",
+                                    node.subsubchild = "RUE",
+                                    parm = "FixedValue",
+                                    print.path = TRUE,
+                                    display.available = FALSE, 
+                                    verbose = FALSE)
+ 
+  pp2 <- inspect_apsimx_replacement("Wheat-opt-ex.apsimx", 
+                                    src.dir = ".", 
+                                    node = "Wheat", 
+                                    node.child = "Cultivars",
+                                    node.subchild = "USA",
+                                    node.subsubchild = "Yecora",
+                                    parm = "BasePhyllochron",
+                                    print.path = TRUE,
+                                    display.available = FALSE, 
+                                    verbose = FALSE)
+  
+ ## Compare to optim
+  start <- Sys.time()
+  wop.nm <- optim_apsimx("Wheat-opt-ex.apsimx",
+                          src.dir = tmp,
+                          parm.paths = c(pp1, pp2),
+                          data = obsWheat, 
+                          replacement = c(TRUE, TRUE),
+                          initial.values = list(RUE = 1.8, BasePhyllochron = 120))
+  end <- Sys.time() ## It took 5.7 minutes 
+  
+  ### Maybe we need a fine grid around the true values?
+  pgrd3 <- expand.grid(RUE = c(1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9), 
+                      BasePhyllochron = c(70, 75, 80, 85, 90, 95, 100))  
+  
+  start <- Sys.time()
+  wop.grd3 <- optim_apsimx("Wheat-opt-ex.apsimx",
+                          src.dir = tmp,
+                          parm.paths = c(pp1, pp2),
+                          data = obsWheat, 
+                          type = "grid",
+                          replacement = c(TRUE, TRUE),
+                          initial.values = list(RUE = 1.83834, BasePhyllochron = 120.732057166),
+                          verbose = TRUE,
+                          grid = pgrd3)
+  end <- Sys.time() ## It took 6.63 minutes 
+  
+  ggplot(wop.grd3$res, aes(x = RUE, y = lrss)) + 
+    facet_wrap(~BasePhyllochron) + 
+    geom_point() + 
+    geom_line()
+
+  system.time(sim.a4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp)) ## This takes 4-5 seconds
+  wop.grd3  
+  cmp <- compare_apsim(obsWheat, sim.a4, labels = c("obs", "sim"), cRSS = TRUE)
 }

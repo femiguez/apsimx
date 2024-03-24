@@ -9,13 +9,14 @@ optim_apsimx(
   src.dir = ".",
   parm.paths,
   data,
-  type = c("optim", "nloptr", "mcmc", "ucminf"),
+  type = c("optim", "nloptr", "mcmc", "ucminf", "grid"),
   weights,
   index = "Date",
   parm.vector.index,
   replacement,
   root,
   initial.values,
+  grid,
   ...
 )
 }
@@ -30,7 +31,8 @@ It is recommended that you use \code{\link{inspect_apsimx}} for this}
 \item{data}{data frame with the observed data. By default is assumes there is a 'Date' column for the index.}
 
 \item{type}{Type of optimization. For now, \code{\link[stats]{optim}}, and, if available, \code{\link[nloptr]{nloptr}} or 
-\sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}. Option \sQuote{ucminf} uses the \code{\link[ucminf]{ucminf}} function.}
+\sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}. Option \sQuote{ucminf} uses the \code{\link[ucminf]{ucminf}} function.
+If \sQuote{type} is \sQuote{grid}, then a grid can be passed and no optimization will be performed.}
 
 \item{weights}{Weighting method or values for computing the residual sum of squares.}
 
@@ -50,6 +52,9 @@ the \sQuote{replacement} component. Its length should be equal to the length or 
 If the parameters to be optimized correspond to a single value, then a simple numeric vector can be supplied.
 If one or more of the parameters represent a vector in APSIM, then the initial values should be passed as a
 list. At the moment, it is not possible to check if these are appropriate (correct name and length).}
+
+\item{grid}{grid used when \sQuote{type = grid}. Columns should be parameters and rows different values for 
+those parameters.}
 
 \item{...}{additional arguments to be passed to the optimization algorithm. See \code{\link[stats]{optim}}}
 }

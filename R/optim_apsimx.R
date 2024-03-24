@@ -32,6 +32,7 @@
 #' @param data data frame with the observed data. By default is assumes there is a 'Date' column for the index.
 #' @param type Type of optimization. For now, \code{\link[stats]{optim}}, and, if available, \code{\link[nloptr]{nloptr}} or 
 #' \sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}. Option \sQuote{ucminf} uses the \code{\link[ucminf]{ucminf}} function.
+#' If \sQuote{type} is \sQuote{grid}, then a grid can be passed and no optimization will be performed.
 #' @param weights Weighting method or values for computing the residual sum of squares. 
 #' @param index Index for filtering APSIM output. Typically, \dQuote{Date}, but it can be c(\dQuote{report}, \dQuote{Date}) for 
 #' multiple simulations
@@ -45,6 +46,8 @@
 #' If the parameters to be optimized correspond to a single value, then a simple numeric vector can be supplied.
 #' If one or more of the parameters represent a vector in APSIM, then the initial values should be passed as a
 #' list. At the moment, it is not possible to check if these are appropriate (correct name and length). 
+#' @param grid grid used when \sQuote{type = grid}. Columns should be parameters and rows different values for 
+#' those parameters.
 #' @param ... additional arguments to be passed to the optimization algorithm. See \code{\link[stats]{optim}}
 #' @note When computing the objective function (residual sum-of-squares) different variables are combined.
 #' It is common to weight them since they are in different units. If the argument weights is not supplied
@@ -59,13 +62,14 @@
 
 optim_apsimx <- function(file, src.dir = ".", 
                          parm.paths, data, 
-                         type = c("optim", "nloptr", "mcmc", "ucminf"), 
+                         type = c("optim", "nloptr", "mcmc", "ucminf", "grid"), 
                          weights, 
                          index = "Date",
                          parm.vector.index,
                          replacement,
                          root,
                          initial.values,
+                         grid,
                          ...){
   
   .check_apsim_name(file)
@@ -154,8 +158,8 @@ optim_apsimx <- function(file, src.dir = ".",
   iparms <- vector("list", length = length(parm.paths))
   names(iparms) <- parm.paths
   
-  if(missing(initial.values))
-    stop("Initial values should be supplied. (Working on a fix for this)", call. = FALSE)
+#  if(missing(initial.values))
+#    stop("Initial values should be supplied. (Working on a fix for this)", call. = FALSE)
   
   ## How do I retrieve the current value I want to optimize?
   for(i in seq_along(parm.paths)){
@@ -345,6 +349,99 @@ optim_apsimx <- function(file, src.dir = ".",
     op$value <- op$objective 
     op$convergence <- op$status
   }
+
+  #### Developing grid ----  
+  if(type == "grid"){
+    
+    if(missing(grid))
+      stop("'grid' is required when 'type' = 'grid'", call. = FALSE)
+    
+    grid <- as.data.frame(grid)
+    oiparms <- iparms ## Original initial parameters
+    
+    if(ncol(grid) != length(parm.paths))
+      stop("Number of columns in grid should be equal to the number of parameters")
+    
+    ## Check that the name in the grid appears somewhere in the parameter path
+    for(.ii in seq_along(parm.paths)){
+      is.dot.present <- grepl(".", names(grid)[.ii], fixed = TRUE)
+      if(is.dot.present){
+        ## The first element should match simulation names
+        fspe <- strsplit(names(grid)[.ii], ".", fixed = TRUE)[[1]] 
+        ## First and second parameter elements
+        apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
+        simulation.names <- sapply(apsimx_json$Children, FUN = function(x) x$Name)
+        ippgn1 <- grepl(fspe[1], parm.paths[.ii], ignore.case = TRUE)
+        if(!ippgn1){
+          cat("Name in first elelment grid name:", fspe[1], "\n")
+          cat("parameter name", parm.paths[.ii], "\n")
+          warning("names in first element of grid object name do not match parameter path name")  
+        }
+        ippgn2 <- grepl(fspe[2], parm.paths[.ii], ignore.case = TRUE)
+        if(!ippgn2){
+          cat("Name in second element grid names:", fspe[2], "\n")
+          cat("parameter name", parm.paths[.ii], "\n")
+          warning("names in second element of grid object name do not match parameter path name")  
+        }
+      }else{
+        ippgn <- grepl(names(grid)[.ii], parm.paths[.ii], ignore.case = TRUE)
+        if(!ippgn){
+          cat("Name in grid:", names(grid)[.ii], "\n")
+          cat("parameter name", parm.paths[.ii], "\n")
+          warning("names in grid object do not match parameter path name")  
+        }
+      }
+    }
+    
+    xargs <- list(...)
+    if(!is.null(xargs$verbose)){
+      verbose <- ifelse(xargs$verbose, TRUE, FALSE)
+    }
+      
+    start <- Sys.time()
+    lrss.vec <- vector("list", length = nrow(grid))
+    for(i in seq_len(nrow(grid))){
+      
+      iparms <- as.list(grid[i, ])
+      lrss <- obj_fun(cfs = rep(1, length(parm.paths)),
+                     parm.paths = parm.paths,
+                     data = data,
+                     iparms = iparms,
+                     weights = weights,
+                     index = index,
+                     parm.vector.index = parm.vector.index,
+                     replacement = replacement,
+                     root = root)
+      lrss.vec[[i]] <- lrss
+      
+      if(verbose){
+        cat("Simulation:", i, 
+            "- Time:", round(Sys.time() - start), 
+            "- Progress:", round(i/nrow(grid) * 100), "(%) \n")
+      }
+    }
+    ## Run the model one more time with the best result
+    ans.grid <- cbind(grid, lrss = unlist(lrss.vec))
+    wminlrss <- which.min(ans.grid$lrss)
+    ### 'Optimized' parameters are the ratio over the original values
+    op.par <- as.vector(unlist(grid[wminlrss,])) / as.vector(unlist(oiparms))
+    best.parms <- grid[wminlrss,]
+    lrss <- obj_fun(cfs = rep(1, length(parm.paths)),
+                    parm.paths = parm.paths,
+                    data = data,
+                    iparms = best.parms,
+                    weights = weights,
+                    index = index,
+                    parm.vector.index = parm.vector.index,
+                    replacement = replacement,
+                    root = root)
+    
+    op <- list(par = op.par, 
+               value = min(ans.grid$lrss),
+               counts = nrow(grid),
+               convergence = NA,
+               message = "grid")
+  }
   
   if(type == "mcmc"){
     ## Setting defaults
@@ -388,12 +485,24 @@ optim_apsimx <- function(file, src.dir = ".",
     return(op.mcmc)
   }
   
-  ans <- structure(list(pre.rss = exp(pre.lrss), 
-                        post.rss = exp(op$value), ## This is weighted RSS
-                        weights = weights,
-                        iaux.parms = iparms, op = op, n = nrow(data),
-                        parm.vector.index = parm.vector.index),
-                   class = "optim_apsim")
+  if(type != "grid"){
+    ans <- structure(list(pre.rss = exp(pre.lrss), 
+                          post.rss = exp(op$value), ## This is weighted RSS
+                          weights = weights,
+                          iaux.parms = iparms, op = op, n = nrow(data),
+                          res = NA,
+                          parm.vector.index = parm.vector.index),
+                     class = "optim_apsim")    
+  }else{
+    ans <- structure(list(pre.rss = exp(pre.lrss), 
+                          post.rss = exp(min(ans.grid$lrss)), ## This is smallest RSS
+                          weights = weights,
+                          iaux.parms = oiparms, op = op, n = nrow(data),
+                          res = ans.grid,
+                          parm.vector.index = parm.vector.index),
+                     class = "optim_apsim")
+  }
+
   return(ans)
 }
 

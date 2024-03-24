@@ -502,28 +502,32 @@ if(inspect.factorial.test.parm.path){
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, c(3, 5)), print.path = TRUE)
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 0))
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 8, 0))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 0))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 3), print.path = TRUE)
   pp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = ".Simulations.AgPasture.Field", print.path = TRUE)
   i <- "WhiteClover.apsimx"
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = 3)
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 2, 5, 6, 2, 0))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 2, 5, 6, 0))
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = ".Simulations.Simulation.Field")
   ## Developing/Testing list/grep
   ## This should work for SimpleGrazing and it doesn't at the moment
   i <- "AgPasture.apsimx"
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 0)) ## This works now
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 2)) ## This does not work
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 0)) 
+  (pp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 2), print.path = TRUE))
   rootp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3))
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list("SimpleGrazingFrequencyString")) 
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", 
-                 parm = list("AgPastureExample", "SimpleGrazingFrequencyString")) 
-  
-  inspect_apsimx(i, src.dir = tmp.dir, root = "AgPastureExample") 
-  inspect_apsimx(i, src.dir = tmp.dir, root = "AgPastureExample", 
-                 node = "Other", parm = list("SimpleGrazingFrequencyString", "SimpleGrazingResidual"))
+  # rut <- strsplit(rootp, ".", fixed = TRUE)[[1]][3]
+  # inspect_apsimx(i, src.dir = tmp.dir, node = "Other", root = rut,
+  #                parm = list("SimpleGrazingFrequencyString")) 
+  # inspect_apsimx(i, src.dir = tmp.dir, node = "Other", 
+  #                parm = list("AgPastureExample", "SimpleGrazingFrequencyString")) 
+  # 
+  # inspect_apsimx(i, src.dir = tmp.dir, root = "AgPastureExample", node = "Other") 
+  # inspect_apsimx(i, src.dir = tmp.dir, root = "AgPastureExample", 
+  #                node = "Other", parm = list("SimpleGrazingFrequencyString", "SimpleGrazingResidual"))
   
   ## This works now, but not for all parameters, not sure why
   inspect_apsimx_json(i, src.dir = tmp.dir, parm = "AgPastureExample.SimpleGrazingFrequencyString")
-  inspect_apsimx_json(i, src.dir = tmp.dir, parm = "AgPastureExample.SimpleMin")
+  inspect_apsimx_json(i, src.dir = tmp.dir, parm = "AgPastureExample.SimpleMinGrazable")
   inspect_apsimx_json(i, src.dir = tmp.dir, parm = "AgPastureExample.GrazingRotationType")
   
   

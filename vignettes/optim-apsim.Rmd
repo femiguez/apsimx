@@ -37,7 +37,7 @@ I like to emphasize here the importance of thinking deeply about whether paramet
 
 3. Is the management information accurate?
 
-Clearly, if there are any problems, issues or inaccuracies which are derived from these three sources of information, then calibrating or tweaking crop parameters to compensate for those errors will not result in a useful model. In concrete terms, as an example: Are you modifying the radition use efficiency parameter to compensate for incorrect planting date or fertilizer inputs? Running an optimization algorithm is easier than having to think hard about the scientific questions, the mechanisms and the structure of the model.
+Clearly, if there are any problems, issues or inaccuracies which are derived from these three sources of information, then calibrating or tweaking crop parameters to compensate for those errors will not result in a useful model. In concrete terms, as an example: Are you modifying the radiation use efficiency parameter to compensate for incorrect planting date or fertilizer inputs? Running an optimization algorithm is easier than having to think hard about the scientific questions, the mechanisms and the structure of the model.
 
 Given this disclaimer, I provide simple functions which connect APSIM with optimization routines. These are  **optim_apsim** and **optim_apsimx**. These functions work best for situations when the function being optimized is smooth (i.e. small changes in the inputs result in small changes in the output without jumps or discontinuities) and the parameters being optimized are continuous. This is: that both input parameters and outputs can take any real value. However, several of the optimization algorithms, such as the default 'Nelder-Mead' work for non-differentiable functions.
 
@@ -61,7 +61,8 @@ Generates the paths for the radiation use efficiency and extinction coefficient 
 
 * data = data frame with the observed measurement which will be compared to APSIM output. It is important that the names match. This is the names given in the output of an APSIM simulation should have the same names as the column names in this data frame so that they can be aligned. Only one observation is allowed per Date.
 
-* type = type of optimization. The default is to use **optim**. It is also possible to use the **nloptr** package or **mcmc** via the **BayesianTools** package (as of version 1.959).
+* type = type of optimization. The default is to use **optim**. It is also possible to use the **nloptr** package, **mcmc** via the **BayesianTools** package, or **ucminf**. More recently, (since version 2.7.4) there is an option for **grid** which requires an input grid of parameter
+values.
 
 * weights = weights to apply when multiple variables are being optimized. See help file for more details.
 
@@ -69,11 +70,14 @@ Generates the paths for the radiation use efficiency and extinction coefficient 
 
 * parm.vector.index = some paths point to a vector of parameters, but sometimes only one element of that vector needs to be optimized. In this case provide the index for which element of the vector needs to be optimized. If some of the parameters need this index while others do not, include a zero for those parameter vectors which are not indexed. 
 
-* ... = additional arguments to be passed to **optim**. For example, you can include lower and upper bounds and change the optimization algorithm (in this case 'L-BFGS-B'). Also, with 'hessian = TRUE' you can obtain confidence intervals. See **optim** help file and documentation. Other options for either **nloptr** or **mcmc**.
+* grid = a grid with columns as the parameters that will vary from simulation to simulation.
+Rows should contain different parameter value combinations.
+
+* ... = additional arguments to be passed to **optim**. For example, you can include lower and upper bounds and change the optimization algorithm (in this case 'L-BFGS-B'). Also, with 'hessian = TRUE' you can obtain confidence intervals. See **optim** help file and documentation. Other options for either **nloptr** or **mcmc**. Argument **verbose** can be passed as well.
 
 ## optim_apsimx
 
-This function has a very similar structure to **optim_apsim**. The main difference is that at the moment it is required to supply the initial values for the parameters. It is also required to indicate whether each parameter is present in the 'replacement' component. As expalined before, use **inspect_apsimx** or **inspect_apsimx_replacement** to find the parameter paths.
+This function has a very similar structure to **optim_apsim**. The main difference is that at the moment it is required to supply the initial values for the parameters. It is also required to indicate whether each parameter is present in the 'replacement' component. As explained before, use **inspect_apsimx** or **inspect_apsimx_replacement** to find the parameter paths.
 
 # Wheat Example
 
