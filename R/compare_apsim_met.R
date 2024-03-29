@@ -396,7 +396,10 @@ summary.met <- function(object, ..., years, months, days, julian.days,
     stop("Either use days or julian.days but not both", call. = TRUE)
 
   ## Summarize information by year
-  if(!missing(years)) x <- x[x$year %in% years,]
+  if(!missing(years)){
+    #### Error message if years outside the range
+    x <- x[x$year %in% years,]
+  } 
   
   if(!missing(months)){
     if(length(months) == 1) months <- as.integer(months)
@@ -408,7 +411,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
                       Month = format(date.range, "%b"),
                       day = as.numeric(format(date.range, "%j")))
     if(inherits(months, "integer")){
-      if(months < 1 || months > 12)
+      if(any(months < 1) || any(months > 12))
         stop("months should be between 1 and 12", call. = FALSE)
       wch.months <- which(dat$month %in% months)
       x <- x[x$day %in% dat[wch.months, "day"],]
@@ -426,7 +429,7 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   if(!missing(days)){
     if(!inherits(days, "integer"))
       stop("days should be of class integer", call. = FALSE)
-    if(days < 1 || days > 31)
+    if(any(days < 1) || any(days > 31))
       stop("days should be between 1 and 31")
     ## Select days that fit the criteria
     date.range <- seq(as.Date("2012-01-01"), as.Date("2012-12-31"), by = "day")

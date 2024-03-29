@@ -477,7 +477,7 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
   
   file.name.path <- file.path(src.dir, file)
   
-  con <- DBI::dbConnect(RSQLite::SQLite(), file.name.path)
+  con <- DBI::dbConnect(RSQLite::SQLite(), file.name.path, flags = RSQLite::SQLITE_RO)
   ## create data frame for each table
   ## Find table names first
   table.names <- RSQLite::dbListTables(con)

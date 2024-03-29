@@ -96,7 +96,7 @@ pp <- inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir,
 inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
                 node = "Other", parm = list(1, 1, 5, 0))
 
-## This still works           
+## It is possible to look into folders using this method           
 inspect_apsimx("maize-manager-folder.apsimx", node = "Other", src.dir = extd.dir,
                parm = list("Manager", "Fertiliser", "Amount"))
 

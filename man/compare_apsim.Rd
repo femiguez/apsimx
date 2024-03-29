@@ -6,7 +6,16 @@
 \alias{plot.out_mrg}
 \title{Compare two or more apsim output objects}
 \usage{
-compare_apsim(..., variable, index = "Date", by, labels, verbose = FALSE)
+compare_apsim(
+  ...,
+  variable,
+  index = "Date",
+  by,
+  labels,
+  cRSS = FALSE,
+  weights,
+  verbose = FALSE
+)
 
 \method{print}{out_mrg}(x, ..., digits = 2)
 
@@ -33,6 +42,10 @@ compare_apsim(..., variable, index = "Date", by, labels, verbose = FALSE)
 \item{by}{variable in \sQuote{index} used for plotting}
 
 \item{labels}{labels for plotting and identification of objects.}
+
+\item{cRSS}{compute (weighted) combined residual sum of squares using some or all variables}
+
+\item{weights}{optional weights for computing the (weighted) combined sum of squares}
 
 \item{verbose}{whether to print indexes to console (default is FALSE).}
 

@@ -191,7 +191,7 @@ optim_apsimx <- function(file, src.dir = ".",
   }
   
   obj_fun <- function(cfs, parm.paths, data, iparms, weights,
-                      index, parm.vector.index, replacement, root){
+                      index, parm.vector.index, replacement, root, gpi){
     
     ## Need to edit the parameters in the simulation file or replacement
     for(i in seq_along(cfs)){
@@ -229,9 +229,19 @@ optim_apsimx <- function(file, src.dir = ".",
     }
     
     ## Run simulation  
-    sim <- try(apsimx(file = file, src.dir = src.dir,
-                     silent = TRUE, cleanup = TRUE, value = "report"),
-               silent = TRUE)
+    if(missing(gpi)){
+      sim <- try(apsimx(file = file, src.dir = src.dir,
+                        silent = TRUE, cleanup = TRUE, value = "report"),
+                 silent = TRUE)      
+    }else{
+      new.file.name <- paste0(tools::file_path_sans_ext(file), "-", gpi, ".apsimx")
+      file.copy(from = file.path(src.dir, file),
+                to = file.path(src.dir, new.file.name))
+      sim <- try(apsimx(file = new.file.name, src.dir = src.dir,
+                        silent = TRUE, cleanup = TRUE, value = "report"),
+                 silent = TRUE)      
+    }
+
     
     if(inherits(sim, "try-error")) return(NA)
     
@@ -394,32 +404,81 @@ optim_apsimx <- function(file, src.dir = ".",
     }
     
     xargs <- list(...)
+    verbose <- FALSE; cores <- 1L
     if(!is.null(xargs$verbose)){
       verbose <- ifelse(xargs$verbose, TRUE, FALSE)
+      pb <- utils::txtProgressBar(min = 1, max = nrow(grid), style = 3)
+    }
+    
+    if(!is.null(xargs$cores)){
+      cores <- xargs$cores
+      acores <- parallel::detectCores()
+      if(cores > acores)
+        stop("'cores' argument should be less than the available cores")
+      if(cores > 1){
+        cl <- parallel::makeCluster(cores)
+        ## Unless I rename the file there will be a conflict
+        evars1 <- c('file', 'obj_fun', 'parm.paths', 'data', 'iparms', 'weights')
+        evars2 <- c('index', 'parm.vector.index', 'replacement', 'root')
+        evars3 <- c('grid')
+        parallel::clusterExport(cl, c(evars1, evars2, evars3), 
+                                environment())
+        parallel::clusterEvalQ(cl, {library('apsimx')})
+      }
     }
       
     start <- Sys.time()
-    lrss.vec <- vector("list", length = nrow(grid))
-    for(i in seq_len(nrow(grid))){
-      
-      iparms <- as.list(grid[i, ])
-      lrss <- obj_fun(cfs = rep(1, length(parm.paths)),
-                     parm.paths = parm.paths,
-                     data = data,
-                     iparms = iparms,
-                     weights = weights,
-                     index = index,
-                     parm.vector.index = parm.vector.index,
-                     replacement = replacement,
-                     root = root)
-      lrss.vec[[i]] <- lrss
-      
-      if(verbose){
-        cat("Simulation:", i, 
-            "- Time:", round(Sys.time() - start), 
-            "- Progress:", round(i/nrow(grid) * 100), "(%) \n")
+    if(cores == 1L){
+      lrss.vec <- vector("list", length = nrow(grid))
+      for(i in seq_len(nrow(grid))){
+        
+        iparms <- as.list(grid[i, ])
+        lrss <- obj_fun(cfs = rep(1, length(parm.paths)),
+                        parm.paths = parm.paths,
+                        data = data,
+                        iparms = iparms,
+                        weights = weights,
+                        index = index,
+                        parm.vector.index = parm.vector.index,
+                        replacement = replacement,
+                        root = root)
+        lrss.vec[[i]] <- lrss
+        
+        if(isTRUE(verbose)){
+          utils::setTxtProgressBar(pb, i)
+        }
+      }
+      close(pb)
+    }else{
+      lrss.vec <- parallel::parLapply(cl,
+                                      seq_len(nrow(grid)),
+                                      function(i) {
+                                        lrss <- obj_fun(cfs = rep(1, length(parm.paths)),
+                                                        parm.paths = parm.paths,
+                                                        data = data,
+                                                        iparms = as.list(grid[i, ]),
+                                                        weights = weights,
+                                                        index = index,
+                                                        parm.vector.index = parm.vector.index,
+                                                        replacement = replacement,
+                                                        root = root,
+                                                        gpi = i)
+                                      })
+      parallel::stopCluster(cl)
+      lrss.vec <- do.call(c, lrss.vec)
+    }
+
+    ## It looks like I still need to clean up when running parallel
+    if(cores > 1){
+      for(i in seq_len(nrow(grid))){
+        for(j in c("apsimx", "db", "db-wal", "db-shm")){
+          to.delete <- paste0(tools::file_path_sans_ext(file), "-", i, ".", j)
+          file.to.delete <- file.path(src.dir, to.delete)
+          if(file.exists(file.to.delete)) file.remove(file.to.delete)          
+        }
       }
     }
+
     ## Run the model one more time with the best result
     ans.grid <- cbind(grid, lrss = unlist(lrss.vec))
     wminlrss <- which.min(ans.grid$lrss)

@@ -66,7 +66,7 @@
 #' inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
 #'                 node = "Other", parm = list(1, 1, 5, 0))
 #' 
-#' ## This still works           
+#' ## It is possible to look into folders using this method           
 #' inspect_apsimx("maize-manager-folder.apsimx", node = "Other", src.dir = extd.dir,
 #'                parm = list("Manager", "Fertiliser", "Amount"))
 #' 
@@ -1053,103 +1053,115 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         if(length(parm) >= 7)  
           stop("Have not developed this yet", call. = FALSE)
       }else{
-        # if(length(parm) == 1){
-        #   tmpr <- grep_json_list(parm, apsimx_json$Children)
-        #   print(tmpr)
-        # }
-        warning("This is a work in progress")
-        #### node = 'Other' and list with characters ----
-        if(length(fcsn) > 1){
-          if(missing(root)){
-            ## In this case the first element of the list should be the root
-            if(length(parm) == 1)
-              stop("'parm' should be at least length equal to 2", call. = FALSE)
-            ## select one of the simulations
-            simulation.names <- sapply(apsimx_json$Children, FUN = function(x) x$Name)
-            wsim <- grep(parm[[1]], simulation.names)
-            if(length(wsim) == 0){
-              cat("Simulation names:", paste(simulation.names, collpse = " "), "\n")
-              stop("First element of 'parm' list does not match Simulation names", call. = FALSE)
-            }else{
-              fcsn <- wsim
-              parm <- parm[2:length(parm)]
-              if(parm[[1]] == "")
-                stop("'parm' is empty")
-            }
-            parent.node <- apsimx_json$Children[[fcsn]]$Children   
+        ## This is if the parm is just one term
+        parm.found <- FALSE
+        if(length(parm) == 1){
+          tparm1 <- try(inspect_apsimx_json(file = file, src.dir = src.dir, parm = parm[[1]]), silent = TRUE)
+          if(!inherits(tparm1, 'try-error')){
+            parm.path <- tparm1
+            parm.found <- TRUE
           }else{
-            ### root is present
-            if(length(root) == 1){
-              nms <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
-                            FUN.VALUE = "character")
-              fcsn <- grep(as.character(root), nms)
-              if(length(fcsn) == 0 || length(fcsn) > 1){
-                cat("Children:", nms, "\n")
-                stop("'root' not found. Choose one of the options above", call. = FALSE)
-              }
-              parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name)
-              parent.node <- apsimx_json$Children[[fcsn]]$Children
-            }else{
-              stop("Have not developed this yet")
-            }
+            stop("Parameter not found")
           }
-        }else{
-          parent.node <- apsimx_json$Children[[fcsn]]$Children            
         }
-        wcz <- grepl("Models.Core.Zone", parent.node)
-        if(sum(wcz) < 0.5)
-          stop("Core Simulation not found", call. = FALSE)
-        core.zone.node <- parent.node[wcz][[1]]$Children
-        parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name) 
-        parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)  
-        tmp <- core.zone.node
-        parm.path.2.1 <- parm.path.2
-        
-        if(length(parm) > 1){
-          for(i in 1:(length(parm) - 1)){
-            nms <- sapply(tmp, function(x) x$Name)
-            print(nms)
-            wcp <- grep(parm[[i]], nms)
-            if(length(wcp) == 0){
-              cat("Names: ", nms, "\n")
-              cat("parm[[i]]", parm[[i]], "\n")
-              stop("Parameter not found")
+        #### node = 'Other' and list with characters ----
+        if(!parm.found){
+          if(length(fcsn) > 1){
+            if(missing(root)){
+              ## In this case the first element of the list should be the root
+              if(length(parm) == 1)
+                stop("'parm' should be at least length equal to 2", call. = FALSE)
+              ## select one of the simulations
+              simulation.names <- sapply(apsimx_json$Children, FUN = function(x) x$Name)
+              wsim <- grep(parm[[1]], simulation.names)
+              if(length(wsim) == 0){
+                cat("Simulation names:", paste(simulation.names, collpse = " "), "\n")
+                stop("First element of 'parm' list does not match Simulation names", call. = FALSE)
+              }else{
+                fcsn <- wsim
+                parm <- parm[2:length(parm)]
+                if(parm[[1]] == "")
+                  stop("'parm' is empty")
+              }
+              parent.node <- apsimx_json$Children[[fcsn]]$Children   
+            }else{
+              ### root is present
+              if(length(root) == 1){
+                nms <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+                              FUN.VALUE = "character")
+                fcsn <- grep(as.character(root), nms)
+                if(length(fcsn) == 0 || length(fcsn) > 1){
+                  cat("Children:", nms, "\n")
+                  stop("'root' not found. Choose one of the options above", call. = FALSE)
+                }
+                parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name)
+                parent.node <- apsimx_json$Children[[fcsn]]$Children
+              }else{
+                stop("Have not developed this yet")
+              }
             }
-            tmp <- tmp[[wcp]]
-            if(!is.null(tmp$Children)) tmp <- tmp$Children
-            ## Build the parm.path
-            parm.path.2.1 <- paste0(parm.path.2.1, ".", nms[wcp])
-          }          
-        }else{
-          ## How do I find parm?
-          tmp.names <- sapply(tmp, FUN = function(x) x$Name)
-          wparm <- grep(parm[[1]], tmp.names)
-          if(length(wparm) == 1){
-            tmp <- tmp[[wparm]]
           }else{
-            #### Work in progress ----
-            for(j in seq_along(tmp)){
-              tmp.nms <- names(tmp[[j]])
-              for(jj in seq_along(parm)){
-                wtn <- grep(parm[[jj]], tmp.nms)
-                if(length(wtn) > 0){
-                  print(tmp[[j]][wtn])
+            parent.node <- apsimx_json$Children[[fcsn]]$Children            
+          }          
+        }
+
+        if(!parm.found){
+          wcz <- grepl("Models.Core.Zone", parent.node)
+          if(sum(wcz) < 0.5)
+            stop("Core Simulation not found", call. = FALSE)
+          core.zone.node <- parent.node[wcz][[1]]$Children
+          parm.path.1 <- paste0(parm.path.0, ".", apsimx_json$Children[[fcsn]]$Name) 
+          parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)  
+          tmp <- core.zone.node
+          parm.path.2.1 <- parm.path.2          
+        }
+
+        if(!parm.found){
+          if(length(parm) > 1){
+            for(i in 1:(length(parm) - 1)){
+              nms <- sapply(tmp, function(x) x$Name)
+              wcp <- grep(parm[[i]], nms)
+              if(length(wcp) == 0){
+                cat("Names: ", nms, "\n")
+                cat("parm[[i]]", parm[[i]], "\n")
+                stop("Parameter not found")
+              }
+              tmp <- tmp[[wcp]]
+              if(!is.null(tmp$Children)) tmp <- tmp$Children
+              ## Build the parm.path
+              parm.path.2.1 <- paste0(parm.path.2.1, ".", nms[wcp])
+            }          
+          }else{
+            ## How do I find parm?
+            tmp.names <- sapply(tmp, FUN = function(x) x$Name)
+            wparm <- grep(parm[[1]], tmp.names)
+            if(length(wparm) == 1){
+              tmp <- tmp[[wparm]]
+            }else{
+              #### Work in progress ----
+              for(j in seq_along(tmp)){
+                tmp.nms <- names(tmp[[j]])
+                for(jj in seq_along(parm)){
+                  wtn <- grep(parm[[jj]], tmp.nms)
+                  if(length(wtn) > 0){
+                    print(tmp[[j]][wtn])
+                  }
                 }
               }
             }
           }
+          
+          if(!is.null(tmp$Parameters)){
+            wp <- grep(parm[[length(parm)]], tmp$Parameters)
+            tmp2 <- tmp$Parameters[[wp]]
+            ## Process parameter path
+            parm.path <- paste0(parm.path.2.1, ".", tmp2$Key)
+            print(knitr::kable(as.data.frame(tmp2)))
+          }else{
+            parm.path <- parm.path.2.1
+            unpack_node(tmp)
+          }          
         }
-
-        if(!is.null(tmp$Parameters)){
-          wp <- grep(parm[[length(parm)]], tmp$Parameters)
-          tmp2 <- tmp$Parameters[[wp]]
-          ## Process parameter path
-          parm.path <- paste0(parm.path.2.1, ".", tmp2$Key)
-          print(knitr::kable(as.data.frame(tmp2)))
-        }else{
-          parm.path <- parm.path.2.1
-          unpack_node(tmp)
-        }        
       }
     }
   }

@@ -3,6 +3,7 @@
 ##
 ## 1. check should never fail. It should always return warnings
 ## 2. napad should work for many different tricky situations
+## 3. plotting and different combinations
 
 require(apsimx)
 
@@ -60,7 +61,7 @@ if(run.apsim.met && internet){
 }
 
 ## Testing the feature for adding a column to a met file
-if(run.apsim.met && internet){
+if(run.apsim.met){
   
   ## Testing adding a column
   extd.dir <- system.file("extdata", package = "apsimx")
@@ -87,7 +88,7 @@ if(run.apsim.met && internet){
     
 }
 
-if(run.apsim.met){
+if(run.apsim.met && internet){
  
   iem <- get_iem_apsim_met(lonlat = c(-93.77, 42.02), 
                            dates = c("2013-01-01","2013-12-31"))
@@ -111,13 +112,27 @@ if(run.apsim.met){
 
 }
 
-if(run.apsim.met){
+#### Different graph tests ----
+if(run.apsim.met && internet){
   
   ## Testing the graph functionality
   pwr <- get_power_apsim_met(lonlat = c(-93.77, 42.02), 
                              dates = c("1990-01-01","2020-12-31"))
   
-  ## Plotting using the density option
+  ### default plotting options
+  plot(pwr)
+  plot(pwr, climatology = TRUE)
+  plot(pwr, climatology = TRUE, years = 2015:2018)
+  plot(pwr, climatology = TRUE, cumulative = TRUE)
+  plot(pwr, climatology = TRUE, years = 2015:2018, cumulative = TRUE)
+  
+  plot(pwr, summary = TRUE)
+  plot(pwr, summary = TRUE, climatology = TRUE)
+  plot(pwr, summary = TRUE, met.var = "rain", climatology = TRUE)
+  
+  
+  
+  ## Plotting using the density option ----
   plot(pwr, plot.type = "density")
   plot(pwr, plot.type = "density", met.var = "radn")
   plot(pwr, plot.type = "density", met.var = "rain")
