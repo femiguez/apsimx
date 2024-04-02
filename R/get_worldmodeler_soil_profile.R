@@ -1,36 +1,47 @@
 
-#' @title Generate a synthetic APSIM soil profile from the World Modeler database
-#' @description Retrieves soil data from the World Modeler global database and converts it to an apsimx soil_profile object
+#' @title Obtain a synthetic APSIM soil profile from the World Modeler database
+#' @description Retrieves soil data from the World Modeler global database and (optionally) saves it to a soils file
 #' @name get_worldmodeler_soil_profile
 #' @param lonlat Longitude and latitude vector (e.g. c(-93, 42)) or matrix.
-#' @param fix whether to attempt to fix issues with the profile
-#' @param check whether to check the soil profile
+#' @param fix whether to fix the soil profiles
+#' @param check whether to check the soil profiles
 #' @param soil.name optional soil name
-#' @param verbose default is FALSE
-#' @param cleanup whether to delete temporary files
-#' @return it generates an object of class \sQuote{soil_profile}.
+#' @param wrt.dir optional directory where to save a file with \sQuote{soils} extension.
+#' If missing it will be written to a temporary directory.
+#' @param filename optional name to be used when saving the file
+#' @param verbose verbose argument passed to read_apsim_soils
+#' @param cleanup argument used to delete the file after download
+#' @return it creates a file with extension \sQuote{soils}
 #' @author Brian Collins (University of Southern Queensland) and Fernando Miguez
 #' @examples 
 #' \dontrun{
 #' ## Get soil profile properties for a single point
-#' ## This causes a fatal error at the moment
-#' ## This is why I don't run it
 #' if(FALSE){
-#'   sp1 <- get_worldmodeler_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
-#' 
-#'   ## Visualize
-#'   plot(sp1)
-#'   plot(sp1, property = "water")
+#'   tdir <- tempdir()
+#'   sp1 <- get_worldmodeler_soil_profile(lonlat = c(-93, 42), wrt.dir = tdir, 
+#'                                       filename = "temp_soils.soils")
+#'   plot(sp1[[1]], property = "Carbon")
 #' }
 #' }
 
 get_worldmodeler_soil_profile <- function(lonlat, fix = FALSE, check = FALSE, 
-                                          soil.name, 
+                                          soil.name, wrt.dir, filename,
                                           verbose = FALSE, cleanup = FALSE){
   
   ## Create temporary directory 
-  tmpdir <- tempdir()
+  if(missing(wrt.dir)){
+    wrt.dir <- tempdir()    
+  }else{
+    wrt.dir <- normalizePath(wrt.dir)
+  }
   
+  if(missing(filename)){
+    filename <- "wm_temp_soils.soils"
+  }else{
+    if(tools::file_ext(filename) != "soils")
+      stop("'filename' should have a '.soils' extention", call. = FALSE)
+  }
+
   if(inherits(lonlat, "numeric")){
     lonlat <- matrix(lonlat, nrow = 1)
   }
@@ -40,32 +51,32 @@ get_worldmodeler_soil_profile <- function(lonlat, fix = FALSE, check = FALSE,
   }
   
   ## Lonlat will be a matrix from now on
-  soil.node <- xml2::read_xml('<folder version="37" name = "Soils"></folder>')
+  soil.node <- xml2::read_xml('<soils version="37"></soils>')
   
   for(i in 1:nrow(lonlat)){
     x <- xml2::read_xml(paste0('https://worldmodel.csiro.au/apsimsoil?lon=', lonlat[i, 1], '&lat=',lonlat[i, 2]))
-    x <- xml2::xml_find_all(x, 'Soil')[[1]]
-    xml2::xml_set_attr(x, 'name', soil.name[i])
-    xml2::xml_add_child(soil.node, x, .copy=F)
+    xs <- xml2::xml_find_all(x, 'Soil')[[1]]
+    xml2::xml_set_attr(xs, 'name', soil.name[i])
+    xml2::xml_add_child(soil.node, xs, .copy = TRUE)
   } 
 
   ## Temporary file with soil 
-  xml2::write_html(soil.node, file = file.path(tmpdir, 'temps.soils')) 
-  soil_profile <- read_apsim_soils("temps.soils", src.dir = tmpdir, verbose = verbose)
-  
+  xml2::write_html(soil.node, file = file.path(wrt.dir, filename), options = c("format", "no_declaration")) 
+  soil_profile <- read_apsim_soils(filename, src.dir = wrt.dir, verbose = verbose)
+   
   if(fix){
     for(j in seq_len(nrow(lonlat))){
       soil_profile[[j]] <- fix_apsimx_soil_profile(soil_profile[[j]], verbose = verbose)
     }
-  } 
-  
+  }
+
   if(check){
     for(j in seq_len(nrow(lonlat))){
-      if(check) check_apsimx_soil_profile(soil_profile[[j]])    
+      if(check) check_apsimx_soil_profile(soil_profile[[j]])
     }
   }
-  
-  if(cleanup) unlink(tmpdir)
-  
+
+  if(cleanup) file.remove(file.path(wrt.dir, filename))
+
   return(soil_profile)
 }

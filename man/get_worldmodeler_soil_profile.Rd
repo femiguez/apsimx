@@ -2,13 +2,15 @@
 % Please edit documentation in R/get_worldmodeler_soil_profile.R
 \name{get_worldmodeler_soil_profile}
 \alias{get_worldmodeler_soil_profile}
-\title{Generate a synthetic APSIM soil profile from the World Modeler database}
+\title{Obtain a synthetic APSIM soil profile from the World Modeler database}
 \usage{
 get_worldmodeler_soil_profile(
   lonlat,
   fix = FALSE,
   check = FALSE,
   soil.name,
+  wrt.dir,
+  filename,
   verbose = FALSE,
   cleanup = FALSE
 )
@@ -16,33 +18,35 @@ get_worldmodeler_soil_profile(
 \arguments{
 \item{lonlat}{Longitude and latitude vector (e.g. c(-93, 42)) or matrix.}
 
-\item{fix}{whether to attempt to fix issues with the profile}
+\item{fix}{whether to fix the soil profiles}
 
-\item{check}{whether to check the soil profile}
+\item{check}{whether to check the soil profiles}
 
 \item{soil.name}{optional soil name}
 
-\item{verbose}{default is FALSE}
+\item{wrt.dir}{optional directory where to save a file with \sQuote{soils} extension.
+If missing it will be written to a temporary directory.}
 
-\item{cleanup}{whether to delete temporary files}
+\item{filename}{optional name to be used when saving the file}
+
+\item{verbose}{verbose argument passed to read_apsim_soils}
+
+\item{cleanup}{argument used to delete the file after download}
 }
 \value{
-it generates an object of class \sQuote{soil_profile}.
+it creates a file with extension \sQuote{soils}
 }
 \description{
-Retrieves soil data from the World Modeler global database and converts it to an apsimx soil_profile object
+Retrieves soil data from the World Modeler global database and (optionally) saves it to a soils file
 }
 \examples{
 \dontrun{
 ## Get soil profile properties for a single point
-## This causes a fatal error at the moment
-## This is why I don't run it
 if(FALSE){
-  sp1 <- get_worldmodeler_soil_profile(lonlat = c(-93, 42), fix = TRUE, verbose = FALSE)
-
-  ## Visualize
-  plot(sp1)
-  plot(sp1, property = "water")
+  tdir <- tempdir()
+  sp1 <- get_worldmodeler_soil_profile(lonlat = c(-93, 42), wrt.dir = tdir, 
+                                      filename = "temp_soils.soils")
+  plot(sp1[[1]], property = "Carbon")
 }
 }
 }
