@@ -9,7 +9,7 @@
   ...,
   years,
   met.var,
-  plot.type = c("ts", "area", "col", "density"),
+  plot.type = c("ts", "area", "col", "density", "anomaly"),
   cumulative = FALSE,
   facet = FALSE,
   climatology = FALSE,
@@ -27,7 +27,9 @@
 temperature (min and max) is displayed}
 
 \item{plot.type}{type of plot, default is \sQuote{ts} or time-series. 
-The options \sQuote{area} and \sQuote{col} are only available when summary = TRUE.}
+The options \sQuote{area} and \sQuote{col} are only available when summary = TRUE.
+Option \sQuote{density} produces a simple plot. Option \sQuote{anomaly} ignores
+argument cumulative is treated as TRUE regardless.}
 
 \item{cumulative}{default is FALSE. Especially useful for \sQuote{rain}.}
 
@@ -54,6 +56,7 @@ plot(ames, years = 2012:2015, cumulative = TRUE)
 ## for rain
 plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)
 plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE, climatology = TRUE)
+plot(ames, met.var = "rain", years = 2012:2015, plot.type = "anomaly")
 ## It is possible to add ggplot elements
 library(ggplot2)
 p1 <- plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)

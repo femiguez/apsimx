@@ -1019,6 +1019,8 @@ pp_apsim_met <- function(metfile, lat, sun_angle=0){
 #' temperature (min and max) is displayed
 #' @param plot.type type of plot, default is \sQuote{ts} or time-series. 
 #' The options \sQuote{area} and \sQuote{col} are only available when summary = TRUE.
+#' Option \sQuote{density} produces a simple plot. Option \sQuote{anomaly} ignores
+#' argument cumulative is treated as TRUE regardless.
 #' @param cumulative default is FALSE. Especially useful for \sQuote{rain}.
 #' @param facet whether to display the years in in different panels (facets). Not implemented yet.
 #' @param climatology logical (default FALSE). Whether to display the \sQuote{climatology}
@@ -1037,6 +1039,7 @@ pp_apsim_met <- function(metfile, lat, sun_angle=0){
 #' ## for rain
 #' plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)
 #' plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE, climatology = TRUE)
+#' plot(ames, met.var = "rain", years = 2012:2015, plot.type = "anomaly")
 #' ## It is possible to add ggplot elements
 #' library(ggplot2)
 #' p1 <- plot(ames, met.var = "rain", years = 2012:2015, cumulative = TRUE)
@@ -1044,7 +1047,7 @@ pp_apsim_met <- function(metfile, lat, sun_angle=0){
 #' }
 #' 
 plot.met <- function(x, ..., years, met.var, 
-                     plot.type = c("ts", "area", "col", "density"), 
+                     plot.type = c("ts", "area", "col", "density", "anomaly"), 
                      cumulative = FALSE,
                      facet = FALSE,
                      climatology = FALSE,
@@ -1065,11 +1068,19 @@ plot.met <- function(x, ..., years, met.var,
   value <- NULL; temperature <- NULL; maxt <- NULL; mint <- NULL;
   cum.met.var <- NULL; year <- NULL; Year <- NULL
   ## Calculate climatology before subsetting years
-  if(climatology){
+  if(climatology || plot.type == "anomaly"){
     maxt.climatology <- stats::aggregate(maxt ~ day, data = x, FUN = mean)
+    maxt.climatology.q25 <- stats::aggregate(maxt ~ day, data = x, FUN = quantile, probs = 0.25)
+    maxt.climatology.q75 <- stats::aggregate(maxt ~ day, data = x, FUN = quantile, probs = 0.75)
     mint.climatology <- stats::aggregate(mint ~ day, data = x, FUN = mean)
+    mint.climatology.q25 <- stats::aggregate(mint ~ day, data = x, FUN = quantile, probs = 0.25)
+    mint.climatology.q75 <- stats::aggregate(mint ~ day, data = x, FUN = quantile, probs = 0.75)
     rain.climatology <- stats::aggregate(rain ~ day, data = x, FUN = mean)
+    rain.climatology.q25 <- stats::aggregate(rain ~ day, data = x, FUN = quantile, probs = 0.25)
+    rain.climatology.q75 <- stats::aggregate(rain ~ day, data = x, FUN = quantile, probs = 0.75)
     radn.climatology <- stats::aggregate(radn ~ day, data = x, FUN = mean)
+    radn.climatology.q25 <- stats::aggregate(radn ~ day, data = x, FUN = quantile, probs = 0.25)
+    radn.climatology.q75 <- stats::aggregate(radn ~ day, data = x, FUN = quantile, probs = 0.75)
     met.var.climatology <- cbind(maxt.climatology, 
                                  mint.climatology[,"mint", drop = FALSE], 
                                  rain.climatology[,"rain", drop = FALSE], 
@@ -1284,6 +1295,60 @@ plot.met <- function(x, ..., years, met.var,
           ggplot2::xlab(met.var)
         print(gp1)    
       }
+    }
+    
+    #### Anomaly ----
+    if(plot.type == "anomaly"){
+      if(missing(met.var)) met.var <- "maxt"
+      
+      met.var.units <- switch(met.var,
+                              rain = "(mm)",
+                              radn = "(MJ/m2)",
+                              rh = "(%)",
+                              maxt = "(degrees C)",
+                              mint = "(degrees C)",
+                              vp = "(hPa)",
+                              windspeed = "(m/s)",
+                              Classic_TT = "(Cd)",
+                              HeatStress_TT = "(Cd)",
+                              CropHeatUnit_TT = "(Cd)",
+                              photoperiod = "(hours)")
+      
+      xdat <- NULL
+      for(i in seq_along(sort(unique(x$year)))){
+        yr <- sort(unique(x$year))[i]
+        x.tmp <- x[x$year == yr,]
+        if(nrow(x.tmp) < 365) next ## Skip incomplete years
+        if(nrow(x.tmp) == 366) x.tmp <- x.tmp[1:365,]
+        x.dag.maxt <- cumsum(x.tmp$maxt) - cumsum(maxt.climatology[1:365, "maxt"])
+        x.dag.mint <- cumsum(x.tmp$mint) - cumsum(mint.climatology[1:365, "mint"])
+        x.dag.rain <- cumsum(x.tmp$rain) - cumsum(rain.climatology[1:365, "rain"])
+        x.dag.radn <- cumsum(x.tmp$radn) - cumsum(radn.climatology[1:365, "radn"])
+        xdat <- rbind(xdat, data.frame(year = yr, day = 1:nrow(x.tmp), 
+                                       maxt = x.dag.maxt, 
+                                       mint = x.dag.mint,
+                                       rain = x.dag.rain,
+                                       radn = x.dag.radn))
+      }
+      xdat$year <- as.factor(xdat$year)
+      xdats <- subset(xdat, select = c("year", "day", met.var))
+      names(xdats) <- c("year", "day", "met.var")
+      if(isFALSE(climatology)){
+        gp1 <- ggplot2::ggplot() + 
+          ggplot2::geom_line(data = xdats, ggplot2::aes(x = day, y = met.var, color = year)) +
+          ggplot2::ylab(paste("Cumulative anomaly for", met.var, met.var.units)) + 
+          ggplot2::geom_hline(yintercept = 0)        
+      }else{
+        met.var.sd <- aggregate(met.var ~ day, data = xdats, FUN = sd)
+        met.var.mean <- aggregate(met.var ~ day, data = xdats, FUN = mean)
+        dmat <- data.frame(day = 1:365, q75 = met.var.sd$met.var + met.var.mean$met.var, q25 = met.var.mean$met.var - met.var.sd$met.var)
+        gp1 <- ggplot2::ggplot() + 
+          ggplot2::geom_ribbon(data = dmat, ggplot2::aes(x = day, ymin = q25, ymax = q75, fill = "25-75"), fill = "deepskyblue1", alpha = 0.2) +
+          ggplot2::geom_line(data = xdats, ggplot2::aes(x = day, y = met.var, color = year)) +
+          ggplot2::ylab(paste("Cumulative anomaly for", met.var, met.var.units)) + 
+          ggplot2::geom_hline(yintercept = 0)
+      }
+      plot(gp1)
     }
     ### The cumulative does not make much sense
     ### If summary is FALSE at least

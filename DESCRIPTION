@@ -1,6 +1,6 @@
 Package: apsimx
 Title: Inspect, Read, Edit and Run 'APSIM' "Next Generation" and 'APSIM' Classic
-Version: 2.7.46
+Version: 2.7.48
 Authors@R: person("Fernando", "Miguez", email = "femiguez@iastate.edu", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-4627-8329"))
 Description: The functions in this package inspect, read, edit and run files for 'APSIM' "Next Generation" ('JSON')
              and 'APSIM' "Classic" ('XML'). The files with an 'apsim' extension correspond to
@@ -43,4 +43,4 @@ Suggests:
         sf,
         ucminf
 LazyData: true
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
