@@ -453,19 +453,22 @@ optim_apsimx <- function(file, src.dir = ".",
       lrss.vec <- parallel::parLapply(cl,
                                       seq_len(nrow(grid)),
                                       function(i) {
-                                        lrss <- obj_fun(cfs = rep(1, length(parm.paths)),
-                                                        parm.paths = parm.paths,
-                                                        data = data,
-                                                        iparms = as.list(grid[i, ]),
-                                                        weights = weights,
-                                                        index = index,
-                                                        parm.vector.index = parm.vector.index,
-                                                        replacement = replacement,
-                                                        root = root,
-                                                        gpi = i)
+                                        lrss <- try(obj_fun(cfs = rep(1, length(parm.paths)),
+                                                            parm.paths = parm.paths,
+                                                            data = data,
+                                                            iparms = as.list(grid[i, ]),
+                                                            weights = weights,
+                                                            index = index,
+                                                            parm.vector.index = parm.vector.index,
+                                                            replacement = replacement,
+                                                            root = root,
+                                                            gpi = i), silent = TRUE)
+                                        if(inherits(lrss, 'try-error')) lrss <- NA
+                                        return(lrss)
                                       })
-      parallel::stopCluster(cl)
+      
       lrss.vec <- do.call(c, lrss.vec)
+      parallel::stopCluster(cl)
     }
 
     ## It looks like I still need to clean up when running parallel
@@ -554,7 +557,7 @@ optim_apsimx <- function(file, src.dir = ".",
                      class = "optim_apsim")    
   }else{
     ans <- structure(list(pre.rss = exp(pre.lrss), 
-                          post.rss = exp(min(ans.grid$lrss)), ## This is smallest RSS
+                          post.rss = exp(min(ans.grid$lrss, na.rm = TRUE)), ## This is smallest RSS
                           weights = weights,
                           iaux.parms = oiparms, op = op, n = nrow(data),
                           res = ans.grid,

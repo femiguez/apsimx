@@ -1594,6 +1594,13 @@ remove_column_apsim_met <- function(met, name){
       stop("'name' is not provided. It should be the name of the column to remove", call. = FALSE)
   }
   
+  if(!name %in% names(met)){
+    cat("name:", name, "\n")
+    cat("names in met:", names(met), "\n")
+    stop("'name' to be removed is not in 'met' object", call. = FALSE)
+  }
+    
+  
   attr(met, "units") <- attr(met, "units")[-which(names(met) == name)]   
   met[[name]] <- NULL
   attr(met, "colnames") <- names(met)
@@ -1625,6 +1632,10 @@ amp_apsim_met <- function(met, by.year = TRUE){
     amp.vec <- numeric(length(unique(Year)))
     for(i in seq_along(unique(met$Year))){
       tmp <- subset(met, Year == unique(met$Year)[i])
+      if(nrow(tmp) < 300){
+        warning(paste("Year:", unique(met$Year)[i], "was not used for calculating 'amp' because less than 300 days were present"))
+        next
+      } 
       mtemp <- (tmp$maxt + tmp$mint) / 2
       tmp <- add_column_apsim_met(met = tmp, value = mtemp, name = "m.temp", units = "(oC)")
       tmp.agg <- aggregate(m.temp ~ month, data = tmp, FUN = mean)
@@ -1640,10 +1651,11 @@ amp_apsim_met <- function(met, by.year = TRUE){
   }
 
   ## Clean up
-  met <- remove_column_apsim_met(met, "m.temp")
   met <- remove_column_apsim_met(met, "month")
   if(by.year){
     met <- remove_column_apsim_met(met, "Year")
+  }else{
+    met <- remove_column_apsim_met(met, "m.temp")
   }
   
   attr(met, "amp") <- paste("amp =", ans, "!calculated with the apsimx R package:", Sys.time())
