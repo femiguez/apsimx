@@ -237,8 +237,10 @@ optim_apsimx <- function(file, src.dir = ".",
       new.file.name <- paste0(tools::file_path_sans_ext(file), "-", gpi, ".apsimx")
       file.copy(from = file.path(src.dir, file),
                 to = file.path(src.dir, new.file.name))
+      xrgs <- xargs_apsimx(single.threaded = TRUE, cpu.count = 1L)
       sim <- try(apsimx(file = new.file.name, src.dir = src.dir,
-                        silent = TRUE, cleanup = TRUE, value = "report"),
+                        silent = TRUE, cleanup = TRUE, xargs = xrgs,
+                        value = "report"),
                  silent = TRUE)      
     }
 
@@ -463,7 +465,9 @@ optim_apsimx <- function(file, src.dir = ".",
                                                             replacement = replacement,
                                                             root = root,
                                                             gpi = i), silent = TRUE)
-                                        if(inherits(lrss, 'try-error')) lrss <- NA
+                                        if(inherits(lrss, 'try-error')){
+                                          lrss <- NA
+                                        } 
                                         return(lrss)
                                       })
       

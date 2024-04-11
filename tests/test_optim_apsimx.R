@@ -496,6 +496,9 @@ if(FALSE){
   file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
   
   system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp)) ## This takes 4-5 seconds
+  xrgs <- xargs_apsimx(single.threaded = TRUE)
+  system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp, xargs = xrgs)) ## This takes 4-5 seconds
+  
 
   start <- Sys.time()
   wop.grd <- optim_apsimx("Wheat-opt-ex.apsimx",
@@ -504,10 +507,12 @@ if(FALSE){
                           data = obsWheat, 
                           type = "grid",
                           replacement = c(TRUE, TRUE),
-                          initial.values = list(RUE = 1.9, BasePhyllochron = 100),
+                          initial.values = list(RUE = 1.2, BasePhyllochron = 120),
                           verbose = TRUE,
-                          grid = pgrd)
+                          grid = pgrd,
+                          cores = 2)
   end <- Sys.time() ## It took 6.1 minutes 
+                    ## Took 3.67 minutes using two cores and single-thread (Mac 2017)
   
   ggplot(wop.grd$res, aes(x = RUE, y = lrss)) + 
     facet_wrap(~BasePhyllochron) + 
@@ -557,9 +562,10 @@ if(FALSE){
                           data = obsWheat, 
                           type = "grid",
                           replacement = c(TRUE, TRUE),
-                          initial.values = list(RUE = 1.83834, BasePhyllochron = 120.732057166),
+                          initial.values = list(RUE = 1.5, BasePhyllochron = 90),
                           verbose = TRUE,
-                          grid = pgrd3)
+                          grid = pgrd3,
+                          cores = 3)
   end <- Sys.time() ## It took 6.63 minutes 
   
   ggplot(wop.grd3$res, aes(x = RUE, y = lrss)) + 

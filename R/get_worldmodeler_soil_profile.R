@@ -13,13 +13,12 @@
 #' @param cleanup argument used to delete the file after download
 #' @return it creates a file with extension \sQuote{soils}
 #' @author Brian Collins (University of Southern Queensland) and Fernando Miguez
+#' @export
 #' @examples 
 #' \dontrun{
 #' ## Get soil profile properties for a single point
 #' if(FALSE){
-#'   tdir <- tempdir()
-#'   sp1 <- get_worldmodeler_soil_profile(lonlat = c(-93, 42), wrt.dir = tdir, 
-#'                                       filename = "temp_soils.soils")
+#'   sp1 <- get_worldmodeler_soil_profile(lonlat = c(-93, 42))
 #'   plot(sp1[[1]], property = "Carbon")
 #' }
 #' }
