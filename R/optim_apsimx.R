@@ -466,7 +466,7 @@ optim_apsimx <- function(file, src.dir = ".",
                                                             root = root,
                                                             gpi = i), silent = TRUE)
                                         if(inherits(lrss, 'try-error')){
-                                          lrss <- NA
+                                          lrss <- -1
                                         } 
                                         return(lrss)
                                       })
@@ -488,6 +488,11 @@ optim_apsimx <- function(file, src.dir = ".",
 
     ## Run the model one more time with the best result
     ans.grid <- cbind(grid, lrss = unlist(lrss.vec))
+    if(verbose){
+      number.parse.fails <- nrow(ans.grid[ans.grid$lrss < 0, ])
+      cat("Number of parse fails:", number.parse.fails, "\n")
+    }
+    if(any(ans.grid$lrss < 0))  ans.grid[ans.grid$lrss < 0, "lrss"] <- NA
     wminlrss <- which.min(ans.grid$lrss)
     ### 'Optimized' parameters are the ratio over the original values
     op.par <- as.vector(unlist(grid[wminlrss,])) / as.vector(unlist(oiparms))

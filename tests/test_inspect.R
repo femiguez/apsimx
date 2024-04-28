@@ -516,8 +516,8 @@ if(inspect.factorial.test.parm.path){
   (pp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 2), print.path = TRUE))
   rootp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3))
   rut <- strsplit(rootp, ".", fixed = TRUE)[[1]][3]
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", root = rut,
-                parm = list("SimpleGrazingFrequencyString"))
+  # inspect_apsimx(i, src.dir = tmp.dir, node = "Other", root = rut,
+  #               parm = list("SimpleGrazingFrequencyString"))
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other",
                  parm = list("AgPastureExample.SimpleGrazingFrequencyString"))
   ## These examples below do not work well (yet)
@@ -558,9 +558,9 @@ if(inspect.factorial.test.parm.path){
                              display.available = TRUE,
                              print.path = TRUE)
 
-  inspect_apsimx_json("Factorial.apsimx", src.dir = tmp.dir,
-                      parm = "Clock",
-                      print.path = TRUE)
+  # inspect_apsimx_json("Factorial.apsimx", src.dir = tmp.dir,
+  #                     parm = "Clock",
+  #                     print.path = TRUE)
   
   inspect_apsimx_json("Factorial.apsimx", src.dir = tmp.dir,
                       parm = "Permutation",

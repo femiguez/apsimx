@@ -345,16 +345,18 @@ if(run.sens.apsimx.cores){
   sns <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
                      parm.paths = c(pp1, pp2),
                      grid = grd)
-  ## This takes 1.55 minutes
-  ## This now (Jan 2024) takes 2.14 minutes
+  ## This takes 1.55 minutes (Mac)
+  ## This now (Jan 2024) takes 2.14 minutes (Mac)
+  ## Windows (Apr 2024): 51 seconds
   summary(sns)
-  summary(sns, select = "Wheat.AboveGround.Wt")
-  summary(sns, select = "AboveGround")
+  summary(sns, select = "Wheat.AboveGround.Wt", scale = TRUE)
+  summary(sns, select = "AboveGround", scale = TRUE)
   
   sns.c2 <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
                         parm.paths = c(pp1, pp2),
                         grid = grd, cores = 2)
   ## This takes 1.29 minutes (Jan 2024)
+  ## Windows: NA
   ## Are they the same?
   (diff.sns.vs.sns.c2 <- sum(colSums(sns$grid.sims - sns.c2$grid.sims)))
   
@@ -369,12 +371,41 @@ if(run.sens.apsimx.cores){
   
   if(abs(diff.sns.vs.sns.c4) > 0.001)
     stop("Simulations with 4 cores do not match")
+
+  #### Summary = 'none' and 1L core
+  sns.s0 <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+                        parm.paths = c(pp1, pp2),
+                        summary = "none",
+                        grid = grd)
   
-  # sns.c8 <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
-  #                       parm.paths = c(pp1, pp2),
-  #                       grid = grd, cores = 8)
-  # 
-  # (diff.sns.vs.sns.c8 <- sum(colSums(sns$grid.sims - sns.c8$grid.sims)))
- 
+  sns.s0.c2 <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+                           parm.paths = c(pp1, pp2),
+                           summary = "none",
+                           grid = grd,
+                           cores = 2L)
+  ##require(arsenal) 
+  
+  ## Data.frames are not identical, but summary results are
+  ## cm1 <- arsenal::comparedf(sns.s0$grid.sims, sns.s0.c2$grid.sims)
+  sns.s0$grid.sims[78, "Fertiliser"]
+  sns.s0.c2$grid.sims[78, "Fertiliser"]
+  
+  summary(sns.s0, select = "AboveGround.Wt", scale = TRUE)
+  summary(sns.s0.c2, select = "AboveGround.Wt", scale = TRUE)
+  
+  summary(sns.s0, select = "AboveGround.N", scale = TRUE)
+  summary(sns.s0.c2, select = "AboveGround.N", scale = TRUE)
+  
+  summary(sns.s0, select = "Yield", scale = TRUE)
+  summary(sns.s0.c2, select = "Yield", scale = TRUE)
+  
+  ### What if I reorder the simulations?
+  snsd1 <- sns.s0$grid.sims
+  snsd2 <- sns.s0.c2$grid.sims
+
+  snsd1.o <- snsd1[order(snsd1$Fertiliser, snsd1$Population, snsd1$Date), ]
+  snsd2.o <- snsd2[order(snsd2$Fertiliser, snsd2$Population, snsd2$Date), ]
+  ##cmpd12 <- arsenal::comparedf(snsd2.o, snsd2.o)   
+  
   
 }

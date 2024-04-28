@@ -26,7 +26,7 @@
 #' @param save whether to save intermediate results. By default they will be saved as a
 #' \sQuote{csv} file using the name of the apsim file. This will replace \sQuote{apsimx} with \sQuote{csv}.
 #' It is also possible to provide the file name here (for example: \sQuote{Some_results.csv}).
-#' @param ... additional arguments (none used at the moment).
+#' @param ... additional arguments.
 #' @note The summary function is stored as an attribute of the data frame \sQuote{grid.sims}.
 #' @return object of class \sQuote{sens_apsim}, but really just a list with results from the evaluations.
 #' @export
@@ -239,7 +239,7 @@ sens_apsimx <- function(file, src.dir = ".",
       ## The first simulation will not be parallelized
       if(.Platform$OS.type == "unix"){
         if(core.counter == 1L){
-          ## Maybe I should edit the file and then delete it 
+          ## I edit the file and then delete it 
           ## to prevent conflicts with the file below
           file.to.run <- file.path(src.dir, paste0(tools::file_path_sans_ext(file),"-", .i, "-1.apsimx"))
           
@@ -421,6 +421,115 @@ sens_apsimx <- function(file, src.dir = ".",
               sim.sd <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
             }
           }          
+        }
+      }
+      #### Parallelizing code for Windows ----
+      if(.Platform$OS.type == "windows"){ 
+        ### Using future package
+        if(!requireNamespace("future", quietly = TRUE)){
+          warning("The future package is required for this option")
+          return(NULL)
+        }
+        j <- 1 ### I only need to run the code below once
+        if(j == 1){
+          future::plan(multisession, workers = 2)
+          file.wo.ext <- tools::file_path_sans_ext(file)
+          xrgs <- xargs_apsimx(single.threaded = TRUE, cpu.count = 1L)
+          j <- j + 1
+        }
+        if(core.counter == 1L){
+          new.file.name.1 <- paste0(file.wo.ext, "-", .i, "-1.apsimx")
+          file.copy(from = file.path(src.dir, file),
+                    to = file.path(src.dir, new.file.name.1))
+          sim1 <- future({
+                      tsim1 <- try(apsimx(file = new.file.name.1, src.dir = src.dir,
+                                         silent = TRUE, cleanup = TRUE, xargs = xrgs,
+                                         value = "report"), silent = TRUE)
+                      return(tsim1)                                          
+                      })
+          if(verbose > 1) cat("Started simulation on first core \n")
+          core.counter <- 2
+         next 
+        }else{
+          new.file.name.2 <- paste0(file.wo.ext, "-", .i, "-2.apsimx")
+          file.copy(from = file.path(src.dir, file),
+                    to = file.path(src.dir, new.file.name.2))
+          sim2 <- future({
+            tsim2 <- try(apsimx(file = new.file.name.2, src.dir = src.dir,
+                               silent = TRUE, cleanup = TRUE, xargs = xrgs,
+                               value = "report"), silent = TRUE)
+            return(tsim2)                                          
+          })
+          if(verbose > 1) cat("Started simulation on second core \n")
+          core.counter <- 1L
+        }
+        sim11 <- future::value(sim1)
+        sim21 <- future::value(sim2)
+
+        if(file.exists(new.file.name.1)){
+          if(verbose > 1) cat("File to delete 1:", new.file.name.1, "\n")
+          file.remove(new.file.name.1)          
+        }
+        
+        if(file.exists(new.file.name.2)){
+          if(verbose > 1) cat("File to delete 2:", new.file.name.2, "\n")
+          file.remove(new.file.name.2)          
+        }
+            
+        if(verbose > 1) cat("About to merge simulations from the two cores \n")    
+        simc <- list(sim1 = sim11, sim2 = sim21)
+        
+        if(inherits(simc[[1]], "try-error") && inherits(simc[[2]], "try-error")){
+          if(verbose > 1) cat("Both simulations failed \n")
+          if(summary != "none"){
+            mat <- matrix(ncol = ncol.class.numeric)  
+          }else{
+            mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+          }
+          sim.sd <- as.data.frame(mat)
+          names(sim.sd) <- nms.sim
+          sim.sd <- rbind(sim.sd, sim.sd) ## This duplicates the empty data.frame result
+          ## col.sim <- rbind(col.sim, sim.sd) - not sure if I need to delete this
+          ## next - not sure if I need to delete this
+        }
+        #### If the first simulation fails and the second one does not
+        if(inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
+          if(verbose > 1){
+            cat("Error type:", simc[[1]], "\n")
+            cat("First simulation failed \n")
+          }
+          if(summary != "none"){
+            mat <- matrix(ncol = ncol.class.numeric)  
+          }else{
+            mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+          }
+          sim.sd1 <- as.data.frame(mat)
+          names(sim.sd1) <- nms.sim
+          sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+          sim.sd <- rbind(sim.sd1, sim.sd2) 
+        }
+        ## If only the second simulation fails
+        if(!inherits(simc[[1]], "try-error") && inherits(simc[[2]], "try-error")){
+          if(verbose > 1){
+            cat("Error type:", simc[[2]], "\n")
+            cat("Second simulation failed \n")
+          }
+          if(summary != "none"){
+            mat <- matrix(ncol = ncol.class.numeric)  
+          }else{
+            mat <- matrix(nrow = nrow(sim), ncol = ncol.class.numeric)  
+          }
+          sim.sd2 <- as.data.frame(mat)
+          names(sim.sd2) <- nms.sim
+          sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+          sim.sd <- rbind(sim.sd1, sim.sd2) 
+        }
+        ## If both simulations are successful
+        if(!inherits(simc[[1]], "try-error") && !inherits(simc[[2]], "try-error")){
+          ## Before they are merged both should be data.frames
+          sim.sd1 <- sens_summary(simc[[1]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+          sim.sd2 <- sens_summary(simc[[2]], summary = summary, grid = grid, i.index = .i, col.class.numeric = col.class.numeric)
+          sim.sd <- do.call(rbind, list(sim.sd1, sim.sd2))
         }
       }
     }

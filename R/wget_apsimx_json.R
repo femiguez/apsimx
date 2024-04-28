@@ -40,7 +40,6 @@ get_apsimx_json <- function(model = "Wheat", wrt.dir = ".", cleanup = FALSE){
 #' @param edit.tag if the file is edited a different tag from the default \sQuote{-edited} can be used.
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
 #' @param verbose whether to print information about successful edit
-#' @param root supply the node postion in the case of multiple simulations such as factorials.
 #' @return it does not return an R object but it writes an apsimx file to disk
 #' @export
 #' @examples

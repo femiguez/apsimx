@@ -28,8 +28,6 @@ insert_replacement_node(
 \item{overwrite}{logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise}
 
 \item{verbose}{whether to print information about successful edit}
-
-\item{root}{supply the node postion in the case of multiple simulations such as factorials.}
 }
 \value{
 it does not return an R object but it writes an apsimx file to disk

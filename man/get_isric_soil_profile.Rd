@@ -71,7 +71,8 @@ FBiom does not depend on any soil property at the moment, should it? \cr
 \examples{
 \dontrun{
 ## Only run this if rest.isric.org is working
-rest.isric.on <- suppressWarnings(try(readLines("http://rest.isric.org", n = 1, warn = FALSE), silent = TRUE))
+rest.isric.on <- suppressWarnings(try(readLines("http://rest.isric.org", 
+n = 1, warn = FALSE), silent = TRUE))
 
 ## Get soil profile properties for a single point
 if(!inherits(rest.isric.on, "try-error")){

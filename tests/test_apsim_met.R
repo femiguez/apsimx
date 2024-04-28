@@ -161,3 +161,26 @@ if(run.apsim.met && internet){
   plot(pwr, plot.type = "density", met.var = "avg_maxt", summary = TRUE, climatology = TRUE, years = c(2012, 2019))
 
 }
+
+
+#### Testing anomaly features ----
+if(run.apsim.met && internet){
+  
+  ## Testing the graph functionality
+  pwr <- get_power_apsim_met(lonlat = c(-93.77, 42.02), 
+                             dates = c("1990-01-01","2020-12-31"))
+  
+  apwr1 <- summary(pwr, anomaly = TRUE)
+  apwr2 <- summary(pwr, anomaly = "rain_sum")
+  apwr3 <- summary(pwr, anomaly = "rain")
+  apwr4 <- summary(pwr, anomaly = "maxt")
+  apwr5 <- summary(pwr, anomaly = c("maxt", "rain"))
+  
+  plot(pwr, plot.type = "anomaly", summary = TRUE, met.var = "rain")
+  plot(pwr, plot.type = "anomaly", summary = TRUE, years = 2012:2015)
+  
+  plot(pwr, plot.type = "anomaly", summary = TRUE, met.var = c("avg_maxt", "rain_sum"))
+  plot(pwr, plot.type = "anomaly", summary = TRUE, years = 2012:2015, met.var = c("avg_maxt", "rain_sum"))
+  plot(pwr, plot.type = "anomaly", summary = TRUE, years = 2012:2015, met.var = c("rain_sum", "avg_maxt"))
+  
+}

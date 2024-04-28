@@ -53,13 +53,20 @@ Have not written this section yet
 extd.dir <- system.file("extdata", package = "apsimx")
 (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Clock")) 
 (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Weather"))
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Metadata")) 
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Physical")) 
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "SoilWater")) 
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Organic"))
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Chemical"))
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater"))
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialN"))
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+soil.child = "Metadata")) 
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+soil.child = "Physical")) 
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+soil.child = "SoilWater")) 
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+soil.child = "Organic"))
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+soil.child = "Chemical"))
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+soil.child = "InitialWater"))
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+soil.child = "InitialN"))
 (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "SurfaceOrganicMatter"))
 (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "MicroClimate"))
 (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop")) 

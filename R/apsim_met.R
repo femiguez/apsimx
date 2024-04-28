@@ -1066,21 +1066,23 @@ plot.met <- function(x, ..., years, met.var,
   ## Global variables?
   day <- NULL; cum.maxt <- NULL; Years <- NULL; cum.mint <- NULL;
   value <- NULL; temperature <- NULL; maxt <- NULL; mint <- NULL;
-  cum.met.var <- NULL; year <- NULL; Year <- NULL
+  cum.met.var <- NULL; year <- NULL; Year <- NULL; q25 <- NULL;
+  q75 <- NULL; tav <- NULL; tav1 <- NULL; tav2 <- NULL; 
+  InitialValues <- NULL 
   ## Calculate climatology before subsetting years
   if(climatology || plot.type == "anomaly"){
     maxt.climatology <- stats::aggregate(maxt ~ day, data = x, FUN = mean)
-    maxt.climatology.q25 <- stats::aggregate(maxt ~ day, data = x, FUN = quantile, probs = 0.25)
-    maxt.climatology.q75 <- stats::aggregate(maxt ~ day, data = x, FUN = quantile, probs = 0.75)
+    maxt.climatology.q25 <- stats::aggregate(maxt ~ day, data = x, FUN = stats::quantile, probs = 0.25)
+    maxt.climatology.q75 <- stats::aggregate(maxt ~ day, data = x, FUN = stats::quantile, probs = 0.75)
     mint.climatology <- stats::aggregate(mint ~ day, data = x, FUN = mean)
-    mint.climatology.q25 <- stats::aggregate(mint ~ day, data = x, FUN = quantile, probs = 0.25)
-    mint.climatology.q75 <- stats::aggregate(mint ~ day, data = x, FUN = quantile, probs = 0.75)
+    mint.climatology.q25 <- stats::aggregate(mint ~ day, data = x, FUN = stats::quantile, probs = 0.25)
+    mint.climatology.q75 <- stats::aggregate(mint ~ day, data = x, FUN = stats::quantile, probs = 0.75)
     rain.climatology <- stats::aggregate(rain ~ day, data = x, FUN = mean)
-    rain.climatology.q25 <- stats::aggregate(rain ~ day, data = x, FUN = quantile, probs = 0.25)
-    rain.climatology.q75 <- stats::aggregate(rain ~ day, data = x, FUN = quantile, probs = 0.75)
+    rain.climatology.q25 <- stats::aggregate(rain ~ day, data = x, FUN = stats::quantile, probs = 0.25)
+    rain.climatology.q75 <- stats::aggregate(rain ~ day, data = x, FUN = stats::quantile, probs = 0.75)
     radn.climatology <- stats::aggregate(radn ~ day, data = x, FUN = mean)
-    radn.climatology.q25 <- stats::aggregate(radn ~ day, data = x, FUN = quantile, probs = 0.25)
-    radn.climatology.q75 <- stats::aggregate(radn ~ day, data = x, FUN = quantile, probs = 0.75)
+    radn.climatology.q25 <- stats::aggregate(radn ~ day, data = x, FUN = stats::quantile, probs = 0.25)
+    radn.climatology.q75 <- stats::aggregate(radn ~ day, data = x, FUN = stats::quantile, probs = 0.75)
     met.var.climatology <- cbind(maxt.climatology, 
                                  mint.climatology[,"mint", drop = FALSE], 
                                  rain.climatology[,"rain", drop = FALSE], 
@@ -1102,6 +1104,7 @@ plot.met <- function(x, ..., years, met.var,
 
   ## Need to make a copy for at least this case
   if(plot.type == "density" && climatology) x2 <- x
+  if(plot.type == "anomaly" && summary) x2 <- x
 
   if(!missing(years)){
     x <- x[x$year %in% years,]
@@ -1376,9 +1379,11 @@ plot.met <- function(x, ..., years, met.var,
     if(any(met.var %in% c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint")))
       ylabs <- "Temperature (degree C)"
     
-    if(any(grepl("rain_sum", met.var)) && length(met.var) > 1)
-      stop("If 'rain_sum' is chosen, it should be the only met variable", call. = FALSE)
-    
+    if(plot.type != "anomaly"){
+      if(any(grepl("rain_sum", met.var)) && length(met.var) > 1)
+        stop("If 'rain_sum' is chosen, it should be the only met variable", call. = FALSE)      
+    }
+
     if(any(met.var %in% c("rain_sum")))
       ylabs <- "Rainfall (mm)"
     
@@ -1480,6 +1485,71 @@ plot.met <- function(x, ..., years, met.var,
           print(gp1)      
         }
       }
+    }
+    
+    if(plot.type == "anomaly"){
+      if(missing(met.var)) 
+        stop("'met.var' is missing with no default", call. = FALSE)
+      
+      ax2 <- summary(x2, anomaly = met.var)
+
+      if(length(grep("anomaly", names(ax2))) == 1){
+        if(missing(years)){
+          gav <- grep("anomaly", names(ax2), value = TRUE)
+          ax2$tav <- ax2[[gav]]
+          gp1 <- ggplot2::ggplot(data = ax2, ggplot2::aes(x = tav, y = 0)) + 
+            ggplot2::geom_point() + 
+            ggplot2::geom_vline(xintercept = 0) + 
+            ggplot2::xlab(paste("Anomaly", met.var, " (%)")) +
+            ggplot2::ylab("") + 
+            ggplot2::scale_y_continuous(breaks = NULL)
+        }else{
+          gav <- grep("anomaly", names(ax2), value = TRUE)
+          ax2$tav <- ax2[[gav]]
+          sax2y <- subset(ax2, year %in% years)
+          sax2y$Year <- as.factor(sax2y$year)
+          gp1 <- ggplot2::ggplot() + 
+            ggplot2::geom_point(data = ax2, ggplot2::aes(x = tav, y = 0)) + 
+            ggplot2::geom_point(data = sax2y, ggplot2::aes(x = tav, y = 0, color = Year), size = 4) + 
+            ggplot2::geom_vline(xintercept = 0) + 
+            ggplot2::xlab(paste("Anomaly", met.var, " (%)")) + 
+            ggplot2::ylab("") +
+            ggplot2::scale_y_continuous(breaks = NULL)
+        }
+      }
+      
+      if(length(grep("anomaly", names(ax2))) > 1){
+        
+        if(length(grep("anomaly", names(ax2))) > 2){
+          cat("Variables:", grep("anomaly", names(ax2), value = TRUE), "\n")
+          stop("Select 'met.var' so that there are only two variables", call. = FALSE)
+        }
+          
+        #### Select only the variables needed
+        tavs <- grep("anomaly", names(ax2), value = TRUE)
+        ax2$tav1 <- ax2[[tavs[1]]]
+        ax2$tav2 <- ax2[[tavs[2]]]
+        
+        if(missing(years)){
+          gp1 <- ggplot2::ggplot(data = ax2, ggplot2::aes(x = tav1, y = tav2)) + 
+            ggplot2::geom_point() + 
+            ggplot2::geom_hline(yintercept = 0) + 
+            ggplot2::geom_vline(xintercept = 0) + 
+            ggplot2::xlab(paste("Anomaly", gsub("anomaly_", "", tavs[1]), " (%)")) + 
+            ggplot2::ylab(paste("Anomaly", gsub("anomaly_", "", tavs[2]), " (%)"))
+        }else{
+          sax2y <- subset(ax2, year %in% years)
+          sax2y$Year <- as.factor(sax2y$year)
+          gp1 <- ggplot2::ggplot() + 
+            ggplot2::geom_point(data = ax2, ggplot2::aes(x = tav1, y = tav2)) + 
+            ggplot2::geom_point(data = sax2y, ggplot2::aes(x = tav1, y = tav2, color = Year), size = 4) +
+            ggplot2::geom_hline(yintercept = 0) + 
+            ggplot2::geom_vline(xintercept = 0) + 
+            ggplot2::xlab(paste("Anomaly", gsub("anomaly_", "", tavs[1]), " (%)")) + 
+            ggplot2::ylab(paste("Anomaly", gsub("anomaly_", "", tavs[2]), " (%)"))
+        }
+      }
+      print(gp1)
     }
   }
   invisible(gp1)
@@ -1667,6 +1737,8 @@ amp_apsim_met <- function(met, by.year = TRUE){
 #' for an object of class \sQuote{met}
 #' @title Calculates attribute amp for an object of class \sQuote{met}
 #' @param met object of class \sQuote{met}
+#' @param by.year whether to compute tav for each year and then average (default is TRUE)
+#' @param na.rm whether to remove missing values (NAs). Default is TRUE.
 #' @return an object of class \sQuote{met} with a recalculation of annual mean temperature amplitude 
 #' @export
 tav_apsim_met <- function(met, by.year = TRUE, na.rm = TRUE){
@@ -1690,18 +1762,17 @@ tav_apsim_met <- function(met, by.year = TRUE, na.rm = TRUE){
     ans <- mean(tav.vec)
   }else{
     ## Alternative simpler method
-    if(method == "mean"){
       mtemp <- (met$maxt + met$mint) / 2
       met <- add_column_apsim_met(met = met, value = mtemp, name = "m.temp", units = "(oC)")
       met.agg <- aggregate(m.temp ~ mnth, data = met, FUN = mean)
       ans <- round(max(met.agg$m.temp) - min(met.agg$m.temp), 2)    
-    }    
   }
   
   ## Clean up
-  met <- remove_column_apsim_met(met, "m.temp")
   if(by.year){
     met <- remove_column_apsim_met(met, "Year")
+  }else{
+    met <- remove_column_apsim_met(met, "m.temp")  
   }
   
   attr(met, "tav") <- paste("tav =", ans, "! calculated average annual temperature", Sys.time())

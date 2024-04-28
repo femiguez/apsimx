@@ -29,7 +29,7 @@ If missing it will be written to a temporary directory.}
 
 \item{filename}{optional name to be used when saving the file}
 
-\item{verbose}{verbose argument passed to read_apsim_soils}
+\item{verbose}{verbose argument passed to \sQuote{read_apsim_soils}}
 
 \item{cleanup}{argument used to delete the file after download}
 }
@@ -42,12 +42,11 @@ Retrieves soil data from the World Modeler global database and (optionally) save
 \examples{
 \dontrun{
 ## Get soil profile properties for a single point
-if(FALSE){
-  tdir <- tempdir()
-  sp1 <- get_worldmodeler_soil_profile(lonlat = c(-93, 42), wrt.dir = tdir, 
-                                      filename = "temp_soils.soils")
-  plot(sp1[[1]], property = "Carbon")
-}
+  sp1 <- get_worldmodeler_soil_profile(lonlat = c(-93, 42))
+  
+  if(inherits(sp1[[1]], 'soil_profile')){
+    plot(sp1[[1]], property = "Carbon")
+  }
 }
 }
 \author{

@@ -8,6 +8,10 @@ tav_apsim_met(met, by.year = TRUE, na.rm = TRUE)
 }
 \arguments{
 \item{met}{object of class \sQuote{met}}
+
+\item{by.year}{whether to compute tav for each year and then average (default is TRUE)}
+
+\item{na.rm}{whether to remove missing values (NAs). Default is TRUE.}
 }
 \value{
 an object of class \sQuote{met} with a recalculation of annual mean temperature amplitude

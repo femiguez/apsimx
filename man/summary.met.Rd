@@ -13,6 +13,7 @@
   julian.days,
   compute.frost = FALSE,
   frost.temperature = 0,
+  anomaly,
   check = FALSE,
   verbose = FALSE,
   na.rm = FALSE,
@@ -22,7 +23,7 @@
 \arguments{
 \item{object}{object of class \sQuote{met}}
 
-\item{...}{optional argument (none used at the momemt)}
+\item{...}{optional argument (none used at the moment)}
 
 \item{years}{optional argument to subset years}
 
@@ -42,6 +43,9 @@ frost statistics.}
 
 \item{frost.temperature}{value to use for the calculation of the frost 
 period (default is zero).}
+
+\item{anomaly}{whether to compute the anomaly. Default is FALSE. 
+It could be TRUE (for all variables) or a character vector for a specific set of variables.}
 
 \item{check}{logical (default FALSE). Whether to \sQuote{check} the \sQuote{met} object.}
 
