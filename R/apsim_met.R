@@ -1380,15 +1380,14 @@ plot.met <- function(x, ..., years, met.var,
       ylabs <- "Temperature (degree C)"
     
     if(plot.type != "anomaly"){
-      if(any(grepl("rain_sum", met.var)) && length(met.var) > 1)
+      if(any(grepl("rain_sum", met.var)) && length(met.var) > 1){
+        cat("Selected met variables:", met.var, "\n")
         stop("If 'rain_sum' is chosen, it should be the only met variable", call. = FALSE)      
+      }
     }
 
     if(any(met.var %in% c("rain_sum")))
       ylabs <- "Rainfall (mm)"
-    
-    if(any(grepl("radn", met.var)) && length(met.var) > 2)
-      stop("If 'radn' is chosen, it should not be mixed with other variables", call. = FALSE)
     
     if(any(met.var %in% c("radn_sum", "radn_avg")))
       ylabs <- "Radiation (MJ/m2)"

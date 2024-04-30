@@ -18,6 +18,8 @@ if(run.test.isric.workflow){
     
     plot(sp2[[1]])
     
+    ## The code below now should add LL15, KL and XF
+    sp3 <- get_isric_soil_profile(lonlat = c(-93, 42), fix = TRUE, xargs = list(crops = "Oilpalm"))
     ## Only get SSURGO tables
     ## stbls <- get_ssurgo_tables(lonlat = c(-93, 42))    
   }

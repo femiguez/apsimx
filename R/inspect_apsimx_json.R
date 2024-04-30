@@ -490,6 +490,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           if(!ii %in% c("Crop LL", "Crop KL", "Crop XF")){
             col.nms <- c(col.nms, ii)
             vals <- as.vector(unlist(tmp))
+            if(is.null(vals)) vals <- rep(".", length(tmp))
             soil.d2 <- cbind(soil.d2, vals)                        
           }
         }

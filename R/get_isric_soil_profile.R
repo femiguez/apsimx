@@ -22,7 +22,8 @@
 #' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
 #' @param verbose argument passed to the fix function.
 #' @param physical whether soil physical properties are obtained from the data base or through \sQuote{SR}, Saxton and Rawls pedotransfer functions.
-#' @param xargs additional arguments passed to \code{\link{apsimx_soil_profile}} or \sQuote{apsimx:::approx_soil_variable} function.
+#' @param xargs additional arguments passed to \code{\link{apsimx_soil_profile}} or \sQuote{apsimx:::approx_soil_variable} function. At the moment these are:
+#' \sQuote{soil.bottom}, \sQuote{method} and \sQuote{nlayers}.
 #' @return it generates an object of class \sQuote{soil_profile}.
 #' @details Variable which are directly retrieved and a simple unit conversion is performed: \cr
 #' * Bulk density - bdod \cr
@@ -137,11 +138,20 @@ get_isric_soil_profile <- function(lonlat,
       nlayers <- xargs$nlayers
     }
   }
-  
+
+  ### If additional arguments are present
+  if(!is.null(xargs)){
+    if(!is.null(xargs$crops)){
+      crps <- xargs$crops
+    }else{
+      crps <- c("Maize", "Soybean", "Wheat")
+    }
+  }
+    
   ## Create the empty soil profile
   if(missing(soil.profile)){
     new.soil <- FALSE
-    soil_profile <- apsimx_soil_profile(nlayers = 6, Thickness = thcknss) 
+    soil_profile <- apsimx_soil_profile(nlayers = 6, Thickness = thcknss, crops = crps) 
     soil_profile$soil$ParticleSizeClay <- NA
     soil_profile$soil$ParticleSizeSilt <- NA
     soil_profile$soil$ParticleSizeSand <- NA
@@ -157,13 +167,6 @@ get_isric_soil_profile <- function(lonlat,
     new.soil <- TRUE
   }
   
-  ### If additional arguments are present
-  if(!is.null(xargs)){
-    if(!is.null(xargs$crops)){
-      soil_profile$crops <- xargs$crops
-    }
-  }
-
   ### For some of the conversions see: https://www.isric.org/explore/soilgrids/faq-soilgrids
   if(new.soil){
     sp.xout <- cumsum(soil_profile$soil$Thickness)
@@ -181,12 +184,12 @@ get_isric_soil_profile <- function(lonlat,
                                                    xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
     soil_profile$soil$CEC <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = cec[[1]]), 
                                                        xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
-    soil_profile$soil$wv0010 <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv0010[[1]]), 
-                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
-    soil_profile$soil$wv0033 <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv0033[[1]]), 
-                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
-    soil_profile$soil$wv1500 <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv1500[[1]]), 
-                                                  xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
+    soil_profile$soil$SAT <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv0010[[1]]), 
+                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y * 1e-3
+    soil_profile$soil$DUL <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv0033[[1]]), 
+                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y * 1e-3  
+    soil_profile$soil$LL15 <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv1500[[1]]), 
+                                                  xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y * 1e-3   
   }else{
     soil_profile$soil$BD <- bdod[[1]] * 1e-2
     soil_profile$soil$Carbon <- soc[[1]] * 1e-2

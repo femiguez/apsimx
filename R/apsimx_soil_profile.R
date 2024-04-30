@@ -688,6 +688,10 @@ check_apsimx_soil_profile <- function(x, particle.density = 2.65){
   if(min(soil$KS) <= 0) warning("KS is zero or negative")
   ## crop.soil
   for(i in seq_along(crop.vars)){
+    if(is.null(soil[[crop.vars[i]]])){
+      warning(paste(crop.vars[i], "is not present"))
+      next
+    } 
     if(min(soil[[crop.vars[i]]]) < 0) warning(paste(crop.vars[i], "is negative"))
     if(max(soil[[crop.vars[i]]]) > 1) warning(paste(crop.vars[i], "is greater than 1"))
   }
