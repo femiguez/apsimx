@@ -13,6 +13,9 @@ can be used to calculate and insert tav in an APSIM met file
 according to the value of parm (0, 1, 2). If 'parm' is a parameter path, the root elements will be 'guessed'
 from the string.
 
+- sens_apsimx cores argument now requires package 'future'. 
+This was done to support both unix and windows.
+
 ## apsimx 2.6.2 - 2024-01-28
 
 - Most change are to adjust to new structure in the APSIM simulations
