@@ -24,9 +24,7 @@
 #'   }
 #' }
 
-get_worldmodeler_soil_profile <- function(lonlat, fix = FALSE, check = FALSE, 
-                                          soil.name, wrt.dir, filename,
-                                          verbose = FALSE, cleanup = FALSE){
+get_worldmodeler_soil_profile <- function(lonlat, soil.name, wrt.dir, filename, verbose = FALSE){
   
   ## Create temporary directory 
   if(missing(wrt.dir)){
@@ -35,8 +33,11 @@ get_worldmodeler_soil_profile <- function(lonlat, fix = FALSE, check = FALSE,
     wrt.dir <- normalizePath(wrt.dir)
   }
   
+  cleanup <- FALSE
+  
   if(missing(filename)){
     filename <- "wm_temp_soils.soils"
+    cleanup <- TRUE
   }else{
     if(tools::file_ext(filename) != "soils")
       stop("'filename' should have a '.soils' extention", call. = FALSE)
@@ -53,30 +54,22 @@ get_worldmodeler_soil_profile <- function(lonlat, fix = FALSE, check = FALSE,
   ## Lonlat will be a matrix from now on
   soil.node <- xml2::read_xml('<soils version="37"></soils>')
   
-  res <- vector('list', nrow(lonlat))
-  get.fail <- c()
-  
   for(i in seq_len(nrow(lonlat))){
     x <- try(xml2::read_xml(paste0('https://worldmodel.csiro.au/apsimsoil?lon=', lonlat[i, 1], '&lat=',lonlat[i, 2])), silent = TRUE)
     if(!inherits(x, 'try-error')){
       xs <- xml2::xml_find_all(x, 'Soil')[[1]]
       xml2::xml_set_attr(xs, 'name', soil.name[i])
       xml2::xml_add_child(soil.node, xs, .copy = TRUE)      
-      ## Temporary file with soil 
-      xml2::write_html(soil.node, file = file.path(wrt.dir, filename), options = c("format", "no_declaration")) 
-      tmp <- read_apsim_soils(filename, src.dir = wrt.dir, verbose = verbose)
-      if(fix) tmp <- fix_apsimx_soil_profile(tmp, verbose = verbose)
-      if(check) check_apsimx_soil_profile(tmp)
-      res[[i]] <- tmp[[1]]
-      get.fail[i] <- FALSE
     }else{
-      get.fail[i] <- TRUE
-      res[[i]] <- x ## This assumes it returns an useful error message
+      warning(paste("Could not get a soil for row", i))
     }
-  } 
-
-  if(cleanup) file.remove(file.path(wrt.dir, filename))
-
+  }
+  
+  xml2::write_html(soil.node, file = file.path(wrt.dir, filename), options = c("format", "no_declaration")) 
+  res <- read_apsim_soils(filename, src.dir = wrt.dir, verbose = verbose)
+  
+  if(cleanup) file.remove(file.path(wrt.dir, filename)) 
+  
   return(res)
 }
 
