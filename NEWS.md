@@ -1,6 +1,14 @@
 **NEWS**
 
-## apsimx 2.X.X
+## apsimx 2.7.X
+
+- sens_apsimx can now accept an argument called 'soil.profiles'. This opens the door
+for conducting simulations on a spatial grid, by carefully passing weather and soils profiles.
+Since now package 'future' is used for parallelization, this makes it easy to run it on a parallel
+environment.
+
+- sens_apsimx cores argument now requires package 'future'. 
+This was done to support both unix and windows.
 
 - edit_apsimx Editing different simulations used to require specifying 'root'. 
 Now if the parameter path is complete, this is not required. In this case
@@ -10,11 +18,7 @@ node should equal "Other"
 can be used to calculate and insert tav in an APSIM met file
 
 - inspect_apsimx is a bit more robust. When node = "Other" the simulation structure will be displayed
-according to the value of parm (0, 1, 2). If 'parm' is a parameter path, the root elements will be 'guessed'
-from the string.
-
-- sens_apsimx cores argument now requires package 'future'. 
-This was done to support both unix and windows.
+according to the value of parm (0, 1, 2). If 'parm' is a parameter path, the root elements will be 'guessed' from the string.
 
 ## apsimx 2.6.2 - 2024-01-28
 

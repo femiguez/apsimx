@@ -12,6 +12,7 @@ sens_apsimx(
   convert,
   replacement,
   grid,
+  soil.profiles,
   summary = c("mean", "max", "var", "sd", "none"),
   root,
   verbose = TRUE,
@@ -27,17 +28,19 @@ sens_apsimx(
 
 \item{src.dir}{directory containing the .apsimx file to be run (defaults to the current directory)}
 
-\item{parm.paths}{absolute or relative paths of the coefficients to be evaluated. 
+\item{parm.paths}{absolute or relative paths of the coefficients to be evaluated.
 It is recommended that you use \code{\link{inspect_apsimx}} for this}
 
 \item{convert}{(logical) This argument is needed if there is a need to pass a vector instead of a single value.
-The vector can be passed as a character string (separated by spaces) and it will be converted to a 
+The vector can be passed as a character string (separated by spaces) and it will be converted to a
 numeric vector. It should be either TRUE or FALSE for each parameter.}
 
-\item{replacement}{TRUE or FALSE for each parameter. Indicating whether it is part of 
+\item{replacement}{TRUE or FALSE for each parameter. Indicating whether it is part of
 the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.}
 
 \item{grid}{grid of parameter values for the evaluation. It can be a data.frame.}
+
+\item{soil.profiles}{list with soil profiles for replacement (see details.)}
 
 \item{summary}{function name to use to summarize the output to be a sinlge row (default is the mean).}
 
@@ -74,6 +77,21 @@ It is a wrapper for running APSIM-X and evaluating different parameters values
 Summary computes variance-based sensitivity indexes from an object of class \sQuote{sens_apsim}
 }
 \details{
+It is possible to provide a list of soil profiles for replacement in the simulations. In this
+case, the parameter path can be simply \sQuote{soil.profile} or \sQuote{soil_profile} if there 
+is one single simulation. It can also be the path to \sQuote{Soil}. In this case, the path should
+be something such as \sQuote{Simulations.SimulationName.Soil}. \sQuote{SimulationName} should
+be replaced with the appropriate string.
+
+In the grid, the column with name \sQuote{soil.profile} should contain integers that will be used to 
+pick from the list of provided soil profiles. In this case it is possible to re-use them. 
+For example, the values could be 1, 2, 3, etc. to select the corresponding soil profiles from 
+the \sQuote{soil.profiles} list.
+
+If the \sQuote{cores} argument is greater than 1, then the package \CRANpkg{future} is required.
+It will first search for a future plan under options and if nothing is found it will chose an OS-appropriate plan
+and it uses the chosen number of cores for execution.
+
 Suggested reading on the topic of sensitivity analysis:
 
 Pianosa et al (2016). Sensitivity analysis of environmental models: A systematic review with practical workflow.

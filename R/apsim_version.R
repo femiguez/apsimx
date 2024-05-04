@@ -33,7 +33,7 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
     
     if(grepl("Darwin", Sys.info()[["sysname"]])){
         laf <- list.files("/Applications/")
-        find.apsim <- grep("APSIM",laf, ignore.case = TRUE)
+        find.apsim <- grep("APSIM", laf, ignore.case = TRUE)
         if(length(find.apsim) == 0) warning("APSIM-X not found")
         apsimx.versions <- laf[find.apsim]
         
@@ -117,7 +117,7 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
       if(length(find.apsim) > 1){
         len.fa <- length(find.apsim)
         fa.dt <- sapply(laf[find.apsim],.favd, simplify = FALSE)[[len.fa]]
-        if(verbose) cat("APSIM-X version date:",as.character(fa.dt))
+        if(verbose) cat("APSIM-X version date:", as.character(fa.dt))
         ## This next line picks the last one
         newest.version <- laf[find.apsim][len.fa]
         ans <- newest.version

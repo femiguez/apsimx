@@ -409,3 +409,53 @@ if(run.sens.apsimx.cores){
   
   
 }
+
+#### Testing passing of soil profiles -----
+
+run.sens.apsimx.soils <- FALSE
+
+if(run.sens.apsimx.soils){
+  
+  extd.dir <- system.file("extdata", package = "apsimx")
+  file.copy(file.path(extd.dir, "Wheat.apsimx"), ".")
+  ## Identify a parameter of interest
+  ## In this case we want to know the impact of varying the fertilizer amount
+  ## and the plant population
+  pp1 <- inspect_apsimx("Wheat.apsimx", src.dir = ".", 
+                        node = "Manager", parm = list("SowingFertiliser", 1))
+  pp1 <- paste0(pp1, ".Amount")
+  
+  pp2 <- inspect_apsimx("Wheat.apsimx", src.dir = tmp.dir, 
+                        node = "Manager", parm = list("SowingRule1", 9))
+  pp2 <- paste0(pp2, ".Population")
+  
+  grd <- expand.grid(parm1 = c(50, 100, 150), parm2 = c(100, 200, 300), parm3 = c(1, 2))
+  names(grd) <- c("Fertiliser", "Population", "soil.profile")
+  
+  inspect_apsimx("Wheat", node = "Other", parm = list(1, 1, 5, 0), print.path = TRUE)
+
+  ### Getting soils
+  sps <- get_ssurgo_soil_profile(lonlat = c(-93, 42), nsoil = 2)
+  
+  plot(sps[[1]], property = "water")
+  plot(sps[[1]], property = "Carbon")
+
+  sns <- sens_apsimx("Wheat.apsimx", src.dir = tmp.dir,
+                     parm.paths = c(pp1, pp2, 'soil.profile'),
+                     soil.profiles = sps,
+                     grid = grd)
+  
+  snsd <- sns$grid.sims
+  
+  ggplot(data = snsd, aes(x = Fertiliser, y = Yield, color = as.factor(soil.profile))) + 
+    facet_wrap(~ Population) + 
+    geom_line()
+  
+  ### Compare soil profiles
+  cmps <- compare_apsim_soil_profile(sps[[1]], sps[[2]])
+  
+  plot(cmps, plot.type = "depth", soil.var = c("DUL"))
+  plot(cmps, plot.type = "depth", soil.var = c("LL15")) ## Should implement 'water'
+  plot(cmps, plot.type = "depth", soil.var = "Carbon")
+    
+}

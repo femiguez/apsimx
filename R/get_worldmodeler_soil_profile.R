@@ -67,7 +67,7 @@ get_worldmodeler_soil_profile <- function(lonlat, fix = FALSE, check = FALSE,
       tmp <- read_apsim_soils(filename, src.dir = wrt.dir, verbose = verbose)
       if(fix) tmp <- fix_apsimx_soil_profile(tmp, verbose = verbose)
       if(check) check_apsimx_soil_profile(tmp)
-      res[[i]] <- tmp
+      res[[i]] <- tmp[[1]]
       get.fail[i] <- FALSE
     }else{
       get.fail[i] <- TRUE
