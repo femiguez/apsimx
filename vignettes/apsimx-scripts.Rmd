@@ -30,28 +30,28 @@ Let's see what is needed to run APSIM-X at the command line.
 
 In Windows, if you use the current (`r Sys.Date()`) version of the installer the program will be, most likely, in:
 
-**C:\\Program Files\\APSIM2021.08.12.6707\\bin\\Models.exe**
+**C:\\Program Files\\APSIM2024.2.7382.0\\bin\\Models.exe**
 
-Notice that for each new build of APSIM-X the path will change. After 'APSIM' is the year, month, date and version separated by a period. In this case '2021.08.12.6707'. In the folder 'bin' (for 'binary') there are many libraries ('.dll files') and some executables. The 'Models.exe' is the one that can run .apsimx files.
+Notice that for each new build of APSIM-X the path will change. After 'APSIM' is the year and month, and version separated by a period. In this case '2021.08.12.6707'. In the folder 'bin' (for 'binary') there are many libraries ('.dll files') and some executables. The 'Models.exe' is the one that can run .apsimx files.
 
 When trying to invoke that line at the command line, the space after 'Program' is a problem. There are some possible solutions. One is to add quotations (for example see 'shQuote' function in R). Another option is to use Windows short name paths, which in this case, for 'Program Files' is 'PROGRA~1' (but this can change). If running the program from R, for example, the separator needs to be either a double backslash '\\\\' or a forward slash '/'. So one example would be:
 
-**C:/PROGRA~1/APSIM2021.08.12.6707/bin/Models.exe** or
+**C:/PROGRA~1/APSIM2024.2.7382.0/bin/Models.exe** or
 
-**C:\\\\PROGRA~1\\\\APSIM2021.08.12.6707\\\\bin\\\\Models.exe**
+**C:\\\\PROGRA~1\\\\APSIM2024.2.7382.0\\\\bin\\\\Models.exe**
 
 The backslash ("\\") is an escape character in R, so you can't use it within strings.
 
 After this, the name of the file that you want to run needs to be included. For example,
 
-**C:/PROGRA~1/APSIM2021.08.12.6707/bin/Models.exe ./Wheat.apsimx**.
+**C:/PROGRA~1/APSIM2024.2.7382.0/bin/Models.exe ./Wheat.apsimx**.
 
 Notice the "./", without this, it will likely not work under Windows. (update: this issue has been addressed in current version of APSIM Next Gen). However, the previous string cannot be passed directly to a Windows shell. It needs to be translated with the forward slashes ("/") converted to backslashes ("\\").
 
 So to run the previous command in Windows from within R this is one way:
 
 ```{r apsimx-windows, eval = FALSE}
-run.strng <- "C:/PROGRA~1/APSIM2021.08.12.6707/bin/Models.exe ./Wheat.apsimx"
+run.strng <- "C:/PROGRA~1/APSIM2024.2.7382.0/bin/Models.exe ./Wheat.apsimx"
 shell(cmd = run.strng, translate = TRUE, intern = TRUE)
 ```
 
@@ -61,7 +61,7 @@ shell(cmd = run.strng, translate = TRUE, intern = TRUE)
 
 For current versions of APSIM Next Gen, this command should be able to run from the command line:
 
-**/Applications/APSIM2021.10.11.6842.app/Contents/Resources/bin/Models ./Wheat.apsimx**
+**/Applications/APSIM2024.2.7382.0.app/Contents/Resources/bin/Models ./Wheat.apsimx**
 
 **Mono is not required.**
 
@@ -103,11 +103,11 @@ Then find out where APSIM-X is installed, but this will change with each new ver
 
 Mac:
 
-**/Applications/APSIM2021.10.11.6842.app**
+**/Applications/APSIM2024.2.7382.0.app**
 
 Debian:
 
-apsim lib: **/usr/local/lib/apsim/2021.08.12.6707**
+apsim lib: **/usr/local/lib/apsim/2024.2.7382.0**
 
 The apsim binary is in: **/usr/local/bin/apsim**
 
@@ -115,11 +115,11 @@ Finally, to run an example at the command line:
 
 Mac:
 
-**mono /Applications/APSIM2021.08.12.6707.app/Contents/Resources/bin/Models.exe ./Wheat.apsimx**
+**mono /Applications/APSIM2024.2.7382.0.app/Contents/Resources/bin/Models.exe ./Wheat.apsimx**
 
 Debian:
 
-**mono /usr/local/lib/apsim/2021.08.12.6707/bin/Models.exe ./Wheat.apsimx**
+**mono /usr/local/lib/apsim/2024.2.7382.0/bin/Models.exe ./Wheat.apsimx**
 
 The previous two commands assume that the file "Wheat.apsimx" is present in the current working directory. A detail that seems to have changed with recent versions of 'mono' (not sure) is that if you just use the name of a file, it will return an error saying that empty paths are not valid. So this did not work on Debian:
 

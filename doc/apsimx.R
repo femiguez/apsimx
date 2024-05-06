@@ -159,7 +159,9 @@ inspect_apsimx_replacement("MaizeSoybean.apsimx", src.dir = extd.dir,
 inspect_apsimx_replacement("MaizeSoybean.apsimx", 
                            src.dir = extd.dir,
                            node = "Soybean", 
-                           node.child = "PioneerP22T61_MG22",
+                           node.child = "Cultivars",
+                           node.subchild = "USA",
+                           node.subsubchild = "PioneerP22T61_MG22",
                            display.available = FALSE) 
 
 ## ----edit-replacement---------------------------------------------------------

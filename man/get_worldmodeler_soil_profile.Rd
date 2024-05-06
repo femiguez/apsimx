@@ -6,21 +6,14 @@
 \usage{
 get_worldmodeler_soil_profile(
   lonlat,
-  fix = FALSE,
-  check = FALSE,
   soil.name,
   wrt.dir,
   filename,
-  verbose = FALSE,
-  cleanup = FALSE
+  verbose = FALSE
 )
 }
 \arguments{
 \item{lonlat}{Longitude and latitude vector (e.g. c(-93, 42)) or matrix.}
-
-\item{fix}{whether to fix the soil profiles}
-
-\item{check}{whether to check the soil profiles}
 
 \item{soil.name}{optional soil name}
 
@@ -30,11 +23,11 @@ If missing it will be written to a temporary directory.}
 \item{filename}{optional name to be used when saving the file}
 
 \item{verbose}{verbose argument passed to \sQuote{read_apsim_soils}}
-
-\item{cleanup}{argument used to delete the file after download}
 }
 \value{
-it creates a file with extension \sQuote{soils}
+it returns a list with objects of class \sQuote{soil_profile}. If
+\sQuote{filename} is specified it also creates a file with extension \sQuote{soils}, 
+which can be read using function \code{\link{read_apsim_soils}}.
 }
 \description{
 Retrieves soil data from the World Modeler global database and (optionally) saves it to a soils file

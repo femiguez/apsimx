@@ -117,11 +117,6 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
     fSDA <- soilDB::fetchSDA(sql, duplicates = TRUE)
   } 
   
-  ## Number of soils is the number of rows on fSDA@site
-  if(nsoil < 0 || is.na(nsoil)){
-    nsoil <- nrow(fSDA@site)
-  }
-  
   ### Mapunit ### -- this might contain the iacornsr
   if(verbose == FALSE){
     mapunit <- suppressWarnings(suppressMessages(soilDB::get_mapunit_from_SDA(sql)))

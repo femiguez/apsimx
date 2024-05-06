@@ -15,7 +15,7 @@ for 'Classic'.
 
 * Imported R packages: DBI, jsonlite, knitr, RSQLite, tools, utils, xml2
 
-* Suggested R packages: BayesianTools, datasets, daymetr, FedData, ggplot2,
+* Suggested R packages: BayesianTools, datasets, daymetr, FedData, future, ggplot2,
   GSODR, listviewer, maps, mvtnorm, nasapower, nloptr, reactR, rmarkdown, soilDB, sp, spData, sf, ucminf
 
 * APSIMX:
@@ -24,14 +24,14 @@ for 'Classic'.
 
 NOTE ON REQUIREMENTS:
 
-* Current (Nov 2021) versions of APSIM Next Gen do not require additional software
+* Current versions of APSIM Next Gen do not require additional software
 to run on Mac or Linux. The dotnet runtime environment is shipped with the image/package.
 
-* For current versions (Nov 2021), on Windows, the 'Microsoft Windows Desktop Runtime' 3.1.14 is required. The installer also updated GTK3 to 3.24.20 during the installation.
+* For current versions, on Windows, the 'Microsoft Windows Desktop Runtime' 3.1.14 is required. The installer also updated GTK3 to 3.24.20 during the installation.
 
 * For older versions of APSIM Next Gen (before Sept 2021) the mono framework was required to run on Mac and Linux (Debian). Mono should be installed first (in Mac and Linux). 
 
-**If you are running the latest version of APSIM Next Gen (Sept 2021 or later), you do 
+**If you are running the latest version of APSIM Next Gen, you do 
 not need to install the Mono Framework**.
 
 **Mono framework download**:

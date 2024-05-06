@@ -87,10 +87,19 @@ sens_apsimx <- function(file, src.dir = ".",
 
     fp.op <- getOption('future.plan')
 
+    ### The code below is not the best, but I need to understand the 'future' package better
     if(.Platform$OS.type != "unix"){
-      if(is.null(fp.op)) future::plan("multisession", workers = cores)
+      if(is.null(fp.op)){
+        future::plan("multisession", workers = cores)
+      }else{
+        future::plan(fp.op, workers = cores)
+      } 
     }else{
-      if(is.null(fp.op)) future::plan("multicore", workers = cores)
+      if(is.null(fp.op)){
+        future::plan("multicore", workers = cores)
+      }else{
+        future::plan(fp.op, workers = cores)
+      } 
     }
   }
 

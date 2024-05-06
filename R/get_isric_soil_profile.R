@@ -124,6 +124,7 @@ get_isric_soil_profile <- function(lonlat,
   soil.bottom <- 200
   method <- "constant"
   nlayers <- 10
+  crps <- c("Maize", "Soybean", "Wheat")
   if(!is.null(xargs)){
     ### Soil bottom
     if(!is.null(xargs$soil.bottom)){
@@ -137,17 +138,12 @@ get_isric_soil_profile <- function(lonlat,
     if(!is.null(xargs$nlayers)){
       nlayers <- xargs$nlayers
     }
-  }
-
-  ### If additional arguments are present
-  if(!is.null(xargs)){
+    ### Crops
     if(!is.null(xargs$crops)){
       crps <- xargs$crops
-    }else{
-      crps <- c("Maize", "Soybean", "Wheat")
     }
   }
-    
+
   ## Create the empty soil profile
   if(missing(soil.profile)){
     new.soil <- FALSE

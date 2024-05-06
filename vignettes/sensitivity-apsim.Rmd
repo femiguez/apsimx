@@ -93,15 +93,23 @@ There is a function in the package which simplifies this task. The one below is 
 * src.dir = source directory where the APSIM file is located.
 * parm.paths = character vector with the full path to the parameters to be evaluated. This can be obtained by using **inspect_apsimx** or **inspect_apsim_json**. The length of the parameter vector should be equal to the number of parameters being evaluated (sometimes less is more). 
 
-* parm.vector.index = some paths point to a vector of parameters, but sometimes only one element of that vector needs to be evaluated. In this case provide the index for which element of the vector needs to be evaluated. If some of the parameters need this index while others do not, include a zero for those parameter vectors which are not indexed. 
+* convert = whether to convert strings to numeric
 
 * replacement = logical indicating whether each parameter is in the replacement component or not.
 
 * grid = data frame with combinations of parameters to be evaluated.
 
+* soil.profiles = soil profiles, which can be passed as a list
+
 * summary = optional summary function to apply if the APSIM output returns multiple rows. The mean is used by default.
 
 * root = indicate the root simulation in case it is not the default one.
+
+* verbose = printing progress and other details
+
+* cores = number of cores to use. The package 'future' is currently used.
+
+* save = whether to save intermediate (and final) results.
 
 * ... = additional arguments (none used at the moment).
 
@@ -114,7 +122,7 @@ The example below shows the following steps.
 3. Create a simple grid for evaluating the model
 
 Here the grid is created using *expand.grid* and it has 9 rows. This means that 
-this while require 9 simulation runs of the APSIM model. This takes a couple of minutes
+this will require 9 simulation runs of the APSIM model. This takes a couple of minutes
 to run. The resulting object is of class *sens_apsim* and it can be investigated 
 using the *summary* function (for now).
 

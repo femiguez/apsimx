@@ -3,7 +3,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ##require(apsimx)
 
 ## ----apsimx-windows, eval = FALSE---------------------------------------------
-#  run.strng <- "C:/PROGRA~1/APSIM2021.01.14.6010/Bin/Models.exe ./Wheat.apsimx"
+#  run.strng <- "C:/PROGRA~1/APSIM2024.2.7382.0/bin/Models.exe ./Wheat.apsimx"
 #  shell(cmd = run.strng, translate = TRUE, intern = TRUE)
 
 ## ----run-apsimx, eval = FALSE-------------------------------------------------

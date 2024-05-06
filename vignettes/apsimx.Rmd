@@ -50,15 +50,15 @@ See the following for details
 
 This package has been tested on (latest version):
 
-**Mac**: ApsimX version (2023-12-10) 7349 (R 4.3.0)
+**Mac**: ApsimX version (2024-02) 7382 (R 4.3.0)
 
-**Debian**: ApsimX version (2023-12-12) 7350 (R 4.3.0)
+**Debian**: ApsimX version (2024-12-12) 7350 (R 4.3.0)
 
 **Windows**: ApsimX version (2023-12-13) 7353 and APSIM Classic 7.10-r4207 (R 3.6.2)
 
 ## Installing APSIM (Next Generation)
 
-For most functions in this package you need to have a version of APSIM-X (or 'Next Generation') installed (or APSIM 'Classic'). For Mac and Linux, for versions older than Sep 2021, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM (https://www.apsim.info/download-apsim/downloads/). **NOTE**: If you are using a version of APSIM Next Gen released after Sep 2021, you do **not** need to install mono. You will need the .NET Runtime 6.0 for Linux or Mac (https://dotnet.microsoft.com/en-us/download/dotnet/6.0). The **apsimx** package will try to detect both mono and APSIM (Classic and Next Generation). 
+For most functions in this package you need to have a version of APSIM-X (or 'Next Generation') installed (or APSIM 'Classic'). For Mac and Linux, for versions older than Sep 2021, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM (https://www.apsim.info/download-apsim/downloads/). **NOTE**: If you are using a version of APSIM Next Gen released after Sep 2021, you do **not** need to install mono. You will need the .NET Runtime 6.0 for Linux or Mac (https://dotnet.microsoft.com, -> download -> dotnet -> 6.0). The **apsimx** package will try to detect both mono and APSIM (Classic and Next Generation). 
 
 **Mac**: For Mac it is also assumed that APSIM has been moved to 'Applications'.
 
@@ -94,7 +94,7 @@ The main functions relevant for 'Classic' are:
 * **apsim_options** set global options: path for executable, examples and warnings.
 * **edit_apsim_xml** edit an XML file such as Maize.xml or Soil.xml
 
-See also 'optim' vignette for optimization options.
+See also 'optim' vignette for optimization options and 'sensitivity' vignette for sensitivity analysis.
 
 # Using 'apsimx'
 
@@ -124,7 +124,8 @@ ggplot(data = maize , aes(x = Date, y = Maize.AboveGround.Wt)) +
 
 ## Inspecting a file with 'inspect_apsimx': Why?
 
-Being able to inspect a file from within R is a functionality which was not considered in previous R packages. My first motivation for doing this was to be able to verify from within R that if I edited an APSIM(X) file, the editing worked as expected. The second use of 'inspect' is to be able to understand the structure of 'apsim' files better. A third useful aspect of 'inspect' is that it can be used to supply the path for a parameter that will be later edited. Another benefit of the inpspect functions is that if you are running APSIM in a cluster, you do not have access to the GUI, so these functions allow you to inspect your files in that environment. In addition, having this functionality within R allows to make these tasks repeatable. For complex inspections and manipulations of an .apsim(x) file the GUI is recommended. However, this package is designed to work with relatively simple .apsim(x) files.
+Being able to inspect a file from within R is a functionality which was not considered in previous R packages. My first motivation for doing this was to be able to verify from within R that if I edited an APSIM(X) file, the editing worked as expected. The second use of 'inspect' is to be able to understand the structure of 'apsim' files better. A third useful aspect of 'inspect' is that it can be used to supply the path for a parameter that will be later edited. Another benefit of the inspect functions is that if you are running APSIM in a Linux cluster, you do not have access to the GUI, so these functions allow you to inspect your files in that environment. In addition, having this functionality within R allows to make these tasks repeatable. For complex inspections and manipulations of an .apsim(x) file the GUI is recommended. This package was originally designed to work with relatively simple .apsim(x) files, but functionality has evolved and it can handle more
+complex simulations.
 
 ## Inspecting and Editing the 'Maize' example
 
@@ -278,7 +279,7 @@ file.remove(paste0(tmp.dir, "/Millet-pp.apsim"))
 
 ## Inspecting a 'Replacement' component
 
-Many additional options in an APSIM-X simulation can be realized through the use of 'Replacements'. For this, there is a function that allows inspection. For this, it is important to know the structure of the 'replacement' and explore the available components. For example, if we want to display the xy pair for the thermal time in the phenology component of the 'Maize' replacement we might go through the following steps:
+Many additional options in an APSIM-X simulation can be realized through the use of 'Replacements'. For this, there is a function that allows inspection. In this case, it is important to know the structure of the 'replacement' and explore the available components. For example, if we want to display the xy pair for the thermal time in the phenology component of the 'Maize' replacement we might go through the following steps:
 
 State the node ("Maize") and display available components:
 
@@ -414,7 +415,7 @@ inspect_apsimx_replacement("Factorial", src.dir = extd.dir,
                            display.available = TRUE)
 ```
 
-Here we stop at this level but it is possible to dig deeper using 'node.subchild' and 'node.subsubchild'. It is not possible at this point to dig deeper than 'node.subsubchild' in the hierarchy level.
+Here we stop at this level but it is possible to dig deeper using 'node.subchild' and 'node.subsubchild'. It is not possible at this point to dig deeper than 'node.sub5child' in the hierarchy level.
 
 The **inspect_apsimx** function can also handle factorials. 
 
@@ -470,6 +471,7 @@ Environmental Mesonet (https://mesonet.agron.iastate.edu/). In addition, this pa
 * **get_gsod_apsim_met**: (requires the 'GSODR' package). Fetch data and create a 'met' R object and (optionally) write a met file to disk.
 * **get_iem_apsim_met**: Fetch data from Iowa Environmental Mesonet
 * **get_iemre_apsim_met**: Fetch data from Iowa Environmental Mesonet Reanalysis
+* **get_worldmodeler_apsim_met**: Fetch data from CSIRO Worldmodeler
 * **plot** plotting method for objects of class 'met'.
 * **summary** summary method for objects of class 'met'.
 
@@ -481,7 +483,7 @@ The function **get_isric_soil_profile** will retrieve data from the ISRIC Soil G
 
 In the USA, the function **get_ssurgo_soil_profile** will retrieve data from the SSURGO database through the **soilDB** R pacakge and will always return a list with objects of class *soil_profile*. Internally, it uses the **ssurgo2sp** function, which can be used to create an APSIM soil profile in two steps. The first step would be to obtain soil data through the 'FedData' R package by using the function **get_ssurgo** or use the **get_ssurgo_tables** in apsimx. The function **ssurgo2sp** can be used for conversion from **SSURGO** csv files to an object of class **soil_profile** and **apsimx_soil_profile** for generating a soil profile that can be used in APSIM-X. Finally, the function **edit_apsimx_replace_soil_profile** will batch replace the soil profile created by **apsimx_soil_profile** in a designated '.apsimx' file. Similarly, 'edit_apsim_replace_soil_profile' will batch replace the soil profile in a designated '.apsim' (Classic) file. I will be working on a more concrete tutorial at some point.
 
-In addition, there are is a function to compare soil profiles **compare_apsim_soil_profile**, which can be used to compare, numerically, one or more soil profiles and a **plot** method to visually comapre this object.
+In addition, there are is a function to compare soil profiles **compare_apsim_soil_profile**, which can be used to compare, numerically, one or more soil profiles and a **plot** method to visually compare this object.
 
 # File Type (or File Format) Details
 

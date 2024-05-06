@@ -125,8 +125,14 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   ## In decreasing order of number of acres
   mapunit2$muacres.percent <- mapunit2$muacres/sum(mapunit2$muacres) * 100
   mapunit2 <- mapunit2[order(mapunit2$muacres, decreasing = TRUE),]
-  mapunit3 <- mapunit2[seq_len(nmapunit),]
-  
+  if(nmapunit < 1 || is.na(nmapunit)){
+    mapunit3 <- mapunit2
+  }else{
+    if(nmapunit > nrow(mapunit2))
+      stop(paste("There are", nrow(mapunit2), "mapunits available and ", nmapunit, "are requested"), call. = FALSE)
+    mapunit3 <- mapunit2[seq_len(nmapunit),]    
+  }
+
   ## Process component
   
   component2 <- subset(component, 
@@ -158,7 +164,14 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
 
     component4$longitude <- lonlat[1]
     component4$latitude <- lonlat[2]
-    component5 <- rbind(component5, component4[seq_len(nsoil),])
+    if(nsoil < 1 || is.na(nsoil)){
+      component5 <- rbind(component5, component4)      
+    }else{
+      if(nsoil > nrow(component4)){
+        stop(paste("There are", nrow(component4), "components (soils) available and", nsoil, "are requested"), call. = FALSE)
+      }
+      component5 <- rbind(component5, component4[seq_len(nsoil),])      
+    }
   }
   
   ## Process chorizon

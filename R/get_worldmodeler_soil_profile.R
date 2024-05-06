@@ -3,15 +3,14 @@
 #' @description Retrieves soil data from the World Modeler global database and (optionally) saves it to a soils file
 #' @name get_worldmodeler_soil_profile
 #' @param lonlat Longitude and latitude vector (e.g. c(-93, 42)) or matrix.
-#' @param fix whether to fix the soil profiles
-#' @param check whether to check the soil profiles
 #' @param soil.name optional soil name
 #' @param wrt.dir optional directory where to save a file with \sQuote{soils} extension.
 #' If missing it will be written to a temporary directory.
 #' @param filename optional name to be used when saving the file
 #' @param verbose verbose argument passed to \sQuote{read_apsim_soils}
-#' @param cleanup argument used to delete the file after download
-#' @return it creates a file with extension \sQuote{soils}
+#' @return it returns a list with objects of class \sQuote{soil_profile}. If
+#' \sQuote{filename} is specified it also creates a file with extension \sQuote{soils}, 
+#' which can be read using function \code{\link{read_apsim_soils}}.
 #' @author Brian Collins (University of Southern Queensland) and Fernando Miguez
 #' @export
 #' @examples 
