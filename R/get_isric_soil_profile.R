@@ -21,6 +21,7 @@
 #' If you are running this function many times it might be better to set this to FALSE.
 #' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
 #' @param verbose argument passed to the fix function.
+#' @param check whether to check the soil profile (default is TRUE)
 #' @param physical whether soil physical properties are obtained from the data base or through \sQuote{SR}, Saxton and Rawls pedotransfer functions.
 #' @param xargs additional arguments passed to \code{\link{apsimx_soil_profile}} or \sQuote{apsimx:::approx_soil_variable} function. At the moment these are:
 #' \sQuote{soil.bottom}, \sQuote{method} and \sQuote{nlayers}.
@@ -63,6 +64,7 @@ get_isric_soil_profile <- function(lonlat,
                                    find.location.name = TRUE,
                                    fix = FALSE,
                                    verbose = TRUE,
+                                   check = TRUE,
                                    physical = c("default", "SR"),
                                    xargs = NULL){
 
@@ -286,7 +288,7 @@ get_isric_soil_profile <- function(lonlat,
   
   if(fix) soil_profile <- fix_apsimx_soil_profile(soil_profile, verbose = verbose)
   
-  check_apsimx_soil_profile(soil_profile)
+  if(check) check_apsimx_soil_profile(soil_profile)
   
   return(soil_profile)  
 }

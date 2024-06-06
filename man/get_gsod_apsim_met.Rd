@@ -10,6 +10,7 @@ get_gsod_apsim_met(
   wrt.dir = ".",
   filename = NULL,
   distance = 100,
+  station,
   fillin.radn = FALSE
 )
 }
@@ -23,6 +24,8 @@ get_gsod_apsim_met(
 \item{filename}{file name for writing out to disk}
 
 \item{distance}{distance in kilometers for the nearest station}
+
+\item{station}{choose the station either by index or character}
 
 \item{fillin.radn}{whether to fill in radiation data using the nasapower pacakge. Default is FALSE.}
 }

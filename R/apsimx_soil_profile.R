@@ -466,10 +466,12 @@ soil_variable_profile <- function(nlayers, a = 0.5, b = 0.5){
 #' @return it produces a plot
 #' @export 
 plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater", "BD",
-                                              "AirDry","LL15","DUL","SAT",
+                                              "AirDry", "LL15", "DUL", "SAT",
                                               "KS", "Carbon", "SoilCNRatio", 
-                                              "FOM","FOM.CN","FBiom",
-                                              "FInert","NO3N","NH4N","PH")){
+                                              "FOM", "FOM.CN", "FBiom",
+                                              "FInert", "NO3N", "NH4N", "PH",
+                                              "ParticleSizeClay", "ParticleSizeSilt",
+                                              "ParticleSizeSand", "texture")){
   ## Test for existence of ggplot2
   if(!requireNamespace("ggplot2", quietly = TRUE)){
     warning("ggplot2 is required for this plotting function")
@@ -487,10 +489,12 @@ plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater"
   property.in.crops <- try(match.arg(property, choices = crops.property, several.ok = TRUE), silent = TRUE)
   
   properties <- c("all", "water", "initialwater", "BD",
-                  "AirDry", "LL15","DUL","SAT",
+                  "AirDry", "LL15", "DUL", "SAT",
                   "KS", "Carbon", "SoilCNRatio", 
                   "FOM", "FOM.CN", "FBiom",
-                  "FInert", "NO3N", "NH4N", "PH")
+                  "FInert", "NO3N", "NH4N", "PH",
+                  "ParticleSizeClay", "ParticleSizeSilt",
+                  "ParticleSizeSand", "texture", "ParticleSize")
     
   if(inherits(property.in.crops, "try-error")){
     property <- try(match.arg(property), silent = TRUE) 
@@ -506,9 +510,9 @@ plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater"
     }
   }
 
-  if(property != "all" && !(property %in% c("water", "initialwater"))){
+  if(property != "all" && !(property %in% c("water", "initialwater", "texture", "ParticleSize"))){
     
-    tmp <- xsoil[,c(property,"Depth","soil.depth.bottom")]
+    tmp <- xsoil[,c(property, "Depth","soil.depth.bottom")]
     gp <- ggplot2::ggplot() + 
                    ggplot2::geom_point(ggplot2::aes(x = tmp[,1], y = -tmp[,3])) + 
                    ggplot2::geom_path(ggplot2::aes(x = tmp[,1], y = -tmp[,3])) +
@@ -587,6 +591,22 @@ plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater"
                                    color = "blue",
                                    fill = "deepskyblue1") + 
               ggplot2::coord_flip()  
+    print(gp)
+  }
+  
+  if(property == "texture" || property == "ParticleSize"){
+    
+    tmp <- utils::stack(xsoil, select = c("ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand"))
+    tmp$soil.depth.bottom <- xsoil$soil.depth.bottom
+    tmp$texture <- factor(gsub("ParticleSize", "", tmp$ind), levels = c("Clay", "Silt", "Sand"))
+    gp <- ggplot2::ggplot(data = tmp) +
+      ggplot2::geom_area(ggplot2::aes(x = -soil.depth.bottom, y = values, fill = texture)) +
+      ggplot2::ggtitle("Particle Size (Clay, Silt and Sand)") +
+      ggplot2::labs(x = "Soil Depth (cm)", y = "Percent (%)", color = "Legend") + 
+      ggplot2::scale_fill_manual(name = "Particle Size", 
+                                 breaks = c("Clay", "Silt", "Sand"),
+                                 values = c(Clay = "brown", Silt = "darkgoldenrod", Sand = "burlywood")) + 
+      ggplot2::coord_flip()  
     print(gp)
   }
   
@@ -870,13 +890,10 @@ fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), particle.densi
 #' @name compare_apsim_soil_profile
 #' @rdname compare_apsim_soil_profile
 #' @description Helper function which allows for a simple comparison among soil_profile objects
-#' @param ... met file objects. Should be of class \sQuote{met}
-#' @param soil.var meteorological variable to use in the comparison. Either \sQuote{all},
-#' \sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
-#' \sQuote{wind_speed} or \sQuote{vp}. 
-#' @param property meteorological variable to use in the comparison. Either \sQuote{all},
-#' \sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
-#' \sQuote{wind_speed} or \sQuote{vp}. 
+#' @param ... soil_profile objects. Should be of class \sQuote{soil_profile}
+#' @param soil.var soil variable to use in the comparison. Either \sQuote{all},
+#' or several others such as \SQuote{BD}, \sQuote{DUL} or \sQuote{Carbon}. 
+#' @param property same as soil.var 
 #' @param labels labels for plotting and identification of \sQuote{soil_profile} objects.
 #' @param check whether to check \sQuote{soil_profile} objects using \sQuote{check_apsimx_soil_profile}.
 #' @param verbose whether to print agreement values (default is FALSE).
@@ -943,7 +960,7 @@ compare_apsim_soil_profile <- function(...,
   names(soil.mrg) <- paste0(names(soil.mrg), ".1")  
   soil1 <- soil1$soil
   nms1 <- names(soil1)
-  
+
   for(i in 2:n.soils){
     
     if(check) check_apsimx_soil_profile(soils[[i]])
@@ -959,7 +976,7 @@ compare_apsim_soil_profile <- function(...,
       soil.i <- subset(soil.i, select = common.names)
     }
   
-    names(soil1) <- paste0(names(soil1), ".1")  
+    names(soil1) <- nms1
     names(soil.i) <- paste0(names(soil.i), ".", i)
     ## drop the year.i and day.i names
     soil.mrg <- cbind(soil.mrg, soil.i)

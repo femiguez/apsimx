@@ -12,7 +12,7 @@
 
 <meta name="author" content="Fernando Miguez" />
 
-<meta name="date" content="2024-05-05" />
+<meta name="date" content="2024-05-06" />
 
 <title>apsimx: An R package for APSIM Next Generation (and Classic)</title>
 
@@ -341,7 +341,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h1 class="title toc-ignore">apsimx: An R package for APSIM Next
 Generation (and Classic)</h1>
 <h4 class="author">Fernando Miguez</h4>
-<h4 class="date">2024-05-05</h4>
+<h4 class="date">2024-05-06</h4>
 
 
 <div id="TOC">
@@ -442,10 +442,9 @@ recommended that you become familiar with it before hand.</p>
 et al. (2018)</a></p>
 <p>This package has been tested on (latest version):</p>
 <p><strong>Mac</strong>: ApsimX version (2024-02) 7382 (R 4.3.0)</p>
-<p><strong>Debian</strong>: ApsimX version (2024-12-12) 7350 (R
-4.3.0)</p>
-<p><strong>Windows</strong>: ApsimX version (2023-12-13) 7353 and APSIM
-Classic 7.10-r4207 (R 3.6.2)</p>
+<p><strong>Debian</strong>: ApsimX version (2024-02) 7382 (R 4.1.2)</p>
+<p><strong>Windows</strong>: ApsimX version (2024-02) 7382 and APSIM
+Classic 7.10-r4221 (R 4.3.3)</p>
 </div>
 <div id="installing-apsim-next-generation" class="section level2">
 <h2>Installing APSIM (Next Generation)</h2>
@@ -456,9 +455,9 @@ mono (<a href="https://www.mono-project.com/download/stable/" class="uri">https:
 download and install APSIM (<a href="https://www.apsim.info/download-apsim/downloads/" class="uri">https://www.apsim.info/download-apsim/downloads/</a>).
 <strong>NOTE</strong>: If you are using a version of APSIM Next Gen
 released after Sep 2021, you do <strong>not</strong> need to install
-mono. You will need the .NET Runtime 6.0 for Linux or Mac (<a href="https://dotnet.microsoft.com/en-us/download/dotnet/6.0" class="uri">https://dotnet.microsoft.com/en-us/download/dotnet/6.0</a>).
-The <strong>apsimx</strong> package will try to detect both mono and
-APSIM (Classic and Next Generation).</p>
+mono. You will need the .NET Runtime 6.0 for Linux or Mac (<a href="https://dotnet.microsoft.com" class="uri">https://dotnet.microsoft.com</a>, -&gt; download -&gt;
+dotnet -&gt; 6.0). The <strong>apsimx</strong> package will try to
+detect both mono and APSIM (Classic and Next Generation).</p>
 <p><strong>Mac</strong>: For Mac it is also assumed that APSIM has been
 moved to ‘Applications’.</p>
 <p><strong>Windows</strong>: In Windows the default install location is
@@ -881,7 +880,7 @@ node should be “Other”.</p>
 <pre><code>## Edited /folder/simulation/area/folder/manager[1]/ui/density 
 ## Edited parameter 
 ## New values  8 
-## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmp78FGH7/Millet-pp.apsim</code></pre>
+## Created  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpyUaSJC/Millet-pp.apsim</code></pre>
 <p>Verify that it was edited correctly.</p>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="fu">inspect_apsim</span>(<span class="st">&quot;Millet-pp.apsim&quot;</span>, <span class="at">src.dir =</span> tmp.dir,</span>
 <span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a>              <span class="at">node =</span> <span class="st">&quot;Manager&quot;</span>,</span>
@@ -1147,7 +1146,7 @@ more straight forward.</p>
 ## Edit (level):  6 
 ## Edited parameter:  Y 
 ## New values:  0 12 20 28 0 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmp78FGH7/MaizeSoybean-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpyUaSJC/MaizeSoybean-edited.apsimx</code></pre>
 <p>Let’s inspect the edited file</p>
 <div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" tabindex="-1"></a><span class="fu">inspect_apsimx_replacement</span>(<span class="st">&quot;MaizeSoybean-edited.apsimx&quot;</span>, </span>
 <span id="cb60-2"><a href="#cb60-2" tabindex="-1"></a>                           <span class="at">src.dir =</span> tmp.dir,</span>
@@ -1269,7 +1268,7 @@ file we can use the following example.</p>
 ## Edited (child):  none 
 ## Edited parameters:  
 ## New values:  Ames.met 
-## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//Rtmp78FGH7/Factorial-edited.apsimx</code></pre>
+## Created:  /var/folders/6j/xksd1tld70q91h73d5s0ln7c0000gn/T//RtmpyUaSJC/Factorial-edited.apsimx</code></pre>
 <p>I won’t be running the ‘Factorial’ example here, but if you are
 interested this is done in the folder ‘tests’ in the pacakge source.</p>
 </div>

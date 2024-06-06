@@ -11,6 +11,7 @@ get_isric_soil_profile(
   find.location.name = TRUE,
   fix = FALSE,
   verbose = TRUE,
+  check = TRUE,
   physical = c("default", "SR"),
   xargs = NULL
 )
@@ -28,6 +29,8 @@ If you are running this function many times it might be better to set this to FA
 \item{fix}{whether to fix compatibility between saturation and bulk density (default is FALSE).}
 
 \item{verbose}{argument passed to the fix function.}
+
+\item{check}{whether to check the soil profile (default is TRUE)}
 
 \item{physical}{whether soil physical properties are obtained from the data base or through \sQuote{SR}, Saxton and Rawls pedotransfer functions.}
 

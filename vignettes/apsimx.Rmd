@@ -52,9 +52,9 @@ This package has been tested on (latest version):
 
 **Mac**: ApsimX version (2024-02) 7382 (R 4.3.0)
 
-**Debian**: ApsimX version (2024-12-12) 7350 (R 4.3.0)
+**Debian**: ApsimX version (2024-02) 7382 (R 4.1.2)
 
-**Windows**: ApsimX version (2023-12-13) 7353 and APSIM Classic 7.10-r4207 (R 3.6.2)
+**Windows**: ApsimX version (2024-02) 7382 and APSIM Classic 7.10-r4221 (R 4.3.3)
 
 ## Installing APSIM (Next Generation)
 

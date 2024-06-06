@@ -245,7 +245,7 @@ sens_apsimx <- function(file, src.dir = ".",
                         verbose = FALSE)
           }          
         }else{
-         ## if(verbose) cat("Replacing the soil profile in simulation", .i, "\n")
+         if(verbose) cat("Replacing the soil profile in simulation", .i, "\n")
          wspc <- grep("soil.profile|Soil$", names(grid)) ## Which one is the soil profile column
          
          if(length(wspc) == 0){
@@ -265,13 +265,13 @@ sens_apsimx <- function(file, src.dir = ".",
              }
            }
            soil.profile.index <- grid[.i, wspc[.k]]
-           
+
            if(missing(root)){
              edit_apsimx_replace_soil_profile(file = file,
                                               src.dir = src.dir,
                                               wrt.dir = src.dir,
                                               soil.profile = soil.profiles[[soil.profile.index]],
-                                              overwrite = TRUE,
+                                              overwrite = FALSE,
                                               verbose = FALSE)           
            }else{
              edit_apsimx_replace_soil_profile(file = file,
@@ -512,19 +512,24 @@ sens_summary <- function(sim, summary = c("mean", "max", "var", "sd", "none"),
   return(sim.sd)
 }
 
+#' The argument \sQuote{formula} can be as in \code{\link{lm}}. The response
+#' can be omitted.
+#' 
 #' @rdname sens_apsimx
 #' @description Summary computes variance-based sensitivity indexes from an object of class \sQuote{sens_apsim}
 #' @param object object of class \sQuote{sens_apsim}
 #' @param ... additional arguments (none used at the moment)
+#' @param formula formula to be passed to analysis of variance. See \code{\link{formula}}.
 #' @param scale if all inputs are numeric it is better to scale them. The
 #' default is FALSE as some inputs might be characters or factors. In this
 #' case all inputs will be treated as factors in the sum of squares decomposition.
 #' @param select option for selecting specific variables in the APSIM output. It will be treated as a regular expression
 #' @param warning whether to issue a warning when applying this function to an object which has not been summarized
-#' @return prints to console
+#' @param verbose whether to print to console results of summary
+#' @return prints to console if verbose and returns a data frame
 #' @export
 #'
-summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all", warning = TRUE){
+summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "all", warning = TRUE, verbose = TRUE){
 
   ## It probably does not make sense to compute this summary if the data were
   ## not previously summarized
@@ -572,21 +577,88 @@ summary.sens_apsim <- function(object, ..., scale = FALSE, select = "all", warni
       dat <- data.frame(y, as.data.frame(sapply(X, function(x) as.factor(as.character(x)))))
     }
 
-    frml <- paste("y ~", paste(names(X), collapse = "+"))
+    if(missing(formula)){
+      frml <- paste("y ~", paste(names(X), collapse = "+"))  
+    }else{
+      if(is.numeric(formula)){
+        frml0 <- paste(names(X), collapse = "+")
+        if(formula == 2L){
+          frml <- paste("y ~ (", paste(names(X), collapse = "+"), ")^2")  
+        }
+        if(formula == 3L){
+          frml <- paste("y ~ (", paste(names(X), collapse = "+"), ")^3")  
+        }
+        if(formula != 2L && formula != 3L)
+          stop("When 'formula' is a number it needs to be either 2 or 3", call. = FALSE)
+      }else{
+        if(attr(terms(formula), "response") == 0){
+          tt <- terms(formula)
+          frml <- reformulate(attr(tt, "term.labels"), response = "y")
+        }else{
+          frml <- formula                  
+        }
+      }
+    }
+    
     fit <- stats::lm(formula = frml, data = dat, na.action = "na.omit")
     if(inherits(fit, "try-error")) next
-    sfit <- as.matrix(stats::anova(fit))
-    cat("Variable:", nms.resp.var[.i], "\n")
-    pmat <- matrix(ncol = 2, nrow = ncol(X) + 1)
+    sfit <- as.matrix(stats::anova(fit, ...))
+    ## if(verbose) cat("Variable:", nms.resp.var[.i], "\n")
+    kable.caption <- paste("Variable:", nms.resp.var[.i])
+    pmat <- matrix(ncol = 2, nrow = length(labels(fit)) + 1)
     row.names(pmat) <- row.names(sfit)
     pmat[,1] <- sfit[,2]
     pmat[,2] <- sfit[,2] / sum(sfit[,2]) * 100
     colnames(pmat) <- c("SS", "SI (%)")
     pmatd <- as.data.frame(pmat)
     pmatd <- pmatd[order(pmatd$SS, decreasing = TRUE),]
-    print(knitr::kable(pmatd, digits = 0))
-    cat("\n")
+    if(verbose){
+      print(knitr::kable(pmatd, caption = kable.caption, digits = 0))
+      cat("\n")      
+    }
+
+    ansi <- data.frame(input = row.names(pmatd), SI = round(pmatd[, "SI (%)"], 1))
+    names(ansi) <- c("input", paste(nms.resp.var[.i], "SI (%)"))    
+    if(.i == 1){
+      ans <- ansi
+    }else{
+      ans <- merge(ans, ansi)
+    }
+
     .j <- .j + 1
   }
   if(.j == 0) return("No variables reported. Are they all constant?")
+  
+  ## Need to reorder (on average)
+  rmns <- rowMeans(ans[, -1, drop = FALSE])
+  ans <- ans[order(rmns, decreasing = TRUE), ]
+  invisible(ans)
+}
+
+#' @rdname sens_apsimx
+#' @description Print method for an object of class \sQuote{sens_apsim}
+#' @param x object of class \sQuote{sens_apsim}
+#' @param ... additional arguments (none used at the moment)
+#' @param variables whether to print APSIM output variables (default is FALSE)
+#' @param summary whether to print the full summary of the grid simulations (default is FALSE)
+#' @return compact printing
+#' @export
+#'
+print.sens_apsim <- function(x, ..., variables = FALSE, summary = FALSE){
+  
+  ### Print parameters in grid
+  cat("Grid dimensions (rows columns):", dim(x$grid), "\n")
+  ### Grid names
+  cat("Grid names:", names(x$grid), "\n")
+  ### Print APSIM output variables
+  output.variables <- setdiff(names(x$grid.sims), names(x$grid))
+  cat("Number of output variables:", length(output.variables), "\n")
+  ### Summary function
+  sfun <- attr(x$grid.sims, "summary")
+  cat("Applied summary function:", sfun, "\n")
+  cat("Objects:", names(x), "\n")
+  if(variables) print(output.variables)
+  ### Print data.frame summary
+  if(summary) print(summary(x$grid.sims))
+  
 }

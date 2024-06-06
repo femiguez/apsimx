@@ -280,7 +280,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
         print(tmp)
         stop("interpolation did not work. Possibly due to missing values.")
       }
-    
+
       if(vars[i] == "Thickness"){
         thck <- numeric(nlayers0)
         for(j in 2:nlayers1) thck[j-1] <- sva$x[j] - sva$x[j-1] 
@@ -291,6 +291,7 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     }
     soil.mat[,1] <- sva$x
     soil.d <- as.data.frame(soil.mat)
+
     ## Attributes will be modeled after APSIM metadata
     attr(soil.d, which = "SoilType") <- as.character(soil.names[sz])
     attr(soil.d, which = "State") <- component5$state[sz]
@@ -331,7 +332,7 @@ approx_soil_variable <- function(x, xout = NULL, soil.bottom = 200,
   
   xd <- as.data.frame(x)
   method <- match.arg(method)
-  if(is.null(xout)) xout <- seq(0,soil.bottom, length.out = nlayers)
+  if(is.null(xout)) xout <- seq(0, soil.bottom, length.out = nlayers)
   
   ans <- stats::approx(x = xd[[1]], y = xd[[2]], method = method, xout = xout, rule = 2)
   

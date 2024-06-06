@@ -157,7 +157,7 @@ get_ssurgo_soil_profile <- function(lonlat, shift = -1,
   }else{
     mapunit.shp <- sf::st_as_sf(res)
   }
-  
+
   sp0 <- ssurgo2sp(mapunit = mapunit, component = cmpnt,
                    chorizon = chrzns, mapunit.shp = mapunit.shp,
                    nmapunit = nmapunit, nsoil = nsoil, xout = xout,

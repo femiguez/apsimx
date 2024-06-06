@@ -49,7 +49,7 @@ apsimx_soil_profile(
   ...,
   property = c("all", "water", "initialwater", "BD", "AirDry", "LL15", "DUL", "SAT",
     "KS", "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N",
-    "PH")
+    "PH", "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand", "texture")
 )
 
 check_apsimx_soil_profile(x, particle.density = 2.65)

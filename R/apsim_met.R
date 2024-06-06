@@ -1095,6 +1095,10 @@ plot.met <- function(x, ..., years, met.var,
       windspeed.climatology <- stats::aggregate(windspeed ~ day, data = x, FUN = mean)
       met.var.climatology <- cbind(met.var.climatology, windspeed.climatology[, "windspeed", drop = FALSE])
     }
+    if(any(grepl("Classic_TT", names(x), fixed = TRUE))){
+      classic_tt.climatology <- stats::aggregate(Classic_TT ~ day, data = x, FUN = mean)
+      met.var.climatology <- cbind(met.var.climatology, classic_tt.climatology[, "Classic_TT", drop = FALSE])
+    }
   }
 
   if(!missing(years)){
@@ -1334,6 +1338,7 @@ plot.met <- function(x, ..., years, met.var,
                                        radn = x.dag.radn))
       }
       xdat$year <- as.factor(xdat$year)
+      browser()
       xdats <- subset(xdat, select = c("year", "day", met.var))
       names(xdats) <- c("year", "day", "met.var")
       if(isFALSE(climatology)){

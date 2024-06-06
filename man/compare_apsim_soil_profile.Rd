@@ -33,9 +33,7 @@ compare_apsim_soil_profile(
 
 \item{soil.var}{soil variable to plot}
 
-\item{property}{meteorological variable to use in the comparison. Either \sQuote{all},
-\sQuote{radn}, \sQuote{maxt}, \sQuote{mint}, \sQuote{rain}, \sQuote{rh}, 
-\sQuote{wind_speed} or \sQuote{vp}.}
+\item{property}{same as soil.var}
 
 \item{labels}{labels for plotting and identification of \sQuote{soil_profile} objects.}
 

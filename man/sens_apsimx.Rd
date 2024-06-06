@@ -3,6 +3,7 @@
 \name{sens_apsimx}
 \alias{sens_apsimx}
 \alias{summary.sens_apsim}
+\alias{print.sens_apsim}
 \title{Sensitivity Analysis for APSIM Next Generation simulation}
 \usage{
 sens_apsimx(
@@ -21,7 +22,17 @@ sens_apsimx(
   ...
 )
 
-\method{summary}{sens_apsim}(object, ..., scale = FALSE, select = "all", warning = TRUE)
+\method{summary}{sens_apsim}(
+  object,
+  ...,
+  formula,
+  scale = FALSE,
+  select = "all",
+  warning = TRUE,
+  verbose = TRUE
+)
+
+\method{print}{sens_apsim}(x, ..., variables = FALSE, summary = FALSE)
 }
 \arguments{
 \item{file}{file name to be run (the extension .apsimx is optional)}
@@ -42,11 +53,11 @@ the \sQuote{replacement} component. Its length should be equal to the length or 
 
 \item{soil.profiles}{list with soil profiles for replacement (see details.)}
 
-\item{summary}{function name to use to summarize the output to be a sinlge row (default is the mean).}
+\item{summary}{whether to print the full summary of the grid simulations (default is FALSE)}
 
 \item{root}{root argument for \code{\link{edit_apsimx_replacement}}}
 
-\item{verbose}{whether to print progress in percent and elapsed time.}
+\item{verbose}{whether to print to console results of summary}
 
 \item{cores}{number of cores to use for parallel evaluation}
 
@@ -58,6 +69,8 @@ It is also possible to provide the file name here (for example: \sQuote{Some_res
 
 \item{object}{object of class \sQuote{sens_apsim}}
 
+\item{formula}{formula to be passed to analysis of variance. See \code{\link{formula}}.}
+
 \item{scale}{if all inputs are numeric it is better to scale them. The
 default is FALSE as some inputs might be characters or factors. In this
 case all inputs will be treated as factors in the sum of squares decomposition.}
@@ -65,16 +78,24 @@ case all inputs will be treated as factors in the sum of squares decomposition.}
 \item{select}{option for selecting specific variables in the APSIM output. It will be treated as a regular expression}
 
 \item{warning}{whether to issue a warning when applying this function to an object which has not been summarized}
+
+\item{x}{object of class \sQuote{sens_apsim}}
+
+\item{variables}{whether to print APSIM output variables (default is FALSE)}
 }
 \value{
 object of class \sQuote{sens_apsim}, but really just a list with results from the evaluations.
 
-prints to console
+prints to console if verbose and returns a data frame
+
+compact printing
 }
 \description{
 It is a wrapper for running APSIM-X and evaluating different parameters values
 
 Summary computes variance-based sensitivity indexes from an object of class \sQuote{sens_apsim}
+
+Print method for an object of class \sQuote{sens_apsim}
 }
 \details{
 It is possible to provide a list of soil profiles for replacement in the simulations. In this

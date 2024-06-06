@@ -9,6 +9,7 @@
 #' @param wrt.dir write directory
 #' @param filename file name for writing out to disk
 #' @param distance distance in kilometers for the nearest station
+#' @param station choose the station either by index or character
 #' @param fillin.radn whether to fill in radiation data using the nasapower pacakge. Default is FALSE.
 #' @details If the filename is not provided it will not write the file to disk, 
 #' but it will return an object of class \sQuote{met}. This is useful in case manipulation
@@ -30,7 +31,7 @@
 #' 
 
 get_gsod_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL, 
-                               distance = 100, fillin.radn = FALSE){
+                               distance = 100, station, fillin.radn = FALSE){
   
   if(!requireNamespace("GSODR", quietly = TRUE)){
     warning("The GSODR package is required for this function")
@@ -49,12 +50,29 @@ get_gsod_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
   
   if(length(nr.st) == 0) stop("No stations found. Try increasing the distance.")
   
-  nr.st1 <- nr.st[1]
+  if(!missing(station)){
+    if(is.numeric(station)){
+      nr.st1 <- nr.st[station]
+    }else{
+      wst <- which(nr.st %in% station)
+      if(length(wst) == 0){
+        stop("'station' not found within the range of near stations")
+      }else{
+        nr.st1 <- nr.st[wst]
+      }
+    }
+  }else{
+    nr.st1 <- nr.st[1] 
+  }
   
   dts <- as.numeric(format(as.Date(dates), "%Y"))
   yrs <- seq(from = dts[1], to = dts[2])
   
   gsd <- GSODR::get_GSOD(years = yrs, station = nr.st1)
+
+  if(nrow(gsd) == 0)
+    stop("No data returned by the GDODR::get_GSOD function", call. = FALSE)
+  
   stnid <- gsd$STNID[1]
   lati <- gsd$LATITUDE[1]
   longi <- gsd$LONGITUDE[1]
@@ -76,7 +94,7 @@ get_gsod_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
   }else{
     gsd$RADN <- NA  
   }
-  
+
   gsd <- subset(as.data.frame(gsd), select = c("YEAR", "YDAY","RADN",
                                                "MAX", "MIN", "PRCP", "RH", "WDSP"))
   
