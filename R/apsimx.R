@@ -34,8 +34,10 @@ apsimx <- function(file = "", src.dir = ".",
   
   if(file == "") stop("need to specify file name")
   
-  .check_apsim_name(file)
-  .check_apsim_name(normalizePath(src.dir))
+  if(isFALSE(apsimx::apsimx.options$allow.path.spaces)){
+     .check_apsim_name(file)
+     .check_apsim_name(normalizePath(src.dir))
+  }
   
   ## The might offer suggestions in case there is a typo in 'file'
   file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
@@ -74,17 +76,19 @@ apsimx <- function(file = "", src.dir = ".",
     }
     ## Run APSIM-X on the command line
     if(!missing(xargs)) run.strng <- paste(run.strng, xargs$xargs.string)
-    res <- system(command = run.strng, ignore.stdout = silent, intern = TRUE)
+    res <- system(command = run.strng, ignore.stdout = silent, intern = FALSE)
   }
   
   if(.Platform$OS.type == "windows"){
-    ## Should probably delete the line below
-    ## As of 2020-07-04, this seems to be working fine
-    ## I will leave the line below until I'm sure it is not needed
-    ## if(src.dir != ".") stop("In Windows you can only run a file from the current directory.")
-    run.strng <- paste0(ada, " ", file.name.path)
+    if(isFALSE(apsimx::apsim.options$allow.path.spaces)){
+      run.strng <- paste0(ada, " ", file.name.path)
+    }else{
+      run.strng <- paste0(ada, 
+                          " ", 
+                          shQuote(normalizePath(file.name.path)))
+    }
     if(!missing(xargs)) run.strng <- paste(run.strng, xargs$xargs.string)
-    shell(cmd = run.strng, translate = TRUE, intern = TRUE)
+    shell(cmd = run.strng, translate = TRUE, intern = FALSE)
   }
 
   if(value != "none"){
@@ -662,6 +666,7 @@ read_apsimx_all <- function(src.dir = ".", value = "report"){
 #' @param warn.versions logical. warning if multiple versions of APSIM-X are detected.
 #' @param warn.find.apsimx logical. By default a warning will be thrown if APSIM-X is not found. 
 #' If \sQuote{exe.path} is \sQuote{NA} an error will be thrown instead.
+#' @param allow.path.spaces logical. By default spaces are not allowed in paths or in the run command.
 #' @note It is possible that APSIM-X is installed in some alternative location other than the 
 #'       defaults ones. Guessing this can be difficult and then the auto_detect functions might
 #'       fail. Also, if multiple versions of APSIM-X are installed apsimx will choose the newest
@@ -676,7 +681,7 @@ read_apsimx_all <- function(src.dir = ".", value = "report"){
 #' }
 
 apsimx_options <- function(exe.path = NA, dotnet = FALSE, mono = FALSE, examples.path = NA, 
-                           warn.versions = TRUE, warn.find.apsimx = TRUE){
+                           warn.versions = TRUE, warn.find.apsimx = TRUE, allow.path.spaces = FALSE){
   
   if(dotnet && mono)
     stop("either dotnet or mono should be TRUE, but not both", call. = TRUE)
@@ -687,6 +692,7 @@ apsimx_options <- function(exe.path = NA, dotnet = FALSE, mono = FALSE, examples
   assign('examples.path', examples.path, apsimx.options)
   assign('warn.versions', warn.versions, apsimx.options)
   assign('warn.find.apsimx', warn.find.apsimx, apsimx.options)
+  assign('allow.path.spaces', allow.path.spaces, apsimx.options)
 }
 
 #' Environment which stores APSIM-X options
@@ -714,6 +720,7 @@ assign('mono', FALSE, apsimx.options)
 assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
+assign('allow.path.spaces', FALSE, apsimx.options)
 assign('.run.local.tests', FALSE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests

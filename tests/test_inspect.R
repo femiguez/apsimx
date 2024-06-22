@@ -579,3 +579,27 @@ if(inspect.factorial.test.parm.path){
                  root = list("PastureByWaterAndNitrogen", "Base"),
                  print.path = TRUE)
 }
+
+#### Test Solute ----
+if(run.inspect.tests){
+  
+  ex.dir <- auto_detect_apsimx_examples()
+  
+  dir(ex.dir)
+  
+  test.files <- c("Maize.apsimx", "Wheat.apsimx", "Soybean.apsimx", "Oats.apsimx")
+  
+  for(i in test.files){
+    
+    inspect_apsimx(i, src.dir = ex.dir,
+                   node = "Soil",
+                   soil.child = "Solute")
+    
+    inspect_apsimx(i, src.dir = ex.dir,
+                   node = "Soil",
+                   soil.child = "Solute",
+                   print.path = TRUE)
+  }
+  
+  
+  }

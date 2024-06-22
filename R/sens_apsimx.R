@@ -544,7 +544,7 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
   l.nms.resp.var <- length(nms.resp.var)
   .j <- 0
 
-  if(select == "all"){
+  if(any(select == "all")){
     select <- nms.resp.var
   }else{
     gsel.col <- NULL
@@ -563,6 +563,7 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
 
   num.resp.var <- ncol(object$grid.sims) - ncol(object$grid)
   nms.resp.var <- setdiff(names(object$grid.sims), names(object$grid))
+  wrn <- NULL
 
   for(.i in seq_along(nms.resp.var)){
     X <- object$grid
@@ -577,7 +578,7 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
       dat <- data.frame(y, as.data.frame(sapply(X, function(x) as.factor(as.character(x)))))
     }
 
-    if(missing(formula)){
+    if(missing(formula) || formula == 1L){
       frml <- paste("y ~", paste(names(X), collapse = "+"))  
     }else{
       if(is.numeric(formula)){
@@ -588,8 +589,11 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
         if(formula == 3L){
           frml <- paste("y ~ (", paste(names(X), collapse = "+"), ")^3")  
         }
-        if(formula != 2L && formula != 3L)
-          stop("When 'formula' is a number it needs to be either 2 or 3", call. = FALSE)
+        if(formula == 4L){
+          frml <- paste("y ~ (", paste(names(X), collapse = "+"), ")^4")  
+        }
+        if(formula != 2L && formula != 3L && formula != 4L)
+          stop("When 'formula' is a number it needs to be either 2, 3 or 4", call. = FALSE)
       }else{
         if(attr(terms(formula), "response") == 0){
           tt <- terms(formula)
@@ -602,8 +606,16 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
     
     fit <- stats::lm(formula = frml, data = dat, na.action = "na.omit")
     if(inherits(fit, "try-error")) next
+    w <- fit$weights
+    ssr <- sum(if (is.null(w)) fit$residuals^2 else w * fit$residuals^2)
+    mss <- sum(if (is.null(w)) fit$fitted.values^2 else w * fit$fitted.values^2)
+    if(ssr < 1e-10 * mss){
+      cat("Variable:", nms.resp.var[.i], "\n")
+      warning("ANOVA F-tests on an essentially perfect fit are unreliable", 
+              immediate. = TRUE)
+    } 
     sfit <- as.matrix(stats::anova(fit, ...))
-    ## if(verbose) cat("Variable:", nms.resp.var[.i], "\n")
+    wrn <- warnings()
     kable.caption <- paste("Variable:", nms.resp.var[.i])
     pmat <- matrix(ncol = 2, nrow = length(labels(fit)) + 1)
     row.names(pmat) <- row.names(sfit)
@@ -618,8 +630,8 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
     }
 
     ansi <- data.frame(input = row.names(pmatd), SI = round(pmatd[, "SI (%)"], 1))
-    names(ansi) <- c("input", paste(nms.resp.var[.i], "SI (%)"))    
-    if(.i == 1){
+    names(ansi) <- c("input", paste(nms.resp.var[.i], "SI (%)"))  
+    if(.j == 0){
       ans <- ansi
     }else{
       ans <- merge(ans, ansi)

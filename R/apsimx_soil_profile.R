@@ -46,6 +46,7 @@
 #' @param soilwat optional \sQuote{list} of class \sQuote{soilwat_parms}
 #' @param swim optional \sQuote{list} of class \sQuote{swim_parms}
 #' @param initialwater optional \sQuote{list} of class \sQuote{initialsoilwater_parms}
+#' @param solutes optional \sQuote{list} of class \sQuote{solutes_parms}
 #' @param soilorganicmatter optional \sQuote{list} of class \sQuote{soilorganicmatter_parms}
 #' @param dist.parms parameter values for creating a profile. If a == 0 and b == 0 then \cr
 #' a constant value of 1 is used. If a == 0 and b != 0, then an exponential decay is used. \cr
@@ -94,6 +95,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                  soilwat = NA,
                                  swim = NA,
                                  initialwater = NA,
+                                 solutes = NA,
                                  soilorganicmatter = NA,
                                  dist.parms = list(a = 0, b = 0.2),
                                  check = TRUE){
@@ -411,7 +413,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
     
     soil <- cbind(soil, crop.soil)
     
-    ans <- list(soil=soil, crops = crops, metadata = metadata, soilwat = soilwat, swim = swim, initialwater = initialwater, soilorganicmatter = soilorganicmatter)
+    ans <- list(soil=soil, crops = crops, metadata = metadata, soilwat = soilwat, swim = swim, initialwater = initialwater, solutes = solutes, soilorganicmatter = soilorganicmatter)
     class(ans) <- "soil_profile"
     
     ## Check for reasonable values
@@ -806,6 +808,19 @@ check_apsimx_soil_profile <- function(x, particle.density = 2.65){
         if(iwat <= 0){
           warning(paste("Initial Water in layer:", j, "is greater than DUL"))
         }
+      }      
+    }
+  }
+  
+  ## Check for Solutes
+  if(inherits(soil$solutes, "solutes_parms")){
+    ## Initial Water can't be greater than DUL?
+    for(j in seq_len(soil$solutes$Solutes)){
+      if(!is.na(soil$solutes[[j]]$InitialValues)){
+        if(length(soil$solutes[[j]]$InitialValues) != length(soil$solutes[[j]]$Thickness))
+          warning(paste("Number of layers in solutes", soil$solutes$Solutes[j], "$InitialValues is different from number of Thickness layers"))
+        if(!all(sapply(soil$solutes[[j]]$InitialValues, is.numeric)))
+          warning("Some IntialValues are not numeric")
       }      
     }
   }

@@ -10,7 +10,8 @@ apsimx_options(
   mono = FALSE,
   examples.path = NA,
   warn.versions = TRUE,
-  warn.find.apsimx = TRUE
+  warn.find.apsimx = TRUE,
+  allow.path.spaces = FALSE
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ for Mac/Linux older than Sept 2021.}
 
 \item{warn.find.apsimx}{logical. By default a warning will be thrown if APSIM-X is not found. 
 If \sQuote{exe.path} is \sQuote{NA} an error will be thrown instead.}
+
+\item{allow.path.spaces}{logical. By default spaces are not allowed in paths or in the run command.}
 }
 \value{
 as a side effect it modifies the \sQuote{apsimx.options} environment.

@@ -10,8 +10,8 @@ inspect_apsimx(
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
     "Manager", "Report", "Operations", "Other"),
   soil.child = c("Metadata", "Water", "InitialWater", "Chemical", "Physical", "Analysis",
-    "SoilWater", "InitialN", "CERESSoilTemperature", "Sample", "Nutrient", "Organic",
-    "Swim3"),
+    "SoilWater", "InitialN", "CERESSoilTemperature", "SoilTemperature", "Sample",
+    "Solute", "NO3", "NH4", "Urea", "Nutrient", "Organic", "Swim3"),
   parm = NULL,
   digits = 3,
   print.path = FALSE,
@@ -23,7 +23,7 @@ inspect_apsimx(
 
 \item{src.dir}{directory containing the .apsimx file to be inspected; defaults to the current working directory}
 
-\item{node}{specific node to be inspected either \sQuote{Clock}, \sQuote{Weather}, 
+\item{node}{specific node to be inspected either \sQuote{Clock}, \sQuote{Weather},
 \sQuote{Soil}, \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop},
  \sQuote{Manager}, \sQuote{Operations} or \sQuote{Other}}
 
@@ -46,10 +46,10 @@ inspect a JSON apsimx file. It does not replace the GUI, but it can save time by
 \details{
 In general, this function is used to inspect one parameter at a time. There are some exceptions. \cr
 
-When node equals \sQuote{Other} there are several options. If \sQuote{parm} is not specified the structure 
+When node equals \sQuote{Other} there are several options. If \sQuote{parm} is not specified the structure
 of the simulation file will be returned. In this case, the parameter to print is typically just \sQuote{Simulations}.
-This option is useful when the intention is to show the simulation structure to pick a root presumably. \sQuote{parm} 
-can be set as 0, 1, 2 or 3 for different levels. 
+This option is useful when the intention is to show the simulation structure to pick a root presumably. \sQuote{parm}
+can be set as 0, 1, 2 or 3 for different levels.
 \sQuote{parm} can also be a list with integers, such as \sQuote{list(1, 2, 3)}. If zero is included, available elements
 If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied.
 
@@ -59,11 +59,11 @@ This is simply a script that prints the relevant parameters which are likely to 
 \examples{
 \donttest{
 extd.dir <- system.file("extdata", package = "apsimx")
-inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Clock") 
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Clock")
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Weather")
-inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Metadata") 
-inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Physical") 
-inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "SoilWater") 
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Metadata")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Physical")
+inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "SoilWater")
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Organic")
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "Chemical")
 inspect_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", soil.child = "InitialWater")
@@ -80,28 +80,28 @@ extd.dir <- system.file("extdata", package = "apsimx")
 ## When parm is not provided
 inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, node = "Other")
 ## When parm = 2
-inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
+inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir,
                node = "Other", parm = 2)
 ## When parm = 3
-inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
+inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir,
                node = "Other", parm = 3)
 ## When parm is a path
-inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
+inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir,
                node = "Other", parm = ".Simulations.Simulation")
 ## When parm is a list with numbers (integers)
-pp <- inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
-                     node = "Other", parm = list(1, 1, 5), 
+pp <- inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir,
+                     node = "Other", parm = list(1, 1, 5),
                      print.path = TRUE)
 ## Same as above, but with zero prints possible options
-inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir, 
+inspect_apsimx("maize-manager-folder.apsimx", src.dir = extd.dir,
                 node = "Other", parm = list(1, 1, 5, 0))
 
-## It is possible to look into folders using this method           
+## It is possible to look into folders using this method
 inspect_apsimx("maize-manager-folder.apsimx", node = "Other", src.dir = extd.dir,
                parm = list("Manager", "Fertiliser", "Amount"))
 
 
-               
+
 }
 
 }

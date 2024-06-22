@@ -34,7 +34,7 @@ inspect an .apsimx or .json (JSON) file. It does not replace the GUI, but it can
 }
 \details{
 This function is a work in progress. There are many instances for which it will not work.
- 
+
  It will probably only find the first instance that matches.
 }
 \examples{

@@ -182,15 +182,18 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
   ## Next edit the Solute component, this is not present in older versions of APSIM
   wssoln <- grepl("Models.Soils.Solute", soil.node0)
   if(sum(wssoln) > 0){
-    soil.solute.node <- soil.node0[wssoln][[1]]
-    
-    for(i in c("Depth", "Thickness", "NO3N", "NH4N")){
-      ## Format the variable
-      tmp <- as.vector(soil.profile$soil[[i]], mode = "list")
-      ## Replace the variable
-      soil.solute.node[[i]] <- tmp 
+    soil.solute.nodes <- soil.node0[wssoln]
+    for(i in seq_along(soil.solute.nodes)){
+      soil.solute.node <- soil.solute.nodes[[i]]
+      vname <- soil.solute.node$Name
+      vname.in.soil <- grep(vname, names(soil.profile$soil), value = TRUE)
+      if(length(vname.in.soil) > 0){
+        tmp <- as.vector(soil.profile$soil[[vname.in.soil]], mode = "list")
+        soil.solute.node[[i]] <- tmp  
+        soil.solute.node$Thickness <- soil.profile$soil$Thickness
+        soil.node0[wssoln][[i]] <- soil.solute.node
+      }
     }
-    soil.node0[wssoln][[1]] <- soil.solute.node
     soil.node[[1]]$Children <- soil.node0    
   }
 
@@ -246,6 +249,35 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
       } 
     }
     soil.node0[wsiswn][[1]] <- soil.initialwater.node
+    soil.node[[1]]$Children <- soil.node0
+  }
+  
+  ## Edit Solutes if present
+  if(inherits(soil.profile$solutes, "solutes_parms")){
+    
+    wssoln <- grepl("Models.Soils.Solute", soil.node0) 
+    soil.solute.nodes <- soil.node0[wssoln]
+    for(i in seq_along(soil.solute.nodes)){
+      soil.solute.node <- soil.solute.nodes[[i]]
+      vname <- soil.solute.node$Name
+      vname.in.solutes <- grep(vname, soil.profile$solutes$Solutes, value = TRUE)
+      if(length(vname.in.solutes) > 0){
+        for(j in seq_along(soil.profile$solutes)){
+          if(any(is.na(soil.profile$solutes[[j]]))){
+            next
+          }else{
+              sspntc <- names(soil.profile$solutes)[[j]] ## Soil Solute Parameter Name to Change
+              ## Is the parameter above present in soil.solute.node?
+              soil.solute.node.names <- names(soil.solute.node)
+              if(!sspntc %in% soil.solute.node.names)
+                stop("soil solute parameter to change is not in soil.solute.node")
+              soil.solute.node[sspntc] <- soil.profile$solutes[[j]]    
+          } 
+        }        
+      }
+      soil.solute.nodes[[i]] <- soil.solute.node
+    }
+    soil.node0[wssoln] <- soil.solute.nodes
     soil.node[[1]]$Children <- soil.node0
   }
   

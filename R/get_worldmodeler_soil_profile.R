@@ -60,7 +60,7 @@ get_worldmodeler_soil_profile <- function(lonlat, soil.name, wrt.dir, filename, 
       xml2::xml_set_attr(xs, 'name', soil.name[i])
       xml2::xml_add_child(soil.node, xs, .copy = TRUE)      
     }else{
-      warning(paste("Could not get a soil for row", i))
+      warning(paste("Could not get a soil for row", i), immediate. = TRUE)
     }
   }
   
@@ -143,6 +143,8 @@ get_worldmodeler_apsim_met <- function(lonlat, dates, wrt.dir, filenames, check 
         check_apsim_met(res[[i]])
       }      
     }else{
+      if(verbose)
+        warning(paste("Could not get met file for row", i), immediate. = TRUE)
      res[[i]] <- x 
     }
   }  

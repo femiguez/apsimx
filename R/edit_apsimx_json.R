@@ -77,7 +77,7 @@
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager", "Report", "Operations", "Other"),
-                        soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample", "Swim3"),
+                        soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample", "Solute", "Swim3"),
                         manager.child = NULL,
                         parm = NULL, value = NULL, 
                         overwrite = FALSE,
@@ -410,17 +410,21 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.node[[1]]$Children[wsomn][[1]] <- soil.om.node
     }
     
-    if(soil.child == "Analysis" || soil.child == "Chemical"){
+    if(soil.child %in% c("Analysis", "Chemical", "Solute")){
       edited.child <- soil.child
       wan <- grepl(soil.child, soil.node0)
       soil.analysis.node <- soil.node0[wan][[1]]
       
-      ## Only PH can be edited
-      if(parm != "PH") stop("only PH can be edited, use 'edit_apsimx_replace_soil_profile instead")
-      if(parm == "PH"){
+      ## Check for length
+      if(length(soil.analysis.node[[parm]]) > length(value))
+        stop("Length of 'value' should not be less than length of 'node'", call. = FALSE)
+      
+      if(parm %in% c("PH", "NO3", "NH4", "Urea", "Thickness")){
         for(i in 1:length(soil.analysis.node[[parm]])){
           soil.analysis.node[[parm]][[i]] <- value[i]
         }
+      }else{
+        stop("'parm' should be one of 'PH', 'NO3', 'NH4', 'Urea' or 'Thickness'", call. = FALSE)
       }
       soil.node[[1]]$Children[wan][[1]] <- soil.analysis.node
     }

@@ -485,3 +485,54 @@ initialwater_parms <- function(Depth = NA, Thickness = NA, InitialValues = NA, I
   ans
   
 }
+
+
+#'
+#' @title Helper function to supply additional Solute parameters
+#' @name solutes_parms
+#' @description Creates a list with specific components for the Solutes module
+#' @param Depth depth for soil layers (see APSIM documentation)
+#' @param Thickness soil thickness for layers (either enter Depth or Thickness, but not both). 
+#' Thickness will be recycled if more than one Solute is passed.
+#' @param Solutes Solutes supplied (for now this can be one or more of: \sQuote{NO3}, \sQuote{NH4} or \sQuote{Urea})
+#' @param InitialValues initial values of solutes
+#' @param InitialValuesUnits passed to Solutes
+#' @param WaterTableConcentration passed to Solutes
+#' @param D0 passed to Solutes
+#' @param Exco passed to Solutes
+#' @param FIP passed to Solutes
+#' @param DepthConstant passed to Solutes
+#' @param MaxDepthSoluteAccessible passed to Solutes
+#' @param RunoffEffectivenessAtMovingSolute passed to Solutes
+#' @param MaxEffectiveRunoff passed to Solutes
+#' @export
+
+solutes_parms <- function(Depth = NA, Thickness = NA, Solutes = NA,
+                          InitialValues = NA, InitialValuesUnits = NA,
+                          WaterTableConcentration = NA, D0 = NA,
+                          Exco = NA, FIP = NA, DepthConstant = NA,
+                          MaxDepthSoluteAccessible = NA, RunoffEffectivenessAtMovingSolute = NA,
+                          MaxEffectiveRunoff = NA){
+  
+  solutes.list <- list(Depth = Depth, Thickness = Thickness, Solutes = Solutes,
+                       InitialValues = InitialValues, 
+                       InitialValuesUnits = InitialValuesUnits, WaterTableConcentration = WaterTableConcentration,
+                       D0 = D0, Exco = Exco, FIP = FIP, DepthConstant = DepthConstant, MaxDepthSoluteAccessible = MaxDepthSoluteAccessible,
+                       RunoffEffectivenessAtMovingSolute = RunoffEffectivenessAtMovingSolute, MaxEffectiveRunoff)
+  
+  if(!Solutes %in% c("NO3", "NH4", "Urea"))
+    warning("'Solutes' should in one or more of: 'NO3', 'NH4', 'Urea'")
+  
+  if(length(solutes.list$Solutes) > 1){
+    if(!is.list(solutes.list$InitialValues))
+      warning("If 'Solutes' is a vector of length > 1, 'InitialValues' should be a 'list'")    
+    if(length(solutes.list$Solutes) != length(solutes.list$InitialValues))
+      warning("Length of 'Solutes' should match the length of the 'InitialValues' list")
+  }
+
+  if(!any(is.na(Thickness)) && any(Thickness < 0)) warning("Thickness values should be greater than zero")
+  
+  ans <- structure(solutes.list, class = c("solutes_parms", "list"))
+  ans
+  
+}

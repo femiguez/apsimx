@@ -25,25 +25,25 @@ optim_apsimx(
 
 \item{src.dir}{directory containing the .apsimx file to be run (defaults to the current directory)}
 
-\item{parm.paths}{absolute or relative paths of the coefficients to be optimized. 
+\item{parm.paths}{absolute or relative paths of the coefficients to be optimized.
 It is recommended that you use \code{\link{inspect_apsimx}} for this}
 
 \item{data}{data frame with the observed data. By default is assumes there is a 'Date' column for the index.}
 
-\item{type}{Type of optimization. For now, \code{\link[stats]{optim}}, and, if available, \code{\link[nloptr]{nloptr}} or 
+\item{type}{Type of optimization. For now, \code{\link[stats]{optim}}, and, if available, \code{\link[nloptr]{nloptr}} or
 \sQuote{mcmc} through \code{\link[BayesianTools]{runMCMC}}. Option \sQuote{ucminf} uses the \code{\link[ucminf]{ucminf}} function.
 If \sQuote{type} is \sQuote{grid}, then a grid can be passed and no optimization will be performed.}
 
 \item{weights}{Weighting method or values for computing the residual sum of squares.}
 
-\item{index}{Index for filtering APSIM output. Typically, \dQuote{Date}, but it can be c(\dQuote{report}, \dQuote{Date}) for 
+\item{index}{Index for filtering APSIM output. Typically, \dQuote{Date}, but it can be c(\dQuote{report}, \dQuote{Date}) for
 multiple simulations}
 
 \item{parm.vector.index}{Index to optimize a specific element of a parameter vector.  At the moment it is
 possible to only edit one element at a time. This is because there is a conflict when generating multiple
 elements in the candidate vector for the same parameter.}
 
-\item{replacement}{TRUE or FALSE for each parameter. Indicating whether it is part of 
+\item{replacement}{TRUE or FALSE for each parameter. Indicating whether it is part of
 the \sQuote{replacement} component. Its length should be equal to the length or \sQuote{parm.paths}.}
 
 \item{root}{root argument for \code{\link{edit_apsimx_replacement}}}
@@ -53,7 +53,7 @@ If the parameters to be optimized correspond to a single value, then a simple nu
 If one or more of the parameters represent a vector in APSIM, then the initial values should be passed as a
 list. At the moment, it is not possible to check if these are appropriate (correct name and length).}
 
-\item{grid}{grid used when \sQuote{type = grid}. Columns should be parameters and rows different values for 
+\item{grid}{grid used when \sQuote{type = grid}. Columns should be parameters and rows different values for
 those parameters.}
 
 \item{...}{additional arguments to be passed to the optimization algorithm. See \code{\link[stats]{optim}}}
@@ -73,14 +73,14 @@ Simple optimization for APSIM Next Generation
 will edit and overwrite the file during the optimization.
 
 * When you use the parm.vector.index you cannot edit two separate elements of
-a vector at the same time. This should be used to target a single element of 
+a vector at the same time. This should be used to target a single element of
 a vector only. (I can add this feature in the future if it is justified.)
 
 * Internally, the optimization is done around the scaled value of the initial parameter
-values. A value of 1 would correspond to the inital value of the parameter. 
-The \sQuote{lower} and \sQuote{upper} (or \sQuote{ub} and \sQuote{lb}) are also scaled 
-to the initial values of the parameters. So, for example, if your initial value is 20 
-and you provide an upper bound of 5, it means that the actual upper value that you are allowing for is 100. 
+values. A value of 1 would correspond to the inital value of the parameter.
+The \sQuote{lower} and \sQuote{upper} (or \sQuote{ub} and \sQuote{lb}) are also scaled
+to the initial values of the parameters. So, for example, if your initial value is 20
+and you provide an upper bound of 5, it means that the actual upper value that you are allowing for is 100.
 
 * I have tested other optimizers and packages, but I think these are enough for most purposes. I tried
 function stats::nlm (but it does not support bounds and it can fail), package 'optimx' is a bit messy and it
