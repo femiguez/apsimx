@@ -40,7 +40,7 @@ apsimx <- function(file = "", src.dir = ".",
   }
   
   ## The might offer suggestions in case there is a typo in 'file'
-  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case = TRUE)
   
   if(length(file.names) == 0){
     stop("There are no .apsimx files in the specified directory to run.")
@@ -76,11 +76,22 @@ apsimx <- function(file = "", src.dir = ".",
     }
     ## Run APSIM-X on the command line
     if(!missing(xargs)) run.strng <- paste(run.strng, xargs$xargs.string)
+    
+    if(apsimx::apsimx.options$allow.path.spaces){
+      ## As written here, this will not work with dotnet or mono
+      ## Just so I do not forget. The problem with spaces can be
+      ## overcome for file paths but I do not think it can be 
+      ## solved for the program command name
+      run.strng <- paste0(ada, 
+                          " ", 
+                          shQuote(normalizePath(file.name.path)))
+    }
+    
     res <- system(command = run.strng, ignore.stdout = silent, intern = FALSE)
   }
   
   if(.Platform$OS.type == "windows"){
-    if(isFALSE(apsimx::apsim.options$allow.path.spaces)){
+    if(isFALSE(apsimx::apsimx.options$allow.path.spaces)){
       run.strng <- paste0(ada, " ", file.name.path)
     }else{
       run.strng <- paste0(ada, 

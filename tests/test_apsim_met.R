@@ -176,6 +176,7 @@ if(run.apsim.met && internet){
   apwr4 <- summary(pwr, anomaly = "maxt")
   apwr5 <- summary(pwr, anomaly = c("maxt", "rain"))
   
+  plot(pwr, plot.type = "anomaly")
   plot(pwr, plot.type = "anomaly", summary = TRUE, met.var = "rain")
   plot(pwr, plot.type = "anomaly", summary = TRUE, years = 2012:2015)
   
@@ -183,4 +184,16 @@ if(run.apsim.met && internet){
   plot(pwr, plot.type = "anomaly", summary = TRUE, years = 2012:2015, met.var = c("avg_maxt", "rain_sum"))
   plot(pwr, plot.type = "anomaly", summary = TRUE, years = 2012:2015, met.var = c("rain_sum", "avg_maxt"))
   
+  pwr <- tt_apsim_met(pwr, dates = c("01-05", "30-10"), method = "Classic_TT")
+  
+  summary(pwr)
+  summary(pwr, compute.frost = TRUE)
+  
+  plot(pwr, met.var = "Classic_TT")
+  plot(pwr, met.var = "Classic_TT", plot.type = "density")
+  plot(pwr, met.var = "Classic_TT", plot.type = "anomaly", years = 2012:2019)
+  
+  plot(pwr, plot.type = "anomaly", summary = TRUE, met.var = c("rain", "high_classic_tt"))
+  plot(pwr, plot.type = "anomaly", summary = TRUE, met.var = c("rain", "high_classic_tt"),
+       years = 2012:2016)
 }

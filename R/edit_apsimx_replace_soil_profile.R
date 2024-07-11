@@ -37,7 +37,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
                                               verbose = TRUE,
                                               root = NULL){
   
-  .check_apsim_name(file)
+  if(!apsimx::apsimx.options$allow.path.spaces) .check_apsim_name(file)
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
@@ -188,8 +188,8 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
       vname <- soil.solute.node$Name
       vname.in.soil <- grep(vname, names(soil.profile$soil), value = TRUE)
       if(length(vname.in.soil) > 0){
-        tmp <- as.vector(soil.profile$soil[[vname.in.soil]], mode = "list")
-        soil.solute.node[[i]] <- tmp  
+        tmp <- as.vector(soil.profile$soil[[vname.in.soil]], mode = "list") ## This now works because these are initial values?
+        soil.solute.node$InitialValues <- tmp  
         soil.solute.node$Thickness <- soil.profile$soil$Thickness
         soil.node0[wssoln][[i]] <- soil.solute.node
       }

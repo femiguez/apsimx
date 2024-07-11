@@ -591,6 +591,7 @@ if(run.inspect.tests){
   
   for(i in test.files){
     
+    cat("Test file:", i, "\n")
     inspect_apsimx(i, src.dir = ex.dir,
                    node = "Soil",
                    soil.child = "Solute")
@@ -599,7 +600,24 @@ if(run.inspect.tests){
                    node = "Soil",
                    soil.child = "Solute",
                    print.path = TRUE)
+    
+    inspect_apsimx(i, src.dir = ex.dir,
+                   node = "Soil",
+                   soil.child = "Solute",
+                   parm = "NO3",
+                   print.path = TRUE)
+    
+    inspect_apsimx(i, src.dir = ex.dir,
+                   node = "Soil",
+                   soil.child = "Solute",
+                   parm = "NH4",
+                   print.path = TRUE)
+    
+    inspect_apsimx(i, src.dir = ex.dir,
+                   node = "Soil",
+                   soil.child = "Solute",
+                   parm = "Urea",
+                   print.path = TRUE)
+    
   }
-  
-  
-  }
+}

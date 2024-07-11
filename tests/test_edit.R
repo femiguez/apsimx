@@ -255,3 +255,35 @@ if(run.apsimx.edit){
                 node = "Outputfile", parm = "variables")
   
 }
+
+#### Testing editing of solute ----
+
+if(run.apsimx.edit){
+  
+  ex.dir <- auto_detect_apsimx_examples()
+  
+  ex.to.test <- dir(ex.dir, pattern = "apsimx$")
+  
+  
+  ex2test <- ex.to.test[c(2, 16, 18, 30, 34)]
+  
+  for(i in ex2test){
+    
+    cat("Example:", i, "\n")
+
+    if(!file.exists(file.path(tmp.dir, i)))
+      file.copy(file.path(ex.dir, i), tmp.dir)
+    
+    inspect_apsimx(i, src.dir = tmp.dir, node = "Soil",
+                   soil.child = "Solute")
+    
+    edit_apsimx(i, src.dir = tmp.dir, wrt.dir = tmp.dir,
+                node = "Soil", soil.child = "NO3",
+                parm = "InitialValues", 
+                value = rep(2, 7))
+    
+    ii <- paste0(tools::file_path_sans_ext(i), "-edited.apsimx")
+    inspect_apsimx(ii, src.dir = tmp.dir, node = "Soil",
+                   soil.child = "Solute")
+  }
+}

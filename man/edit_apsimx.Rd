@@ -11,7 +11,7 @@ edit_apsimx(
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
     "Manager", "Report", "Operations", "Other"),
   soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis",
-    "Chemical", "InitialWater", "Sample", "Solute", "Swim3"),
+    "Chemical", "InitialWater", "Sample", "Solute", "NO3", "NH4", "Urea", "Swim3"),
   manager.child = NULL,
   parm = NULL,
   value = NULL,

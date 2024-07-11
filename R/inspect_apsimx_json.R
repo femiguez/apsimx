@@ -576,23 +576,28 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     ssnc <- selected.soil.node.child
 
     if(soil.child == "Solute"){
+      
       solutes <- sapply(ssnc, function(x) x$Name)
+      
+      parm.path <- paste0(parm.path.2.1, ".", "Solute")
       
       if(missing(parm)){
         cat("Solutes:", solutes, "\n")
-        parm.path <- paste0(parm.path.2.1, ".", solutes)              
       }else{
-        ## parm can be a character as in "NO3", "NH4", "Urea" or a list
-        ## If parm is a list, it should be list("NO3", 1)
-        if(is.character(parm)) parm.path <- paste0(parm.path.2.1, ".", parm)              
-        if(is.list(parm)){
-          parm.path.2.1.0 <- paste0(parm.path.2.1, ".", parm[[1]])              
-        }
+        sel.parm <- grep(parm[[1]], solutes)
+        if(length(sel.parm) == 0)
+          stop("'parm' should be one of: ", paste(solutes, collapse = ", "), call. = FALSE)
+        solutes <- parm[[1]]
       }
 
       for(j in seq_along(solutes)){
-        cat("Solute:", solutes[j], "\n")
+        cat("\nSolute:", solutes[j], "\n")
         ssnc.solute <- ssnc[[j]]
+        if(length(unlist(ssnc.solute$Thickness)) != length(unlist(ssnc.solute$InitialValues))){
+          cat("Length of Thickness:", length(unlist(ssnc.solute$Thickness)), "\n")
+          cat("Length of InitialValues:", length(unlist(ssnc.solute$InitialValues)), "\n")
+          stop("Length of 'Thickness' does not match length of 'InitialValues'", call. = FALSE)
+        }
         soil.d1 <- data.frame(Thickness = unlist(ssnc.solute$Thickness),
                               InitialValues = unlist(ssnc.solute$InitialValues))
         if(!is.null(soil.d1)) print(knitr::kable(soil.d1, digits = digits))
@@ -605,7 +610,15 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           soil.d2 <- rbind(soil.d2,
                            data.frame(parm = k, value = as.character(tmp)))
         }
-        if(!is.null(soil.d2)) print(knitr::kable(soil.d2, digits = digits))
+        if(missing(parm)){
+          if(!is.null(soil.d2)) print(knitr::kable(soil.d2, digits = digits))
+        }else{
+          if(is.list(parm) && is.numeric(parm[[2]])){
+            soil.d2.s <- soil.d2[parm[[2]], , drop = FALSE]
+            if(!is.null(soil.d2)) print(knitr::kable(soil.d2.s, digits = digits))            
+          }
+        }
+        soil.d2 <- NULL
       }
     }
   }

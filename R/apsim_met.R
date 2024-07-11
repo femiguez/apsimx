@@ -1331,14 +1331,20 @@ plot.met <- function(x, ..., years, met.var,
         x.dag.mint <- cumsum(x.tmp$mint) - cumsum(mint.climatology[1:365, "mint"])
         x.dag.rain <- cumsum(x.tmp$rain) - cumsum(rain.climatology[1:365, "rain"])
         x.dag.radn <- cumsum(x.tmp$radn) - cumsum(radn.climatology[1:365, "radn"])
+        if(met.var == "Classic_TT"){
+          x.dag.classic_tt <- x.tmp$Classic_TT - classic_tt.climatology[1:365, "Classic_TT"]  
+        }else{
+          x.dag.classic_tt <- NA
+        }
         xdat <- rbind(xdat, data.frame(year = yr, day = 1:nrow(x.tmp), 
                                        maxt = x.dag.maxt, 
                                        mint = x.dag.mint,
                                        rain = x.dag.rain,
-                                       radn = x.dag.radn))
+                                       radn = x.dag.radn,
+                                       Classic_TT = x.dag.classic_tt))
       }
       xdat$year <- as.factor(xdat$year)
-      browser()
+      ## browser()
       xdats <- subset(xdat, select = c("year", "day", met.var))
       names(xdats) <- c("year", "day", "met.var")
       if(isFALSE(climatology)){
@@ -1369,9 +1375,9 @@ plot.met <- function(x, ..., years, met.var,
     }
     
     if(is.null(list(...)$compute.frost)){
-      valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg") 
+      valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg", "high_classic_tt", "avg_classic_tt") 
     }else{
-      valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg", "first_half_frost","second_half_frost","frost_free_period","frost_days") 
+      valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg", "first_half_frost", "second_half_frost", "frost_free_period", "frost_days", "high_classic_tt", "avg_classic_tt") 
     }
     sel.met.var <- sapply(met.var, function(x) grep(x, valid.met.vars)) 
     if(length(sel.met.var) == 0 || is.list(sel.met.var)){

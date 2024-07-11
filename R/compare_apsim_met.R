@@ -455,12 +455,20 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   
   n.years <- length(unique(x$year))
   
-  if(compute.frost){
-    ans <- matrix(nrow = n.years, ncol = 16)  
-  }else{
-    ans <- matrix(nrow = n.years, ncol = 12)  
+  ## If I want to both compute frost and calculate Classic_TT
+  if(compute.frost && "Classic_TT" %in% names(x)){
+    ans <- matrix(nrow = n.years, ncol = 18)  
   }
-  
+  if(!compute.frost && "Classic_TT" %in% names(x)){
+    ans <- matrix(nrow = n.years, ncol = 14) 
+  }
+  if(compute.frost && isFALSE("Classic_TT" %in% names(x))){
+    ans <- matrix(nrow = n.years, ncol = 16) 
+  }
+  if(!compute.frost && !"Classic_TT" %in% names(x)){
+    ans <- matrix(nrow = n.years, ncol = 12) 
+  }
+
   ans[,1] <- sort(unique(x$year))
   x <- add_column_apsim_met(x, value = as.factor(x$year), name = "year", units = "()")
   
@@ -693,8 +701,28 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       }
     }
   }
+  
+  if("Classic_TT" %in% names(x)){
+    if(isFALSE(compute.frost)){
+      if(all(is.na(x$Classic_TT))){
+        ans[,13] <- NA
+        ans[,14] <- NA
+      }else{
+        ans[,13] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
+        ans[,14] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
+      }      
+    }else{
+      if(all(is.na(x$Classic_TT))){
+        ans[,17] <- NA
+        ans[,18] <- NA
+      }else{
+        ans[,17] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
+        ans[,18] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
+      } 
+    }
+  }
 
-  if(compute.frost){
+  if(compute.frost && isFALSE("Classic_TT" %in% names(x))){
     colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
                        "high_maxt", "high_mint", ## 4 and 5
                        "avg_maxt", "avg_mint", ## 6 and 7
@@ -702,14 +730,36 @@ summary.met <- function(object, ..., years, months, days, julian.days,
                        "rain_sum", "radn_sum", "radn_avg", ## 10, 11, 12
                        "first_half_frost", "second_half_frost", ## 13, 14
                        "frost_free_period", "frost_days") ## 15, 16    
-  }else{
+  }
+  
+  if(isFALSE(compute.frost) && isFALSE("Classic_TT" %in% names(x))){
     colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
                        "high_maxt", "high_mint", ## 4 and 5
                        "avg_maxt", "avg_mint", ## 6 and 7
                        "low_maxt", "low_mint", ## 8 and 9
                        "rain_sum", "radn_sum", "radn_avg") ## 10, 11, 12
   }
-
+  
+  if(isFALSE(compute.frost) && isTRUE("Classic_TT" %in% names(x))){
+    colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
+                       "high_maxt", "high_mint", ## 4 and 5
+                       "avg_maxt", "avg_mint", ## 6 and 7
+                       "low_maxt", "low_mint", ## 8 and 9
+                       "rain_sum", "radn_sum", "radn_avg", ## 10, 11, 12
+                       "high_classic_tt", "avg_classic_tt") ## 13, 14 
+  }
+  
+  if(isTRUE(compute.frost) && isTRUE("Classic_TT" %in% names(x))){
+    colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
+                       "high_maxt", "high_mint", ## 4 and 5
+                       "avg_maxt", "avg_mint", ## 6 and 7
+                       "low_maxt", "low_mint", ## 8 and 9
+                       "rain_sum", "radn_sum", "radn_avg", ## 10, 11, 12
+                       "first_half_frost", "second_half_frost", ## 13, 14
+                       "frost_free_period", "frost_days", ## 15, 16
+                       "high_classic_tt", "avg_classic_tt") ## 17, 18 
+  }
+  
   #### Calculate anomalies ----
   if(!missing(anomaly)){
 

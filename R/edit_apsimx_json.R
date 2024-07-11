@@ -77,7 +77,7 @@
 
 edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager", "Report", "Operations", "Other"),
-                        soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample", "Solute", "Swim3"),
+                        soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample", "Solute", "NO3", "NH4", "Urea", "Swim3"),
                         manager.child = NULL,
                         parm = NULL, value = NULL, 
                         overwrite = FALSE,
@@ -86,11 +86,11 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         root = NULL,
                         verbose = TRUE){
   
-  .check_apsim_name(file)
+  if(isFALSE(apsimx.options$allow.path.spaces)) .check_apsim_name(file)
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
-  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
+  file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
   
   if(length(file.names) == 0){
     stop("There are no .apsimx files in the specified directory to edit.")
@@ -410,23 +410,57 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       soil.node[[1]]$Children[wsomn][[1]] <- soil.om.node
     }
     
-    if(soil.child %in% c("Analysis", "Chemical", "Solute")){
+    if(soil.child %in% c("Analysis", "Chemical", "Solute", "NO3", "NH4", "Urea")){
       edited.child <- soil.child
       wan <- grepl(soil.child, soil.node0)
-      soil.analysis.node <- soil.node0[wan][[1]]
+
+      if(sum(wan) == 1){
+        soil.analysis.node <- soil.node0[wan][[1]]  
+      }else{
+        soil.node0.names <- sapply(soil.node0[wan], FUN = function(x) x$Name)
+        if(soil.child == "Solute"){
+          if(length(parm) != 2)
+            stop("When 'soil.child' is 'Solute' 'parm' should be of length = 2", call. = FALSE)
+          if(!parm[[1]] %in% c("NO3", "NH4", "Urea"))
+            stop("The first element of 'parm' should be one of :", soil.node0.names, call. = FALSE)
+          wsan <- which(soil.node0.names == parm[[1]])
+          soil.analysis.node <- soil.node0[wan][[wsan]]
+        }
+      }
       
       ## Check for length
-      if(length(soil.analysis.node[[parm]]) > length(value))
-        stop("Length of 'value' should not be less than length of 'node'", call. = FALSE)
-      
-      if(parm %in% c("PH", "NO3", "NH4", "Urea", "Thickness")){
-        for(i in 1:length(soil.analysis.node[[parm]])){
-          soil.analysis.node[[parm]][[i]] <- value[i]
+      if(length(parm) == 1){
+        if(length(soil.analysis.node[[parm]]) != length(value)){
+          cat("Length of value:", length(value), "\n")
+          cat("Length of 'node':", length(soil.analysis.node[[parm]]), "\n")
+          stop("Length of 'value' should equalto length of 'node'", call. = FALSE)
         }
-      }else{
-        stop("'parm' should be one of 'PH', 'NO3', 'NH4', 'Urea' or 'Thickness'", call. = FALSE)
+        if(parm %in% c("PH", "NO3", "NH4", "Urea", "Thickness", "InitialValues")){
+          for(i in 1:length(soil.analysis.node[[parm]])){
+            soil.analysis.node[[parm]][[i]] <- value[i]
+          }
+        }else{
+          stop("'parm' should be one of 'PH', 'NO3', 'NH4', 'Urea', 'InitialValues' or 'Thickness'", call. = FALSE)
+        }
       }
-      soil.node[[1]]$Children[wan][[1]] <- soil.analysis.node
+      
+      if(length(parm) == 2){
+        if(length(soil.analysis.node[[parm[[2]]]]) > length(value))
+          stop("Length of 'value' should not be less than length of 'node'", call. = FALSE)
+        if(length(soil.analysis.node[[parm[[2]]]]) < length(value))
+          stop("Length of 'value' should not be greater than length of 'node'", call. = FALSE)
+        if(!parm[[2]] %in% names(soil.analysis.node))
+          stop("The second element of 'parm' should be one of: ", names(soil.analysis.node), call. = FALSE)
+        for(i in 1:length(soil.analysis.node[[parm[[2]]]])){
+          soil.analysis.node[[parm[[2]]]][[i]] <- value[i]
+        }
+      }
+      ### Need to fix this
+      if(sum(wan) == 1){
+        soil.node[[1]]$Children[wan][[1]] <- soil.analysis.node  
+      }else{
+        soil.node[[1]]$Children[wan][[wsan]] <- soil.analysis.node
+      }
     }
     
     if(soil.child == "InitialWater"){
