@@ -33,7 +33,7 @@
 #' @param overwrite logical; if \code{TRUE} the old file is overwritten, a new file is written otherwise
 #' @param edit.tag if the file is edited a different tag from the default \sQuote{-edited} can be used.
 #' @param parm.path path to the attribute to edit when node is \sQuote{Other}
-#' @param root supply the node postion in the case of multiple simulations such as factorials.
+#' @param root supply the node position in the case of multiple simulations such as factorials.
 #' @param verbose whether to print information about successful edit
 #' @return (when verbose=TRUE) complete file path to edited .apsimx file is returned as a character string.
 #' As a side effect this function creates a new (JSON) .apsimx file.

@@ -51,10 +51,11 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
                                 soil.child = c("Metadata", "Water", "InitialWater",
                                           "Chemical", "Physical", "Analysis", "SoilWater",
                                           "InitialN", "CERESSoilTemperature", "Sample",
+                                          "Solute", "NO3", "NH4", "Urea",
                                           "Nutrient", "Organic", "Swim3"),
                                 parm = NULL,
                                 digits = 3,
-                                root){
+                                root = NULL){
   #### Beginning of function ----
   .check_apsim_name(file)
   
@@ -240,7 +241,7 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
     }
   }
 
-  if((length(fcsn) > 1 || !missing(root)) && find.root){
+  if((length(fcsn) > 1 || !is.null(root)) && find.root){
     if(missing(root)){
       cat("Simulation structure: \n")
       str_list(apsimx_json)
@@ -400,7 +401,11 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
       ## Which is not 'Metadata"
       if(soil.child == "InitialWater") soil.child <- "Water"
       
-      wsc <- grep(soil.child, soil.children.names)
+      if(soil.child != "Solute"){
+        wsc <- grep(soil.child, soil.children.names)
+      }else{
+        wsc <- which(soil.children.names %in% c("NO3", "NH4", "Urea"))
+      }
       
       if(soil.child == "Water" && length(wsc) == 2) wsc <- wsc[2]
       
@@ -536,6 +541,85 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
         }
         if(!parm.physical.found)
           stop("Soil physical parameter not found", call. = FALSE)
+      }
+    }
+  }
+  
+  second.level.soil <- c("Solute", "NO3", "NH4", "Urea")
+  
+  if(soil.child %in% second.level.soil){
+    
+    soil.d2 <- NULL
+    soil.d3 <- NULL
+    enms <- c("IncludeInDocumentation", "Enabled", "ReadOnly", "Children", "Name", "$type")
+    ssnc <- selected.soil.node.child
+    
+    if(soil.child == "Solute"){
+      
+      solutes <- sapply(ssnc, function(x) x$Name)
+      
+      parm.path <- paste0(parm.path.2.1, ".", "Solute")
+      
+      if(missing(parm)){
+        ## cat("Solutes:", solutes, "\n")
+        ## Do I need to do anything here?
+      }else{
+        ret_lst <- vector('list', length = length(solutes))
+        names(ret_lst) <- solutes
+        sel.parm <- grep(parm[[1]], solutes)
+        if(length(sel.parm) == 0)
+          stop("'parm' should be one of: ", paste(solutes, collapse = ", "), call. = FALSE)
+        solutes <- parm[[1]]
+      }
+      
+      ret_lst <- vector('list', length = length(solutes))
+      names(ret_lst) <- solutes
+      
+      for(j in seq_along(solutes)){
+        ## cat("\nSolute:", solutes[j], "\n")
+        ssnc.solute <- ssnc[[j]]
+        if(length(unlist(ssnc.solute$Thickness)) != length(unlist(ssnc.solute$InitialValues))){
+          cat("Length of Thickness:", length(unlist(ssnc.solute$Thickness)), "\n")
+          cat("Length of InitialValues:", length(unlist(ssnc.solute$InitialValues)), "\n")
+          stop("Length of 'Thickness' does not match length of 'InitialValues'", call. = FALSE)
+        }
+        soil.d1 <- data.frame(Thickness = unlist(ssnc.solute$Thickness),
+                              InitialValues = unlist(ssnc.solute$InitialValues))
+        if(!is.null(soil.d1)){
+          if(is.null(parm)){
+            ret_lst[[j]][["first"]] <- soil.d1
+          }else{
+            if(length(parm) == 1){
+              if(parm %in% c("Thickness", "InitialValues")){
+                ret_lst[[j]][["first"]] <- soil.d1[, parm, drop = FALSE]
+              }else{
+                ret_lst[[j]][["first"]] <- soil.d1
+              }
+            }
+          }
+        } 
+        
+        cnms <- setdiff(names(ssnc.solute), enms)        
+        for(k in cnms){
+          if(k %in% c("Thickness", "InitialValues")) next
+          tmp <- ssnc.solute[k][[1]]
+          if(is.null(tmp)) tmp <- ""
+          soil.d2 <- rbind(soil.d2,
+                           data.frame(parm = k, value = as.character(tmp)))
+        }
+        if(missing(parm) || length(parm) == 1){
+          if(!is.null(soil.d2)){
+            ret_lst[[j]][["second"]] <- soil.d2
+          } 
+        }else{
+          if(is.list(parm) && is.numeric(parm[[2]])){
+            soil.d2.s <- soil.d2[parm[[2]], , drop = FALSE]
+            if(!is.null(soil.d2)){
+              ret_lst[[j]][["second"]] <- soil.d2.s
+            }            
+          }
+        }
+        soil.d2 <- NULL
       }
     }
   }

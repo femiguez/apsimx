@@ -1,5 +1,6 @@
 ## Run a few tests for the examples
 require(apsimx)
+packageVersion("apsimx")
 apsimx_options(warn.versions = FALSE)
 
 ## Run inspect tests
@@ -23,6 +24,10 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Organic")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Solute")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Solute", parm = "NO3")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Solute", parm = list("NO3", 2)) 
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Solute", parm = list("NO3", "D0"))
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
@@ -48,6 +53,9 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Organic")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Solute")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Solute", parm = "NH4")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Solute", parm = list("NH4", "DepthConstant"))
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "InitialWater")
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
@@ -68,6 +76,10 @@ if(run.inspect.tests){
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "SoilWater", parm = "SummerDate")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Organic")
   inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Chemical")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "Solute")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "NO3")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "NO3", parm = "InitialValues")
+  inspect_apsimx(i, src.dir = ex.dir, node = "Soil", soil.child = "NO3", parm = "D0")
   inspect_apsimx(i, src.dir = ex.dir, node = "SurfaceOrganicMatter")
   inspect_apsimx(i, src.dir = ex.dir, node = "Crop")
   inspect_apsimx(i, src.dir = ex.dir, node = "Manager")
@@ -501,9 +513,9 @@ if(inspect.factorial.test.parm.path){
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, c(3, 5)))
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, c(3, 5)), print.path = TRUE)
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 0))
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 8, 0))
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 0))
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 3), print.path = TRUE)
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 0))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 7, 7, 0))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 7, 1, 3), print.path = TRUE)
   pp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = ".Simulations.AgPasture.Field", print.path = TRUE)
   i <- "WhiteClover.apsimx"
   inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = 3)
@@ -512,8 +524,8 @@ if(inspect.factorial.test.parm.path){
   ## Developing/Testing list/grep
   ## This should work for SimpleGrazing and it doesn't at the moment
   i <- "AgPasture.apsimx"
-  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 0)) 
-  (pp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 5, 1, 2), print.path = TRUE))
+  inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 7, 8, 0)) 
+  (pp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3, 7, 8, 17), print.path = TRUE))
   rootp <- inspect_apsimx(i, src.dir = tmp.dir, node = "Other", parm = list(1, 3))
   rut <- strsplit(rootp, ".", fixed = TRUE)[[1]][3]
   # inspect_apsimx(i, src.dir = tmp.dir, node = "Other", root = rut,
@@ -583,10 +595,10 @@ if(inspect.factorial.test.parm.path){
 #### Test Solute ----
 if(run.inspect.tests){
   
+  ### It is also possible to inspect 'Solute' or individual components in 
+  ### other ways (see the initial 'inspect' tests at the beginning of this script)
   ex.dir <- auto_detect_apsimx_examples()
-  
   dir(ex.dir)
-  
   test.files <- c("Maize.apsimx", "Wheat.apsimx", "Soybean.apsimx", "Oats.apsimx")
   
   for(i in test.files){

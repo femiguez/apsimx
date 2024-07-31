@@ -10,11 +10,11 @@ extract_data_apsimx(
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
     "Manager", "Report", "Operations", "Other"),
   soil.child = c("Metadata", "Water", "InitialWater", "Chemical", "Physical", "Analysis",
-    "SoilWater", "InitialN", "CERESSoilTemperature", "Sample", "Nutrient", "Organic",
-    "Swim3"),
+    "SoilWater", "InitialN", "CERESSoilTemperature", "Sample", "Solute", "NO3", "NH4",
+    "Urea", "Nutrient", "Organic", "Swim3"),
   parm = NULL,
   digits = 3,
-  root
+  root = NULL
 )
 }
 \arguments{

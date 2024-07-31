@@ -14,7 +14,7 @@ if(.Platform$OS.type == "unix"){
 }else{
   internet <- FALSE  
 }
-  
+run.apsim.met <- FALSE  
 if(run.apsim.met && internet){
   
   ## Testing napad and impute
@@ -23,8 +23,10 @@ if(run.apsim.met && internet){
   bsas.lon <- unit_conv("58d 22' 54\" S", from = "degrees", to = "decimal")
   
   pwr <- get_power_apsim_met(lonlat = c(bsas.lon, bsas.lat), dates = c("2010-01-01", "2015-12-31"))
+  dim(pwr)
   check_apsim_met(pwr)
   gsd <- get_gsod_apsim_met(lonlat = c(bsas.lon, bsas.lat), dates = c("2010-01-01", "2015-12-31"))
+  dim(gsd)
   check_apsim_met(gsd)
   gsd$radn <- pwr$radn
   check_apsim_met(gsd)
@@ -129,8 +131,6 @@ if(run.apsim.met && internet){
   plot(pwr, summary = TRUE)
   plot(pwr, summary = TRUE, climatology = TRUE)
   plot(pwr, summary = TRUE, met.var = "rain", climatology = TRUE)
-  
-  
   
   ## Plotting using the density option ----
   plot(pwr, plot.type = "density")

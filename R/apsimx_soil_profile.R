@@ -482,6 +482,7 @@ plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater"
   ## Really dumb... but for now...
   dist <- NA; soil.depths <- NA; soil.depth.bottom <- NA; SAT <- NA
   LL15 <- NA; DUL <- NA; AirDry <- NA; InitialValues <- NULL
+  texture <- NULL; values <- NULL
   xsoil <- x$soil
   ## Add soil bottom depth
   xsoil$soil.depth.bottom <- sapply(as.character(xsoil$Depth), FUN = function(x) as.numeric(strsplit(x,"-")[[1]][2]))

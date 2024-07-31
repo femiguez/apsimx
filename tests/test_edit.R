@@ -264,8 +264,7 @@ if(run.apsimx.edit){
   
   ex.to.test <- dir(ex.dir, pattern = "apsimx$")
   
-  
-  ex2test <- ex.to.test[c(2, 16, 18, 30, 34)]
+  ex2test <- ex.to.test[c(2, 16, 18, 30)]
   
   for(i in ex2test){
     
@@ -277,13 +276,49 @@ if(run.apsimx.edit){
     inspect_apsimx(i, src.dir = tmp.dir, node = "Soil",
                    soil.child = "Solute")
     
+    edf.solute <- extract_data_apsimx(i, src.dir = tmp.dir, node = "Soil",
+                   soil.child = "Solute")
+    
+    initialvalues.length <- nrow(edf.solute$NO3$first)
+    
     edit_apsimx(i, src.dir = tmp.dir, wrt.dir = tmp.dir,
                 node = "Soil", soil.child = "NO3",
                 parm = "InitialValues", 
-                value = rep(2, 7))
+                value = rep(2, initialvalues.length))
     
     ii <- paste0(tools::file_path_sans_ext(i), "-edited.apsimx")
     inspect_apsimx(ii, src.dir = tmp.dir, node = "Soil",
-                   soil.child = "Solute")
+                   soil.child = "Solute", parm = "NO3")
+    
+    ### The parameters in the second table cannot be edited ATM
+    # edit_apsimx(i, src.dir = tmp.dir, wrt.dir = tmp.dir,
+    #             node = "Soil", soil.child = "NO3",
+    #             parm = "DepthConstant", 
+    #             value = 1,
+    #             edit.tag = "-DepthConstant")
+  }
+}
+
+#### Testing edit.tag feature ----
+
+if(run.apsimx.edit){
+  
+  ex.dir <- auto_detect_apsimx_examples()
+  
+  ex.to.test <- dir(ex.dir, pattern = "apsimx$")
+  
+  ex2test <- ex.to.test[c(2, 16, 18, 30, 34)]
+  
+  for(i in ex2test){
+    
+    cat("Example:", i, "\n")
+    
+    if(!file.exists(file.path(tmp.dir, i)))
+      file.copy(file.path(ex.dir, i), tmp.dir)   
+    
+    edit_apsimx(i, src.dir = tmp.dir, wrt.dir = tmp.dir,
+                node = "Weather",
+                value = "temp.met",
+                edit.tag = "-tempmet")
   }
 }

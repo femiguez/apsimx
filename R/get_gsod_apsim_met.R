@@ -68,7 +68,7 @@ get_gsod_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
   dts <- as.numeric(format(as.Date(dates), "%Y"))
   yrs <- seq(from = dts[1], to = dts[2])
   
-  gsd <- GSODR::get_GSOD(years = yrs, station = nr.st1)
+  gsd <- GSODR::get_GSOD(years = yrs, station = nr.st1$STNID)
 
   if(nrow(gsd) == 0)
     stop("No data returned by the GDODR::get_GSOD function", call. = FALSE)
@@ -95,7 +95,7 @@ get_gsod_apsim_met <- function(lonlat, dates, wrt.dir = ".", filename = NULL,
     gsd$RADN <- NA  
   }
 
-  gsd <- subset(as.data.frame(gsd), select = c("YEAR", "YDAY","RADN",
+  gsd <- subset(as.data.frame(gsd), select = c("YEAR", "YDAY", "RADN",
                                                "MAX", "MIN", "PRCP", "RH", "WDSP"))
   
   

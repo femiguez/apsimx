@@ -595,9 +595,9 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
         if(formula != 2L && formula != 3L && formula != 4L)
           stop("When 'formula' is a number it needs to be either 2, 3 or 4", call. = FALSE)
       }else{
-        if(attr(terms(formula), "response") == 0){
-          tt <- terms(formula)
-          frml <- reformulate(attr(tt, "term.labels"), response = "y")
+        if(attr(stats::terms(formula), "response") == 0){
+          tt <- stats::terms(formula)
+          frml <- stats::reformulate(attr(tt, "term.labels"), response = "y")
         }else{
           frml <- formula                  
         }

@@ -46,7 +46,7 @@ edit_apsimx(
 
 \item{parm.path}{path to the attribute to edit when node is \sQuote{Other}}
 
-\item{root}{supply the node postion in the case of multiple simulations such as factorials.}
+\item{root}{supply the node position in the case of multiple simulations such as factorials.}
 
 \item{verbose}{whether to print information about successful edit}
 }
