@@ -6,6 +6,9 @@
 ## 3. plotting and different combinations
 
 require(apsimx)
+packageVersion("apsimx")
+packageVersion("GSODR")
+packageVersion("data.table")
 
 run.apsim.met <- get(".run.local.tests", envir = apsimx.options)
 
@@ -14,7 +17,7 @@ if(.Platform$OS.type == "unix"){
 }else{
   internet <- FALSE  
 }
-run.apsim.met <- FALSE  
+run.apsim.met <- FALSE  ## This does not work because GSODR does not work
 if(run.apsim.met && internet){
   
   ## Testing napad and impute

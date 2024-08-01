@@ -1,5 +1,6 @@
 ## Testing the edit function with a variety of files
 require(apsimx)
+packageVersion("apsimx")
 apsimx_options(warn.versions = FALSE)
 
 extd.dir <- system.file("extdata", package = "apsimx")

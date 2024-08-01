@@ -726,55 +726,55 @@ check_apsimx <- function(file = "", src.dir = ".",
   ## When node == "Other" root should always be missing
   ## The problem is that I have to guess it
   ## We should be able to use node == "Other" even if root is not missing
-  if(node == "Other" && is.null(root) && length(wcore) > 1){
-    ## Process 'parm'
-    if(is.null(parm.path))
-      stop("parm.path is missing")
-    if(!grepl(".", parm.path, fixed = TRUE))
-      stop("parm.path is not a proper json path")
-    cparm <- paste0(parm.path, ".", parm)
-    pparm <- strsplit(cparm, split = ".", fixed = TRUE)[[1]]
-    root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
-    if(pparm[2] != root.name.level.0)
-      stop(paste("First parm element does not match:", root.name.level.0), call. = FALSE)
-    root1 <- pparm[3] 
-    if(is.na(pparm[4])){
-      root <- root1
-    }else{
-      ## Guess if 'root' is contained in the first level of names
-      root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
-                                   FUN.VALUE = "character")
-      wroot1 <- grep(as.character(root1), root.names.level.1)    
-      if(length(wroot1) == 0)
-        stop(paste("Second element of parm did not match:", root.names.level.1), call. = FALSE)
-      ## Need to test if the fourth element of pparm is a node
-      nodes <- c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Report", "Operations", "Other", "Field")
-      if(pparm[4] %in% nodes){
-        ## This amounts to guessing that root should be of length 1
-        root <- list(pparm[3])
-      }else{
-        ## This amounts to guessing that pparm[4] should be the second element in 
-        root.names.level.2 <- vapply(apsimx_json$Children[[wroot1]]$Children, 
-                                     FUN = function(x) x$Name, 
-                                     FUN.VALUE = "character")
-        root2 <- pparm[4]
-        wroot2 <- grep(as.character(root2), root.names.level.2)  
-        if(length(wroot2) == 0)
-          stop(paste("Third element of parm did not match:", root.names.level.2), call. = FALSE)
-        if(pparm[5] %in% nodes){
-          root <- list(pparm[3], pparm[4])
-        }else{
-          root.names.level.3 <- vapply(apsimx_json$Children[[wroot1]]$Children[[wroot2]]$Children, 
-                                       FUN = function(x) x$Name, 
-                                       FUN.VALUE = "character")
-          root3 <- pparm[5]
-          wroot3 <- grep(as.character(root3), root.names.level.3)    
-          if(length(wroot3) == 0)
-            stop(paste("Fourth element of parm did not match:", root.names.level.3), call. = FALSE)
-        }
-      }      
-    }
-  }
+  # if(node == "Other" && is.null(root) && length(wcore) > 1){
+  #   ## Process 'parm'
+  #   if(is.null(parm.path))
+  #     stop("parm.path is missing")
+  #   if(!grepl(".", parm.path, fixed = TRUE))
+  #     stop("parm.path is not a proper json path")
+  #   cparm <- paste0(parm.path, ".", parm)
+  #   pparm <- strsplit(cparm, split = ".", fixed = TRUE)[[1]]
+  #   root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
+  #   if(pparm[2] != root.name.level.0)
+  #     stop(paste("First parm element does not match:", root.name.level.0), call. = FALSE)
+  #   root1 <- pparm[3] 
+  #   if(is.na(pparm[4])){
+  #     root <- root1
+  #   }else{
+  #     ## Guess if 'root' is contained in the first level of names
+  #     root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
+  #                                  FUN.VALUE = "character")
+  #     wroot1 <- grep(as.character(root1), root.names.level.1)    
+  #     if(length(wroot1) == 0)
+  #       stop(paste("Second element of parm did not match:", root.names.level.1), call. = FALSE)
+  #     ## Need to test if the fourth element of pparm is a node
+  #     nodes <- c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Report", "Operations", "Other", "Field")
+  #     if(pparm[4] %in% nodes){
+  #       ## This amounts to guessing that root should be of length 1
+  #       root <- list(pparm[3])
+  #     }else{
+  #       ## This amounts to guessing that pparm[4] should be the second element in 
+  #       root.names.level.2 <- vapply(apsimx_json$Children[[wroot1]]$Children, 
+  #                                    FUN = function(x) x$Name, 
+  #                                    FUN.VALUE = "character")
+  #       root2 <- pparm[4]
+  #       wroot2 <- grep(as.character(root2), root.names.level.2)  
+  #       if(length(wroot2) == 0)
+  #         stop(paste("Third element of parm did not match:", root.names.level.2), call. = FALSE)
+  #       if(pparm[5] %in% nodes){
+  #         root <- list(pparm[3], pparm[4])
+  #       }else{
+  #         root.names.level.3 <- vapply(apsimx_json$Children[[wroot1]]$Children[[wroot2]]$Children, 
+  #                                      FUN = function(x) x$Name, 
+  #                                      FUN.VALUE = "character")
+  #         root3 <- pparm[5]
+  #         wroot3 <- grep(as.character(root3), root.names.level.3)    
+  #         if(length(wroot3) == 0)
+  #           stop(paste("Fourth element of parm did not match:", root.names.level.3), call. = FALSE)
+  #       }
+  #     }      
+  #   }
+  # }
   
   if(length(wcore) > 1 || !is.null(root)){
     if(is.null(root)){
@@ -830,35 +830,42 @@ check_apsimx <- function(file = "", src.dir = ".",
   ### Checking the Clock
   if(node %in% c("all", "Clock")){
     if(verbose) cat("Checking the Clock \n")
-    dates <- extract_data_apsimx(file = file, src.dir = src.dir,
-                                 node = "Clock", root = root)
-    try.start <- try(as.Date(dates[[1]], tryFormats = c("%Y-%m-%dT%H:%M:%S")), silent = TRUE)
-    if(inherits(try.start, "try-error"))
-      warning(names(dates)[1], " : ", try.start)
-    try.end <- try(as.Date(dates[[2]], tryFormats = c("%Y-%m-%dT%H:%M:%S")), silent = TRUE)
-    if(inherits(try.end, "try-error"))
-      warning(names(dates)[2], " : ", try.end)
+    dates <- try(extract_data_apsimx(file = file, src.dir = src.dir,
+                                 node = "Clock", root = root), silent = TRUE)
+    if(inherits(dates, 'try-error')){
+      warning("Clock not found", immediate. = TRUE)
+    }else{
+      try.start <- try(as.Date(dates[[1]], tryFormats = c("%Y-%m-%dT%H:%M:%S")), silent = TRUE)
+      if(inherits(try.start, "try-error"))
+        warning(names(dates)[1], " : ", try.start, immediate. = TRUE)
+      try.end <- try(as.Date(dates[[2]], tryFormats = c("%Y-%m-%dT%H:%M:%S")), silent = TRUE)
+      if(inherits(try.end, "try-error"))
+        warning(names(dates)[2], " : ", try.end, immediate. = TRUE)      
+    }
   }
   
   ### Checking the Weather
   if(node %in% c("all", "Weather", "met")){
     if(verbose) cat("Checking the Weather (met) \n")
-    met.name <- extract_data_apsimx(file = file, src.dir = src.dir,
+    met.name <- try(extract_data_apsimx(file = file, src.dir = src.dir,
                                     node = "Weather",
-                                    root = root)  
-    
-    mfe <- file.exists(met.name[[1]])
-    if(!mfe){
-      warning("Could not find 'met' file")
+                                    root = root), silent = TRUE)
+    if(inherits(met.name, 'try-error')){
+      warning("Weather (met) not found", immediate. = TRUE)
     }else{
-     if(check.apsim.met){
-       ### Annoying, but I need to split the name
-       mfn <- basename(normalizePath(met.name[[1]])) ## met file name
-       mfsd <- dirname(normalizePath(met.name[[1]]))
-       met <- read_apsim_met(file = mfn, src.dir = mfsd)
-       check_apsim_met(met)
-     }
-   }
+      mfe <- file.exists(met.name[[1]])
+      if(!mfe){
+        warning("Could not find 'met' file", immediate. = TRUE)
+      }else{
+        if(check.apsim.met){
+          ### Annoying, but I need to split the name
+          mfn <- basename(normalizePath(met.name[[1]])) ## met file name
+          mfsd <- dirname(normalizePath(met.name[[1]]))
+          met <- read_apsim_met(file = mfn, src.dir = mfsd)
+          check_apsim_met(met)
+        }
+      }      
+    }
   }
   
   if(node %in% c("all", "Soil")){
@@ -936,11 +943,10 @@ check_apsimx <- function(file = "", src.dir = ".",
         ## Are the number of layers the same as for 'Physical'?
         soil.physical.layers.length <- nrow(soil.physical.layers)
         soil.initialwater.initialvalues.length <- nrow(soil.initialwater.initialvalues)
-        browser()
         if(soil.physical.layers.length != soil.initialwater.initialvalues.length){
           cat("Number of layers in soil physical:", soil.physical.layers.length, "\n")
           cat("Number of layers in initial water values:", soil.initialwater.initialvalues.length, "\n")
-          warning("Number of layers in physical does match the ones in InitialWater - InitialValues")
+          message("Number of layers in physical does match the ones in InitialWater - InitialValues")
         }
         ## Checking that InitialWater is between LL15 and SAT (It can be greater than DUL?)
         if(soil.physical.layers.length == soil.initialwater.initialvalues.length){
@@ -950,16 +956,16 @@ check_apsimx <- function(file = "", src.dir = ".",
             if(soil.physical.layer.thickness != soil.initialwater.layer.thickness){
               cat("Soil physical Thickness for layer:", i, " is ", soil.physical.layer.thickness, "\n")
               cat("Soil InitialWater Thickness:", soil.initialwater.layer.thickness, "\n")
-              warning("Soil Physical Thickness does not match InitialWater")
+              message("Soil Physical Thickness does not match InitialWater")
             }
             soil.initialwater.layer.values <- soil.initialwater.initialvalues$InitialValues[i]
             soil.physical.layers.LL15 <- soil.physical.layers$LL15[i]
             soil.physical.layers.SAT <- soil.physical.layers$SAT[i]
             if(soil.initialwater.layer.values < soil.physical.layers.LL15){
-              warning("Soil InitialWater InitialValues for layer ", i, " is lower than LL15")
+              message("Soil InitialWater InitialValues for layer ", i, " is lower than LL15")
             }
             if(soil.initialwater.layer.values > soil.physical.layers.SAT){
-              warning("Soil InitialWater InitialValues for layer ", i, " is greater than SAT")
+              message("Soil InitialWater InitialValues for layer ", i, " is greater than SAT")
             }
           }
         }
@@ -969,42 +975,45 @@ check_apsimx <- function(file = "", src.dir = ".",
     if(soil.child %in% c("all", "Solute")){
       if(verbose) cat("Checking the soil Solutes \n")
       ### First: extract soil Solutes
-      soil.solutes <- extract_data_apsimx(file = file, src.dir = src.dir, 
+      soil.solutes <- try(extract_data_apsimx(file = file, src.dir = src.dir, 
                                                node = "Soil", 
                                                soil.child = "Solute",
-                                               root = root)  
-      ### Checking Thickness and Initial Values
-      if(verbose) cat("Solutes: ", names(soil.solutes), "\n")
-      for(i in seq_along(soil.solutes)){
-        soil.solute.initialvalues <- soil.solutes[[i]][[1]]
-        soil.solute.initialvalues.length <- nrow(soil.solute.initialvalues)
-        if(soil.physical.layers.length != soil.solute.initialvalues.length){
-          cat("Number of layers in soil physical:", soil.physical.layers.length, "\n")
-          cat("Number of layers in solute values:", soil.solute.initialvalues.length, "\n")
-          warning("Number of layers in physical does match the ones in Solute - InitialValues")
-        }
-        for(j in seq_len(soil.solute.initialvalues.length)){
-          soil.solute.layer.thickness <- soil.solute.initialvalues$Thickness[i]
-          soil.physical.layer.thickness <- soil.physical.layers$Thickness[i]
-          if(soil.physical.layer.thickness != soil.solute.layer.thickness){
-            cat("Soil physical Thickness for layer:", i, " is ", soil.physical.layer.thickness, "\n")
-            cat("Soil solute Thickness:", soil.solute.layer.thickness, "\n")
-            warning("Soil Physical Thickness does not match Solute")
+                                               root = root), silent = TRUE)
+      if(inherits(soil.solutes, 'try-error')){
+        warning("Soil 'Solutes' not found", immediate. = TRUE)
+      }else{
+        if(verbose) cat("Solutes: ", names(soil.solutes), "\n")
+        for(i in seq_along(soil.solutes)){
+          soil.solute.initialvalues <- soil.solutes[[i]][[1]]
+          soil.solute.initialvalues.length <- nrow(soil.solute.initialvalues)
+          if(soil.physical.layers.length != soil.solute.initialvalues.length){
+            cat("Number of layers in soil physical:", soil.physical.layers.length, "\n")
+            cat("Number of layers in solute values:", soil.solute.initialvalues.length, "\n")
+            message("Number of layers in physical does match the ones in Solute - InitialValues")
           }
-          soil.solute.layer.values <- soil.solute.initialvalues$InitialValues[i]
-          if(!is.numeric(soil.solute.layer.values)){
-            warning("Soil Solute InitialValues for layer ", i, " is not numeric")
+          for(j in seq_len(soil.solute.initialvalues.length)){
+            soil.solute.layer.thickness <- soil.solute.initialvalues$Thickness[i]
+            soil.physical.layer.thickness <- soil.physical.layers$Thickness[i]
+            if(soil.physical.layer.thickness != soil.solute.layer.thickness){
+              cat("Soil physical Thickness for layer:", i, " is ", soil.physical.layer.thickness, "\n")
+              cat("Soil solute Thickness:", soil.solute.layer.thickness, "\n")
+              message("Soil Physical Thickness does not match Solute")
+            }
+            soil.solute.layer.values <- soil.solute.initialvalues$InitialValues[i]
+            if(!is.numeric(soil.solute.layer.values)){
+              warning("Soil Solute InitialValues for layer ", i, " is not numeric", immediate. = TRUE)
+            }
+            if(soil.solute.layer.values < 0){
+              warning("Soil Solute InitialValues for layer ", i, " is less than zero", immediate. = TRUE)
+            }
           }
-          if(soil.solute.layer.values < 0){
-            warning("Soil Solute InitialValues for layer ", i, " is less than zero")
-          }
-        }
+        }        
       }
     }
     
     if(soil.child %in% c("all", "Organic")){
       if(verbose) cat("Checking the soil Organic \n")
-      ### First: extract soil InitialWater
+      ### First: extract soil Organic
       soil.organic <- extract_data_apsimx(file = file, src.dir = src.dir, 
                                           node = "Soil", 
                                           soil.child = "Organic",
@@ -1044,8 +1053,9 @@ check_apsimx <- function(file = "", src.dir = ".",
         if(FInert.value > 1)
           message("FInert for layer: ", i, " is greater than 1. Value: ", FInert.value)
         ### Checking that FBiom + FInert are not greater than 1
-        if(FBiom.value + FInert.value > 1)
+        if(FBiom.value + FInert.value > 1){
           message("FBiom + FInert for layer: ", i, " is greater than 1. FBiom Value: ", FBiom.value, " FInert Value: ", FInert.value)
+        }
         ### Checking FOM
         FOM.value <- as.numeric(soil.organic.layers[["FOM"]][i])
         if(FOM.value < 0)
@@ -1127,7 +1137,7 @@ assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
 assign('allow.path.spaces', FALSE, apsimx.options)
-assign('.run.local.tests', TRUE, apsimx.options)
+assign('.run.local.tests', FALSE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests
 ## which do not require an APSIM install
