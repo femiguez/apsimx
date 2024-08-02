@@ -8,7 +8,7 @@ check_apsimx(
   file = "",
   src.dir = ".",
   node = c("all", "Clock", "Weather", "Soil"),
-  soil.child = c("all", "Physical", "InitialWater", "Solute", "Organic"),
+  soil.child = c("all", "Physical", "InitialWater", "SoilWater", "Solute", "Organic"),
   check.apsim.met = FALSE,
   root = NULL,
   verbose = TRUE

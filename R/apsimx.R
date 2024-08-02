@@ -688,7 +688,7 @@ read_apsimx_all <- function(src.dir = ".", value = "report"){
 
 check_apsimx <- function(file = "", src.dir = ".",
                          node = c("all", "Clock", "Weather", "Soil"),
-                         soil.child = c("all", "Physical", "InitialWater", "Solute", "Organic"),
+                         soil.child = c("all", "Physical", "InitialWater", "SoilWater", "Solute", "Organic"),
                          check.apsim.met = FALSE,
                          root = NULL,
                          verbose = TRUE){
@@ -708,131 +708,16 @@ check_apsimx <- function(file = "", src.dir = ".",
   }
   
   file <- match.arg(file, file.names)
-  
-  file.name.path <- file.path(src.dir, file)
-  
+
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)
-  
-  ## Parse apsimx file (JSON)
-  apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
-  
-  children.names <- sapply(apsimx_json$Children, FUN = function(x) x$`$type`)
-  wcore <- grep("Core.Simulation", children.names)
-  
-  parm.path <- NULL
-  parm <- NULL
-  parm.path.0 <- paste0(".", apsimx_json$Name) ## Root
-  ## When node == "Other" root should always be missing
-  ## The problem is that I have to guess it
-  ## We should be able to use node == "Other" even if root is not missing
-  # if(node == "Other" && is.null(root) && length(wcore) > 1){
-  #   ## Process 'parm'
-  #   if(is.null(parm.path))
-  #     stop("parm.path is missing")
-  #   if(!grepl(".", parm.path, fixed = TRUE))
-  #     stop("parm.path is not a proper json path")
-  #   cparm <- paste0(parm.path, ".", parm)
-  #   pparm <- strsplit(cparm, split = ".", fixed = TRUE)[[1]]
-  #   root.name.level.0 <- gsub(".", "", parm.path.0, fixed = TRUE)
-  #   if(pparm[2] != root.name.level.0)
-  #     stop(paste("First parm element does not match:", root.name.level.0), call. = FALSE)
-  #   root1 <- pparm[3] 
-  #   if(is.na(pparm[4])){
-  #     root <- root1
-  #   }else{
-  #     ## Guess if 'root' is contained in the first level of names
-  #     root.names.level.1 <- vapply(apsimx_json$Children, FUN = function(x) x$Name, 
-  #                                  FUN.VALUE = "character")
-  #     wroot1 <- grep(as.character(root1), root.names.level.1)    
-  #     if(length(wroot1) == 0)
-  #       stop(paste("Second element of parm did not match:", root.names.level.1), call. = FALSE)
-  #     ## Need to test if the fourth element of pparm is a node
-  #     nodes <- c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager","Report", "Operations", "Other", "Field")
-  #     if(pparm[4] %in% nodes){
-  #       ## This amounts to guessing that root should be of length 1
-  #       root <- list(pparm[3])
-  #     }else{
-  #       ## This amounts to guessing that pparm[4] should be the second element in 
-  #       root.names.level.2 <- vapply(apsimx_json$Children[[wroot1]]$Children, 
-  #                                    FUN = function(x) x$Name, 
-  #                                    FUN.VALUE = "character")
-  #       root2 <- pparm[4]
-  #       wroot2 <- grep(as.character(root2), root.names.level.2)  
-  #       if(length(wroot2) == 0)
-  #         stop(paste("Third element of parm did not match:", root.names.level.2), call. = FALSE)
-  #       if(pparm[5] %in% nodes){
-  #         root <- list(pparm[3], pparm[4])
-  #       }else{
-  #         root.names.level.3 <- vapply(apsimx_json$Children[[wroot1]]$Children[[wroot2]]$Children, 
-  #                                      FUN = function(x) x$Name, 
-  #                                      FUN.VALUE = "character")
-  #         root3 <- pparm[5]
-  #         wroot3 <- grep(as.character(root3), root.names.level.3)    
-  #         if(length(wroot3) == 0)
-  #           stop(paste("Fourth element of parm did not match:", root.names.level.3), call. = FALSE)
-  #       }
-  #     }      
-  #   }
-  # }
-  
-  if(length(wcore) > 1 || !is.null(root)){
-    if(is.null(root)){
-      cat("Simulation structure: \n")
-      str_list(apsimx_json)
-      stop("more than one simulation found and no root node label has been specified \n select one of the children names above")   
-    }else{
-      ## Parse root
-      root <- parse_root(root)
-      if(length(root) > 3)
-        stop("At the moment 3 is the maximum length for root", call. = TRUE)
-      if(length(root) == 1){
-        root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
-        wcore1 <- grep(as.character(root), root.node.0.names)
-        if(length(wcore1) == 0 || length(wcore1) > 1)
-          stop("no root node label found or root is not unique")
-        parent.node <- apsimx_json$Children[[wcore1]]$Children
-      }
-      if(length(root) == 2){
-        root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
-        wcore1 <- grep(as.character(root[1]), root.node.0.names)
-        if(length(wcore1) == 0 || length(wcore1) > 1)
-          stop("no root node label in position 1 found or root is not unique")
-        root.node.0 <- apsimx_json$Children[[wcore1]]
-        root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)  
-        wcore2 <- grep(as.character(root[2]), root.node.0.child.names)
-        if(length(wcore2) == 0 || length(wcore2) > 1)
-          stop("no root node label in position 2 found or root is not unique")
-        parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children        
-      }
-      if(length(root) == 3){
-        root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
-        wcore1 <- grep(as.character(root[1]), root.node.0.names)
-        if(length(wcore1) == 0 || length(wcore1) > 1)
-          stop("no root node label in position 1 found or root is not unique")
-        root.node.0 <- apsimx_json$Children[[wcore1]]
-        root.node.0.child.names <- sapply(root.node.0$Children, function(x) x$Name)
-        wcore2 <- grep(as.character(root[2]), root.node.0.child.names)
-        if(length(wcore2) == 0 || length(wcore2) > 1)
-          stop("no root node label in position 2 found or root is not unique")
-        root.node.1 <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]
-        root.node.1.child.names <- sapply(root.node.1$Children, function(x) x$Name)  
-        wcore3 <- grep(as.character(root[3]), root.node.1.child.names)
-        if(length(wcore3) == 0 || length(wcore3) > 1)
-          stop("no root node label in position 3 found or root is not unique")
-        parent.node <- apsimx_json$Children[[wcore1]]$Children[[wcore2]]$Children[[wcore3]]$Children        
-      }
-    }
-  }else{
-    parent.node <- apsimx_json$Children[[wcore]]$Children  
-  }
   
   ### Checking the Clock
   if(node %in% c("all", "Clock")){
     if(verbose) cat("Checking the Clock \n")
     dates <- try(extract_data_apsimx(file = file, src.dir = src.dir,
                                  node = "Clock", root = root), silent = TRUE)
-    if(inherits(dates, 'try-error')){
+    if(inherits(dates, 'try-error') || nrow(dates) == 0){
       warning("Clock not found", immediate. = TRUE)
     }else{
       try.start <- try(as.Date(dates[[1]], tryFormats = c("%Y-%m-%dT%H:%M:%S")), silent = TRUE)
@@ -851,9 +736,19 @@ check_apsimx <- function(file = "", src.dir = ".",
                                     node = "Weather",
                                     root = root), silent = TRUE)
     if(inherits(met.name, 'try-error')){
-      warning("Weather (met) not found", immediate. = TRUE)
+      warning("Weather (met) not found", immediate. = TRUE)  
     }else{
-      mfe <- file.exists(met.name[[1]])
+      if(grepl("%root%", met.name)){
+        ## This means that the weather file is from an example 
+        ex.dir <- auto_detect_apsimx_examples()
+        mfn0 <- strsplit(met.name[[1]], "[\\/]", fixed = FALSE)[[1]]
+        mfn0.length <- length(mfn0)
+        mfn <- mfn0[mfn0.length]
+        mwf <- mfn0[mfn0.length - 1]
+        mfe <- file.exists(file.path(ex.dir, mwf, mfn))
+      }else{
+        mfe <- file.exists(met.name[[1]])
+      }
       if(!mfe){
         warning("Could not find 'met' file", immediate. = TRUE)
       }else{
@@ -864,7 +759,7 @@ check_apsimx <- function(file = "", src.dir = ".",
           met <- read_apsim_met(file = mfn, src.dir = mfsd)
           check_apsim_met(met)
         }
-      }      
+      }
     }
   }
   
@@ -883,7 +778,7 @@ check_apsimx <- function(file = "", src.dir = ".",
       if(verbose) cat("Soil has: ", nrow(soil.physical.layers), "layers \n")
       
       for(i in seq_len(nrow(soil.physical.layers))){
-        if(verbose) cat("Checking layer:", i, "\n")
+        if(verbose) cat("Checking Physical layer:", i, "\n")
         ### Checking Thickness
         thickness.value <- as.numeric(soil.physical.layers[["Thickness"]][i])
         if(thickness.value <= 0)
@@ -937,7 +832,7 @@ check_apsimx <- function(file = "", src.dir = ".",
                                                root = root)
       soil.initialwater.initialvalues <- soil.initialwater$second
       if(is.null(soil.initialwater.initialvalues))
-        stop("'soil.initialwater.initialvalues' is null", call. = FALSE)
+        warning("'soil.initialwater.initialvalues' is null", immediate. = TRUE)
       ## Check number of layers
       if(soil.child %in% "all"){
         ## Are the number of layers the same as for 'Physical'?
@@ -968,6 +863,35 @@ check_apsimx <- function(file = "", src.dir = ".",
               message("Soil InitialWater InitialValues for layer ", i, " is greater than SAT")
             }
           }
+        }
+      }
+    }
+    
+    ### Checking SoilWater
+    if(soil.child %in% c("all", "SoilWater")){
+      
+      if(verbose) cat("Checking the soil water \n")
+      ### First: extract soil InitialWater
+      soil.soilwater <- extract_data_apsimx(file = file, src.dir = src.dir, 
+                                               node = "Soil", 
+                                               soil.child = "SoilWater",
+                                               root = root)
+      soil.soilwater.second <- soil.soilwater$second
+      if(is.null(soil.soilwater.second))
+        warning("'soil.soilwater.second' is null", immediate. = TRUE)
+      ## Check number of layers
+      if(soil.child %in% "all"){
+        ## Are the number of layers the same as for 'Physical'?
+        soil.soilwater.second.length <- nrow(soil.soilwater.second)
+        for(i in seq_len(soil.soilwater.second.length)){
+          ### Checking that Thickness is grater than zero
+          if(verbose) cat("Checking SoilWater layer:", i, "\n")
+          if(soil.soilwater.second$Thickness[i] < 0)
+            message("SoilWater Thickness for layer: ", i, " is less than zero")
+          if(soil.soilwater.second$SWCON[i] < 0)
+            message("SoilWater SWCON for layer: ", i, " is less than zero")
+          if(soil.soilwater.second$SWCON[i] > 1)
+            message("SoilWater SWCON for layer: ", i, " is greater than one")
         }
       }
     }
