@@ -57,7 +57,10 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
                                 digits = 3,
                                 root = NULL){
   #### Beginning of function ----
-  .check_apsim_name(file)
+  if(isFALSE(apsimx::apsimx.options$allow.path.spaces)){
+    .check_apsim_name(file)
+    .check_apsim_name(normalizePath(src.dir))
+  }
   
   file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
   
@@ -399,26 +402,42 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
     }else{
       ## Pick which soil component we want to look at
       ## Which is not 'Metadata"
-      if(soil.child == "InitialWater") soil.child <- "Water"
-      
+      ## If "InitialWater" is present then use it
+      wsiw <- "InitialWater" %in% soil.children.names
+      if(soil.child %in% c("Water", "InitialWater")){
+        if(soil.child == "InitialWater" && isFALSE(wsiw)){
+          wsiw2 <- grep("initial water", soil.children.names, ignore.case = TRUE)
+          if(length(wsiw2) > 0){
+            soil.child <-  grep("initial water", soil.children.names, ignore.case = TRUE, value = TRUE)
+          }else{
+            wsiw3 <- grep("^Water", soil.children.names)
+            if(length(wsiw3) > 0){
+              soil.child <- "Water"
+            }else{
+              soil.child <- "InitialWater"                          
+            }
+          }
+        }        
+      }
+ 
       if(soil.child != "Solute"){
-        wsc <- grep(soil.child, soil.children.names)
+        wsc <- which(soil.child == soil.children.names)
       }else{
         wsc <- which(soil.children.names %in% c("NO3", "NH4", "Urea"))
       }
-      
+
       if(soil.child == "Water" && length(wsc) == 2) wsc <- wsc[2]
       
       if(length(wsc) == 0) stop("soil.child likely not present")
       
       selected.soil.node.child <- soil.node[[1]]$Children[wsc]
     }
-    
+    ## if(soil.child == "InitialWater") browser()
     ## For some variables now it is the time to print
     ## The code below is not strictly needed but it is here
     ## in case I need a second level of soil in the future
     first.level.soil <- c("Water", "Physical",
-                          "Chemical", "Analysis", "InitialWater",
+                          "Chemical", "Analysis", "InitialWater", "Initial water", "initial water",
                           "InitialN", "SoilWater", "Analysis",
                           "CERESSoilTemperature", "Organic", "Swim3")
     if(soil.child %in% first.level.soil){
@@ -439,7 +458,7 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
       d3.col.nms <- NULL
       
       for(ii in cnms){
-        
+
         tmp <- selected.soil.node.child[[1]][ii][[1]]
         
         if(ii %in% c("Crop LL", "Crop KL", "Crop XF")){
@@ -463,7 +482,7 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
           if(!ii %in% c("Crop LL", "Crop KL", "Crop XF")){
             col.nms <- c(col.nms, ii)
             vals <- as.vector(unlist(tmp))
-            soil.d2 <- cbind(soil.d2, vals)                        
+            soil.d2 <- cbind(soil.d2, vals)
           }
         }
       }

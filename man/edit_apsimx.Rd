@@ -88,12 +88,12 @@ bds <- c(1.02, 1.03, 1.09, 1.16, 1.18, 1.19, 1.20)
 edit_apsimx("Wheat.apsimx", src.dir = extd.dir,
             wrt.dir = tmp.dir,
             node = "Soil",
-            soil.child = "Water", 
+            soil.child = "Physical", 
             parm = "BD", value = bds,
             verbose = FALSE)
 ## Inspect file
 inspect_apsimx("Wheat-edited.apsimx", src.dir = tmp.dir,
-                node = "Soil", soil.child = "Water")
+                node = "Soil", soil.child = "Physical")
 ## To delete the file...
 file.remove(file.path(tmp.dir, "Wheat-edited.apsimx"))
 

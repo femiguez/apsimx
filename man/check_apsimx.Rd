@@ -41,6 +41,7 @@ Partial checking of an apsimx file for possible issues.
 ## Check file distributed with the package
 extd.dir <- system.file("extdata", package = "apsimx")
 
-## check_apsimx("Wheat.apsimx", src.dir = extd.dir)
+check_apsimx("Wheat.apsimx", src.dir = extd.dir)
+## This throws warnings but it should not produce errors
 }
 }

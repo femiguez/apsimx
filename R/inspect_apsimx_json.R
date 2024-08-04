@@ -431,14 +431,30 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }else{
       ## Pick which soil component we want to look at
       ## Which is not 'Metadata"
-      if(soil.child == "InitialWater") soil.child <- "Water"
+      wsiw <- "InitialWater" %in% soil.children.names
+      if(soil.child %in% c("Water", "InitialWater")){
+        if(soil.child == "InitialWater" && isFALSE(wsiw)){
+          wsiw2 <- grep("initial water", soil.children.names, ignore.case = TRUE)
+          if(length(wsiw2) > 0){
+           soil.child <-  grep("initial water", soil.children.names, ignore.case = TRUE, value = TRUE)
+          }else{
+            wsiw3 <- grep("^Water", soil.children.names)
+            if(length(wsiw3) > 0){
+              soil.child <- "Water"
+            }else{
+              soil.child <- "InitialWater"                          
+            }
+          }
+        }        
+      }
 
       if(soil.child != "Solute"){
-        wsc <- grep(soil.child, soil.children.names)
+        wsc <- which(soil.child == soil.children.names)
       }else{
         wsc <- which(soil.children.names %in% c("NO3", "NH4", "Urea"))
       }
 
+      ### This is a bad idea probably
       if(soil.child == "Water" && length(wsc) == 2) wsc <- wsc[2]
 
       if(length(wsc) == 0) stop("soil.child likely not present")
@@ -450,7 +466,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
       ## The code below is not strictly needed but it is here
       ## in case I need a second level of soil in the future
     first.level.soil <- c("Water", "Physical",
-                          "Chemical", "Analysis", "InitialWater",
+                          "Chemical", "Analysis", "InitialWater", "Initial water", "initial water",
                           "InitialN", "SoilWater", "SoilTemperature",
                           "CERESSoilTemperature", "Organic", "Swim3")
     if(soil.child %in% first.level.soil){

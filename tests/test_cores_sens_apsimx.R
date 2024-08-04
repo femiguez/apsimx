@@ -1,6 +1,7 @@
 ## Script to test cores functionality
 
 require(apsimx)
+packageVersion("apsimx")
 require(future)
 
 apsimx_options(warn.versions = FALSE)

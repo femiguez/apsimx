@@ -50,12 +50,12 @@
 #' edit_apsimx("Wheat.apsimx", src.dir = extd.dir,
 #'             wrt.dir = tmp.dir,
 #'             node = "Soil",
-#'             soil.child = "Water", 
+#'             soil.child = "Physical", 
 #'             parm = "BD", value = bds,
 #'             verbose = FALSE)
 #' ## Inspect file
 #' inspect_apsimx("Wheat-edited.apsimx", src.dir = tmp.dir,
-#'                 node = "Soil", soil.child = "Water")
+#'                 node = "Soil", soil.child = "Physical")
 #' ## To delete the file...
 #' file.remove(file.path(tmp.dir, "Wheat-edited.apsimx"))
 #' 
@@ -317,7 +317,7 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       }
     }
   
-    if(soil.child == "Water" || soil.child == "Physical"){
+    if(soil.child == "Physical"){
       edited.child <- soil.child
       
       ## In older versions of APSIM Next Gen instead of 'Physical' it was called
@@ -463,18 +463,38 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       }
     }
     
-    if(soil.child == "InitialWater"){
+    if(soil.child == "InitialWater" || soil.child == "Water"){
       edited.child <- "InitialWater"
-      wiwn <- grepl("InitialWater", soil.node0)
+      soil.node0.names <- sapply(soil.node0, function(x) x$Name)
+      wiwn <- grep("InitialWater", soil.node0.names)
+      if(length(wiwn) == 0){
+        ### Maybe find just water?
+        wiwn <- grep("^Water", soil.node0.names)
+        if(length(wiwn) == 0){
+          wiwn <- grep("initial water", soil.node0.names, ignore.case = TRUE)
+        }
+      }
+      if(length(wiwn) == 0)
+        stop("InitialWater node not found", call. = FALSE)
+      
       soil.initialwater.node <- soil.node0[wiwn][[1]]
       
       ## Only three can be edited: PercentMethod, FractionFull, DepthWetSoil
-      siw.parms <- c("PercentMethod", "FractionFull", "DepthWetSoil")
+      siw.parms <- c("PercentMethod", "FractionFull", "DepthWetSoil", "Thickness", "InitialValues")
       parm <- match.arg(parm, choices = siw.parms)
       
-      soil.initialwater.node[[parm]] <- value
-      
-      soil.node[[1]]$Children[wiwn][[1]] <- soil.initialwater.node
+      if(parm %in% c("Thickness", "InitialValues")){
+        soil.initialwater.node.vector <- soil.initialwater.node[[parm]]
+        if(length(value) != length(soil.initialwater.node.vector))
+          stop("Length of 'value' should match the length of ", parm, call. = FALSE)
+        for(i in seq_along(soil.initialwater.node.vector))
+          soil.initialwater.node.vector[[1]][[i]] <- value[i]
+        soil.initialwater.node[[parm]] <- soil.initialwater.node.vector[[1]]
+        soil.node[[1]]$Children[wiwn][[1]] <- soil.initialwater.node
+      }else{
+        soil.initialwater.node[[parm]] <- value
+        soil.node[[1]]$Children[wiwn][[1]] <- soil.initialwater.node        
+      }
     }
     
     if(soil.child == "Sample"){
