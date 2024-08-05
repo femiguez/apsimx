@@ -10,6 +10,8 @@
 
 - There is an option to run files which are in directories with spaces. This is experimental as it can fail in some cases. See 'apsimx_options'.
 
+- Improvements to the code that runs 'sens_apsimx' in parallel
+
 ## apsimx 2.7.7
 
 - sens_apsimx can now accept an argument called 'soil.profiles'. This opens the door

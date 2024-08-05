@@ -92,9 +92,11 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   if(!missing(grep.options)){
     gfixed <- grep.options$fixed
     gignore.case <- grep.options$ignore.case
+    gexact <- grep.options$exact ### This makes matches exact, effectively not using grep
   }else{
     gfixed <- FALSE
     gignore.case <- FALSE
+    gexact <- FALSE ### Default is FALSE meaning: use grep
   }
 
   if(length(frn) == 0) stop(paste0(root," not found"))
@@ -234,7 +236,11 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   
   rep.node.subchildren.names <- vapply(rep.node.child$Children, function(x) x$Name,
                                        FUN.VALUE = "character")
-  wrnsc <- grep(node.subchild, rep.node.subchildren.names, fixed = gfixed, ignore.case = gignore.case)
+  if(isFALSE(gexact)){
+    wrnsc <- grep(node.subchild, rep.node.subchildren.names, fixed = gfixed, ignore.case = gignore.case)  
+  }else{
+    wrnsc <- which(node.subchild == rep.node.subchildren.names)
+  }
   if(length(wrnsc) == 0) stop("node.subchild not found")
   if(length(wrnsc) > 1) stop("More than one subchild found. Make it unique (see regular expressions)")
   rep.node.subchild <- rep.node.child$Children[[wrnsc]]
@@ -268,7 +274,11 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   ## unnamed Children
   rep.node.subsubchildren.names <- vapply(rep.node.subchild$Children, function(x) x$Name,
                                           FUN.VALUE = "character")
-  wrnssc <- grep(node.subsubchild, rep.node.subsubchildren.names, fixed = gfixed, ignore.case = gignore.case)
+  if(isFALSE(gexact)){
+    wrnssc <- grep(node.subsubchild, rep.node.subsubchildren.names, fixed = gfixed, ignore.case = gignore.case)  
+  }else{
+    wrnssc <- which(node.subsubchild == rep.node.subsubchildren.names)
+  }
   if(length(wrnssc) == 0) stop("node.subsubchild not found")
   if(length(wrnssc) > 1) stop("More than one subsubchild found. Make it unique (see regular expressions)")
   rep.node.subsubchild <- rep.node.subchild$Children[[wrnssc]]
@@ -311,11 +321,16 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   }
   
   if(!is.null(parm) && any(parm %in% rep.node.subsubchild.names)){
+    if(isFALSE(gexact)){
       wrnsspc <- grep(parm, rep.node.subsubchild.names, fixed = gfixed, ignore.case = gignore.case)
-      rep.node.sub3child <- rep.node.subsubchild[wrnsspc]
-      cat_parm(rep.node.sub3child, parm = parm)
+    }else{
+      wrnsspc <- which(parm == rep.node.subsubchild.names)  
+    }
+    rep.node.sub3child <- rep.node.subsubchild[wrnsspc]
+    cat_parm(rep.node.sub3child, parm = parm)
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.subsubchild$Command)))){
+      if(gexact) stop("'exact' is not recommended when 'parm' is in 'Command'", call. = FALSE)
       wcp <- grep(parm, unlist(rep.node.subsubchild$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.subsubchild$Command)[wcp], "\n")
     }else{
@@ -335,7 +350,11 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   
   rep.node.sub3children.names <- vapply(rep.node.subsubchild$Children, function(x) x$Name,
                                        FUN.VALUE = "character")
-  wrnsssc <- grep(node.sub3child, rep.node.sub3children.names, fixed = gfixed, ignore.case = gignore.case)
+  if(isFALSE(wrnsssc)){
+    wrnsssc <- grep(node.sub3child, rep.node.sub3children.names, fixed = gfixed, ignore.case = gignore.case)  
+  }else{
+    wrnsssc <- which(node.sub3child == rep.node.sub3children.names)
+  }
   if(length(wrnsssc) == 0) stop("node.sub3child not found")
   if(length(wrnsssc) > 1) stop("More than one sub3child found. Make it unique (see regular expressions)")
   rep.node.sub4child <- rep.node.subsubchild$Children[[wrnsssc]]
@@ -377,11 +396,17 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   }
   
   if(!is.null(parm) && any(grepl(parm, rep.node.sub4child.names))){
-    wrnssspc <- grep(parm, rep.node.sub4child.names, fixed = gfixed, ignore.case = gignore.case)
+    if(isFALSE(gexact)){
+      wrnssspc <- grep(parm, rep.node.sub4child.names, fixed = gfixed, ignore.case = gignore.case)  
+    }else{
+      wrnssspc <- which(parm == rep.node.sub4child.names)
+    }
+    
     rep.node.sub4child <- rep.node.sub4child[wrnssspc]
     cat_parm(rep.node.sub4child, parm = parm) ## This might be wrong, without parm argument
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.sub4child$Command)))){
+      if(gexact) stop("'exact' is not recommended when 'parm' is in 'Command'", call. = FALSE)
       wcp <- grep(parm, unlist(rep.node.sub4child$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.sub4child$Command)[wcp])
     }else{
@@ -399,7 +424,11 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   #### Start of code chunck for node.sub4child ----
   rep.node.sub4children.names <- vapply(rep.node.sub4child$Children, function(x) x$Name,
                                         FUN.VALUE = "character")
-  wrnssssc <- grep(node.sub4child, rep.node.sub4children.names, fixed = gfixed, ignore.case = gignore.case)
+  if(isFALSE(gexact)){
+    wrnssssc <- grep(node.sub4child, rep.node.sub4children.names, fixed = gfixed, ignore.case = gignore.case)  
+  }else{
+    wrnssssc <- which(node.sub4child == rep.node.sub4children.names)
+  }
   if(length(wrnssssc) == 0) stop("node.sub4child not found")
   if(length(wrnssssc) > 1) stop("More than one sub4child found. Make it unique (see regular expressions)")
   rep.node.sub5child <- rep.node.sub4child$Children[[wrnssssc]]
@@ -440,11 +469,16 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   }  
 
   if(!is.null(parm) && any(grepl(parm, rep.node.sub5child.names))){
-    wrnsssspc <- grep(parm, rep.node.sub5child.names, fixed = gfixed, ignore.case = gignore.case)
+    if(isFALSE(gexact)){
+      wrnsssspc <- grep(parm, rep.node.sub5child.names, fixed = gfixed, ignore.case = gignore.case)  
+    }else{
+      wrnsssspc <- which(parm == rep.node.sub5child.names)
+    }
     rep.node.sub5child <- rep.node.sub4child[wrnsssspc]
     cat_parm(rep.node.sub5child, parm = parm) ## This might be wrong, without parm argument
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.sub5child$Command)))){
+      if(gexact) stop("'exact' is not recommended when 'parm' is in 'Command'", call. = FALSE)
       wcp <- grep(parm, unlist(rep.node.sub5child$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.sub5child$Command)[wcp])
     }else{
@@ -464,7 +498,11 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   #### Start of code chunck for node.sub5child ----
   rep.node.sub5children.names <- vapply(rep.node.sub5child$Children, function(x) x$Name,
                                         FUN.VALUE = "character")
-  wrnsssssc <- grep(node.sub5child, rep.node.sub5children.names, fixed = gfixed, ignore.case = gignore.case)
+  if(isFALSE(gexact)){
+    wrnsssssc <- grep(node.sub5child, rep.node.sub5children.names, fixed = gfixed, ignore.case = gignore.case)
+  }else{
+    wrnsssssc <- which(node.sub5child == rep.node.sub5children.names)  
+  }
   if(length(wrnsssssc) == 0) stop("node.sub5child not found")
   if(length(wrnsssssc) > 1) stop("More than one sub5child found. Make it unique (see regular expressions)")
   rep.node.sub6child <- rep.node.sub5child$Children[[wrnsssssc]]
@@ -506,11 +544,16 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   }  
   
   if(!is.null(parm) && any(grepl(parm, rep.node.sub6child.names))){
-    wrnssssspc <- grep(parm, rep.node.sub6child.names, fixed = gfixed, ignore.case = gignore.case)
+    isFALSE(gexact){
+      wrnssssspc <- grep(parm, rep.node.sub6child.names, fixed = gfixed, ignore.case = gignore.case)  
+    }else{
+      wrnssssspc <- which(parm == rep.node.sub6child.names)
+    }
     rep.node.sub6child <- rep.node.sub5child[wrnssssspc]
     cat_parm(rep.node.sub6child, parm = parm) ## This might be wrong, without parm argument
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.sub6child$Command)))){
+      if(gexact) stop("'exact' is not recommended when 'parm' is in 'Command'", call. = FALSE)
       wcp <- grep(parm, unlist(rep.node.sub6child$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.sub6child$Command)[wcp])
     }else{
