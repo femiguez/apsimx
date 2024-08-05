@@ -111,7 +111,8 @@ the \sQuote{soil.profiles} list.
 
 If the \sQuote{cores} argument is greater than 1, then the package \CRANpkg{future} is required.
 It will first search for a future plan under options and if nothing is found it will chose an OS-appropriate plan
-and it uses the chosen number of cores for execution.
+and it uses the chosen number of cores for execution. Errors, messages and warnings are normally suppressed 
+during parallel execution, so it is important to ensure that the simulations are constructed properly.
 
 Suggested reading on the topic of sensitivity analysis:
 

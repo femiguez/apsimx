@@ -6,6 +6,10 @@
 
 - New function 'check_apsimx' that will try to identify common issues in apsimx files
 
+- apsimx_example can now run several other examples
+
+- There is an option to run files which are in directories with spaces. This is experimental as it can fail in some cases. See 'apsimx_options'.
+
 ## apsimx 2.7.7
 
 - sens_apsimx can now accept an argument called 'soil.profiles'. This opens the door

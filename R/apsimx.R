@@ -458,9 +458,14 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## Several examples are not supported because they do not use
   ## relative paths for the weather file
   ## Examples which do not run: Chicory
-  ex.ch <- c("Barley", "ControlledEnvironment", "Eucalyptus",
-             "EucalyptusRotation",
-             "Maize", "Oats", "Rotation", "Soybean", "Sugarcane", "Wheat")
+  ex.ch <- c("AgPasture", "Barley", "Canola", "Chickpea", 
+               "ControlledEnvironment", "Eucalyptus",
+               "EucalyptusRotation",
+               "Maize", "Mungbean",
+               "Oats", "OilPalm", "Peanut", "Pinus", "Potato",
+               "RedClover",
+               "Rotation", "Slurp", "Sorghum",
+               "Soybean", "Sugarcane", "Wheat", "WhiteClover")
 
   example <- match.arg(example, choices = ex.ch)
   
