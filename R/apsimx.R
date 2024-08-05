@@ -217,8 +217,16 @@ auto_detect_apsimx <- function(){
         newest.version <- grep(newest.version.number, laf[find.apsim], value = TRUE)
         if(apsimx::apsimx.options$warn.versions &&
            is.na(apsimx::apsimx.options$exe.path)){
-           warning(paste("Multiple versions of APSIM-X installed. \n
-                    Choosing the newest one:", newest.version))
+          options.warn.versions <- getOption("apsimx.warn.versions")
+          if(is.null(options.warn.versions)){
+            warning(paste("Multiple versions of APSIM-X installed. \n
+                    Choosing the newest one:", newest.version))            
+          }else{
+            if(isTRUE(options.warn.versions)){
+              warning(paste("Multiple versions of APSIM-X installed. \n
+                    Choosing the newest one:", newest.version))            
+            }
+          }
         }
         apsimx.name <- newest.version
         apsimx_dir <- paste0(st1, apsimx.name, st3)
@@ -258,8 +266,16 @@ auto_detect_apsimx <- function(){
         len.fa <- length(find.apsim)
         newest.version <- apsimx.versions[find.apsim]
         if(apsimx::apsimx.options$warn.versions){
-          warning(paste("Multiple versions of APSIM-X installed. \n
-                    Choosing the newest one:", newest.version))
+          options.warn.versions <- getOption("apsimx.warn.versions")
+          if(is.null(options.warn.versions)){
+            warning(paste("Multiple versions of APSIM-X installed. \n
+                    Choosing the newest one:", newest.version))            
+          }else{
+            if(isTRUE(options.warn.versions)){
+              warning(paste("Multiple versions of APSIM-X installed. \n
+                    Choosing the newest one:", newest.version))            
+            }
+          }
         }
         apsimx.name <- newest.version
         apsimx_dir <- paste0(st1, apsimx.name, st3)
@@ -301,8 +317,16 @@ auto_detect_apsimx <- function(){
       apsimx.versions <- laf[find.apsim]
       newest.version <- apsimx.versions[length(find.apsim)]
       if(apsimx::apsimx.options$warn.versions){
-        warning(paste("Multiple versions of APSIM-X installed. \n
-                    Choosing the newest one:", newest.version))
+        options.warn.versions <- getOption("apsimx.warn.versions")
+        if(is.null(options.warn.versions)){
+          warning(paste("Multiple versions of APSIM-X installed. \n
+                    Choosing the newest one:", newest.version))            
+        }else{
+          if(isTRUE(options.warn.versions)){
+            warning(paste("Multiple versions of APSIM-X installed. \n
+                    Choosing the newest one:", newest.version))            
+          }
+        }
       }
       apsimx.name <- newest.version
       apsimx_dir <- paste0(st1, apsimx.name, st3)

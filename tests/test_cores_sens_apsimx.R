@@ -1,8 +1,9 @@
 ## Script to test cores functionality
 
-require(apsimx)
+library(apsimx)
 packageVersion("apsimx")
-require(future)
+library(future)
+options(apsimx.warn.versions = FALSE)
 
 apsimx_options(warn.versions = FALSE)
 
@@ -35,10 +36,10 @@ if(run.test.two.cores.sns){
     ## date        elapsed
     ## 2022-11-22      125 (2.08 minutes)
     ## 2024-05-05      121 (2.0 minutes) - Mac 2017
+    ## 2024-08-05      110 (1.9 minutes) - Mac 2017
     ## 2024-05-02      101 (Dell Precision 7865)
     ## 2024-05-05      95.8 (Mac Pro 2021)
     ## 2024-06-20      61.65 (Dell Precision 7865)
-    
     
     ## The two core simulation seems to work when number of simulations are even for n - 1
     system.time(sns1 <- sens_apsimx(file = "Wheat.apsimx",
@@ -118,7 +119,7 @@ if(run.test.more.cores.sns){
                                   src.dir = ".",
                                   parm.paths = c(pp1, pp2),
                                   grid = grd2,
-                                  cores = 3))
+                                  cores = 4))
 
   ## Compare results
   is.it.zero <- sum(colSums(sns2$grid.sims - sns4$grid.sims))
@@ -141,7 +142,58 @@ if(run.test.more.cores.sns){
 
 }
 
-## Testing the 'save' feature
+
+run.test.even.more.cores.sns <- FALSE
+
+if(run.test.even.more.cores.sns){
+
+  tmp.dir <- tempdir()
+  setwd(tmp.dir)
+  ex.dir <- auto_detect_apsimx_examples()
+
+  file.copy(file.path(ex.dir, "Wheat.apsimx"), ".")
+
+  pp1 <- inspect_apsimx("Wheat.apsimx", src.dir = ".",
+                        node = "Manager", parm = list("Fertilise", 1))
+  pp1 <- paste0(pp1, ".Amount")
+
+  pp2 <- inspect_apsimx("Wheat.apsimx", src.dir = ".",
+                        node = "Manager", parm = list("Sow using", 10))
+  pp2 <- paste0(pp2, ".Population")
+
+  ## The names in the grid should (partially) match the parameter path names
+  grd <- expand.grid(Fertilise = c(50, 100, 150), Population = c(100, 200, 300))
+
+  system.time(sns3 <- sens_apsimx(file = "Wheat.apsimx",
+                                 src.dir = ".",
+                                 parm.paths = c(pp1, pp2),
+                                 grid = grd,
+                                 cores = 4))
+
+  system.time(sns8 <- sens_apsimx(file = "Wheat.apsimx",
+                                  src.dir = ".",
+                                  parm.paths = c(pp1, pp2),
+                                  grid = grd,
+                                  cores = 8))
+
+  ## Compare results
+  is.it.zero <- sum(colSums(sns3$grid.sims - sns8$grid.sims))
+
+  if(is.it.zero > 0.5)
+    stop("Results are not identical when cores = 2 and cores = 3 (smaller grid)")
+
+  grd2 <- expand.grid(Fertilise = c(50, 100, 150, 200, 250), Population = c(100, 200, 300, 400, 500))
+
+  ## Trying more cores
+  system.time(sns10 <- sens_apsimx(file = "Wheat.apsimx",
+                                   src.dir = ".",
+                                   parm.paths = c(pp1, pp2),
+                                   grid = grd2,
+                                   cores = 10))
+
+}
+
+#### Testing the 'save' feature ----
 
 run.test.save.cores.sns <- FALSE
 

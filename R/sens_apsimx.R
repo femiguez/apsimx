@@ -12,7 +12,8 @@
 #' 
 #' If the \sQuote{cores} argument is greater than 1, then the package \CRANpkg{future} is required.
 #' It will first search for a future plan under options and if nothing is found it will chose an OS-appropriate plan
-#' and it uses the chosen number of cores for execution.
+#' and it uses the chosen number of cores for execution. Errors, messages and warnings are normally suppressed 
+#' during parallel execution, so it is important to ensure that the simulations are constructed properly.
 #'
 #' Suggested reading on the topic of sensitivity analysis:
 #'
@@ -87,20 +88,13 @@ sens_apsimx <- function(file, src.dir = ".",
 
     fp.op <- getOption('future.plan')
 
-    ### The code below is not the best, but I need to understand the 'future' package better
-    if(.Platform$OS.type != "unix"){
-      if(is.null(fp.op)){
-        future::plan("multisession", workers = cores)
-      }else{
-        future::plan(fp.op, workers = cores)
-      } 
+    ### Maybe multisession needs to be the default regardless of platform
+    if(is.null(fp.op)){
+      oplan <- future::plan(strategy = "multisession", workers = cores)
+      on.exit(oplan)
     }else{
-      if(is.null(fp.op)){
-        future::plan("multicore", workers = cores)
-      }else{
-        future::plan(fp.op, workers = cores)
-      } 
-    }
+      future::plan(fp.op, workers = cores)
+    } 
   }
 
   ## This might offer suggestions in case there is a typo in 'file'
@@ -344,7 +338,8 @@ sens_apsimx <- function(file, src.dir = ".",
         sim.list[[core.counter]] <- future::future(apsimx(file = paste0(tools::file_path_sans_ext(file), "-", core.counter, ".apsimx"),
                                                                 src.dir = src.dir,
                                                                 silent = TRUE,
-                                                                cleanup = TRUE, value = "report"))
+                                                                cleanup = TRUE, value = "report"),
+                                                   conditions = character(0))
         break
       }
       if(core.counter < cores){

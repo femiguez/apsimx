@@ -1,6 +1,12 @@
 **NEWS**
 
-## apsimx 2.7.X
+## apsimx 2.8.X
+
+- Many changes to inspect, extract and edit to better support 'InitialWater' and 'Solutes'. There is significant testing, but more is needed.
+
+- New function 'check_apsimx' that will try to identify common issues in apsimx files
+
+## apsimx 2.7.7
 
 - sens_apsimx can now accept an argument called 'soil.profiles'. This opens the door
 for conducting simulations on a spatial grid, by carefully passing weather and soils profiles.
