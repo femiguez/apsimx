@@ -22,7 +22,9 @@
 #' @param digits number of decimals to print (default 3)
 #' @param print.path print the path to the inspected parameter (default FALSE)
 #' @param verbose whether to print additional information, default: TRUE
-#' @param grep.options Additional options for grep. To be passed as a list.
+#' @param grep.options Additional options for grep. To be passed as a list. At the moment these are: \sQuote{fixed}, \sQuote{ignore.case} and \sQuote{exact}.
+#' The option \sQuote{exact} is not a grep option, but it can be used to use exact matching (effectively not using grep).
+#' This option will be ignored at the level of \sQuote{Command}.
 #' @details This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 #' @note I need to make some changes in order to be able to handle multiple parameters. At this point, it
 #' might work but it will generate warnings.
@@ -330,7 +332,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     cat_parm(rep.node.sub3child, parm = parm)
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.subsubchild$Command)))){
-      if(gexact) stop("'exact' is not recommended when 'parm' is in 'Command'", call. = FALSE)
+      if(verbose && gexact) message("'exact' is ignored when 'parm' is in 'Command'")
       wcp <- grep(parm, unlist(rep.node.subsubchild$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.subsubchild$Command)[wcp], "\n")
     }else{
@@ -406,7 +408,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     cat_parm(rep.node.sub4child, parm = parm) ## This might be wrong, without parm argument
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.sub4child$Command)))){
-      if(gexact) stop("'exact' is not recommended when 'parm' is in 'Command'", call. = FALSE)
+      if(verbose && gexact) message("'exact' is ignored when 'parm' is in 'Command'")
       wcp <- grep(parm, unlist(rep.node.sub4child$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.sub4child$Command)[wcp])
     }else{
@@ -478,7 +480,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     cat_parm(rep.node.sub5child, parm = parm) ## This might be wrong, without parm argument
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.sub5child$Command)))){
-      if(gexact) stop("'exact' is not recommended when 'parm' is in 'Command'", call. = FALSE)
+      if(verbose && gexact) message("'exact' is ignored when 'parm' is in 'Command'")
       wcp <- grep(parm, unlist(rep.node.sub5child$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.sub5child$Command)[wcp])
     }else{
@@ -553,7 +555,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
     cat_parm(rep.node.sub6child, parm = parm) ## This might be wrong, without parm argument
   }else{
     if(!is.null(parm) && any(grepl(parm, unlist(rep.node.sub6child$Command)))){
-      if(gexact) stop("'exact' is not recommended when 'parm' is in 'Command'", call. = FALSE)
+      if(verbose && gexact) message("'exact' is ignored when 'parm' is in 'Command'")
       wcp <- grep(parm, unlist(rep.node.sub6child$Command), fixed = gfixed, ignore.case = gignore.case)
       cat(unlist(rep.node.sub6child$Command)[wcp])
     }else{
