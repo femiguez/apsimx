@@ -172,7 +172,7 @@ To look at paths in Windows:
 
 Unix/Linux paths
 
-[Unix paths](https://wpbeaches.com/how-to-add-to-the-shell-path-in-macos-using-terminal/)
+I used to have links here but CRAN does not like them. Search for unix paths.
 
 
 ### Session information

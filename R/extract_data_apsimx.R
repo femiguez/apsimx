@@ -245,7 +245,7 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
   }
 
   if((length(fcsn) > 1 || !is.null(root)) && find.root){
-    if(missing(root)){
+    if(is.null(root)){
       cat("Simulation structure: \n")
       str_list(apsimx_json)
       stop("more than one simulation found and no root node label has been specified \n select one of the children names above", call. = FALSE)   

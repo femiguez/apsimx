@@ -1,6 +1,6 @@
 **NEWS**
 
-## apsimx 2.8.X
+## apsimx 2.8.0
 
 - Many changes to inspect, extract and edit to better support 'InitialWater' and 'Solutes'. There is significant testing, but more is needed.
 

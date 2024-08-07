@@ -61,7 +61,9 @@ to be \sQuote{Models.Core.Folder}.}
 
 \item{verbose}{whether to print additional information, default: TRUE}
 
-\item{grep.options}{Additional options for grep. To be passed as a list.}
+\item{grep.options}{Additional options for grep. To be passed as a list. At the moment these are: \sQuote{fixed}, \sQuote{ignore.case} and \sQuote{exact}.
+The option \sQuote{exact} is not a grep option, but it can be used to use exact matching (effectively not using grep).
+This option will be ignored at the level of \sQuote{Command}.}
 }
 \value{
 table with inspected parameters and values (and \sQuote{parm path} when \sQuote{print.path} = TRUE).

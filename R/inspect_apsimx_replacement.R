@@ -352,7 +352,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   
   rep.node.sub3children.names <- vapply(rep.node.subsubchild$Children, function(x) x$Name,
                                        FUN.VALUE = "character")
-  if(isFALSE(wrnsssc)){
+  if(isFALSE(gexact)){
     wrnsssc <- grep(node.sub3child, rep.node.sub3children.names, fixed = gfixed, ignore.case = gignore.case)  
   }else{
     wrnsssc <- which(node.sub3child == rep.node.sub3children.names)
@@ -546,7 +546,7 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
   }  
   
   if(!is.null(parm) && any(grepl(parm, rep.node.sub6child.names))){
-    isFALSE(gexact){
+    if(isFALSE(gexact)){
       wrnssssspc <- grep(parm, rep.node.sub6child.names, fixed = gfixed, ignore.case = gignore.case)  
     }else{
       wrnssssspc <- which(parm == rep.node.sub6child.names)
