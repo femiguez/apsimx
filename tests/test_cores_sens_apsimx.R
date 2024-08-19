@@ -37,9 +37,8 @@ if(run.test.two.cores.sns){
     ## 2022-11-22      125 (2.08 minutes)
     ## 2024-05-05      121 (2.0 minutes) - Mac 2017
     ## 2024-08-05      110 (1.9 minutes) - Mac 2017
-    ## 2024-05-02      101 (Dell Precision 7865)
+    ## 2024-08-19      63.68 (Dell Precision 5680)
     ## 2024-05-05      95.8 (Mac Pro 2021)
-    ## 2024-06-20      61.65 (Dell Precision 7865)
     ## 2024-08-12      61.92 (Dell Precision 7865)
     
     ## The two core simulation seems to work when number of simulations are even for n - 1
@@ -55,6 +54,8 @@ if(run.test.two.cores.sns){
     ## 2022-11-22   292     11    100 (1.67 minutes. It takes 84% of the time compared to 1 core)
     ## 2024-03-06   64      3.3    37.259 (0.52 minutes 57% of the time)
     ## 2024-08-12                  34.87 (Dell Precision 7865)
+    ## 2024-08-19                  40.47 (Dell Precision 5680)
+    ## 2024-08-19                  18.16 (Dell Precision 5680 - 8 cores)
     ## 2024-05-05                  55.77 (Mac Pro 2021)
     ## 2024-05-05                  27 (Mac Pro 2021 - 8 cores)
 

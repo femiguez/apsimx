@@ -1,6 +1,6 @@
 **NEWS**
 
-## apsimx 2.8.0
+## apsimx 2.8.0 - 2024-08-19
 
 - Many changes to inspect, extract and edit to better support 'InitialWater' and 'Solutes'. There is significant testing, but more is needed.
 
@@ -13,6 +13,9 @@
 - Improvements to the code that runs 'sens_apsimx' in parallel
 
 - Implemented 'id' and 'id.labels' in plot for compare_apsim
+
+- Package 'FedData' was removed from 'Suggests' as it was removed from CRAN (8-19-2024).
+It has not been used in the 'apsimx' package for a long time.
 
 ## apsimx 2.7.7
 
