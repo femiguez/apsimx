@@ -28,11 +28,22 @@
 #'
 #' plot(cap)
 #' plot(cap, plot.type = "diff")
+#' plot(cap, plot.type = "resid")
 #' plot(cap, plot.type = "ts")
 #'
 #' plot(cap, variable = "AboveGround")
 #' plot(cap, variable = "AboveGround", plot.type = "diff")
 #' plot(cap, variable = "AboveGround", plot.type = "ts")
+#' 
+#' ## Selecting a variable
+#' cap <- compare_apsim(obsWheat, sim.opt, variable = "AboveGround", 
+#'                      labels = c("obs", "sim"))
+#'                      
+#' ## Using id
+#' plot(cap, variable = "AboveGround", id = 0.05)
+#'                      
+#' 
+#' 
 #' }
 #' 
 
@@ -77,7 +88,7 @@ compare_apsim <- function(...,
     stop("index not found in second data.frame")
   
   nms1.i <- intersect(nms1, names(outs[[2]])) ## Variables in common
-  
+
   if(all(c("report", "Date") %in% nms1) && length(index) == 1){
     stop("'report' and 'Date' found in first data frame but index length is equal to 1.
          Maybe index should be c('report', 'Date')?", call. = FALSE)
@@ -143,8 +154,8 @@ compare_apsim <- function(...,
       stop("No data in common between data frames")
     }
   }
-  
-  if(length(index == 1)){
+
+  if(length(index) == 1){
     ans.out.length <- ifelse(missing(variable), length(nms1.i) - 1, 1)  
   }else{
     ans.out.length <- ifelse(missing(variable), length(nms1.i) - 2, 1)  
@@ -154,20 +165,29 @@ compare_apsim <- function(...,
                     intercept = NA, slope = NA, rss = NA, rmse = NA, r2 = NA, concorr = NA,
                     mod.eff = NA)
   k <- 1
-  ## Calculate bias for all variables
+  ## Calculate statistics for all variables
+  resid.matrix <- NULL
+  crss <- NA
+  
   if(missing(variable)){
     var.sel <- setdiff(nms1.i, index) ## All variables except index
     gvar.sel <- paste0(var.sel, collapse = "|")
     idx.out.mrg <- grep(gvar.sel, names(out.mrg))
     out.mrg.s <- out.mrg[, idx.out.mrg]
-    
     ## Compute Bias matrix
     for(i in var.sel){
       if(verbose) cat("Variable: ", i, "\n")
       tmp <- out.mrg.s[, grep(i, names(out.mrg.s))]
-      if(ncol(tmp) < 2) stop("merged selected variables should be at least of length 2")
+      if(ncol(tmp) < 2) stop("merged selected variables should be at least of length 2", call. = FALSE)
+      if(ncol(tmp) > 2){
+        ### This means that the variable matched more than one target in the dataframes
+        ### I need an exact match
+        wvm1 <- which(paste0(i, ".1") == names(out.mrg.s))
+        wvm2 <- which(paste0(i, ".2") == names(out.mrg.s))
+        tmp <- out.mrg.s[, c(wvm1, wvm2)]
+      }
       ans$variable[k] <- i
-      
+   
       for(j in 2:ncol(tmp)){
         if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
         ans$vs[k] <- c(paste(names(tmp)[j - 1], "vs.", names(tmp)[j]))
@@ -175,7 +195,9 @@ compare_apsim <- function(...,
           if(verbose) cat("labels:", labels[j - 1], " vs. ", labels[j], "\n")
           ans$labels[k] <- paste(labels[j - 1], " vs. ", labels[j])
         }
-        fm0 <- lm(tmp[, j] ~ tmp[, j - 1])
+        fm0 <- lm(tmp[, j] ~ tmp[, j - 1], na.action = "na.exclude")
+        ### Store residuals
+        resid.matrix <- cbind(resid.matrix, stats::residuals(fm0, type = "pearson"))
         if(verbose) cat(" \t Bias: ", sum(tmp[, j - 1] - tmp[, j]), "\n")
         ans$bias[k] <- sum(tmp[, j - 1] - tmp[, j])
         if(verbose) cat(" \t Intercept: ", coef(fm0)[1], "\n")
@@ -206,9 +228,10 @@ compare_apsim <- function(...,
       diffs <- as.matrix(dout1) - as.matrix(dout2)
       if(missing(weights)) weights <- rep(1, ncol(diffs))
       crss <- sum(weights * colSums(diffs^2, na.rm = TRUE)) 
-    }else{
-      crss <- NA
     }
+    ### Need to assign names to residual matrix
+    ## browser()
+    colnames(resid.matrix) <- var.sel
   }
   
   if(!missing(variable)){
@@ -227,6 +250,8 @@ compare_apsim <- function(...,
         ans$labels[k] <- paste(labels[j - 1], " vs. ", labels[j])
       }
       fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
+      ### Store residuals
+      resid.matrix <- cbind(resid.matrix, stats::residuals(fm0, type = "pearson"))
       if(verbose) cat(" \t Bias: ", sum(tmp[, j - 1] - tmp[, j]), "\n")
       ans$bias[k] <- sum(tmp[, j - 1] - tmp[, j])
       if(verbose) cat(" \t Intercept: ", coef(fm0)[1], "\n")
@@ -246,12 +271,14 @@ compare_apsim <- function(...,
       if(verbose) cat(" \t ME: ", mod_eff(tmp[, j-1], tmp[, j]), "\n")
       ans$mod.eff[k] <- mod_eff(tmp[, j - 1], tmp[, j])
     }
+    clnm <- gsub(".1", "", grep(variable, names(out.mrg), value = TRUE)[1], fixed = TRUE) 
+    colnames(resid.matrix) <- clnm
   }
-  
+
   attr(out.mrg, "out.names") <- o.nms
   attr(out.mrg, "length.outs") <- n.outs
   attr(out.mrg, "index") <- index
-  out.mrg <- structure(list(out.mrg = out.mrg, index.table = ans, cRSS = crss),
+  out.mrg <- structure(list(out.mrg = out.mrg, index.table = ans, cRSS = crss, resid.matrix = resid.matrix),
                        class = "out_mrg")
   invisible(out.mrg)
 }
@@ -279,27 +306,37 @@ print.out_mrg <- function(x, ..., digits = 2){
 #' @param pairs pair of objects to compare, defaults to 1 and 2 but others are possible
 #' @param cumulative whether to plot cumulative values (default FALSE)
 #' @param variable variable to plot 
-#' @param id identification (not implemented yet)
+#' @param id identification. Useful for finding extreme values. If this values is equal to 
+#' 1 and no id.label is provided all observations are labeled by the row number. If it is 
+#' less than one points are labeled if their probability is equal or less than the id value.
+#' For example, a value of 0.05 will label values that have a probability of 0.05 (or less)
+#' under a normal distribution.
+#' @param id.label optional label for the id
 #' @param by variable in \sQuote{index} used for plotting
 #' @param facet whether to facet or use color for the by variable (default is FALSE, meaning \sQuote{color})
 #' @param span argument passed to \sQuote{geom_smooth}
+#' @param dodge.width optional argument to control the \sQuote{dodge} for the \sQuote{id.label}
 #' @return it produces a plot
 #' @export
 #' 
-plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
+plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "resid", "ts", "density"),
                          pairs = c(1, 2),
                          cumulative = FALSE, ## Might not make sense for these type of graphs...
                          variable,
                          id,
+                         id.label,
                          by,
                          facet = FALSE,
-                         span = 0.75){
+                         span = 0.75,
+                         dodge.width = NULL){
   
   if(!requireNamespace("ggplot2", quietly = TRUE)){
     warning("ggplot2 is required for this plotting function")
     return(NULL)
   }
   
+  x.resid <- x$resid.matrix
+  colnames(x.resid) <- paste0("resid.", colnames(x.resid))
   x <- x$out.mrg
   
   o.nms <- attr(x, "out.names")
@@ -320,11 +357,61 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
   
   if(is.na(variable) || length(variable) == 0) stop("variable not found")
   
+  ### If I'm guaranteed to have a variable then I need to subset residuals
+  x.resid <- x.resid[, grep(variable, colnames(x.resid), value = TRUE), drop = FALSE]
+  
   plot.type <- match.arg(plot.type)
   
   if(cumulative && plot.type != "ts") 
     stop("cumulative is only available for plot.type = 'ts' ")
   
+  ### id and label ----
+  ### If id and label are missing
+  if(missing(id) && missing(id.label)){
+    id.lbs <- rep("", nrow(x))
+    if(is.null(dodge.width)) dodge.width <- 0
+  }
+    
+  if(missing(id) && !missing(id.label))
+    stop("'id' should be specified if 'id.label' is not missing", call. = FALSE)
+  
+  ### I should be able to add the label to all plots and not need the
+  ### duplication
+  prs0 <- paste0(variable, ".", pairs)
+  prs <- paste0(prs0, collapse = "|")
+  tmp <- x[, grep(prs, names(x))]
+  ## Add residuals
+  tmpr <- cbind(tmp, x.resid)
+  if(!missing(id)){
+    if(is.null(dodge.width)){
+      dodge.width <- diff(range(tmp[[prs0[1]]])) * (1/10)  
+    }
+    if(missing(id.label) && id == 1){
+      id.lbs <- seq_len(nrow(tmp))
+    }
+    if(missing(id.label) && id < 1){
+      ### Probability of residuals under the normal distribution
+      p.vls <- stats::pnorm(-abs(x.resid))
+      w.pvls <- !c(p.vls <= id)
+      id.lbs <- seq_len(nrow(tmp))
+      id.lbs[w.pvls] <- ""
+    }
+    if(!missing(id.label) && id == 1){
+      if(length(id.label) != nrow(tmp))
+        stop("length of id.label whould be equal to the number of observations", call. = FALSE)
+      id.lbs <- id.label
+    }
+    if(!missing(id.label) && id < 1){
+      if(length(id.label) != nrow(tmp))
+        stop("length of id.label should be equal to the number of observations", call. = FALSE)
+      id.lbs <- id.label
+      p.vls <- stats::pnorm(-abs(x.resid))
+      w.pvls <- !c(p.vls <= id)
+      id.lbs[w.pvls] <- ""
+    }    
+  }
+
+  #### plot.type = "vs" ----
   if(plot.type == "vs" && !cumulative && (length(index) == 1 || missing(by))){
     tmp <- x[, grep(variable, names(x))]
     prs <- paste0(variable, ".", pairs)
@@ -334,7 +421,9 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
       ggplot2::xlab(paste(o.nms[pairs[1]], prs[1])) + 
       ggplot2::ylab(paste(o.nms[pairs[2]], prs[2])) + 
       ggplot2::geom_smooth(method = "lm", ...) + 
-      ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange")
+      ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange") + 
+      ggplot2::geom_text(ggplot2::aes(label = id.lbs),
+                         position = ggplot2::position_dodge2(dodge.width))
     
     print(gp1)
     
@@ -352,7 +441,9 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
         ggplot2::ylab(paste(o.nms[pairs[2]], prs[2])) + 
         ggplot2::geom_smooth(method = "lm", ...) + 
         ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange") + 
-        ggplot2::guides(color=ggplot2::guide_legend(title=by))
+        ggplot2::guides(color=ggplot2::guide_legend(title=by)) + 
+        ggplot2::geom_text(ggplot2::aes(label = id.lbs),
+                           position = ggplot2::position_dodge2(dodge.width))
       
       print(gp1)      
     }else{
@@ -365,12 +456,15 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
         ggplot2::xlab(paste(o.nms[pairs[1]], prs[1])) + 
         ggplot2::ylab(paste(o.nms[pairs[2]], prs[2])) + 
         ggplot2::geom_smooth(method = "lm", ...) + 
-        ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange")
+        ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange") + 
+        ggplot2::geom_text(ggplot2::aes(label = id.lbs),
+                           position = ggplot2::position_dodge2(dodge.width))
       
       print(gp1)
     }
   }
   
+  #### plot.type = "diff" ----
   if(plot.type == "diff" && !cumulative){
     
     prs0 <- paste0(variable, ".", pairs)
@@ -387,11 +481,33 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
       ggplot2::xlab(paste(o.nms[pairs[1]], prs0[1])) + 
       ggplot2::ylab(paste("Difference", prs0[2], "-", prs0[1])) + 
       ggplot2::geom_smooth(method = "lm", ...) + 
-      ggplot2::geom_hline(yintercept = 0, color = "orange")
+      ggplot2::geom_hline(yintercept = 0, color = "orange") + 
+      ggplot2::geom_text(ggplot2::aes(label = id.lbs),
+                         position = ggplot2::position_dodge2(dodge.width))
     
     print(gp1)   
   }
+
+  #### plot.type = "resid" ----
+  if(plot.type == "resid" && !cumulative){
+    
+    if(is.null(dodge.width)) dodge.width <- 0
+    
+    resid.name <- grep("resid", names(tmpr), value = TRUE)
+    
+    gp1 <- ggplot2::ggplot(data = tmpr, ggplot2::aes(x = eval(parse(text = eval(prs0[1]))), 
+                                                     y = eval(parse(text = eval(resid.name))))) +
+      ggplot2::geom_point() + 
+      ggplot2::xlab(paste(o.nms[pairs[1]], prs0[1])) + 
+      ggplot2::ylab(paste("Pearson ", resid.name)) + 
+      ggplot2::geom_smooth(method = "lm", ...) + 
+      ggplot2::geom_hline(yintercept = 0, color = "orange") + 
+      ggplot2::geom_text(ggplot2::aes(label = id.lbs),
+                           position = ggplot2::position_dodge2(dodge.width))
+    print(gp1)   
+  }
   
+    
   if(plot.type == "ts" && !cumulative && (length(index) == 1 || missing(by))){
   
     prs0 <- paste0(variable, ".", pairs)
@@ -420,11 +536,15 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
                            span = span, ...) + 
       ggplot2::xlab(index) + 
       ggplot2::ylab(variable) + 
-      ggplot2::guides(color=ggplot2::guide_legend(title=""))
+      ggplot2::guides(color=ggplot2::guide_legend(title="")) + 
+      ggplot2::geom_text(ggplot2::aes(label = id.lbs),
+                         position = ggplot2::position_dodge2(dodge.width))
     
     print(gp1)   
   }
 
+  
+  #### plot.type = "ts" ----
   if(plot.type == "ts" && !cumulative && length(index) == 2 && !missing(by)){
     
     if(facet){
@@ -445,7 +565,9 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
                              span = span, ...) + 
         ggplot2::xlab(index[2]) + 
         ggplot2::ylab(variable) + 
-        ggplot2::guides(color=ggplot2::guide_legend(title=""))
+        ggplot2::guides(color=ggplot2::guide_legend(title="")) + 
+        ggplot2::geom_text(ggplot2::aes(label = id.lbs),
+                           position = ggplot2::position_dodge2(dodge.width))
       
       print(gp1)         
     }else{
@@ -475,7 +597,9 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
                                       color = paste(o.nms[pairs[2]], prs0[2]))) + 
       ggplot2::xlab(index) + 
       ggplot2::ylab(paste("Cumulative ", variable)) + 
-      ggplot2::theme(legend.title = ggplot2::element_blank())
+      ggplot2::theme(legend.title = ggplot2::element_blank()) + 
+      ggplot2::geom_text(ggplot2::aes(label = id.lbs),
+                         position = ggplot2::position_dodge2(dodge.width))
     
     print(gp1)   
   }

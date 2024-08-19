@@ -96,7 +96,7 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
       tmp.matc <- matrix(NA, nrow = 1, ncol = ncols) 
     }
     ans <- data.frame(tmp.dat, as.data.frame(rbind(tmp.matc,tmp.matx)))
-    names(ans) <- c("APSIM",paste0("Version.",1:ncols))
+    names(ans) <- c("APSIM", paste0("Version.",1:ncols))
   }
   
   if(which == "all"){

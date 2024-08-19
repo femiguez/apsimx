@@ -760,7 +760,7 @@ check_apsimx <- function(file = "", src.dir = ".",
   }
   
   ### Checking the Weather
-  if(node %in% c("all", "Weather", "met")){
+  if(node %in% c("all", "Weather")){
     if(verbose) cat("Checking the Weather (met) \n")
     met.name <- try(extract_data_apsimx(file = file, src.dir = src.dir,
                                     node = "Weather",
@@ -1095,7 +1095,7 @@ assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
 assign('allow.path.spaces', FALSE, apsimx.options)
-assign('.run.local.tests', FALSE, apsimx.options)
+assign('.run.local.tests', TRUE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests
 ## which do not require an APSIM install
@@ -1104,7 +1104,7 @@ assign('.run.local.tests', FALSE, apsimx.options)
 #' @import DBI jsonlite knitr RSQLite xml2 
 #' @importFrom utils read.table write.table packageVersion
 #' @importFrom tools file_path_sans_ext file_ext
-#' @importFrom stats aggregate anova coef cor cov2cor deviance lm optim qt quantile var sd setNames sigma terms reformulate
+#' @importFrom stats aggregate anova coef cor cov2cor deviance lm optim pnorm qt quantile var sd setNames sigma terms reformulate
 NULL
 
 utils::globalVariables(".data")

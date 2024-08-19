@@ -22,14 +22,16 @@ compare_apsim(
 \method{plot}{out_mrg}(
   x,
   ...,
-  plot.type = c("vs", "diff", "ts", "density"),
+  plot.type = c("vs", "diff", "resid", "ts", "density"),
   pairs = c(1, 2),
   cumulative = FALSE,
   variable,
   id,
+  id.label,
   by,
   facet = FALSE,
-  span = 0.75
+  span = 0.75,
+  dodge.width = NULL
 )
 }
 \arguments{
@@ -59,11 +61,19 @@ compare_apsim(
 
 \item{cumulative}{whether to plot cumulative values (default FALSE)}
 
-\item{id}{identification (not implemented yet)}
+\item{id}{identification. Useful for finding extreme values. If this values is equal to 
+1 and no id.label is provided all observations are labeled by the row number. If it is 
+less than one points are labeled if their probability is equal or less than the id value.
+For example, a value of 0.05 will label values that have a probability of 0.05 (or less)
+under a normal distribution.}
+
+\item{id.label}{optional label for the id}
 
 \item{facet}{whether to facet or use color for the by variable (default is FALSE, meaning \sQuote{color})}
 
 \item{span}{argument passed to \sQuote{geom_smooth}}
+
+\item{dodge.width}{optional argument to control the \sQuote{dodge} for the \sQuote{id.label}}
 }
 \value{
 object of class \sQuote{out_mrg}, which can be used for further plotting
@@ -99,11 +109,22 @@ cap <- compare_apsim(obsWheat, sim.opt, labels = c("obs", "sim"))
 
 plot(cap)
 plot(cap, plot.type = "diff")
+plot(cap, plot.type = "resid")
 plot(cap, plot.type = "ts")
 
 plot(cap, variable = "AboveGround")
 plot(cap, variable = "AboveGround", plot.type = "diff")
 plot(cap, variable = "AboveGround", plot.type = "ts")
+
+## Selecting a variable
+cap <- compare_apsim(obsWheat, sim.opt, variable = "AboveGround", 
+                     labels = c("obs", "sim"))
+                     
+## Using id
+plot(cap, variable = "AboveGround", id = 0.05)
+                     
+
+
 }
 
 }

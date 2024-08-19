@@ -40,6 +40,7 @@ if(run.test.two.cores.sns){
     ## 2024-05-02      101 (Dell Precision 7865)
     ## 2024-05-05      95.8 (Mac Pro 2021)
     ## 2024-06-20      61.65 (Dell Precision 7865)
+    ## 2024-08-12      61.92 (Dell Precision 7865)
     
     ## The two core simulation seems to work when number of simulations are even for n - 1
     system.time(sns1 <- sens_apsimx(file = "Wheat.apsimx",
@@ -53,7 +54,7 @@ if(run.test.two.cores.sns){
     ## date        user system elapsed
     ## 2022-11-22   292     11    100 (1.67 minutes. It takes 84% of the time compared to 1 core)
     ## 2024-03-06   64      3.3    37.259 (0.52 minutes 57% of the time)
-    ## 2024-05-02                  61.33 (Dell Precision 7865)
+    ## 2024-08-12                  34.87 (Dell Precision 7865)
     ## 2024-05-05                  55.77 (Mac Pro 2021)
     ## 2024-05-05                  27 (Mac Pro 2021 - 8 cores)
 
@@ -169,12 +170,14 @@ if(run.test.even.more.cores.sns){
                                  parm.paths = c(pp1, pp2),
                                  grid = grd,
                                  cores = 4))
+  ## 2024-08-12 Elapsed time: 21.95 (Dell Precision 7865)
 
   system.time(sns8 <- sens_apsimx(file = "Wheat.apsimx",
                                   src.dir = ".",
                                   parm.paths = c(pp1, pp2),
                                   grid = grd,
                                   cores = 8))
+  ## 2024-08-12 Elapsed time: 15.91 (Dell Precision 7865)
 
   ## Compare results
   is.it.zero <- sum(colSums(sns3$grid.sims - sns8$grid.sims))

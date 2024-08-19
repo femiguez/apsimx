@@ -12,6 +12,8 @@
 
 - Improvements to the code that runs 'sens_apsimx' in parallel
 
+- Implemented 'id' and 'id.labels' in plot for compare_apsim
+
 ## apsimx 2.7.7
 
 - sens_apsimx can now accept an argument called 'soil.profiles'. This opens the door

@@ -22,7 +22,16 @@ if(run.test.compare.apsimx){
   
   plot(cap, variable = "AboveGround")
   plot(cap, variable = "AboveGround", plot.type = "diff")
+  plot(cap, variable = "AboveGround", plot.type = "resid")
   plot(cap, variable = "AboveGround", plot.type = "ts")
+  
+  ## Testing the id functionality ----
+  plot(cap, variable = "AboveGround", plot.type = "resid", id = 0.05)
+  plot(cap, variable = "AboveGround", plot.type = "resid", id = 0.05, 
+       id.label = letters[1:10])
+  plot(cap, variable = "AboveGround", plot.type = "ts", id = 0.05)
+  plot(cap, variable = "AboveGround", plot.type = "ts", id = 0.05, 
+       id.label = letters[1:10])
   
   ## Adding the capability when the length of the index is equal to 2
   obsPheno <- read.csv("~/Dropbox/apsimx-other/pheno_optim/obsPheno.csv")
@@ -41,6 +50,10 @@ if(run.test.compare.apsimx){
   
   plot(cmp, by = "report", plot.type = "ts", facet = TRUE, se = FALSE) + 
     ggplot2::theme(legend.position = "top")
+  
+  ### Testing id feature ----
+  plot(cmp, by = "report", se = FALSE, id = 0.05, facet = TRUE,
+       id.label = obsPheno$Date)
   
 }
 
