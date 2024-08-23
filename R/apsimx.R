@@ -5,10 +5,12 @@
 #' 
 #' @title Run an APSIM-X simulation
 #' @name apsimx
-#' @description Run apsimx from R. It uses \sQuote{system} (unix) or \sQuote{shell} (windows) and it attempts to be platform independent.
+#' @description Run apsimx from R. It uses \code{\link{system}} (unix) or \code{\link{shell}} (windows) and it attempts to be platform independent.
 #' @param file file name to be run (the extension .apsimx is optional)
 #' @param src.dir directory containing the .apsimx file to be run (defaults to the current directory)
-#' @param silent whether to print messages from apsim simulation
+#' @param silent whether to print messages from apsim simulation. This is passed to argument \sQuote{ignore.stdout} for
+#' function \code{\link{system}}.
+#' @param intern This is passed to argument \sQuote{intern} for function \code{\link{system}}.
 #' @param value how much output to return: \cr
 #'              option \sQuote{report} returns only the \sQuote{main} report component; \cr
 #'              option \sQuote{all} returns all components of the simulation; \cr
@@ -27,6 +29,7 @@
 
 apsimx <- function(file = "", src.dir = ".",
                    silent = FALSE, 
+                   intern = FALSE,
                    value = "report",
                    cleanup = FALSE,
                    simplify = TRUE,
@@ -34,7 +37,7 @@ apsimx <- function(file = "", src.dir = ".",
   
   if(file == "") stop("need to specify file name")
   
-  if(isFALSE(apsimx::apsimx.options$allow.path.spaces)){
+  if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
      .check_apsim_name(file)
      .check_apsim_name(normalizePath(src.dir))
   }
@@ -46,6 +49,10 @@ apsimx <- function(file = "", src.dir = ".",
     stop("There are no .apsimx files in the specified directory to run.")
   }
   
+  if(get("system.intern", envir = apsimx::apsimx.options)){
+    intern <- TRUE ## This global option overrides the function argument
+  }
+  
   file <- match.arg(file, file.names)
   
   file.name.path <- file.path(src.dir, file)
@@ -53,8 +60,13 @@ apsimx <- function(file = "", src.dir = ".",
   ada <- auto_detect_apsimx()
   
   ## Grabs the global variables
-  dotnet.flag <- apsimx::apsimx.options$dotnet
-  mono.flag <- apsimx::apsimx.options$mono
+  ## Is there a difference between:
+  ## 1) apsimx::apsimx.options$dotnet
+  ## 2) get("dotnet", apsimx::apsimx.options)
+  ## 3) get("dotnet", apsimx.options)
+  ## ??
+  dotnet.flag <- get("dotnet", envir = apsimx::apsimx.options)
+  mono.flag <- get("mono", envir = apsimx::apsimx.options)
   
   if(!missing(xargs)){
     dotnet.flag <- xargs$dotnet
@@ -77,7 +89,7 @@ apsimx <- function(file = "", src.dir = ".",
     ## Run APSIM-X on the command line
     if(!missing(xargs)) run.strng <- paste(run.strng, xargs$xargs.string)
     
-    if(apsimx::apsimx.options$allow.path.spaces){
+    if(get("allow.path.spaces", envir = apsimx::apsimx.options)){
       ## As written here, this will not work with dotnet or mono
       ## Just so I do not forget. The problem with spaces can be
       ## overcome for file paths but I do not think it can be 
@@ -86,12 +98,12 @@ apsimx <- function(file = "", src.dir = ".",
                           " ", 
                           shQuote(normalizePath(file.name.path)))
     }
-    
-    res <- system(command = run.strng, ignore.stdout = silent, intern = FALSE)
+
+    res <- system(command = run.strng, ignore.stdout = silent, intern = intern)
   }
   
   if(.Platform$OS.type == "windows"){
-    if(isFALSE(apsimx::apsimx.options$allow.path.spaces)){
+    if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
       run.strng <- paste0(ada, " ", file.name.path)
     }else{
       run.strng <- paste0(ada, 
@@ -99,7 +111,7 @@ apsimx <- function(file = "", src.dir = ".",
                           shQuote(normalizePath(file.name.path)))
     }
     if(!missing(xargs)) run.strng <- paste(run.strng, xargs$xargs.string)
-    shell(cmd = run.strng, translate = TRUE, intern = FALSE)
+    shell(cmd = run.strng, translate = TRUE, intern = intern)
   }
 
   if(value != "none"){
@@ -116,6 +128,11 @@ apsimx <- function(file = "", src.dir = ".",
     if(value == "none") stop("do not clean up if you choose value = 'none' ")
     ## Delete the apsim-generated sql database 
     file.remove(paste0(src.dir, "/", sub("apsimx", "db", file)))
+    ## Other files created by APSIM
+    fn1 <- paste0(src.dir, "/", sub("apsimx", "db-wal", file))
+    fn2 <- paste0(src.dir, "/", sub("apsimx", "db-shm", file))
+    if(file.exists(fn1)) file.remove(fn1)
+    if(file.exists(fn2)) file.remove(fn2)
   }
   
   if(value != "none")
@@ -184,10 +201,10 @@ auto_detect_apsimx <- function(){
       ## custom version is available
       if(length(find.apsim) == 0){
         ## I only throw a warning because maybe the user has a custom version of APSIM-X only
-        if(!is.na(apsimx::apsimx.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
+        if(!is.na(get("exe.path", envir = apsimx::apsimx.options)) && get("warn.find.apsimx", envir = apsimx::apsimx.options)){
           warning("APSIM-X not found, but a custom one is present")
         }else{
-          if(is.na(apsimx::apsimx.options$exe.path))
+          if(is.na(get("exe.path", envir = apsimx::apsimx.options)))
             stop("APSIM-X not found and no 'exe.path' exists.")
         }
       }
@@ -195,8 +212,8 @@ auto_detect_apsimx <- function(){
       ## APSIM executable
       st1 <- "/Applications/"
       st3 <- "/Contents/Resources/bin/Models.exe"   
-      if(apsimx.options$dotnet)  st3 <- gsub("exe$", "dll", st3) 
-      if(isFALSE(apsimx.options$mono) && isFALSE(apsimx.options$dotnet)) 
+      if(get("dotnet", envir = apsimx::apsimx.options))  st3 <- gsub("exe$", "dll", st3) 
+      if(isFALSE(get("mono", envir = apsimx::apsimx.options)) && isFALSE(get("dotnet", envir = apsimx::apsimx.options))) 
         st3 <- "/Contents/Resources/bin/Models"
 
       if(length(find.apsim) == 1){
@@ -215,8 +232,8 @@ auto_detect_apsimx <- function(){
         fa.dt <- as.numeric(sapply(laf[find.apsim], .favn))
         newest.version.number <- max(fa.dt)
         newest.version <- grep(newest.version.number, laf[find.apsim], value = TRUE)
-        if(apsimx::apsimx.options$warn.versions &&
-           is.na(apsimx::apsimx.options$exe.path)){
+        if(get("warn.versions", envir = apsimx::apsimx.options) &&
+           is.na(get("exe.path", envir = apsimx::apsimx.options))){
           options.warn.versions <- getOption("apsimx.warn.versions")
           if(is.null(options.warn.versions)){
             warning(paste("Multiple versions of APSIM-X installed. \n
@@ -240,18 +257,18 @@ auto_detect_apsimx <- function(){
       ## What if length equals zero?
       if(length(find.apsim) == 0){
         ## I only throw a warning because maybe the user has a custom version of APSIM-X only
-        if(!is.na(apsimx::apsimx.options$exe.path) && apsimx::apsimx.options$warn.find.apsimx){
+        if(!is.na(get("exe.path", envir = apsimx::apsimx.options)) && get("warn.find.apsimx", envir = apsimx::apsimx.options)){
           warning("APSIM-X not found, but a custom one is present")
         }else{
-          if(is.na(apsimx::apsimx.options$exe.path))
+          if(is.na(get("exe.path", envir = apsimx::apsimx.options)))
             stop("APSIM-X not found and no 'exe.path' exists.")  
         }
       }
       ## APSIM executable
       st1 <- "/usr/local/lib/apsim/"
       st3 <- "/bin/Models.exe" 
-      if(apsimx.options$dotnet) st3 <- gsub("exe$", "dll", st3) 
-      if(isFALSE(apsimx.options$mono) && isFALSE(apsimx.options$dotnet)) 
+      if(get("dotnet", envir = apsimx::apsimx.options)) st3 <- gsub("exe$", "dll", st3) 
+      if(isFALSE(get("mono", envir = apsimx::apsimx.options)) && isFALSE(get("dotnet", envir = apsimx::apsimx.options))) 
         st3 <- "/bin/Models"
       
       if(length(find.apsim) == 1){
@@ -265,7 +282,7 @@ auto_detect_apsimx <- function(){
       if(length(apsimx.versions) > 1){
         len.fa <- length(find.apsim)
         newest.version <- apsimx.versions[find.apsim]
-        if(apsimx::apsimx.options$warn.versions){
+        if(get("warn.versions", envir = apsimx::apsimx.options)){
           options.warn.versions <- getOption("apsimx.warn.versions")
           if(is.null(options.warn.versions)){
             warning(paste("Multiple versions of APSIM-X installed. \n
@@ -289,9 +306,9 @@ auto_detect_apsimx <- function(){
     find.apsim <- grep("APSIM", laf)
     
     ## What if length equals zero?
-    if(length(find.apsim) == 0 && is.na(apsimx::apsimx.options$exe.path)){
+    if(length(find.apsim) == 0 && is.na(get("exe.path", envir = apsimx::apsimx.options))){
         ## Try using the registry only if APSIM path has not been set manually
-        if(apsimx::apsimx.options$warn.find.apsimx) warning("Searching the Windows registry for APSIM-X")
+        if(get("warn.find.apsimx", envir = apsimx::apsimx.options)) warning("Searching the Windows registry for APSIM-X")
         ## HCR hive is for HKEY_CLASSES_ROOT, HLM is for HKEY_LOCAL_MACHINE and HCU is for HKEY_CURRENT_USER
         regcmd <- try(utils::readRegistry("APSIMXFile\\shell\\open\\command", "HCR")[[1]], silent = TRUE)
         if(inherits(regcmd, "try-error")) regcmd <- try(utils::readRegistry("APSIMXFile\\shell\\open\\command", "HCU")[[1]], silent = TRUE)
@@ -305,7 +322,7 @@ auto_detect_apsimx <- function(){
     }
     
     st3 <- "/bin/Models.exe" 
-    if(apsimx.options$dotnet) st3 <- gsub("exe$", "dll", st3) 
+    if(get("dotnet", envir = apsimx::apsimx.options)) st3 <- gsub("exe$", "dll", st3) 
     
     if(length(find.apsim) == 1){
       apsimx.versions <- laf[find.apsim]
@@ -316,7 +333,7 @@ auto_detect_apsimx <- function(){
     if(length(find.apsim) > 1){
       apsimx.versions <- laf[find.apsim]
       newest.version <- apsimx.versions[length(find.apsim)]
-      if(apsimx::apsimx.options$warn.versions){
+      if(get("warn.versions", envir = apsimx::apsimx.options)){
         options.warn.versions <- getOption("apsimx.warn.versions")
         if(is.null(options.warn.versions)){
           warning(paste("Multiple versions of APSIM-X installed. \n
@@ -333,12 +350,12 @@ auto_detect_apsimx <- function(){
     }
   }
   
-  if(!is.na(apsimx::apsimx.options$exe.path)){
+  if(!is.na(get("exe.path", envir = apsimx::apsimx.options))){
     ## Windows paths might contain white spaces which are
     ## problematic when running them at the command line
-    if(grepl("\\s", apsimx::apsimx.options$exe.path))
+    if(grepl("\\s", get("exe.path", envir = apsimx::apsimx.options)))
       stop("White spaces are not allowed in APSIM-X executable path")
-    apsimx_dir <- apsimx::apsimx.options$exe.path
+    apsimx_dir <- get("exe.path", envir = apsimx::apsimx.options)
   }
   return(apsimx_dir)
 }
@@ -372,7 +389,7 @@ auto_detect_apsimx_examples <- function(){
         fa.dt <- as.numeric(sapply(laf[find.apsim], .favn))
         newest.version.number <- max(fa.dt)
         newest.version <- grep(newest.version.number, laf[find.apsim], value = TRUE)
-        if(apsimx::apsimx.options$warn.versions && is.na(apsimx::apsimx.options$exe.path)){
+        if(get("warn.versions", envir = apsimx::apsimx.options) && is.na(get("exe.path", envir = apsimx::apsimx.options))){
           warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:", newest.version))
         }
@@ -393,7 +410,7 @@ auto_detect_apsimx_examples <- function(){
       if(length(apsimx.versions) > 1){
         len.fa <- length(find.apsim)
         newest.version <- apsimx.versions[find.apsim]
-        if(apsimx.options$warn.versions && is.na(apsimx::apsimx.options$exe.path)){
+        if(get("warn.versions", envir = apsimx::apsimx.options) && is.na(get("exe.path", envir = apsimx::apsimx.options))){
           warning(paste("Multiple versions of APSIM-X installed. \n
                     Choosing the newest one:", newest.version))
         }
@@ -414,12 +431,12 @@ auto_detect_apsimx_examples <- function(){
       apsimx_ex_dir <- gsub("bin/Models.*", "Examples", adax)
   }
   
-  if(!is.na(apsimx::apsimx.options$examples.path)){
+  if(!is.na(get("examples.path", envir = apsimx::apsimx.options))){
     ## I dislike white spaces in paths!
     ## I'm looking at you Windows!
-    if(grepl("\\s", apsimx::apsimx.options$examples.path))
+    if(grepl("\\s", get("examples.path", envir = apsimx::apsimx.options)))
       stop("White spaces are not allowed in examples.path")
-    apsimx_ex_dir <- apsimx::apsimx.options$examples.path
+    apsimx_ex_dir <- get("examples.path", envir = apsimx::apsimx.options)
   }
   return(apsimx_ex_dir)
 }
@@ -477,10 +494,11 @@ apsimx_example <- function(example = "Wheat", silent = FALSE){
   ## Do not transfer permissions?
   file.copy(from = ex, to = tmp.dir, copy.mode = FALSE)
   
-  sim <- apsimx(paste0(example, ".apsimx"), src.dir = tmp.dir, 
+  sim <- apsimx(paste0(example, ".apsimx"), src.dir = tmp.dir, intern = TRUE,
                 value = "report", simplify = FALSE)
 
   ## OS independent cleanup (risky?)
+  ## Should I also try to remove .db-shm and .db-whl (or whatever that is?)
   file.remove(paste0(tmp.dir, "/", example, ".db"))
   file.remove(paste0(tmp.dir, "/", example, ".apsimx"))
 
@@ -725,7 +743,7 @@ check_apsimx <- function(file = "", src.dir = ".",
   
   if(file == "") stop("need to specify file name")
   
-  if(isFALSE(apsimx::apsimx.options$allow.path.spaces)){
+  if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
     .check_apsim_name(file)
     .check_apsim_name(normalizePath(src.dir))
   }
@@ -1041,6 +1059,7 @@ check_apsimx <- function(file = "", src.dir = ".",
 #' @param warn.find.apsimx logical. By default a warning will be thrown if APSIM-X is not found. 
 #' If \sQuote{exe.path} is \sQuote{NA} an error will be thrown instead.
 #' @param allow.path.spaces logical. By default spaces are not allowed in paths or in the run command.
+#' @param system.intern logical. Default is FALSE. \sQuote{intern} argument passed to \code{\link{system}}.
 #' @note It is possible that APSIM-X is installed in some alternative location other than the 
 #'       defaults ones. Guessing this can be difficult and then the auto_detect functions might
 #'       fail. Also, if multiple versions of APSIM-X are installed apsimx will choose the newest
@@ -1055,7 +1074,8 @@ check_apsimx <- function(file = "", src.dir = ".",
 #' }
 
 apsimx_options <- function(exe.path = NA, dotnet = FALSE, mono = FALSE, examples.path = NA, 
-                           warn.versions = TRUE, warn.find.apsimx = TRUE, allow.path.spaces = FALSE){
+                           warn.versions = TRUE, warn.find.apsimx = TRUE, allow.path.spaces = FALSE,
+                           system.intern = FALSE){
   
   if(dotnet && mono)
     stop("either dotnet or mono should be TRUE, but not both", call. = TRUE)
@@ -1067,6 +1087,7 @@ apsimx_options <- function(exe.path = NA, dotnet = FALSE, mono = FALSE, examples
   assign('warn.versions', warn.versions, apsimx.options)
   assign('warn.find.apsimx', warn.find.apsimx, apsimx.options)
   assign('allow.path.spaces', allow.path.spaces, apsimx.options)
+  assign('system.intern', system.intern, apsimx.options)
 }
 
 #' Environment which stores APSIM-X options
@@ -1095,6 +1116,7 @@ assign('examples.path', NA, apsimx.options)
 assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
 assign('allow.path.spaces', FALSE, apsimx.options)
+assign('system.intern', FALSE, apsimx.options)
 assign('.run.local.tests', FALSE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests
@@ -1102,7 +1124,7 @@ assign('.run.local.tests', FALSE, apsimx.options)
 
 ## Import packages needed for apsimx to work correctly
 #' @import DBI jsonlite knitr RSQLite xml2 
-#' @importFrom utils read.table write.table packageVersion
+#' @importFrom utils head read.table write.table packageVersion
 #' @importFrom tools file_path_sans_ext file_ext
 #' @importFrom stats aggregate anova coef cor cov2cor deviance lm optim pnorm qt quantile var sd setNames sigma terms reformulate
 NULL

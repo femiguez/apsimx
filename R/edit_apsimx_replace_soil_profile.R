@@ -37,7 +37,10 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
                                               verbose = TRUE,
                                               root = NULL){
   
-  if(!apsimx::apsimx.options$allow.path.spaces) .check_apsim_name(file)
+  if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
+    .check_apsim_name(file)
+    .check_apsim_name(src.dir)
+  } 
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   

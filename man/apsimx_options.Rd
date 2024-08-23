@@ -11,7 +11,8 @@ apsimx_options(
   examples.path = NA,
   warn.versions = TRUE,
   warn.find.apsimx = TRUE,
-  allow.path.spaces = FALSE
+  allow.path.spaces = FALSE,
+  system.intern = FALSE
 )
 }
 \arguments{
@@ -30,6 +31,8 @@ for Mac/Linux older than Sept 2021.}
 If \sQuote{exe.path} is \sQuote{NA} an error will be thrown instead.}
 
 \item{allow.path.spaces}{logical. By default spaces are not allowed in paths or in the run command.}
+
+\item{system.intern}{logical. Default is FALSE. \sQuote{intern} argument passed to \code{\link{system}}.}
 }
 \value{
 as a side effect it modifies the \sQuote{apsimx.options} environment.

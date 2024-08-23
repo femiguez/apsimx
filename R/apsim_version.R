@@ -123,8 +123,8 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
         ans <- newest.version
       }
       ## If the one in use is not any of the above such as a Custom build
-      if(!is.na(apsimx::apsimx.options$exe.path)){
-        ans <- apsimx::apsimx.options$exe.path
+      if(!is.na(get("exe.path", envir = apsimx::apsimx.options))){
+        ans <- get("exe.path", envir = apsimx::apsimx.options)
       }
     }
     ## For Windows
@@ -143,8 +143,8 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
         ansc <- names(newest.version)
       }
       ## It is possible that the one in use is not the latest one
-      if(!is.na(apsimx::apsim.options$exe.path)){
-        ansc <- apsimx::apsim.options$exe.path
+      if(!is.na(get("exe.path", envir = apsimx::apsim.options))){
+        ansc <- get("exe.path", envir = apsimx::apsim.options)
       }
       ## For APSIM-X
       if(length(find.apsimx) == 1){
@@ -157,8 +157,8 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
         ansx <- newest.version
       }
       ## It is possible that the one in use is not the latest one
-      if(!is.na(apsimx::apsimx.options$exe.path)){
-        ansx <- apsimx::apsimx.options$exe.path
+      if(!is.na(get("exe.path", envir = apsimx::apsimx.options))){
+        ansx <- get("exe.path", envir = apsimx::apsimx.options)
       }
       
       ans <- data.frame(Classic = ansc, NextGeneration = ansx)

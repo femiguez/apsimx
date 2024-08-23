@@ -86,7 +86,10 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         root = NULL,
                         verbose = TRUE){
   
-  if(isFALSE(apsimx.options$allow.path.spaces)) .check_apsim_name(file)
+  if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
+    .check_apsim_name(file)
+    .check_apsim_name(src.dir)
+  } 
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
@@ -879,7 +882,10 @@ edit_apsimx_json <- function(file, src.dir = ".", wrt.dir = NULL,
                              overwrite = FALSE, edit.tag = "-edited",
                              verbose = TRUE){
   
-  .check_apsim_name(file)
+  if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
+    .check_apsim_name(file)
+    .check_apsim_name(src.dir)
+  } 
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   

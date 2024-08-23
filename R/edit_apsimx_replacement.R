@@ -90,6 +90,11 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                     parm = NULL, value = NULL, overwrite = FALSE,
                                     edit.tag = "-edited", verbose = TRUE, grep.options){
   
+  if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
+    .check_apsim_name(file)
+    .check_apsim_name(normalizePath(src.dir))
+  }
+  
   file.names <- dir(path = src.dir, pattern=".apsimx$",ignore.case=TRUE)
   
   if(length(file.names)==0){

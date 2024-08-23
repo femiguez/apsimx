@@ -22,7 +22,7 @@ extract_data_apsimx(
 
 \item{src.dir}{directory containing the .apsimx file to be inspected; defaults to the current working directory}
 
-\item{node}{specific node to be used either \sQuote{Clock}, \sQuote{Weather}, 
+\item{node}{specific node to be used either \sQuote{Clock}, \sQuote{Weather},
 \sQuote{Soil}, \sQuote{SurfaceOrganicMatter}, \sQuote{MicroClimate}, \sQuote{Crop},
  \sQuote{Manager}, \sQuote{Operations} or \sQuote{Other}}
 
@@ -51,27 +51,27 @@ Have not written this section yet
 \examples{
 \donttest{
 extd.dir <- system.file("extdata", package = "apsimx")
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Clock")) 
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Clock"))
 (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Weather"))
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
-soil.child = "Metadata")) 
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
-soil.child = "Physical")) 
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
-soil.child = "SoilWater")) 
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil",
+soil.child = "Metadata"))
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil",
+soil.child = "Physical"))
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil",
+soil.child = "SoilWater"))
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil",
 soil.child = "Organic"))
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil",
 soil.child = "Chemical"))
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil",
 soil.child = "InitialWater"))
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil", 
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Soil",
 soil.child = "InitialN"))
 (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "SurfaceOrganicMatter"))
 (edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "MicroClimate"))
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop")) 
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager")) 
-(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Report")) 
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Crop"))
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Manager"))
+(edf <- extract_data_apsimx("Wheat.apsimx", src.dir = extd.dir, node = "Report"))
 }
 
 }

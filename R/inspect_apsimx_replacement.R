@@ -63,9 +63,11 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
                                        verbose = TRUE,
                                        grep.options){
   
-  .check_apsim_name(file)
-  .check_apsim_name(src.dir)
-  
+  if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
+    .check_apsim_name(file)
+    .check_apsim_name(normalizePath(src.dir))
+  }
+
   file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)
   
   if(length(file.names) == 0){

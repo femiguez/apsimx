@@ -5,7 +5,7 @@ packageVersion("apsimx")
 library(future)
 options(apsimx.warn.versions = FALSE)
 
-apsimx_options(warn.versions = FALSE)
+apsimx_options(warn.versions = FALSE, allow.path.spaces = TRUE)
 
 run.test.two.cores.sns <- FALSE
 
@@ -127,19 +127,19 @@ if(run.test.more.cores.sns){
   is.it.zero <- sum(colSums(sns2$grid.sims - sns4$grid.sims))
 
   if(is.it.zero > 0.5)
-    stop("Results are not identical when cores = 2 and cores = 3 (smaller grid)")
+    stop("Results are not identical when cores = 3 and cores = 4 (smaller grid)")
 
   ## Trying more cores
   system.time(sns5 <- sens_apsimx(file = "Wheat.apsimx",
                                   src.dir = ".",
                                   parm.paths = c(pp1, pp2),
                                   grid = grd,
-                                  cores = 4))
+                                  cores = 5))
 
   is.it.zero <- sum(colSums(sns1$grid.sims - sns5$grid.sims))
 
   if(is.it.zero > 0.5)
-    stop("Results are not identical when cores = 3 and cores = 4")
+    stop("Results are not identical when cores = 1 and cores = 5")
 
 
 }

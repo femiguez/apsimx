@@ -1,19 +1,21 @@
 #'
 #' It is possible to provide a list of soil profiles for replacement in the simulations. In this
-#' case, the parameter path can be simply \sQuote{soil.profile} or \sQuote{soil_profile} if there 
+#' case, the parameter path can be simply \sQuote{soil.profile} or \sQuote{soil_profile} if there
 #' is one single simulation. It can also be the path to \sQuote{Soil}. In this case, the path should
 #' be something such as \sQuote{Simulations.SimulationName.Soil}. \sQuote{SimulationName} should
 #' be replaced with the appropriate string.
-#' 
-#' In the grid, the column with name \sQuote{soil.profile} should contain integers that will be used to 
-#' pick from the list of provided soil profiles. In this case it is possible to re-use them. 
-#' For example, the values could be 1, 2, 3, etc. to select the corresponding soil profiles from 
+#'
+#' In the grid, the column with name \sQuote{soil.profile} should contain integers that will be used to
+#' pick from the list of provided soil profiles. In this case it is possible to re-use them.
+#' For example, the values could be 1, 2, 3, etc. to select the corresponding soil profiles from
 #' the \sQuote{soil.profiles} list.
-#' 
+#'
 #' If the \sQuote{cores} argument is greater than 1, then the package \CRANpkg{future} is required.
 #' It will first search for a future plan under options and if nothing is found it will chose an OS-appropriate plan
-#' and it uses the chosen number of cores for execution. Errors, messages and warnings are normally suppressed 
-#' during parallel execution, so it is important to ensure that the simulations are constructed properly.
+#' (\sQuote{multisession}) and it uses the chosen number of cores for execution. Errors, messages and warnings are normally 
+#' suppressed during parallel execution, so it is important to ensure that the simulations are constructed properly.
+#' In testing, cloud services (Box, Dropbox, etc.) do not work well as they seem to interfere with the syncing
+#' of apsim database files. It is suggested that they are turned off when running simulations.
 #'
 #' Suggested reading on the topic of sensitivity analysis:
 #'
@@ -59,7 +61,7 @@ sens_apsimx <- function(file, src.dir = ".",
                         convert,
                         replacement,
                         grid,
-                        soil.profiles,
+                        soil.profiles = NULL,
                         summary = c("mean", "max", "var", "sd", "none"),
                         root,
                         verbose = TRUE,
@@ -70,8 +72,10 @@ sens_apsimx <- function(file, src.dir = ".",
   if(missing(file))
     stop("file is missing with no default", call. = FALSE)
 
-  .check_apsim_name(file)
-  .check_apsim_name(src.dir)
+  if(isFALSE(get("allow.path.spaces", apsimx::apsimx.options))){
+    .check_apsim_name(file)
+    .check_apsim_name(normalizePath(src.dir))
+  }
 
   if(cores > 1L){
 
@@ -91,10 +95,11 @@ sens_apsimx <- function(file, src.dir = ".",
     ### Maybe multisession needs to be the default regardless of platform
     if(is.null(fp.op)){
       oplan <- future::plan(strategy = "multisession", workers = cores)
-      on.exit(oplan)
+      on.exit(plan(oplan), add = TRUE)
     }else{
-      future::plan(fp.op, workers = cores)
-    } 
+      oplan <- future::plan(fp.op, workers = cores)
+      on.exit(plan(oplan), add = TRUE)
+    }
   }
 
   ## This might offer suggestions in case there is a typo in 'file'
@@ -120,12 +125,12 @@ sens_apsimx <- function(file, src.dir = ".",
   if(missing(replacement)) replacement <- rep(FALSE, length(parm.paths))
 
   if(missing(grid))
-    stop("grid argument is missing")
+    stop("grid argument is missing", call. = FALSE)
 
   grid <- as.data.frame(grid)
 
   if(ncol(grid) != length(parm.paths))
-      stop("Number of columns in grid should be equal to the number of parameters")
+      stop("Number of columns in grid should be equal to the number of parameters", call. = FALSE)
 
   ## When verbose this is more compact than previous behavior
   pb <- utils::txtProgressBar(min = 1, max = nrow(grid), style = 3)
@@ -133,7 +138,8 @@ sens_apsimx <- function(file, src.dir = ".",
   ## Check that the name in the grid appears somewhere in the parameter path
   for(.ii in seq_along(parm.paths)){
     is.dot.present <- grepl(".", names(grid)[.ii], fixed = TRUE)
-    is.soil <- grepl("soil.profile|Soil$", names(grid)[.ii]) ## This should be of length one
+    is.soil <- grepl("soil.profile|^Soil$", names(grid)[.ii]) ## This should be of length one
+
     if(is.dot.present && !is.soil){
       ## The first element should match simulation names
       fspe <- strsplit(names(grid)[.ii], ".", fixed = TRUE)[[1]]
@@ -153,9 +159,11 @@ sens_apsimx <- function(file, src.dir = ".",
         warning("names in second element of grid object name do not match parameter path name")
       }
     }else{
-      if(grepl("soil.profile|Soil$", parm.paths[.ii])){
+      ### If the intention is to replace soil profiles
+      ### Then 'parm.path' can only be either 'soil.profile' or 'Soil'
+      if(grepl("soil.profile|^Soil$", parm.paths[.ii])){
        ### Check that there is a column in grid that corresponds to soils
-        isn <- grepl("soil.profile|Soil$", names(grid)[.ii], ignore.case = TRUE)
+        isn <- grepl("soil.profile|^Soil$", names(grid)[.ii], ignore.case = TRUE)
         if(isFALSE(isn)){
           cat("Name in grid:", names(grid)[.ii], "\n")
           cat("parameter name", parm.paths[.ii], "\n")
@@ -167,7 +175,7 @@ sens_apsimx <- function(file, src.dir = ".",
           cat("Name in grid:", names(grid)[.ii], "\n")
           cat("parameter name", parm.paths[.ii], "\n")
           warning("names in grid object do not match parameter path name")
-        }        
+        }
       }
     }
   }
@@ -217,7 +225,7 @@ sens_apsimx <- function(file, src.dir = ".",
         }
       }else{
         ## cat("parameter path", parm.paths[.j], "\n")
-        if(!grepl("soil.profile|Soil", parm.paths[.j])){
+        if(!grepl("soil.profile|Soil$", parm.paths[.j])){
           if(missing(root)){
             edit_apsimx(file = file,
                         src.dir = src.dir,
@@ -237,16 +245,16 @@ sens_apsimx <- function(file, src.dir = ".",
                         value = par.val,
                         root = root,
                         verbose = FALSE)
-          }          
+          }
         }else{
-         if(verbose) cat("Replacing the soil profile in simulation", .i, "\n")
+         if(verbose > 1L) cat("Replacing the soil profile in simulation", .i, "\n")
          wspc <- grep("soil.profile|Soil$", names(grid)) ## Which one is the soil profile column
-         
+
          if(length(wspc) == 0){
            cat("Result of wspc:", wspc, "\n")
            stop("'soil.profile' column not found in grid", call. = FALSE)
          }
-         
+
          ## There can be more than one column with soils that need to be replaced
          for(.k in seq_along(wspc)){
            if(grepl("Soil$", names(grid)[wspc[.k]])){
@@ -265,8 +273,8 @@ sens_apsimx <- function(file, src.dir = ".",
                                               src.dir = src.dir,
                                               wrt.dir = src.dir,
                                               soil.profile = soil.profiles[[soil.profile.index]],
-                                              overwrite = FALSE,
-                                              verbose = FALSE)           
+                                              overwrite = TRUE,
+                                              verbose = FALSE)
            }else{
              edit_apsimx_replace_soil_profile(file = file,
                                               src.dir = src.dir,
@@ -335,10 +343,10 @@ sens_apsimx <- function(file, src.dir = ".",
 
         file.copy(from = file.path(src.dir, file), to = file.to.run)
 
-        sim.list[[core.counter]] <- future::future(apsimx(file = paste0(tools::file_path_sans_ext(file), "-", core.counter, ".apsimx"),
+        sim.list[[core.counter]] <- future::future(try(apsimx(file = paste0(tools::file_path_sans_ext(file), "-", core.counter, ".apsimx"),
                                                                 src.dir = src.dir,
                                                                 silent = TRUE,
-                                                                cleanup = TRUE, value = "report"),
+                                                                cleanup = TRUE, value = "report"), silent = TRUE),
                                                    conditions = character(0))
         break
       }
@@ -509,7 +517,7 @@ sens_summary <- function(sim, summary = c("mean", "max", "var", "sd", "none"),
 
 #' The argument \sQuote{formula} can be as in \code{\link{lm}}. The response
 #' can be omitted.
-#' 
+#'
 #' @rdname sens_apsimx
 #' @description Summary computes variance-based sensitivity indexes from an object of class \sQuote{sens_apsim}
 #' @param object object of class \sQuote{sens_apsim}
@@ -574,18 +582,18 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
     }
 
     if(missing(formula) || formula == 1L){
-      frml <- paste("y ~", paste(names(X), collapse = "+"))  
+      frml <- paste("y ~", paste(names(X), collapse = "+"))
     }else{
       if(is.numeric(formula)){
         frml0 <- paste(names(X), collapse = "+")
         if(formula == 2L){
-          frml <- paste("y ~ (", paste(names(X), collapse = "+"), ")^2")  
+          frml <- paste("y ~ (", paste(names(X), collapse = "+"), ")^2")
         }
         if(formula == 3L){
-          frml <- paste("y ~ (", paste(names(X), collapse = "+"), ")^3")  
+          frml <- paste("y ~ (", paste(names(X), collapse = "+"), ")^3")
         }
         if(formula == 4L){
-          frml <- paste("y ~ (", paste(names(X), collapse = "+"), ")^4")  
+          frml <- paste("y ~ (", paste(names(X), collapse = "+"), ")^4")
         }
         if(formula != 2L && formula != 3L && formula != 4L)
           stop("When 'formula' is a number it needs to be either 2, 3 or 4", call. = FALSE)
@@ -594,11 +602,11 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
           tt <- stats::terms(formula)
           frml <- stats::reformulate(attr(tt, "term.labels"), response = "y")
         }else{
-          frml <- formula                  
+          frml <- formula
         }
       }
     }
-    
+
     fit <- stats::lm(formula = frml, data = dat, na.action = "na.omit")
     if(inherits(fit, "try-error")) next
     w <- fit$weights
@@ -606,9 +614,9 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
     mss <- sum(if (is.null(w)) fit$fitted.values^2 else w * fit$fitted.values^2)
     if(ssr < 1e-10 * mss){
       cat("Variable:", nms.resp.var[.i], "\n")
-      warning("ANOVA F-tests on an essentially perfect fit are unreliable", 
+      warning("ANOVA F-tests on an essentially perfect fit are unreliable",
               immediate. = TRUE)
-    } 
+    }
     sfit <- as.matrix(stats::anova(fit, ...))
     wrn <- warnings()
     kable.caption <- paste("Variable:", nms.resp.var[.i])
@@ -621,11 +629,11 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
     pmatd <- pmatd[order(pmatd$SS, decreasing = TRUE),]
     if(verbose){
       print(knitr::kable(pmatd, caption = kable.caption, digits = 0))
-      cat("\n")      
+      cat("\n")
     }
 
     ansi <- data.frame(input = row.names(pmatd), SI = round(pmatd[, "SI (%)"], 1))
-    names(ansi) <- c("input", paste(nms.resp.var[.i], "SI (%)"))  
+    names(ansi) <- c("input", paste(nms.resp.var[.i], "SI (%)"))
     if(.j == 0){
       ans <- ansi
     }else{
@@ -635,7 +643,7 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
     .j <- .j + 1
   }
   if(.j == 0) return("No variables reported. Are they all constant?")
-  
+
   ## Need to reorder (on average)
   rmns <- rowMeans(ans[, -1, drop = FALSE])
   ans <- ans[order(rmns, decreasing = TRUE), ]
@@ -652,7 +660,7 @@ summary.sens_apsim <- function(object, ..., formula, scale = FALSE, select = "al
 #' @export
 #'
 print.sens_apsim <- function(x, ..., variables = FALSE, summary = FALSE){
-  
+
   ### Print parameters in grid
   cat("Grid dimensions (rows columns):", dim(x$grid), "\n")
   ### Grid names
@@ -667,5 +675,5 @@ print.sens_apsim <- function(x, ..., variables = FALSE, summary = FALSE){
   if(variables) print(output.variables)
   ### Print data.frame summary
   if(summary) print(summary(x$grid.sims))
-  
+
 }

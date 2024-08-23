@@ -177,7 +177,7 @@ auto_detect_apsim <- function(){
   
   ## APSIM executable
   st3 <- "/Model/Apsim.exe" 
-  if(is.na(apsimx::apsim.options$exe.path)){
+  if(is.na(get("exe.path", envir = apsimx::apsim.options))){
     if(length(apsim.name) >= 1){
       apsim_dir <- paste0(st1, apsim.name, st3)  
     }else{
@@ -185,13 +185,13 @@ auto_detect_apsim <- function(){
     }
   }
   
-  if(!is.na(apsimx::apsim.options$exe.path)){
+  if(!is.na(get("exe.path", envir = apsimx::apsim.options))){
     ## Windows paths can contain white spaces which are
     ## problematic when running them at the command line
     ## I will simply not allow white spaces
-    if(grepl("\\s", apsimx::apsim.options$exe.path))
+    if(grepl("\\s", get("exe.path", envir = apsimx::apsim.options)))
       stop("White spaces are not allowed in APSIM Classic exe.path")
-    apsim_dir <- apsimx::apsim.options$exe.path
+    apsim_dir <- get("exe.path", envir = apsimx::apsim.options)
   }
   return(apsim_dir)
 }
@@ -228,7 +228,7 @@ auto_detect_apsim_examples <- function(){
   if(length(apsim.versions) > 1){
       versions <- sapply(apsim.versions, fev)
       newest.version <- sort(versions, decreasing = TRUE)[1]
-      if(apsimx::apsim.options$warn.versions){
+      if(get("warn.versions", envir = apsimx::apsim.options)){
         warning(paste("Multiple versions of APSIM installed. \n
                       Choosing the newest one:",newest.version))
       }
@@ -240,11 +240,11 @@ auto_detect_apsim_examples <- function(){
     st3 <- "/Examples" 
     apsim_ex_dir <- paste0(st1, "/", apsim.name,st3)
   
-  if(!is.na(apsimx::apsim.options$examples.path)){
+  if(!is.na(get("examples.path", envir = apsimx::apsim.options))){
     ## Not sure if I need shQuote here
-    if(grepl("\\s", apsimx::apsim.options$examples.path))
+    if(grepl("\\s", get("examples.path", envir = apsimx::apsim.options)))
       stop("White spaces are not allowed in APSIM Classic examples.path")
-    apsim_ex_dir <- apsimx::apsim.options$examples.path
+    apsim_ex_dir <- get("examples.path", envir = apsimx::apsim.options)
   }
   return(apsim_ex_dir)
 }

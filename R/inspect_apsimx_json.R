@@ -87,7 +87,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
                            print.path = FALSE,
                            root){
   #### Beginning of function ----
-  ##.check_apsim_name(file)
+  if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
+    .check_apsim_name(file)
+    .check_apsim_name(normalizePath(src.dir))
+  }
 
   file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
 
@@ -442,10 +445,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             if(length(wsiw3) > 0){
               soil.child <- "Water"
             }else{
-              soil.child <- "InitialWater"                          
+              soil.child <- "InitialWater"
             }
           }
-        }        
+        }
       }
 
       if(soil.child != "Solute"){
@@ -509,6 +512,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         }
         if(length(tmp) > 1){
           if(!ii %in% c("Crop LL", "Crop KL", "Crop XF")){
+            if(grepl("Metadata", ii)) next
             col.nms <- c(col.nms, ii)
             vals <- as.vector(unlist(tmp))
             if(is.null(vals)) vals <- rep(".", length(tmp))
@@ -592,10 +596,10 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     ssnc <- selected.soil.node.child
 
     if(soil.child %in% c("Solute", "NO3", "NH4", "Urea")){
-      
+
       solutes <- sapply(ssnc, function(x) x$Name)
       parm.path <- paste0(parm.path.2.1, ".", soil.child)
-      
+
       if(missing(parm)){
         cat("Solutes:", solutes, "\n")
       }else{
@@ -603,11 +607,11 @@ inspect_apsimx <- function(file = "", src.dir = ".",
           sel.parm <- grep(parm[[1]], solutes)
           if(length(sel.parm) == 0)
             stop("'parm' should be one of: ", paste(solutes, collapse = ", "), call. = FALSE)
-          solutes <- parm[[1]]          
+          solutes <- parm[[1]]
         }
         if(soil.child %in% c("NO3", "NH4", "Urea")){
           ## In this case 'parm' could be either Thickness, InitialValues
-          ## or some of the other ones. 
+          ## or some of the other ones.
           parm.path <- paste0(parm.path.2.1, ".", soil.child)
         }
       }
@@ -623,22 +627,22 @@ inspect_apsimx <- function(file = "", src.dir = ".",
         soil.d1 <- data.frame(Thickness = unlist(ssnc.solute$Thickness),
                               InitialValues = unlist(ssnc.solute$InitialValues))
         if(missing(parm)){
-          if(!is.null(soil.d1)) print(knitr::kable(soil.d1, digits = digits))  
+          if(!is.null(soil.d1)) print(knitr::kable(soil.d1, digits = digits))
         }else{
           if(length(parm) == 1){
             if(parm %in% c("Thickness", "InitialValues")){
               soil.d1.s <- soil.d1[, parm, drop = FALSE]
-              if(!is.null(soil.d1)) print(knitr::kable(soil.d1.s, digits = digits))  
+              if(!is.null(soil.d1)) print(knitr::kable(soil.d1.s, digits = digits))
             }else{
               ### Parm is of length equal to 1 and is not "Thickness" or "InitialValues"
               if(parm %in% c("NO3", "NH4", "Urea")){
-                if(!is.null(soil.d1)) print(knitr::kable(soil.d1, digits = digits))  
+                if(!is.null(soil.d1)) print(knitr::kable(soil.d1, digits = digits))
               }
-            }          
-          }          
+            }
+          }
         }
-          
-        cnms <- setdiff(names(ssnc.solute), enms)        
+
+        cnms <- setdiff(names(ssnc.solute), enms)
         for(k in cnms){
           if(k %in% c("Thickness", "InitialValues")) next
           tmp <- ssnc.solute[k][[1]]
@@ -653,13 +657,13 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             if(soil.child == "Solute"){
               if(!parm %in% solutes)
                 stop("'parm' should be one of:", solutes, call. = FALSE)
-              if(!is.null(soil.d2)) print(knitr::kable(soil.d2, digits = digits))                          
+              if(!is.null(soil.d2)) print(knitr::kable(soil.d2, digits = digits))
             }else{
               if(!parm %in% c("Thickness", "InitialValues")){
                 if(!parm %in% soil.d2$parm)
                   stop("'parm' should be one of:", paste(soil.d2$parm, collapse = " "), call. = FALSE)
-                soil.d2.s <- soil.d2[soil.d2$parm == parm, , drop = FALSE] 
-                if(!is.null(soil.d2)) print(knitr::kable(soil.d2.s, digits = digits)) 
+                soil.d2.s <- soil.d2[soil.d2$parm == parm, , drop = FALSE]
+                if(!is.null(soil.d2)) print(knitr::kable(soil.d2.s, digits = digits))
               }
             }
           }
@@ -669,14 +673,14 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             if(is.numeric(parm[[2]])){
               if(parm[[2]] < 1 || parm[[2]] > nrow(soil.d2))
                 stop("The second elment of 'parm' should be a number between 1 and ", nrow(soil.d2), call. = FALSE)
-              soil.d2.s <- soil.d2[parm[[2]], , drop = FALSE]  
+              soil.d2.s <- soil.d2[parm[[2]], , drop = FALSE]
             }
             if(is.character(parm[[2]])){
               if(!parm[[2]] %in% soil.d2$parm)
                 stop("The second element of 'parm' should be one of:", soil.d2$parm, call. = FALSE)
-              soil.d2.s <- soil.d2[soil.d2$parm == parm[[2]], , drop = FALSE]  
+              soil.d2.s <- soil.d2[soil.d2$parm == parm[[2]], , drop = FALSE]
             }
-            if(!is.null(soil.d2)) print(knitr::kable(soil.d2.s, digits = digits))            
+            if(!is.null(soil.d2)) print(knitr::kable(soil.d2.s, digits = digits))
           }
         }
         soil.d2 <- NULL

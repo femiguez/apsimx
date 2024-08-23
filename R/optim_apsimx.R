@@ -72,7 +72,10 @@ optim_apsimx <- function(file, src.dir = ".",
                          grid,
                          ...){
 
-  .check_apsim_name(file)
+  if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
+    .check_apsim_name(file)
+    .check_apsim_name(normalizePath(src.dir))
+  }
 
   ## The might offer suggestions in case there is a typo in 'file'
   file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)

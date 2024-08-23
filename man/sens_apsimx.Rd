@@ -13,7 +13,7 @@ sens_apsimx(
   convert,
   replacement,
   grid,
-  soil.profiles,
+  soil.profiles = NULL,
   summary = c("mean", "max", "var", "sd", "none"),
   root,
   verbose = TRUE,
@@ -99,20 +99,22 @@ Print method for an object of class \sQuote{sens_apsim}
 }
 \details{
 It is possible to provide a list of soil profiles for replacement in the simulations. In this
-case, the parameter path can be simply \sQuote{soil.profile} or \sQuote{soil_profile} if there 
+case, the parameter path can be simply \sQuote{soil.profile} or \sQuote{soil_profile} if there
 is one single simulation. It can also be the path to \sQuote{Soil}. In this case, the path should
 be something such as \sQuote{Simulations.SimulationName.Soil}. \sQuote{SimulationName} should
 be replaced with the appropriate string.
 
-In the grid, the column with name \sQuote{soil.profile} should contain integers that will be used to 
-pick from the list of provided soil profiles. In this case it is possible to re-use them. 
-For example, the values could be 1, 2, 3, etc. to select the corresponding soil profiles from 
+In the grid, the column with name \sQuote{soil.profile} should contain integers that will be used to
+pick from the list of provided soil profiles. In this case it is possible to re-use them.
+For example, the values could be 1, 2, 3, etc. to select the corresponding soil profiles from
 the \sQuote{soil.profiles} list.
 
 If the \sQuote{cores} argument is greater than 1, then the package \CRANpkg{future} is required.
 It will first search for a future plan under options and if nothing is found it will chose an OS-appropriate plan
-and it uses the chosen number of cores for execution. Errors, messages and warnings are normally suppressed 
-during parallel execution, so it is important to ensure that the simulations are constructed properly.
+(\sQuote{multisession}) and it uses the chosen number of cores for execution. Errors, messages and warnings are normally 
+suppressed during parallel execution, so it is important to ensure that the simulations are constructed properly.
+In testing, cloud services (Box, Dropbox, etc.) do not work well as they seem to interfere with the syncing
+of apsim database files. It is suggested that they are turned off when running simulations.
 
 Suggested reading on the topic of sensitivity analysis:
 

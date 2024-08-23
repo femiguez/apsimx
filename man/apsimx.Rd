@@ -8,6 +8,7 @@ apsimx(
   file = "",
   src.dir = ".",
   silent = FALSE,
+  intern = FALSE,
   value = "report",
   cleanup = FALSE,
   simplify = TRUE,
@@ -19,7 +20,10 @@ apsimx(
 
 \item{src.dir}{directory containing the .apsimx file to be run (defaults to the current directory)}
 
-\item{silent}{whether to print messages from apsim simulation}
+\item{silent}{whether to print messages from apsim simulation. This is passed to argument \sQuote{ignore.stdout} for
+function \code{\link{system}}.}
+
+\item{intern}{This is passed to argument \sQuote{intern} for function \code{\link{system}}.}
 
 \item{value}{how much output to return: \cr
 option \sQuote{report} returns only the \sQuote{main} report component; \cr
@@ -37,7 +41,7 @@ option \sQuote{user-defined} should be the name of a specific table}
 a data frame with the \sQuote{Report} from the APSIM-X simulation. The return value depends on the argument \sQuote{value} above.
 }
 \description{
-Run apsimx from R. It uses \sQuote{system} (unix) or \sQuote{shell} (windows) and it attempts to be platform independent.
+Run apsimx from R. It uses \code{\link{system}} (unix) or \code{\link{shell}} (windows) and it attempts to be platform independent.
 }
 \details{
 Run an APSIM-X Simulation
