@@ -819,56 +819,60 @@ check_apsimx <- function(file = "", src.dir = ".",
       
       if(verbose) cat("Checking the soil physical properties \n")
       ### First: extract soil physical
-      soil.physical <- extract_data_apsimx(file = file, src.dir = src.dir, 
+      soil.physical <- try(extract_data_apsimx(file = file, src.dir = src.dir, 
                                            node = "Soil", 
                                            soil.child = "Physical",
-                                           root = root)
-      ### Check the layers
-      soil.physical.layers <- soil.physical[[1]]
-      if(verbose) cat("Soil has: ", nrow(soil.physical.layers), "layers \n")
-      
-      for(i in seq_len(nrow(soil.physical.layers))){
-        if(verbose) cat("Checking Physical layer:", i, "\n")
-        ### Checking Thickness
-        thickness.value <- as.numeric(soil.physical.layers[["Thickness"]][i])
-        if(thickness.value <= 0)
-          message("Thickness for layer: ", i, " is less than or equal to zero. Value: ", thickness.value)
-        ### Checking Bulk Density
-        bd.value <- as.numeric(soil.physical.layers[["BD"]][i])
-        if(bd.value <= 0)
-          message("Bulk Density for layer: ", i, " is less than or equal to zero. Value: ", bd.value)
-        if(bd.value > 3)
-          message("Bulk Density for layer: ", i, " is greater than 3. Value: ", bd.value)
-        ### Checking AirDry
-        AirDry.value <- as.numeric(soil.physical.layers[["AirDry"]][i])
-        if(AirDry.value <= 0)
-          message("AirDry for layer: ", i, " is less than or equal to zero. Value: ", AirDry.value)
-        if(AirDry.value > 1)
-          message("AirDry for layer: ", i, " is greater than 1. Value: ", AirDry.value)
-        ### Checking LL15
-        LL15.value <- as.numeric(soil.physical.layers[["LL15"]][i])
-        if(LL15.value <= 0)
-          message("LL15 for layer: ", i, " is less than or equal to zero. Value: ", LL15.value)
-        if(LL15.value > 1)
-          message("LL15 for layer: ", i, " is greater than 1. Value: ", LL15.value)
-        if(AirDry.value > LL15.value) ## AirDry value should be lower than the LL15 value, always right?
-          message("The AirDry value is greater than the LL15 value for layer: ", i, ". AirDry value: ", AirDry.value, ". LL15 value:", LL15.value)
-        ### Checking DUL
-        DUL.value <- as.numeric(soil.physical.layers[["DUL"]][i])
-        if(DUL.value <= 0)
-          message("DUL for layer: ", i, " is less than or equal to zero. Value: ", DUL.value)
-        if(DUL.value > 1)
-          message("DUL for layer: ", i, " is greater than 1. Value: ", DUL.value)
-        if(DUL.value < LL15.value) ## DUL value should be greater than the LL15 value, always right?
-          message("The DUL value is lower than the LL15 value for layer: ", i, ". DUL value: ", DUL.value, ". LL15 value:", LL15.value)
-        ### Checking SAT
-        SAT.value <- as.numeric(soil.physical.layers[["SAT"]][i])
-        if(SAT.value <= 0)
-          message("SAT for layer: ", i, " is less than or equal to zero. Value: ", SAT.value)
-        if(SAT.value > 1)
-          message("SAT for layer: ", i, " is greater than 1. Value: ", SAT.value)
-        if(SAT.value < DUL.value) ## SAT value should be greater than the DUL value, always right?
-          message("The SAT value is lower than the DUL value for layer: ", i, ". SAT value: ", SAT.value, ". DUL value:", DUL.value)
+                                           root = root), silent = TRUE)
+      if(inherits(soil.physical, 'try-error')){
+        warning("Soil 'Physical' component not found", immediate. = TRUE)
+      }else{
+        ### Check the layers
+        soil.physical.layers <- soil.physical[[1]]
+        if(verbose) cat("Soil has: ", nrow(soil.physical.layers), "layers \n")
+        
+        for(i in seq_len(nrow(soil.physical.layers))){
+          if(verbose) cat("Checking Physical layer:", i, "\n")
+          ### Checking Thickness
+          thickness.value <- as.numeric(soil.physical.layers[["Thickness"]][i])
+          if(thickness.value <= 0)
+            message("Thickness for layer: ", i, " is less than or equal to zero. Value: ", thickness.value)
+          ### Checking Bulk Density
+          bd.value <- as.numeric(soil.physical.layers[["BD"]][i])
+          if(bd.value <= 0)
+            message("Bulk Density for layer: ", i, " is less than or equal to zero. Value: ", bd.value)
+          if(bd.value > 3)
+            message("Bulk Density for layer: ", i, " is greater than 3. Value: ", bd.value)
+          ### Checking AirDry
+          AirDry.value <- as.numeric(soil.physical.layers[["AirDry"]][i])
+          if(AirDry.value <= 0)
+            message("AirDry for layer: ", i, " is less than or equal to zero. Value: ", AirDry.value)
+          if(AirDry.value > 1)
+            message("AirDry for layer: ", i, " is greater than 1. Value: ", AirDry.value)
+          ### Checking LL15
+          LL15.value <- as.numeric(soil.physical.layers[["LL15"]][i])
+          if(LL15.value <= 0)
+            message("LL15 for layer: ", i, " is less than or equal to zero. Value: ", LL15.value)
+          if(LL15.value > 1)
+            message("LL15 for layer: ", i, " is greater than 1. Value: ", LL15.value)
+          if(AirDry.value > LL15.value) ## AirDry value should be lower than the LL15 value, always right?
+            message("The AirDry value is greater than the LL15 value for layer: ", i, ". AirDry value: ", AirDry.value, ". LL15 value:", LL15.value)
+          ### Checking DUL
+          DUL.value <- as.numeric(soil.physical.layers[["DUL"]][i])
+          if(DUL.value <= 0)
+            message("DUL for layer: ", i, " is less than or equal to zero. Value: ", DUL.value)
+          if(DUL.value > 1)
+            message("DUL for layer: ", i, " is greater than 1. Value: ", DUL.value)
+          if(DUL.value < LL15.value) ## DUL value should be greater than the LL15 value, always right?
+            message("The DUL value is lower than the LL15 value for layer: ", i, ". DUL value: ", DUL.value, ". LL15 value:", LL15.value)
+          ### Checking SAT
+          SAT.value <- as.numeric(soil.physical.layers[["SAT"]][i])
+          if(SAT.value <= 0)
+            message("SAT for layer: ", i, " is less than or equal to zero. Value: ", SAT.value)
+          if(SAT.value > 1)
+            message("SAT for layer: ", i, " is greater than 1. Value: ", SAT.value)
+          if(SAT.value < DUL.value) ## SAT value should be greater than the DUL value, always right?
+            message("The SAT value is lower than the DUL value for layer: ", i, ". SAT value: ", SAT.value, ". DUL value:", DUL.value)
+        }        
       }
     }
     
@@ -876,75 +880,83 @@ check_apsimx <- function(file = "", src.dir = ".",
 
       if(verbose) cat("Checking the soil initial water \n")
       ### First: extract soil InitialWater
-      soil.initialwater <- extract_data_apsimx(file = file, src.dir = src.dir, 
+      soil.initialwater <- try(extract_data_apsimx(file = file, src.dir = src.dir, 
                                                node = "Soil", 
                                                soil.child = "InitialWater",
-                                               root = root)
-      soil.initialwater.initialvalues <- soil.initialwater$second
-      if(is.null(soil.initialwater.initialvalues)){
-        warning("'soil.initialwater.initialvalues' is null", immediate. = TRUE)
+                                               root = root), silent = TRUE)
+      if(inherits(soil.initialwater, 'try-error')){
+        warning("Soil 'InitialWater' not found", immediate. = TRUE)
       }else{
-        ## Check number of layers
-        if(soil.child %in% "all"){
-          ## Are the number of layers the same as for 'Physical'?
-          soil.physical.layers.length <- nrow(soil.physical.layers)
-          soil.initialwater.initialvalues.length <- nrow(soil.initialwater.initialvalues)
-          if(soil.physical.layers.length != soil.initialwater.initialvalues.length){
-            cat("Number of layers in soil physical:", soil.physical.layers.length, "\n")
-            cat("Number of layers in initial water values:", soil.initialwater.initialvalues.length, "\n")
-            message("Number of layers in physical does match the ones in InitialWater - InitialValues")
-          }
-          ## Checking that InitialWater is between LL15 and SAT (It can be greater than DUL?)
-          if(soil.physical.layers.length == soil.initialwater.initialvalues.length){
-            for(i in seq_len(soil.initialwater.initialvalues.length)){
-              soil.initialwater.layer.thickness <- soil.initialwater.initialvalues$Thickness[i]
-              soil.physical.layer.thickness <- soil.physical.layers$Thickness[i]
-              if(soil.physical.layer.thickness != soil.initialwater.layer.thickness){
-                cat("Soil physical Thickness for layer:", i, " is ", soil.physical.layer.thickness, "\n")
-                cat("Soil InitialWater Thickness:", soil.initialwater.layer.thickness, "\n")
-                message("Soil Physical Thickness does not match InitialWater")
-              }
-              soil.initialwater.layer.values <- soil.initialwater.initialvalues$InitialValues[i]
-              soil.physical.layers.LL15 <- soil.physical.layers$LL15[i]
-              soil.physical.layers.SAT <- soil.physical.layers$SAT[i]
-              if(soil.initialwater.layer.values < soil.physical.layers.LL15){
-                message("Soil InitialWater InitialValues for layer ", i, " is lower than LL15")
-              }
-              if(soil.initialwater.layer.values > soil.physical.layers.SAT){
-                message("Soil InitialWater InitialValues for layer ", i, " is greater than SAT")
+        soil.initialwater.initialvalues <- soil.initialwater$second
+        if(is.null(soil.initialwater.initialvalues)){
+          warning("'soil.initialwater.initialvalues' is null", immediate. = TRUE)
+        }else{
+          ## Check number of layers
+          if(soil.child %in% "all"){
+            ## Are the number of layers the same as for 'Physical'?
+            soil.physical.layers.length <- nrow(soil.physical.layers)
+            soil.initialwater.initialvalues.length <- nrow(soil.initialwater.initialvalues)
+            if(soil.physical.layers.length != soil.initialwater.initialvalues.length){
+              cat("Number of layers in soil physical:", soil.physical.layers.length, "\n")
+              cat("Number of layers in initial water values:", soil.initialwater.initialvalues.length, "\n")
+              message("Number of layers in physical does match the ones in InitialWater - InitialValues")
+            }
+            ## Checking that InitialWater is between LL15 and SAT (It can be greater than DUL?)
+            if(soil.physical.layers.length == soil.initialwater.initialvalues.length){
+              for(i in seq_len(soil.initialwater.initialvalues.length)){
+                soil.initialwater.layer.thickness <- soil.initialwater.initialvalues$Thickness[i]
+                soil.physical.layer.thickness <- soil.physical.layers$Thickness[i]
+                if(soil.physical.layer.thickness != soil.initialwater.layer.thickness){
+                  cat("Soil physical Thickness for layer:", i, " is ", soil.physical.layer.thickness, "\n")
+                  cat("Soil InitialWater Thickness:", soil.initialwater.layer.thickness, "\n")
+                  message("Soil Physical Thickness does not match InitialWater")
+                }
+                soil.initialwater.layer.values <- soil.initialwater.initialvalues$InitialValues[i]
+                soil.physical.layers.LL15 <- soil.physical.layers$LL15[i]
+                soil.physical.layers.SAT <- soil.physical.layers$SAT[i]
+                if(soil.initialwater.layer.values < soil.physical.layers.LL15){
+                  message("Soil InitialWater InitialValues for layer ", i, " is lower than LL15")
+                }
+                if(soil.initialwater.layer.values > soil.physical.layers.SAT){
+                  message("Soil InitialWater InitialValues for layer ", i, " is greater than SAT")
+                }
               }
             }
-          }
+          }        
         }        
       }
-    }
+    } ## This closes the if(soil.child %in% c("all", "InitialWater"))
     
     ### Checking SoilWater
     if(soil.child %in% c("all", "SoilWater")){
       
       if(verbose) cat("Checking the soil water \n")
       ### First: extract soil InitialWater
-      soil.soilwater <- extract_data_apsimx(file = file, src.dir = src.dir, 
+      soil.soilwater <- try(extract_data_apsimx(file = file, src.dir = src.dir, 
                                                node = "Soil", 
                                                soil.child = "SoilWater",
-                                               root = root)
-      soil.soilwater.second <- soil.soilwater$second
-      if(is.null(soil.soilwater.second))
-        warning("'soil.soilwater.second' is null", immediate. = TRUE)
-      ## Check number of layers
-      if(soil.child %in% "all"){
-        ## Are the number of layers the same as for 'Physical'?
-        soil.soilwater.second.length <- nrow(soil.soilwater.second)
-        for(i in seq_len(soil.soilwater.second.length)){
-          ### Checking that Thickness is grater than zero
-          if(verbose) cat("Checking SoilWater layer:", i, "\n")
-          if(soil.soilwater.second$Thickness[i] < 0)
-            message("SoilWater Thickness for layer: ", i, " is less than zero")
-          if(soil.soilwater.second$SWCON[i] < 0)
-            message("SoilWater SWCON for layer: ", i, " is less than zero")
-          if(soil.soilwater.second$SWCON[i] > 1)
-            message("SoilWater SWCON for layer: ", i, " is greater than one")
-        }
+                                               root = root), silent = TRUE)
+      if(inherits(soil.soilwater, 'try-error')){
+        warning("Soil 'SoilWater' not found.", immediate. = TRUE)
+      }else{
+        soil.soilwater.second <- soil.soilwater$second
+        if(is.null(soil.soilwater.second))
+          warning("'soil.soilwater.second' is null", immediate. = TRUE)
+        ## Check number of layers
+        if(soil.child %in% "all"){
+          ## Are the number of layers the same as for 'Physical'?
+          soil.soilwater.second.length <- nrow(soil.soilwater.second)
+          for(i in seq_len(soil.soilwater.second.length)){
+            ### Checking that Thickness is grater than zero
+            if(verbose) cat("Checking SoilWater layer:", i, "\n")
+            if(soil.soilwater.second$Thickness[i] < 0)
+              message("SoilWater Thickness for layer: ", i, " is less than zero")
+            if(soil.soilwater.second$SWCON[i] < 0)
+              message("SoilWater SWCON for layer: ", i, " is less than zero")
+            if(soil.soilwater.second$SWCON[i] > 1)
+              message("SoilWater SWCON for layer: ", i, " is greater than one")
+          }
+        }        
       }
     }
     
@@ -990,55 +1002,57 @@ check_apsimx <- function(file = "", src.dir = ".",
     if(soil.child %in% c("all", "Organic")){
       if(verbose) cat("Checking the soil Organic \n")
       ### First: extract soil Organic
-      soil.organic <- extract_data_apsimx(file = file, src.dir = src.dir, 
+      soil.organic <- try(extract_data_apsimx(file = file, src.dir = src.dir, 
                                           node = "Soil", 
                                           soil.child = "Organic",
-                                          root = root)   
-      
-      soil.organic.layers <- soil.organic[[2]]
-      ### Only checking the second component for now
-      if(verbose) cat("Soil Organic has: ", nrow(soil.organic.layers), "layers \n")
-      
-      for(i in seq_len(nrow(soil.organic.layers))){
-        if(verbose) cat("Checking Organic layer:", i, "\n")
-        thickness.value <- as.numeric(soil.organic.layers[["Thickness"]][i])
-        if(thickness.value <= 0)
-          message("Thickness for layer: ", i, " is less than or equal to zero. Value: ", thickness.value)         
-        ### Checking Carbon
-        carbon.value <- as.numeric(soil.organic.layers[["Carbon"]][i])
-        if(carbon.value <= 0)
-          message("Carbon for layer: ", i, " is less than or equal to zero. Value: ", carbon.value)
-        if(carbon.value > 100)
-          message("Carbon for layer: ", i, " is greater than 100. Value: ", carbon.value)
-        ### Checking SoilCNRatio
-        soilcnratio.value <- as.numeric(soil.organic.layers[["SoilCNRatio"]][i])
-        if(soilcnratio.value <= 0)
-          message("SoilCNRatio for layer: ", i, " is less than or equal to zero. Value: ", soilcnratio.value)
-        if(soilcnratio.value > 100)
-          message("SoilCNRatio for layer: ", i, " is greater than 100. Value: ", soilcnratio.value)
-        ### Checking FBiom
-        FBiom.value <- as.numeric(soil.organic.layers[["FBiom"]][i])
-        if(FBiom.value <= 0)
-          message("FBiom for layer: ", i, " is less than or equal to zero. Value: ", FBiom.value)
-        if(FBiom.value > 1)
-          message("FBiom for layer: ", i, " is greater than 1. Value: ", FBiom.value)
-        ### Checking FInert
-        FInert.value <- as.numeric(soil.organic.layers[["FInert"]][i])
-        if(FInert.value <= 0)
-          message("FInert for layer: ", i, " is less than or equal to zero. Value: ", FInert.value)
-        if(FInert.value > 1)
-          message("FInert for layer: ", i, " is greater than 1. Value: ", FInert.value)
-        ### Checking that FBiom + FInert are not greater than 1
-        if(FBiom.value + FInert.value > 1){
-          message("FBiom + FInert for layer: ", i, " is greater than 1. FBiom Value: ", FBiom.value, " FInert Value: ", FInert.value)
+                                          root = root), silent = TRUE)
+      if(inherits(soil.organic, 'try-error')){
+        warning("Soil 'Organic' not found", immediate. = TRUE)
+      }else{
+        soil.organic.layers <- soil.organic[[2]]
+        ### Only checking the second component for now
+        if(verbose) cat("Soil Organic has: ", nrow(soil.organic.layers), "layers \n")
+        
+        for(i in seq_len(nrow(soil.organic.layers))){
+          if(verbose) cat("Checking Organic layer:", i, "\n")
+          thickness.value <- as.numeric(soil.organic.layers[["Thickness"]][i])
+          if(thickness.value <= 0)
+            message("Thickness for layer: ", i, " is less than or equal to zero. Value: ", thickness.value)         
+          ### Checking Carbon
+          carbon.value <- as.numeric(soil.organic.layers[["Carbon"]][i])
+          if(carbon.value <= 0)
+            message("Carbon for layer: ", i, " is less than or equal to zero. Value: ", carbon.value)
+          if(carbon.value > 100)
+            message("Carbon for layer: ", i, " is greater than 100. Value: ", carbon.value)
+          ### Checking SoilCNRatio
+          soilcnratio.value <- as.numeric(soil.organic.layers[["SoilCNRatio"]][i])
+          if(soilcnratio.value <= 0)
+            message("SoilCNRatio for layer: ", i, " is less than or equal to zero. Value: ", soilcnratio.value)
+          if(soilcnratio.value > 100)
+            message("SoilCNRatio for layer: ", i, " is greater than 100. Value: ", soilcnratio.value)
+          ### Checking FBiom
+          FBiom.value <- as.numeric(soil.organic.layers[["FBiom"]][i])
+          if(FBiom.value <= 0)
+            message("FBiom for layer: ", i, " is less than or equal to zero. Value: ", FBiom.value)
+          if(FBiom.value > 1)
+            message("FBiom for layer: ", i, " is greater than 1. Value: ", FBiom.value)
+          ### Checking FInert
+          FInert.value <- as.numeric(soil.organic.layers[["FInert"]][i])
+          if(FInert.value <= 0)
+            message("FInert for layer: ", i, " is less than or equal to zero. Value: ", FInert.value)
+          if(FInert.value > 1)
+            message("FInert for layer: ", i, " is greater than 1. Value: ", FInert.value)
+          ### Checking that FBiom + FInert are not greater than 1
+          if(FBiom.value + FInert.value > 1){
+            message("FBiom + FInert for layer: ", i, " is greater than 1. FBiom Value: ", FBiom.value, " FInert Value: ", FInert.value)
+          }
+          ### Checking FOM
+          FOM.value <- as.numeric(soil.organic.layers[["FOM"]][i])
+          if(FOM.value < 0)
+            message("FOM for layer: ", i, " is less than zero. Value: ", FOM.value)
+          if(FOM.value > 1e5)
+            message("FOM for layer: ", i, " is greater than 100,000. Value: ", FOM.value)
         }
-        ### Checking FOM
-        FOM.value <- as.numeric(soil.organic.layers[["FOM"]][i])
-        if(FOM.value < 0)
-          message("FOM for layer: ", i, " is less than zero. Value: ", FOM.value)
-        if(FOM.value > 1e5)
-          message("FOM for layer: ", i, " is greater than 100,000. Value: ", FOM.value)
-          
       }
     }
   }

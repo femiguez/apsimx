@@ -116,6 +116,10 @@ suppressed during parallel execution, so it is important to ensure that the simu
 In testing, cloud services (Box, Dropbox, etc.) do not work well as they seem to interfere with the syncing
 of apsim database files. It is suggested that they are turned off when running simulations.
 
+In version 2.8.0 and earlier the original file was changed after it was edited by the function.
+In newer versions, the function creates a backup file and then restores it after the code is
+executed, if there are no errors.
+
 Suggested reading on the topic of sensitivity analysis:
 
 Pianosa et al (2016). Sensitivity analysis of environmental models: A systematic review with practical workflow.

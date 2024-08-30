@@ -16,6 +16,10 @@
 #' suppressed during parallel execution, so it is important to ensure that the simulations are constructed properly.
 #' In testing, cloud services (Box, Dropbox, etc.) do not work well as they seem to interfere with the syncing
 #' of apsim database files. It is suggested that they are turned off when running simulations.
+#' 
+#' In version 2.8.0 and earlier the original file was changed after it was edited by the function.
+#' In newer versions, the function creates a backup file and then restores it after the code is
+#' executed, if there are no errors.
 #'
 #' Suggested reading on the topic of sensitivity analysis:
 #'
@@ -77,6 +81,13 @@ sens_apsimx <- function(file, src.dir = ".",
     .check_apsim_name(normalizePath(src.dir))
   }
 
+  ### Make a backup copy of the file, since it will be modified later
+  file.backup.name <- paste0(tools::file_path_sans_ext(file), "-backup.apsimx")
+  file.copy(from = file.path(src.dir, file), 
+            to = file.path(src.dir, file.backup.name))
+  if(verbose > 1L)
+    message("Created backup copy of original file")
+  
   if(cores > 1L){
 
     if(!requireNamespace("future", quietly = TRUE)){
@@ -95,10 +106,10 @@ sens_apsimx <- function(file, src.dir = ".",
     ### Maybe multisession needs to be the default regardless of platform
     if(is.null(fp.op)){
       oplan <- future::plan(strategy = "multisession", workers = cores)
-      on.exit(plan(oplan), add = TRUE)
+      on.exit(future::plan(oplan), add = TRUE)
     }else{
       oplan <- future::plan(fp.op, workers = cores)
-      on.exit(plan(oplan), add = TRUE)
+      on.exit(future::plan(oplan), add = TRUE)
     }
   }
 
@@ -341,8 +352,14 @@ sens_apsimx <- function(file, src.dir = ".",
         ## to prevent conflicts with the file below
         file.to.run <- file.path(src.dir, paste0(tools::file_path_sans_ext(file),"-", core.counter, ".apsimx"))
 
-        file.copy(from = file.path(src.dir, file), to = file.to.run)
-
+        fcs <- file.copy(from = file.path(src.dir, file), to = file.to.run)
+        if(isFALSE(fcs)){
+          message("Iteration:", .i)
+          message("Core counter:", core.counter)
+          message("File to run": file.to.run)
+          stop("Failed to copy file", call. = FALSE)
+        }
+          
         sim.list[[core.counter]] <- future::future(try(apsimx(file = paste0(tools::file_path_sans_ext(file), "-", core.counter, ".apsimx"),
                                                                 src.dir = src.dir,
                                                                 silent = TRUE,
@@ -363,7 +380,6 @@ sens_apsimx <- function(file, src.dir = ".",
 
       if(verbose > 1){
         print(sapply(sim.list, class))
-
         cat("Length sim.list:", length(sim.list), "\n")
         cat("Number of simulations remaining:", num.sim.rem, "\n")
       }
@@ -412,7 +428,12 @@ sens_apsimx <- function(file, src.dir = ".",
       }
 
       for(j in seq_len(length(simc))){
-        file.remove(file.path(src.dir, paste0(tools::file_path_sans_ext(file), "-", j, ".apsimx")))
+        frs <- file.remove(file.path(src.dir, paste0(tools::file_path_sans_ext(file), "-", j, ".apsimx")))
+        if(isFALSE(frs)){
+          message("Iteration:", .i)
+          message("Core counter:", core.counter)
+          stop("Failed to remove file", call. = FALSE)
+        }
       }
     }
 
@@ -473,6 +494,14 @@ sens_apsimx <- function(file, src.dir = ".",
     cdat <- col.sim
   }
 
+  ### If there are no errors, which usually happen earlier
+  file.remove(file.path(src.dir, file)) ## Remove the modified file
+  file.rename(from = file.path(src.dir, file.backup.name),
+            to = file.path(src.dir, file))
+  if(verbose > 1L){
+    message("Restoring the original file from backup")
+  }
+  
   attr(cdat, "summary") <- summary
 
   ans <- structure(list(grid.sims = cdat, grid = grid, parm.paths = parm.paths),

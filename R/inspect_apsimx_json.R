@@ -6,7 +6,7 @@
 #' This option is useful when the intention is to show the simulation structure to pick a root presumably. \sQuote{parm}
 #' can be set as 0, 1, 2 or 3 for different levels.
 #' \sQuote{parm} can also be a list with integers, such as \sQuote{list(1, 2, 3)}. If zero is included, available elements
-#  will be displayed.
+#  will be displayed. At the moment, the maximum length of this list is 7.
 #' If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied.
 #'
 #' @title Inspect an .apsimx (JSON) file
@@ -434,6 +434,7 @@ inspect_apsimx <- function(file = "", src.dir = ".",
     }else{
       ## Pick which soil component we want to look at
       ## Which is not 'Metadata"
+      ## browser()
       wsiw <- "InitialWater" %in% soil.children.names
       if(soil.child %in% c("Water", "InitialWater")){
         if(soil.child == "InitialWater" && isFALSE(wsiw)){
@@ -1180,8 +1181,45 @@ inspect_apsimx <- function(file = "", src.dir = ".",
             print(knitr::kable(pdat[parm[[6]],, drop = FALSE], row.names = TRUE))
           }
         }
-        if(length(parm) >= 7)
+        if(length(parm) >= 7){
+
+          names.level.6 <- FALSE
+          root.names.level.6 <- vapply(wlevel5$Children, FUN = function(x) x$Name,
+                                       FUN.VALUE = "character")
+          if(length(root.names.level.6) == 0){
+            root.names.level.6 <- names(wlevel5)
+            names.level.6 <- TRUE
+          }
+          if(length(parm[[7]]) == 1){
+            if(parm[[7]] > 0){
+              if(names.level.6){
+                selected.names <- root.names.level.6[parm[[7]]]
+                ##pdat <- data.frame(sixth_level = selected.names)
+                ##print(knitr::kable(pdat, row.names = TRUE))
+                parm.path <- paste0(parm.path, ".", selected.names)
+              }else{
+                wlevel6 <- try(apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]$Children[[parm[[5]]]]$Children[[parm[[6]]]]$Children[[parm[[7]]]], silent = TRUE)
+                if(inherits(wlevel6, "try-error"))
+                  stop("parm[[7]] did not match an available node", call. = FALSE)
+                parm.path <- paste0(parm.path, ".", root.names.level.6[parm[[7]]])
+              }
+            }else{
+              pdat <- data.frame(seventh_level = root.names.level.6)
+              print(knitr::kable(pdat, row.names = TRUE))
+            }
+          }else{
+            ### Here I assume that parm[[7]] is a vector
+            if(length(parm[[7]]) > length(root.names.level.6))
+              stop("Length of parm[[7]] should be less than number of elements in the seventh level")
+            selected.levels <- root.names.level.6[parm[[7]]]
+            parm.path <- paste0(parm.path, ".", selected.levels)
+            pdat <- data.frame(seventh_level = root.names.level.6)
+            print(knitr::kable(pdat[parm[[7]],, drop = FALSE], row.names = TRUE))
+          }
+        }
+        if(length(parm) >= 8){
           stop("Have not developed this yet", call. = FALSE)
+        }
       }else{
         ## This is if the parm is just one term
         parm.found <- FALSE

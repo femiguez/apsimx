@@ -1,6 +1,7 @@
 ## This test will build from simple to more complex sensitivity analysis
 
 require(apsimx)
+packageVersion("apsimx")
 require(ggplot2)
 apsimx_options(warn.versions = FALSE)
 
@@ -514,9 +515,111 @@ if(run.sens.apsimx.soils){
   file.remove("Ames.met")
 }
 
+#### Multiple soils simulation ----
 ### I need to think more about the additional tests that I need to 
 ### to ensure that the feature of cycling through soils works
 ### Why did I think that there can be more than one column of soils that
 ### Need to be replaced? I think it is because of multiple simulations
 ### In one simulation run I could need to replace the soil of several 'roots'
 ### How do I do this?
+
+run.multiple.soils.sens.apsimx <- FALSE
+
+if(run.multiple.soils.sens.apsimx){
+  
+  ### Is AgPasture the best example of a multiple simulation file?
+  extd.dir <- system.file("extdata", package = "apsimx")  
+  file.copy(file.path(extd.dir, "MaizeSoybean.apsimx"), ".")
+  file.copy(file.path(extd.dir, "Ames.met"), ".")
+  
+  inspect_apsimx("MaizeSoybean.apsimx", ".", node = "Other",
+                 parm = 2)
+  
+  inspect_apsimx("MaizeSoybean.apsimx", ".", node = "Other",
+                 parm = list(1, 2, 5, 0))
+  
+  check_apsimx("MaizeSoybean.apsimx", root = "SimulationSoybean")
+  check_apsimx("MaizeSoybean.apsimx", root = "SimulationMaize")
+  
+  sim0 <- apsimx("MaizeSoybean.apsimx")
+
+  dir()
+  dim(sim0)
+  
+  ggplot(data = sim0[sim0$SimulationName == "SimulationMaize", ], 
+         aes(x = Date, y = Maize.Total.Wt)) + 
+    geom_line()
+  
+  ggplot(data = sim0[sim0$SimulationName == "SimulationSoybean", ], 
+         aes(x = Date, y = Soybean.Total.Wt)) + 
+    geom_line()
+  
+  ### Inspecting the soil
+  inspect_apsimx("MaizeSoybean.apsimx", node = "Soil",
+                 root = "SimulationSoybean",
+                 soil.child = "Physical")
+  
+  inspect_apsimx("MaizeSoybean.apsimx", node = "Soil",
+                 root = "SimulationMaize",
+                 soil.child = "Physical")
+
+  inspect_apsimx("MaizeSoybean.apsimx", node = "Soil",
+                 root = "SimulationMaize") ### Nicollet
+  inspect_apsimx("MaizeSoybean.apsimx", node = "Soil",
+                 root = "SimulationSoybean") ### Nicollet
+  
+  #### Extracting alternative soils for this location?
+  sps <- get_ssurgo_soil_profile(c(-93.76911, 42.02204), nsoil = 2, fix = TRUE)
+
+  #### Which soils are these?
+  sps[[1]]$metadata$SoilType
+  sps[[2]]$metadata$SoilType
+  
+  plot(sps[[1]], property = "water")
+  plot(sps[[2]], property = "water")
+  
+  #### Now I want to edit these soils for each simulation... Will it work?
+  #### What if I ONLY change the soils? It does not work
+  soil.paths <- c("SimulationSoybean.Soil", "SimulationMaize.Soil")
+  grd <- expand.grid(soil1 = 1:2, soil2 = 1:2)
+  names(grd) <- soil.paths
+  
+  start <- Sys.time()
+  sns.soil0 <- sens_apsimx("MaizeSoybean.apsimx", 
+                           parm.paths = soil.paths,
+                           convert = rep(FALSE, 2),
+                           replacement = rep(FALSE, 2),
+                           grid = grd,
+                           summary = "none",
+                           soil.profiles = sps)
+  (Sys.time() - start)
+  
+  head(sns.soil0$grid.sims[, c(1, 2, 3, 9)])
+
+  snsM <- subset(sns.soil0$grid.sims, SimulationName == "SimulationMaize") 
+  ggplot(data = snsM, 
+         aes(x = Date, y = Maize.Total.Wt, color = as.factor(SimulationMaize.Soil))) + 
+    geom_line() + 
+    ylim(c(1000, 2000))
+  
+  snsS <- subset(sns.soil0$grid.sims, SimulationName == "SimulationSoybean") 
+  ggplot(data = snsS, 
+         aes(x = Date, y = Soybean.Total.Wt, color = as.factor(SimulationSoybean.Soil))) + 
+    geom_line()
+  
+  ### Can I use more than one core?
+  start <- Sys.time()
+  sns.soil0.c2 <- sens_apsimx("MaizeSoybean.apsimx", 
+                              parm.paths = soil.paths,
+                              convert = rep(FALSE, 2),
+                              replacement = rep(FALSE, 2),
+                              grid = grd,
+                              summary = "none",
+                              soil.profiles = sps,
+                              cores = 2L)
+  (Sys.time() - start)
+  #### There appears to be no benefit with such a small number of simulations,
+  #### but it runs...
+  
+  
+}
