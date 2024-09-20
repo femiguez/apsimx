@@ -796,7 +796,7 @@ check_apsimx <- function(file = "", src.dir = ".",
         mwf <- mfn0[mfn0.length - 1]
         mfe <- file.exists(file.path(ex.dir, mwf, mfn))
       }else{
-        mfe <- file.exists(met.name[[1]])
+        mfe <- file.exists(file.path(src.dir, met.name[[1]]))
       }
       if(!mfe){
         message("Weather (met) file path: ", met.name)
@@ -1131,7 +1131,7 @@ assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
 assign('allow.path.spaces', FALSE, apsimx.options)
 assign('system.intern', FALSE, apsimx.options)
-assign('.run.local.tests', FALSE, apsimx.options)
+assign('.run.local.tests', TRUE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests
 ## which do not require an APSIM install
