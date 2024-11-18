@@ -911,6 +911,7 @@ fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), particle.densi
 #' or several others such as \SQuote{BD}, \sQuote{DUL} or \sQuote{Carbon}. 
 #' @param property same as soil.var 
 #' @param labels labels for plotting and identification of \sQuote{soil_profile} objects.
+#' @param merge.wide whether to attempt to merge soils in \sQuote{wide} format.
 #' @param check whether to check \sQuote{soil_profile} objects using \sQuote{check_apsimx_soil_profile}.
 #' @param verbose whether to print agreement values (default is FALSE).
 #' @note I have only tested this for 2 or 3 objects. The code is set up to be able to 
@@ -938,9 +939,11 @@ compare_apsim_soil_profile <- function(...,
                                           "BD", "AirDry", "LL15", 
                                           "DUL", "SAT", "KS", "Carbon", "SoilCNRatio",
                                           "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
-                                          "NH4N", "PH"),
+                                          "NH4N", "PH", "ParticleSizeClay", 
+                                          "ParticleSizeSilt", "ParticleSizeSand"),
                                       property,
                                       labels,
+                                      merge.wide = TRUE,
                                       check = FALSE,
                                       verbose = FALSE){
   
@@ -957,6 +960,31 @@ compare_apsim_soil_profile <- function(...,
   
   if(n.soils < 2) stop("you should provide at least two soil_profiles", call. = FALSE)
   
+  #### Long merging of soils. ----
+  ## It is not required that they have the same number of layers 
+  soils.soil.names <- lapply(soils, FUN = \(x) names(x$soil))
+  soils.soil.common.names <- Reduce(intersect, soils.soil.names)
+  
+  if(is.null(soils.soil.common.names))
+    stop("No common column names between 'soil' data.frames", call. = FALSE)
+  
+  if(missing(labels)){
+    soil.long.labels <- unlist(lapply(soils, FUN = \(x) x$metadata$SoilType))
+  }else{
+    soil.long.labels <- labels
+  }
+  
+  if(length(soil.long.labels) != length(soils))
+    stop("Length of labels should be equal to the number of soil profiles", call. = FALSE)
+  
+  soils.long <- NULL
+  for(ii in seq_along(soils)){
+    tmp.long <- subset(soils[[ii]]$soil, select = soils.soil.common.names)
+    ## This depth will be used for plotting
+    tmp.long$depth <- -(cumsum(tmp.long$Thickness) * 1e-1)
+    soils.long <- rbind(soils.long, data.frame(soil = soil.long.labels[ii], tmp.long))
+  }
+
   soil1 <- soils[[1]]
   
   m.nms <- NULL
@@ -972,134 +1000,145 @@ compare_apsim_soil_profile <- function(...,
   if(check) check_apsimx_soil_profile(soil1$soil)
   
   ## Should have the same number of layers
-  soil.mrg <- soil1$soil
-  names(soil.mrg) <- paste0(names(soil.mrg), ".1")  
-  soil1 <- soil1$soil
-  nms1 <- names(soil1)
+  soil.mrg <- NA; ans <- NA
+  if(merge.wide){
+    soil.mrg <- soil1$soil
+    names(soil.mrg) <- paste0(names(soil.mrg), ".1")  
+    soil1 <- soil1$soil
+    nms1 <- names(soil1)    
+  }
 
-  for(i in 2:n.soils){
-    
-    if(check) check_apsimx_soil_profile(soils[[i]])
-    
-    soil.i <- soils[[i]]$soil
-    
-    if(nrow(soil1) != nrow(soil.i)) stop("soil profiles should have the same number of rows", call. = FALSE)
-    
-    if(ncol(soil1) != ncol(soil.i) || length(setdiff(names(soil1), names(soil.i))) > 0){
-      warning("Number of columns is not the same for the soil profiles. Selecting the ones in common.")
-      common.names <- intersect(names(soil1), names(soil.i))
-      soil1 <- subset(soil1, select = common.names)
-      soil.i <- subset(soil.i, select = common.names)
-    }
-  
-    names(soil1) <- nms1
-    names(soil.i) <- paste0(names(soil.i), ".", i)
-    ## drop the year.i and day.i names
-    soil.mrg <- cbind(soil.mrg, soil.i)
-  }
-  
-  if(soil.var == "all"){
-    ans <- data.frame(variable = setdiff(names(soil1), c("Depth")),
-                      vs = NA, labels = NA,
-                      bias = NA, slope = NA, corr = NA)
-    if(missing(labels)) ans$labels <- NULL
-  }else{
-    ans <- data.frame(variable = soil.var,
-                      vs = NA, labels = NA,
-                      bias = NA, slope = NA, corr = NA)
-    if(missing(labels)) ans$labels <- NULL
-  }
-  
-  ## Calculate bias for all variables
-  if(soil.var == "all"){
-    soil.var.sel <- nms1[!(nms1 %in% c("Depth"))]
-    gvar.sel <- paste0(soil.var.sel, collapse = "|")
-    idx.soil.mrg <- grep(gvar.sel, names(soil.mrg))
-    soil.mrg.s <- soil.mrg[,idx.soil.mrg]
-    
-    k <- 1  
-    ## Compute Bias matrix
-    for(i in soil.var.sel){
-      if(verbose) cat("Variable ", i, "\n")
-      ans$variable[k] <- i
-      tmp <- soil.mrg.s[, grep(i, names(soil.mrg.s)), drop = FALSE]
-      if(ncol(tmp) > 2){
-        if(i == "FOM"){
-          tmp <- soil.mrg.s[, grep("FOM.[1-9]", names(soil.mrg.s))]    
-        }else{
-          tmp <- soil.mrg.s[, grep("FOM.CN", names(soil.mrg.s))]   
-        }
-      }
-      if(ncol(tmp) < 2){
-        stop("merged selected variables should be at least of length 2", call. = FALSE)
+  if(merge.wide){
+    for(i in 2:n.soils){
+      
+      if(check) check_apsimx_soil_profile(soils[[i]])
+      
+      soil.i <- soils[[i]]$soil
+      
+      if(nrow(soil1) != nrow(soil.i)){
+        message("Soil profiles should have the same number of rows")
+        message("Not merging soils in wide format")
+        stop("Try setting 'merge.wide' argument to FALSE", call. = FALSE)
       } 
       
+      if(ncol(soil1) != ncol(soil.i) || length(setdiff(names(soil1), names(soil.i))) > 0){
+        warning("Number of columns is not the same for the soil profiles. Selecting the ones in common.")
+        common.names <- intersect(names(soil1), names(soil.i))
+        soil1 <- subset(soil1, select = common.names)
+        soil.i <- subset(soil.i, select = common.names)
+      }
+      
+      names(soil1) <- nms1
+      names(soil.i) <- paste0(names(soil.i), ".", i)
+      ## drop the year.i and day.i names
+      soil.mrg <- cbind(soil.mrg, soil.i)
+    }
+    
+    if(soil.var == "all"){
+      ans <- data.frame(variable = setdiff(names(soil1), c("Depth")),
+                        vs = NA, labels = NA,
+                        bias = NA, slope = NA, corr = NA)
+      if(missing(labels)) ans$labels <- NULL
+    }else{
+      ans <- data.frame(variable = soil.var,
+                        vs = NA, labels = NA,
+                        bias = NA, slope = NA, corr = NA)
+      if(missing(labels)) ans$labels <- NULL
+    }
+    
+    ## Calculate bias for all variables
+    if(soil.var == "all"){
+      soil.var.sel <- nms1[!(nms1 %in% c("Depth"))]
+      gvar.sel <- paste0(soil.var.sel, collapse = "|")
+      idx.soil.mrg <- grep(gvar.sel, names(soil.mrg))
+      soil.mrg.s <- soil.mrg[,idx.soil.mrg]
+      
+      k <- 1  
+      ## Compute Bias matrix
+      for(i in soil.var.sel){
+        if(verbose) cat("Variable ", i, "\n")
+        ans$variable[k] <- i
+        tmp <- soil.mrg.s[, grep(i, names(soil.mrg.s)), drop = FALSE]
+        if(ncol(tmp) > 2){
+          if(i == "FOM"){
+            tmp <- soil.mrg.s[, grep("FOM.[1-9]", names(soil.mrg.s))]    
+          }else{
+            tmp <- soil.mrg.s[, grep("FOM.CN", names(soil.mrg.s))]   
+          }
+        }
+
+        if(ncol(tmp) < 2){
+          stop("merged selected variables should be at least of length 2", call. = FALSE)
+        } 
+        
+        for(j in 2:ncol(tmp)){
+          if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
+          ans$vs[k] <- paste(names(tmp)[j - 1], "vs.", names(tmp)[j])
+          if(!missing(labels)){
+            if(verbose) cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
+            ans$labels[k] <- paste(labels[j - 1], "vs.", labels[j])
+          } 
+          if(abs(sum(tmp[, j - 1] - tmp[, j])) < 0.0001){
+            if(verbose) cat(paste("Variable", i, "appears identical \n"))
+            ans$bias[k] <- NA
+            ans$slope[k] <- NA
+            ans$corr[k] <- NA
+            ans$rss[k] <- NA
+            ans$rmse[k] <- NA
+            next
+          }
+          
+          fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
+          if(verbose) cat(" \t Bias: ", coef(fm0)[1], "\n")
+          ans$bias[k] <- coef(fm0)[1]
+          if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
+          ans$slope[k] <- coef(fm0)[2]
+          if(verbose) cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
+          ans$corr[k] <- cor(tmp[,j - 1], tmp[, j])
+          if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
+          ans$rss[k] <- deviance(fm0)
+          if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
+          ans$rmse[k] <- sigma(fm0)
+        }
+        k <- k + 1
+      }
+    }
+    
+    if(soil.var != "all"){
+      ## Just select the appropriate variable
+      idx.soil.mrg <- grep(soil.var, names(soil.mrg))
+      soil.mrg.s <- soil.mrg[,idx.soil.mrg]
+      
+      if(verbose) cat("Variable ", soil.var, "\n")
+      ans$variable[1] <- soil.var
+      
+      tmp <- soil.mrg.s
       for(j in 2:ncol(tmp)){
         if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
-        ans$vs[k] <- paste(names(tmp)[j - 1], "vs.", names(tmp)[j])
+        ans$vs[1] <- paste(names(tmp)[j - 1], "vs.", names(tmp)[j])
         if(!missing(labels)){
           if(verbose) cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
-          ans$labels[k] <- paste(labels[j - 1], "vs.", labels[j])
-        } 
-        if(abs(sum(tmp[, j - 1] - tmp[, j])) < 0.0001){
-          if(verbose) cat(paste("Variable", i, "appears identical \n"))
-          ans$bias[k] <- NA
-          ans$slope[k] <- NA
-          ans$corr[k] <- NA
-          ans$rss[k] <- NA
-          ans$rmse[k] <- NA
-          next
+          ans$labels[1] <- paste(labels[j - 1], "vs.", labels[j])
         }
-          
         fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
         if(verbose) cat(" \t Bias: ", coef(fm0)[1], "\n")
-        ans$bias[k] <- coef(fm0)[1]
+        ans$bias[1] <- coef(fm0)[1]
         if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
-        ans$slope[k] <- coef(fm0)[2]
+        ans$slope[1] <- coef(fm0)[2]
         if(verbose) cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
-        ans$corr[k] <- cor(tmp[,j - 1], tmp[, j])
+        ans$corr[1] <- suppressWarnings(cor(tmp[,j - 1], tmp[, j]))
         if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
-        ans$rss[k] <- deviance(fm0)
+        ans$rss[1] <- deviance(fm0)
         if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
-        ans$rmse[k] <- sigma(fm0)
+        ans$rmse <- sigma(fm0)
       }
-      k <- k + 1
-    }
+    }    
   }
-  
-  if(soil.var != "all"){
-    ## Just select the appropriate variable
-    idx.soil.mrg <- grep(soil.var, names(soil.mrg))
-    soil.mrg.s <- soil.mrg[,idx.soil.mrg]
-    
-    if(verbose) cat("Variable ", soil.var, "\n")
-    ans$variable[1] <- soil.var
-    
-    tmp <- soil.mrg.s
-    for(j in 2:ncol(tmp)){
-      if(verbose) cat(names(tmp)[j - 1], " vs. ", names(tmp)[j], "\n")
-      ans$vs[1] <- paste(names(tmp)[j - 1], "vs.", names(tmp)[j])
-      if(!missing(labels)){
-        if(verbose) cat("labels", labels[j - 1], " vs. ", labels[j], "\n")
-        ans$labels[1] <- paste(labels[j - 1], "vs.", labels[j])
-      }
-      fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
-      if(verbose) cat(" \t Bias: ", coef(fm0)[1], "\n")
-      ans$bias[1] <- coef(fm0)[1]
-      if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
-      ans$slope[1] <- coef(fm0)[2]
-      if(verbose) cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
-      ans$corr[1] <- suppressWarnings(cor(tmp[,j - 1], tmp[, j]))
-      if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
-      ans$rss[1] <- deviance(fm0)
-      if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
-      ans$rmse <- sigma(fm0)
-    }
-  }
-  
+
   attr(soil.mrg, "soil.names") <- m.nms
   attr(soil.mrg, "length.soils") <- n.soils  
-  soil.mrg <- structure(list(soil.mrg = soil.mrg, index.table = ans),
+  attr(soil.mrg, "merge.wide") <- merge.wide
+  soil.mrg <- structure(list(soil.mrg = soil.mrg, index.table = ans, soils.long = soils.long),
                        class = "soil_profile_mrg")
   invisible(soil.mrg)
 }
@@ -1113,8 +1152,19 @@ compare_apsim_soil_profile <- function(...,
 #' @param digits number of digits to print (default is 2)
 #' @return a table with indexes for the soil profiles
 #' @export
-print.soil_profile_mrg <- function(x, ..., digits = 2){
-  print(x$index.table[!is.na(x$index.table$bias),], digits = digits)
+print.soil_profile_mrg <- function(x, ..., format = c("wide", "long"), digits = 2){
+  
+  format <- match.arg(format)
+  
+  if(attr(x$soil.mrg, "merge.wide")){
+    print(x$index.table[!is.na(x$index.table$bias),], digits = digits)  
+  }
+  
+  if(format == "long" || !attr(x$soil.mrg, "merge.wide")){
+   cat("Common names in 'long' format", names(x$soils.long), "\n") 
+   cat("Dimmensions in 'long' format", dim(x$soils.long), "\n")
+   print(head(x$soils.long))
+  }
 }
 
 #' Plotting function for comparing soil profiles
@@ -1125,6 +1175,7 @@ print.soil_profile_mrg <- function(x, ..., digits = 2){
 #' @param plot.type either \sQuote{depth}, \sQuote{vs}, \sQuote{diff} or \sQuote{density}
 #' @param pairs pair of objects to compare, defaults to 1 and 2 but others are possible
 #' @param soil.var soil variable to plot 
+#' @param property same as soil.var 
 #' @param span argument to be passed to \sQuote{geom_smooth}
 #' @return it produces a plot
 #' @export
@@ -1135,7 +1186,9 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
                                       "BD", "AirDry", "LL15", 
                                       "DUL", "SAT", "KS", "Carbon", "SoilCNRatio",
                                       "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
-                                      "NH4N", "PH"),
+                                      "NH4N", "PH", "ParticleSizeClay", 
+                                      "ParticleSizeSilt", "ParticleSizeSand"),
+                         property,
                          span = 0.75){
   
   if(!requireNamespace("ggplot2", quietly = TRUE)){
@@ -1145,137 +1198,182 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
 
   plot.type <- match.arg(plot.type)
   soil.var <- match.arg(soil.var)
-    
+  
+  if(!missing(property)) soil.var <- property
+  
+  if(!missing(property) && soil.var == "all")
+    warning("Either use property or soil.var but not both. soil.var will be ignored.")
+  
   if(plot.type != "depth" && soil.var == "all")
     stop("Please select a soil variable for this type of plot", call. = FALSE)
   
-  x <- x$soil.mrg
-  
-  value <- NULL; depth <- NULL; soil <- NULL
-  
-  m.nms <- attr(x, "soil.names")
-  if(max(pairs) > attr(x, "length.soils")) stop("pairs index larger than length of soils")
-  
-  if(soil.var == "all"){
-    num.vars <- length(grep(".1", names(x), fixed = TRUE))
-    num.soils <- attr(x, "length.soils")
-    soil.labels <- attr(x, "soil.names")
-    tmp <- NULL
-    for(i in seq_len(num.soils)){
-      wch.col <- grep(paste0(".", i), names(x), fixed = TRUE)
-      if(length(wch.col) != num.vars)
-        stop("Could not merge soil profiles", call. = FALSE)
-      tmp0 <- x[,wch.col]
-      names(tmp0) <- gsub(paste0(".", i), "", names(tmp0), fixed = TRUE)
-      tmp1 <- data.frame(soil = soil.labels[i], tmp0)
-      ## Insert depth variable
-      tmp1$depth[1] <- tmp1$Thickness[1] / 2
-      tmp1$cum.thickness <- cumsum(tmp1$Thickness)
-      for(i in 2:nrow(tmp1)){
-        tmp1$depth[i] <- tmp1$cum.thickness[i - 1] + tmp1$Thickness[i] / 2
-      }      
-      tmp1$Depth <- NULL
-      tmp2 <- NULL
-      vars <- setdiff(names(tmp1), c("soil", "Thickness"))
-      for(j in seq_along(vars)){
-        tmp2 <- rbind(tmp2, data.frame(soil = tmp1[["soil"]], depth = tmp1$depth, 
-                                       variable = vars[j], value = tmp1[[vars[j]]]))
+  if(attr(x$soil.mrg, "merge.wide")){
+    ### All this code only makes sense for 'merge.wide'
+    x <- x$soil.mrg  
+    
+    value <- NULL; depth <- NULL; soil <- NULL
+    
+    m.nms <- attr(x, "soil.names")
+    if(max(pairs) > attr(x, "length.soils")) stop("pairs index larger than length of soils")
+    
+    if(soil.var == "all"){
+      num.vars <- length(grep(".1", names(x), fixed = TRUE))
+      num.soils <- attr(x, "length.soils")
+      soil.labels <- attr(x, "soil.names")
+      tmp <- NULL
+      for(i in seq_len(num.soils)){
+        wch.col <- grep(paste0(".", i), names(x), fixed = TRUE)
+        if(length(wch.col) != num.vars)
+          stop("Could not merge soil profiles", call. = FALSE)
+        tmp0 <- x[,wch.col]
+        names(tmp0) <- gsub(paste0(".", i), "", names(tmp0), fixed = TRUE)
+        tmp1 <- data.frame(soil = soil.labels[i], tmp0)
+        ## Insert depth variable
+        tmp1$depth[1] <- tmp1$Thickness[1] / 2
+        tmp1$cum.thickness <- cumsum(tmp1$Thickness)
+        for(i in 2:nrow(tmp1)){
+          tmp1$depth[i] <- tmp1$cum.thickness[i - 1] + tmp1$Thickness[i] / 2
+        }      
+        tmp1$Depth <- NULL
+        tmp2 <- NULL
+        vars <- setdiff(names(tmp1), c("soil", "Thickness"))
+        for(j in seq_along(vars)){
+          tmp2 <- rbind(tmp2, data.frame(soil = tmp1[["soil"]], depth = tmp1$depth, 
+                                         variable = vars[j], value = tmp1[[vars[j]]]))
+        }
+        tmp <- rbind(tmp, tmp2)
       }
-      tmp <- rbind(tmp, tmp2)
-    }
-    tmp.o <- tmp[order(tmp$soil, tmp$variable, tmp$depth),]
-    tmp3 <- tmp.o[!tmp.o$variable %in% c("depth", "cum.thickness"),]
-
-    gp1 <- ggplot2::ggplot(data = tmp3, ggplot2::aes(x = value, y = depth * 0.1, color = soil)) + 
-      ggplot2::facet_wrap(~ variable, scales = "free") + 
-      ggplot2::geom_point() + 
-      ggplot2::geom_path() + 
-      ggplot2::scale_y_reverse() + 
-      ggplot2::ylab("Depth (cm)") 
-    print(gp1)
-  }
-  
-  if(plot.type == "vs" && soil.var != "all"){
-    tmp <- x[, grep(soil.var, names(x))]
-    prs <- paste0(soil.var, ".", pairs)
-    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs[1]))), 
-                                                    y = eval(parse(text = eval(prs[2]))))) +
-      ggplot2::geom_point() + 
-      ggplot2::xlab(paste(m.nms[pairs[1]], prs[1])) + 
-      ggplot2::ylab(paste(m.nms[pairs[2]], prs[2])) + 
-      ggplot2::geom_smooth(method = "lm") + 
-      ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange")
-    
-    print(gp1)
-  }
-  
-  if(plot.type == "diff" && soil.var != "all"){
-    
-    prs0 <- paste0(soil.var, ".", pairs)
-    prs <- paste0(prs0, collapse = "|")
-    tmp <- x[, grep(prs, names(x))]
-    
-    ## x Variable is prs[1]
-    ## y Variable is prs[2] - prs[1]
-    dff <- tmp[,prs0[2]] - tmp[,prs0[1]]
-    
-    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs0[1]))), 
-                                                    y = dff)) +
-      ggplot2::geom_point() + 
-      ggplot2::xlab(paste(m.nms[pairs[1]], prs0[1])) + 
-      ggplot2::ylab(paste("Difference", prs0[2], "-", prs0[1])) + 
-      ggplot2::geom_smooth(method = "lm", ...) + 
-      ggplot2::geom_hline(yintercept = 0, color = "orange")
-    
-    print(gp1)   
-  }
-  
-  if(plot.type == "depth" && soil.var != "all"){
-    
-    prs0 <- paste0(soil.var, ".", pairs)
-    prs <- paste0(prs0, collapse = "|")
-    x$depth[1] <- x$Thickness.1[1] / 2
-    x$cum.thickness <- cumsum(x$Thickness.1)
-    for(i in 2:nrow(x)){
-      x$depth[i] <- x$cum.thickness[i - 1] + x$Thickness.1[i] / 2
-    } 
-    tmp <- x[, grep(prs, names(x))]
-    tmp$Depth <- x$depth * 0.1
-
-    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(y = .data[["Depth"]], 
-                                                    x = eval(parse(text = eval(prs0[1]))),
-                                                    color = paste(m.nms[pairs[1]], prs0[1]))) +
+      tmp.o <- tmp[order(tmp$soil, tmp$variable, tmp$depth),]
+      tmp3 <- tmp.o[!tmp.o$variable %in% c("depth", "cum.thickness"),]
       
-      ggplot2::geom_point() + 
-      ggplot2::geom_path() + 
-      ggplot2::geom_point(ggplot2::aes(x = eval(parse(text = eval(prs0[2]))),
-                                       color = paste(m.nms[pairs[2]], prs0[2]))) + 
-      ggplot2::geom_path(ggplot2::aes(x = eval(parse(text = eval(prs0[2]))),
-                                       color = paste(m.nms[pairs[2]], prs0[2]))) + 
-      ggplot2::ylab("Depth (cm)") + 
-      ggplot2::xlab(soil.var) + 
-      ggplot2::scale_y_reverse() + 
-      ggplot2::theme(legend.title = ggplot2::element_blank())
+      gp1 <- ggplot2::ggplot(data = tmp3, ggplot2::aes(x = value, y = depth * 0.1, color = soil)) + 
+        ggplot2::facet_wrap(~ variable, scales = "free") + 
+        ggplot2::geom_point() + 
+        ggplot2::geom_path() + 
+        ggplot2::scale_y_reverse() + 
+        ggplot2::ylab("Depth (cm)") 
+      print(gp1)
+    }
     
-    print(gp1)   
+    if(plot.type == "vs" && soil.var != "all"){
+      tmp <- x[, grep(soil.var, names(x))]
+      prs <- paste0(soil.var, ".", pairs)
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs[1]))), 
+                                                      y = eval(parse(text = eval(prs[2]))))) +
+        ggplot2::geom_point() + 
+        ggplot2::xlab(paste(m.nms[pairs[1]], prs[1])) + 
+        ggplot2::ylab(paste(m.nms[pairs[2]], prs[2])) + 
+        ggplot2::geom_smooth(method = "lm") + 
+        ggplot2::geom_abline(intercept = 0, slope = 1, color = "orange")
+      
+      print(gp1)
+    }
+    
+    if(plot.type == "diff" && soil.var != "all"){
+      
+      prs0 <- paste0(soil.var, ".", pairs)
+      prs <- paste0(prs0, collapse = "|")
+      tmp <- x[, grep(prs, names(x))]
+      
+      ## x Variable is prs[1]
+      ## y Variable is prs[2] - prs[1]
+      dff <- tmp[,prs0[2]] - tmp[,prs0[1]]
+      
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs0[1]))), 
+                                                      y = dff)) +
+        ggplot2::geom_point() + 
+        ggplot2::xlab(paste(m.nms[pairs[1]], prs0[1])) + 
+        ggplot2::ylab(paste("Difference", prs0[2], "-", prs0[1])) + 
+        ggplot2::geom_smooth(method = "lm", ...) + 
+        ggplot2::geom_hline(yintercept = 0, color = "orange")
+      
+      print(gp1)   
+    }
+    
+    if(plot.type == "depth" && soil.var != "all"){
+      
+      prs0 <- paste0(soil.var, ".", pairs)
+      prs <- paste0(prs0, collapse = "|")
+      x$depth[1] <- x$Thickness.1[1] / 2
+      x$cum.thickness <- cumsum(x$Thickness.1)
+      for(i in 2:nrow(x)){
+        x$depth[i] <- x$cum.thickness[i - 1] + x$Thickness.1[i] / 2
+      } 
+      tmp <- x[, grep(prs, names(x))]
+      tmp$Depth <- x$depth * 0.1
+      
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(y = .data[["Depth"]], 
+                                                      x = eval(parse(text = eval(prs0[1]))),
+                                                      color = paste(m.nms[pairs[1]], prs0[1]))) +
+        
+        ggplot2::geom_point() + 
+        ggplot2::geom_path() + 
+        ggplot2::geom_point(ggplot2::aes(x = eval(parse(text = eval(prs0[2]))),
+                                         color = paste(m.nms[pairs[2]], prs0[2]))) + 
+        ggplot2::geom_path(ggplot2::aes(x = eval(parse(text = eval(prs0[2]))),
+                                        color = paste(m.nms[pairs[2]], prs0[2]))) + 
+        ggplot2::ylab("Depth (cm)") + 
+        ggplot2::xlab(soil.var) + 
+        ggplot2::scale_y_reverse() + 
+        ggplot2::theme(legend.title = ggplot2::element_blank())
+      
+      print(gp1)   
+    }
+    
+    if(plot.type == "density" && soil.var != "all"){
+      
+      prs0 <- paste0(soil.var, ".", pairs)
+      prs <- paste0(prs0, collapse = "|")
+      tmp <- x[, grep(prs, names(x))]
+      
+      gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs0[1]))),
+                                                      color = paste(m.nms[pairs[1]], prs0[1]))) + 
+        ggplot2::geom_density() + 
+        ggplot2::geom_density(ggplot2::aes(x = eval(parse(text = eval(prs0[2]))),
+                                           color = paste(m.nms[pairs[2]], prs0[2]))) +
+        ggplot2::xlab(soil.var) + 
+        ggplot2::theme(legend.title = ggplot2::element_blank())
+      
+      print(gp1)
+    }
+    
+  }else{
+    x <- x$soils.long
+    
+    ### First option is plot.type = "depth" and soil.var == "all"
+    if(plot.type == "depth" && soil.var == "all"){
+      
+      v2e <- setdiff(names(x), c("soil", "depth"))
+      x2 <- subset(x, select = v2e)
+      cdat <- NULL
+      for(i in seq_len(dim(x2)[2])){
+        if(names(x2)[i] == "Depth") next
+        tmp <- data.frame(soil = x$soil, depth = x$depth, 
+                          variable = names(x2)[i], value = x2[[i]])
+        cdat <- rbind(cdat, tmp)
+      }
+      gp1 <- ggplot2::ggplot(data = cdat, ggplot2::aes(x = value, y = depth, color = soil)) + 
+        ggplot2::facet_wrap(~ variable, scales = "free") + 
+        ggplot2::geom_point() + 
+        ggplot2::geom_path() + 
+        ggplot2::ylab("Depth (cm)") 
+      print(gp1)
+    }
+      
+    ### Second option is plot.type = "depth" and soil.var != "all"
+    if(plot.type == "depth" && soil.var != "all"){
+      fsvn <- grep(soil.var, names(x)) ## Find soil.var in data.frame names
+      if(length(fsvn) == 0)
+        stop("'soil.var' not found in long soil data frame")
+      gp1 <- ggplot2::ggplot(data = x, ggplot2::aes(x = depth, y = .data[[soil.var]], color = soil)) + 
+        ggplot2::geom_point() + 
+        ggplot2::geom_line() + 
+        ggplot2::ylab(soil.var) + 
+        ggplot2::coord_flip()
+      print(gp1)
+    }
   }
-  
-  if(plot.type == "density" && soil.var != "all"){
-    
-    prs0 <- paste0(soil.var, ".", pairs)
-    prs <- paste0(prs0, collapse = "|")
-    tmp <- x[, grep(prs, names(x))]
-    
-    gp1 <- ggplot2::ggplot(data = tmp, ggplot2::aes(x = eval(parse(text = eval(prs0[1]))),
-                                                    color = paste(m.nms[pairs[1]], prs0[1]))) + 
-      ggplot2::geom_density() + 
-      ggplot2::geom_density(ggplot2::aes(x = eval(parse(text = eval(prs0[2]))),
-                                         color = paste(m.nms[pairs[2]], prs0[2]))) +
-      ggplot2::xlab(soil.var) + 
-      ggplot2::theme(legend.title = ggplot2::element_blank())
-    
-    print(gp1)
-  }
+
   invisible(gp1)
 }
 

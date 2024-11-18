@@ -12,11 +12,12 @@ compare_apsim_soil_profile(
     "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH"),
   property,
   labels,
+  merge.wide = TRUE,
   check = FALSE,
   verbose = FALSE
 )
 
-\method{print}{soil_profile_mrg}(x, ..., digits = 2)
+\method{print}{soil_profile_mrg}(x, ..., format = c("wide", "long"), digits = 2)
 
 \method{plot}{soil_profile_mrg}(
   x,
@@ -36,6 +37,8 @@ compare_apsim_soil_profile(
 \item{property}{same as soil.var}
 
 \item{labels}{labels for plotting and identification of \sQuote{soil_profile} objects.}
+
+\item{merge.wide}{whether to attempt to merge soils in \sQuote{wide} format.}
 
 \item{check}{whether to check \sQuote{soil_profile} objects using \sQuote{check_apsimx_soil_profile}.}
 
