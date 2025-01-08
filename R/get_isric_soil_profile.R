@@ -125,7 +125,7 @@ get_isric_soil_profile <- function(lonlat,
   ## Some variables can be passed to apsimx:::approx_soil_variable
   soil.bottom <- 200
   method <- "constant"
-  nlayers <- 10
+  nlayers <- 6
   crps <- c("Maize", "Soybean", "Wheat")
   if(!is.null(xargs)){
     ### Soil bottom
@@ -149,7 +149,7 @@ get_isric_soil_profile <- function(lonlat,
   ## Create the empty soil profile
   if(missing(soil.profile)){
     new.soil <- FALSE
-    soil_profile <- apsimx_soil_profile(nlayers = 6, Thickness = thcknss, crops = crps) 
+    soil_profile <- apsimx_soil_profile(nlayers = nlayers, Thickness = thcknss, soil.bottom = soil.bottom, crops = crps) 
     soil_profile$soil$ParticleSizeClay <- NA
     soil_profile$soil$ParticleSizeSilt <- NA
     soil_profile$soil$ParticleSizeSand <- NA
