@@ -337,6 +337,9 @@ sr_ll <- function(clay, sand, om){
 ## Texture to other parameters
 texture2soilParms <- function(texture.class = "NO DATA"){
 
+  if(length(texture.class) > 1)
+    stop("This function only takes arguments of length equal to 1", call. = FALSE)
+  
   textureClasses <- c("clay", "silty clay", "sandy clay", "clay loam", "silty clay loam", "sandy clay loam", "loam", "silty loam", "sandy loam", "silt", "loamy sand", "sand", "NO DATA")  
   Albedo <- c(0.12, 0.12, 0.13, 0.13, 0.12, 0.13, 0.13, 0.14, 0.13, 0.13, 0.16, 0.19, 0.13)
   CN2 <- c(73.0, 73.0, 73.0, 73.0, 73.0, 73.0, 73.0, 73.0, 68.0, 73.0, 68.0, 68.0, 73.0)
@@ -371,6 +374,9 @@ intl_sand_propn <- function( usda_clay, usda_silt ) {
 # Texture triangle as equations
 
 texture_class <- function (usda_clay, usda_silt ) {
+  
+  if(length(usda_clay) > 1 || length(usda_silt) > 1)
+    stop("This function only accepts numeric vectors of length equal to 1", call. = FALSE)
   
   if(usda_clay < 0 || usda_clay > 1) stop("usda_clay should be between 0 and 1")
   if(usda_silt < 0 || usda_silt > 1) stop("usda_silt should be between 0 and 1")
