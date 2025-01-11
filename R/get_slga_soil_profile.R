@@ -1,3 +1,6 @@
+
+
+
 # this is based on the get_isric_soil_profile function of Fernando Miguez, Eric Zurcher and Andrew Moore
 get_slga_soil_profile <- function(lonlat, 
                                    statistic = c("mean", "Q0.5"),
@@ -22,7 +25,9 @@ get_slga_soil_profile <- function(lonlat,
   slga <- get_slga_soil(lat, lon)
   
   ## These are the default thicknesses in ISRIC
-  thcknss <- c(50, 100, 150, 300, 400, 1000) ## in mm
+  ## They also match thickness values in SLGA
+  ## thcknss <- c(50, 100, 150, 300, 400, 1000) ## in mm
+  thcknss <- slga$thickness * 10 ## converts cm to mm
   
   ## Some variables can be passed to apsimx:::approx_soil_variable
   soil.bottom <- 200
@@ -66,8 +71,6 @@ get_slga_soil_profile <- function(lonlat,
     soil_profile <- soil.profile
     new.soil <- TRUE
   }
-  
-
   
   # Calculate SAT (saturation) for each depth layer based on BD and particle density (2.65 g/cm³)
   particle_density <- 2.65  # Particle density (g/cm³)
@@ -137,9 +140,9 @@ get_slga_soil_profile <- function(lonlat,
   #### Passing parameters from soilwat
   ## The soil texture class in the metadata will be based on the first layer only
   # note that this is the USA texture triangle - will need to update to the Australian one later
-  txt_clss <- texture_class(soil_profile$soil$ParticleSizeClay * 1e-2, soil_profile$soil$ParticleSizeSilt * 1e-2)
+  txt_clss <- texture_class_slga(soil_profile$soil$ParticleSizeClay * 1e-2, soil_profile$soil$ParticleSizeSilt * 1e-2)
   # Get soil parameters
-  t2sp <- texture2soilParms(txt_clss)
+  t2sp <- texture2soilParms_slga(txt_clss)
   
   if(missing(soil.profile)){
     soil_profile$soilwat <- soilwat_parms(Salb = t2sp$Albedo, CN2Bare = t2sp$CN2, 
@@ -212,46 +215,46 @@ get_slga_soil_profile <- function(lonlat,
 #### Pedo Transfer equations (Saxton and Rawls) ####
 
 ## Field Capacity or DUL
-sr_dul <- function(clay, sand, om){
-  clay <- clay * 1e-2
-  sand <- sand * 1e-2
-  om <- om * 1e-2
-  ans0 <- -0.251 * sand + 0.195 * clay + 0.011 * om +
-    0.006 * (sand * om) - 0.027 * (clay * om) + 0.452 * (sand * clay) + 0.299
-  ans <- ans0 + (1.283 * ans0^2 - 0.374 * ans0 - 0.015)
-  ans
-}
-
-sr_dul_s <- function(clay, sand, om){
-  clay <- clay * 1e-2
-  sand <- sand * 1e-2
-  om <- om * 1e-2
-  ans0 <- 0.278 * sand + clay * 0.034 + om * 0.022 +
-    -0.018 * sand * om - 0.027 * clay * om + 
-    -0.584 * sand * clay + 0.078
-  ans <- ans0 + (0.636 * ans0 - 0.107)
-  ans
-}
-
-sr_sat <- function(sand, sr_dul, sr_dul_s){
-  sand <- sand * 1e-2
-  ans <- sr_dul + sr_dul_s - 0.097 * sand + 0.043
-  ans
-}
-
-sr_ll <- function(clay, sand, om){
-  clay <- clay * 1e-2
-  sand <- sand * 1e-2
-  om <- om * 1e-2
-  ans0 <- -0.024 * sand + 0.487 * clay + 0.006 * om + 
-    0.005 * sand * om + 0.013 *clay * om + 0.068 *sand * clay +  0.031
-  ans <- ans0 + (0.14 * ans0 - 0.02)
-  ans
-} 
+# sr_dul <- function(clay, sand, om){
+#   clay <- clay * 1e-2
+#   sand <- sand * 1e-2
+#   om <- om * 1e-2
+#   ans0 <- -0.251 * sand + 0.195 * clay + 0.011 * om +
+#     0.006 * (sand * om) - 0.027 * (clay * om) + 0.452 * (sand * clay) + 0.299
+#   ans <- ans0 + (1.283 * ans0^2 - 0.374 * ans0 - 0.015)
+#   ans
+# }
+# 
+# sr_dul_s <- function(clay, sand, om){
+#   clay <- clay * 1e-2
+#   sand <- sand * 1e-2
+#   om <- om * 1e-2
+#   ans0 <- 0.278 * sand + clay * 0.034 + om * 0.022 +
+#     -0.018 * sand * om - 0.027 * clay * om + 
+#     -0.584 * sand * clay + 0.078
+#   ans <- ans0 + (0.636 * ans0 - 0.107)
+#   ans
+# }
+# 
+# sr_sat <- function(sand, sr_dul, sr_dul_s){
+#   sand <- sand * 1e-2
+#   ans <- sr_dul + sr_dul_s - 0.097 * sand + 0.043
+#   ans
+# }
+# 
+# sr_ll <- function(clay, sand, om){
+#   clay <- clay * 1e-2
+#   sand <- sand * 1e-2
+#   om <- om * 1e-2
+#   ans0 <- -0.024 * sand + 0.487 * clay + 0.006 * om + 
+#     0.005 * sand * om + 0.013 *clay * om + 0.068 *sand * clay +  0.031
+#   ans <- ans0 + (0.14 * ans0 - 0.02)
+#   ans
+# } 
 
 ## Texture to other parameters
 
-texture2soilParms <- function(texture.class = "NO DATA") { 
+texture2soilParms_slga <- function(texture.class = "NO DATA") { 
   # Define texture classes and associated parameters
   textureClasses <- c("clay", "silty clay", "sandy clay", "clay loam", "silty clay loam", 
                       "sandy clay loam", "loam", "silty loam", "sandy loam", "silt", 
@@ -286,22 +289,22 @@ texture2soilParms <- function(texture.class = "NO DATA") {
 
 # Re-express the PSD in terms of the International system, using an equation from Minasny et al. (2001)
 
-intl_clay_propn <- function( usda_clay, usda_silt ) { 
-  return( usda_clay) 
-}
-
-intl_silt_propn <- function( usda_clay, usda_silt ) { 
-  return( max( 0.0, -0.0041 - 0.127*usda_clay + 0.553*usda_silt + 0.17*usda_clay^2 - 0.19*usda_silt^2 + 0.59*usda_clay*usda_silt ) ) 
-}
-
-intl_sand_propn <- function( usda_clay, usda_silt ) { 
-  return( 1.0 - intl_clay_propn( usda_clay, usda_silt ) - intl_silt_propn( usda_clay, usda_silt ) )
-}  
+# intl_clay_propn <- function( usda_clay, usda_silt ) { 
+#   return( usda_clay) 
+# }
+# 
+# intl_silt_propn <- function( usda_clay, usda_silt ) { 
+#   return( max( 0.0, -0.0041 - 0.127*usda_clay + 0.553*usda_silt + 0.17*usda_clay^2 - 0.19*usda_silt^2 + 0.59*usda_clay*usda_silt ) ) 
+# }
+# 
+# intl_sand_propn <- function( usda_clay, usda_silt ) { 
+#   return( 1.0 - intl_clay_propn( usda_clay, usda_silt ) - intl_silt_propn( usda_clay, usda_silt ) )
+# }  
 
 # Texture triangle as equations
 
 # redefine the texture_class function to accept vectors
-texture_class <- function(usda_clay, usda_silt) {
+texture_class_slga <- function(usda_clay, usda_silt) {
   if (any(usda_clay < 0 | usda_clay > 1)) stop("All values in usda_clay should be between 0 and 1")
   if (any(usda_silt < 0 | usda_silt > 1)) stop("All values in usda_silt should be between 0 and 1")
   
@@ -331,25 +334,60 @@ texture_class <- function(usda_clay, usda_silt) {
   return(classes)
 }
 
-get_slga_soil <- function(latitude, longitude) {
+### The function below was created by Chloe 
+### Modified by Fernando Miguez 2025-01-11
+
+#' The data comes from https://esoil.io/TERNLandscapes/Public/Pages/SLGA/index.html
+#' 
+#' @title Retrieve soil profile data from SLGA (Soils for Australia)
+#' @description This function gets a soil profile for the Australia extent
+#' @name get_slga_soil
+#' @param lonlat Longitude and latitude vector (e.g. c(151.8306, -27.4969))
+#' @return a data.frame with elements: depth (midpoint in cm), depths (as character in cm), thickness (cm), clay, sand, silt, wv1500, wv0033, bdod, nitrogen, phh2o, cec, soc
+#' @export
+#' \dontrun{
+#' require(jsonlite)
+#' ## retrieve data from longitude and latitude 151.8305805675806 and -27.496873026858598
+#' ## Note: This can take a couple of minutes
+#' slgas <- get_slga_soil(lonlat = c(151.8306, -27.4969)) 
+#' 
+#' }
+
+get_slga_soil <- function(lonlat) {
+  
+  if(missing(lonlat))
+    stop("lonlat is missing without default", call. = FALSE)
+  
+  #### Create extent step ####
+  longitude <- as.numeric(lonlat[1])
+  latitude <- as.numeric(lonlat[2])
+  
+  if (longitude < 112 || longitude > 154) stop("Longitude should be between 112 and 154 for the extent of Australia")
+  if (latitude < -44 || latitude > -10) stop("Latitude should be between -44 and -10 for the extent of Australia")
+  
+  ### API endpoint
+  root.url <- "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/"
+    
   # Define properties
   properties <- list(
-    clay = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/CLY/CLY_000_005_EV_N_P_AU_TRN_N_20210902.tif",
-    sand = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/SND/SND_000_005_EV_N_P_AU_TRN_N_20210902.tif",
-    silt = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/SLT/SLT_000_005_EV_N_P_AU_TRN_N_20210902.tif",
-    wv1500 = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/L15/L15_000_005_EV_N_P_AU_TRN_N_20210614.tif",
-    wv0033 = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/DUL/DUL_000_005_EV_N_P_AU_TRN_N_20210614.tif",
-    bdod = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/BDW/BDW_000_005_EV_N_P_AU_TRN_N_20230607.tif",
-    nitrogen = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/NTO/NTO_000_005_EV_N_P_AU_NAT_C_20231101.tif",
-    phh2o = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/PHW/PHW_000_005_EV_N_P_AU_TRN_N_20220520.tif",
-    cec = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/CEC/CEC_000_005_EV_N_P_AU_TRN_N_20220826.tif",
-    # des = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/DES/DES_000_200_EV_N_P_AU_TRN_C_20190901.tif",
-    soc = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/SOC/SOC_000_005_EV_N_P_AU_TRN_N_20220727.tif"
+    clay = paste0(root.url, "CLY/CLY_000_005_EV_N_P_AU_TRN_N_20210902.tif"),
+    sand = paste0(root.url, "SND/SND_000_005_EV_N_P_AU_TRN_N_20210902.tif"),
+    silt = paste0(root.url, "SLT/SLT_000_005_EV_N_P_AU_TRN_N_20210902.tif"),
+    wv1500 = paste0(root.url, "L15/L15_000_005_EV_N_P_AU_TRN_N_20210614.tif"),
+    wv0033 = paste0(root.url, "DUL/DUL_000_005_EV_N_P_AU_TRN_N_20210614.tif"),
+    bdod = paste0(root.url, "BDW/BDW_000_005_EV_N_P_AU_TRN_N_20230607.tif"),
+    nitrogen = paste0(root.url, "NTO/NTO_000_005_EV_N_P_AU_NAT_C_20231101.tif"),
+    phh2o = paste0(root.url, "PHW/PHW_000_005_EV_N_P_AU_TRN_N_20220520.tif"),
+    cec = paste0(root.url, "CEC/CEC_000_005_EV_N_P_AU_TRN_N_20220826.tif"),
+    soc = paste0(root.url, "SOC/SOC_000_005_EV_N_P_AU_TRN_N_20220727.tif")
   )
+  ## Previously used property
+  # des = "https://esoil.io/TERNLandscapes/Public/Products/TERN/SLGA/DES/DES_000_200_EV_N_P_AU_TRN_C_20190901.tif",
   
   # Define depths
   depths <- c("000_005", "005_015", "015_030", "030_060", "060_100", "100_200")
-  
+  depth.midpoint <- c(2.5, 10, 22.5, 45, 80, 150) ## In cm 
+  thickness <- c(5, 10, 15, 30, 40, 100) ## In cm
   # Initialize results list
   results <- list()
   
@@ -372,13 +410,13 @@ get_slga_soil <- function(latitude, longitude) {
       )
       
       # Make the API request
-      response <- GET(api_url)
+      response <- jsonlite::fromJSON(api_url)
+      ## This returns a data.frame when it works
       
-      # Parse the response
-      if (status_code(response) == 200) {
-        data <- fromJSON(content(response, "text"))
-        property_results[i] <- data$Value  # Assign to vector
-      } else {
+      if(!inherits(response, 'try-error')){
+        property_results[i] <- response$Value  # Assign to vector
+      }else{
+        messsage("Could not retrieve data for", cog_path, latitude, longitude)
         property_results[i] <- NA  # Handle errors gracefully
       }
     }
@@ -387,7 +425,11 @@ get_slga_soil <- function(latitude, longitude) {
     results[[property_name]] <- property_results
   }
   
-  # Return the results
-  return(results)
+  ans <- data.frame(depth = depth.midpoint, depths = depths, thickness = thickness,
+                    as.data.frame(results))
+  return(ans)
 }
 
+# start <- Sys.time()
+# slgas <- get_slga_soil(lonlat = c(151.8306, -27.4969))
+# end <- Sys.time()
