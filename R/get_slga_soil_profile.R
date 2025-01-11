@@ -345,6 +345,7 @@ texture_class_slga <- function(usda_clay, usda_silt) {
 #' @param lonlat Longitude and latitude vector (e.g. c(151.8306, -27.4969))
 #' @return a data.frame with elements: depth (midpoint in cm), depths (as character in cm), thickness (cm), clay, sand, silt, wv1500, wv0033, bdod, nitrogen, phh2o, cec, soc
 #' @export
+#' @examples
 #' \dontrun{
 #' require(jsonlite)
 #' ## retrieve data from longitude and latitude 151.8305805675806 and -27.496873026858598

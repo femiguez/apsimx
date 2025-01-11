@@ -9,7 +9,8 @@
 compare_apsim_soil_profile(
   ...,
   soil.var = c("all", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", "Carbon",
-    "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH"),
+    "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH",
+    "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand"),
   property,
   labels,
   merge.wide = TRUE,
@@ -25,7 +26,9 @@ compare_apsim_soil_profile(
   plot.type = c("depth", "vs", "diff", "density"),
   pairs = c(1, 2),
   soil.var = c("all", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", "Carbon",
-    "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH"),
+    "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH",
+    "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand"),
+  property,
   span = 0.75
 )
 }
