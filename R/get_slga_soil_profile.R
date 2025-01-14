@@ -1,4 +1,31 @@
-
+#' Source: https://esoil.io/TERNLandscapes/Public/Pages/SLGA/index.html
+#' 
+#' @title Generate a synthetic APSIM soil profile from the SLGA soil database
+#' @description Retrieves soil data from the SLGA database (Australia) and converts it to an APSIM soil_profile object
+#' @name get_slga_soil_profile
+#' @param lonlat Longitude and latitude vector (e.g. c(151.8306, -27.4969)).
+#' @param statistic default is the mean
+#' @param soil.profile a soil profile to fill in in case the default one is not appropriate
+#' @param find.location.name default is TRUE. Use either maps package or photon API to find Country/State.
+#' If you are running this function many times it might be better to set this to FALSE.
+#' @param fix whether to fix compatibility between saturation and bulk density (default is FALSE).
+#' @param verbose argument passed to the fix function.
+#' @param check whether to check the soil profile (default is TRUE)
+#' @param physical whether soil physical properties are obtained from the data base or through \sQuote{SR}, Saxton and Rawls pedotransfer functions.
+#' @param xargs additional arguments passed to \code{\link{apsimx_soil_profile}} or \sQuote{apsimx:::approx_soil_variable} function. At the moment these are:
+#' \sQuote{soil.bottom}, \sQuote{method} and \sQuote{nlayers}.
+#' @return it generates an object of class \sQuote{soil_profile}.
+#' @seealso \code{\link{apsimx_soil_profile}}, \code{\link{edit_apsim_replace_soil_profile}}, \code{\link{edit_apsimx_replace_soil_profile}}.
+#' @export
+#' @author Fernando E. Miguez, Chloe, Eric Zurcher (CSIRO) and Andrew Moore (CSIRO)
+#' @examples 
+#' \dontrun{
+#' ## Get soil profile properties for a single point
+#'   sp1 <- get_slga_soil_profile(lonlat = c(151.8306, -27.4969), fix = TRUE, verbose = FALSE)
+#'   ## Visualize
+#'   plot(sp1)
+#'   plot(sp1, property = "water")
+#' }
 
 
 # this is based on the get_isric_soil_profile function of Fernando Miguez, Eric Zurcher and Andrew Moore
@@ -67,7 +94,6 @@ get_slga_soil_profile <- function(lonlat,
     soil_profile$soil$SAT <- NA
     
   }else{
-    ## stop("This is not fully implemented yet. Submit a github issue if you need it.", call. = FALSE)
     soil_profile <- soil.profile
     new.soil <- TRUE
   }
@@ -110,7 +136,6 @@ get_slga_soil_profile <- function(lonlat,
     soil_profile$soil$DUL <- slga[["wv0033"]] * 1e-2  # Drained upper limit
     soil_profile$soil$LL15 <- slga[["wv1500"]] * 1e-2  # Lower limit (wilting point)
     soil_profile$soil$SAT <- (1 - (soil_profile$soil$BD / particle_density))*0.99
-    
   }
   
   # Ensure SAT is greater than DUL; if not, set SAT to 1.1 times DUL
@@ -137,7 +162,7 @@ get_slga_soil_profile <- function(lonlat,
     soil_profile$soil[[paste0(i,".LL")]] <- soil_profile$soil$LL15 ## Without better information  
   }
   
-  #### Passing parameters from soilwat
+  #### Passing soil properties from soilwat
   ## The soil texture class in the metadata will be based on the first layer only
   # note that this is the USA texture triangle - will need to update to the Australian one later
   txt_clss <- texture_class_slga(soil_profile$soil$ParticleSizeClay * 1e-2, soil_profile$soil$ParticleSizeSilt * 1e-2)
@@ -166,6 +191,8 @@ get_slga_soil_profile <- function(lonlat,
 
   soil_profile$initialwater <- isw
 
+  ## Will this always be Australia?
+  ## photon might be nice for location
   if(find.location.name){
     if(requireNamespace("maps", quietly = TRUE)){
       country <- maps::map.where(x = lon, y = lat)
@@ -194,7 +221,7 @@ get_slga_soil_profile <- function(lonlat,
   alist$Country <- country
   alist$Longitude <- lon
   alist$Latitude <- lat
-  alist$DataSource <- paste("Original source is Soil and Landscape Grid of Australia www.isric.org. See: https://esoil.io/TERNLandscapes/Public/Pages/SLGA/index.html",Sys.time())
+  alist$DataSource <- paste("Original source is Soil and Landscape Grid of Australia. See: https://esoil.io/TERNLandscapes/Public/Pages/SLGA/index.html", Sys.time())
   alist$Comments <- paste("resolution = 90 m",
                           "- taxonomic classification name =", txt_clss,
                           "- drainage class =", NA, 
@@ -211,49 +238,14 @@ get_slga_soil_profile <- function(lonlat,
   return(soil_profile)  
 }
 
+## Texture to other soil properties
 
-#### Pedo Transfer equations (Saxton and Rawls) ####
-
-## Field Capacity or DUL
-# sr_dul <- function(clay, sand, om){
-#   clay <- clay * 1e-2
-#   sand <- sand * 1e-2
-#   om <- om * 1e-2
-#   ans0 <- -0.251 * sand + 0.195 * clay + 0.011 * om +
-#     0.006 * (sand * om) - 0.027 * (clay * om) + 0.452 * (sand * clay) + 0.299
-#   ans <- ans0 + (1.283 * ans0^2 - 0.374 * ans0 - 0.015)
-#   ans
-# }
-# 
-# sr_dul_s <- function(clay, sand, om){
-#   clay <- clay * 1e-2
-#   sand <- sand * 1e-2
-#   om <- om * 1e-2
-#   ans0 <- 0.278 * sand + clay * 0.034 + om * 0.022 +
-#     -0.018 * sand * om - 0.027 * clay * om + 
-#     -0.584 * sand * clay + 0.078
-#   ans <- ans0 + (0.636 * ans0 - 0.107)
-#   ans
-# }
-# 
-# sr_sat <- function(sand, sr_dul, sr_dul_s){
-#   sand <- sand * 1e-2
-#   ans <- sr_dul + sr_dul_s - 0.097 * sand + 0.043
-#   ans
-# }
-# 
-# sr_ll <- function(clay, sand, om){
-#   clay <- clay * 1e-2
-#   sand <- sand * 1e-2
-#   om <- om * 1e-2
-#   ans0 <- -0.024 * sand + 0.487 * clay + 0.006 * om + 
-#     0.005 * sand * om + 0.013 *clay * om + 0.068 *sand * clay +  0.031
-#   ans <- ans0 + (0.14 * ans0 - 0.02)
-#   ans
-# } 
-
-## Texture to other parameters
-
+## This function was vectorized by Chloe
+## If more than one textured is supplied only the first one is used
+## for CN2 and Albedo, but different SWCON values can be provided
+## assuming that this is for deeper depths. This only makes sense
+## if the first layer is the top layer and the other ones are the 
+## deeper layers of the soil profile
 texture2soilParms_slga <- function(texture.class = "NO DATA") { 
   # Define texture classes and associated parameters
   textureClasses <- c("clay", "silty clay", "sandy clay", "clay loam", "silty clay loam", 
@@ -303,17 +295,25 @@ texture2soilParms_slga <- function(texture.class = "NO DATA") {
 
 # Texture triangle as equations
 
+## The function below was written by Andrew Moore and/or Eric Zurcher and
+## modified by Fernando Miguez and Chloe
 # redefine the texture_class function to accept vectors
 texture_class_slga <- function(usda_clay, usda_silt) {
+
+  if(length(usda_clay) != length(usda_silt))
+    stop("length of clay should be equal to length of silt", call. = FALSE)
   if (any(usda_clay < 0 | usda_clay > 1)) stop("All values in usda_clay should be between 0 and 1")
   if (any(usda_silt < 0 | usda_silt > 1)) stop("All values in usda_silt should be between 0 and 1")
+  
+  if(any(usda_clay + usda_silt > 1))
+    stop("clay plus silt should be less than one", call. = FALSE)
   
   intl_clay <- usda_clay
   intl_silt <- usda_silt
   intl_sand <- 1.0 - intl_clay - intl_silt
   
   # Initialize result vector
-  classes <- rep(NA, length(usda_clay))
+  classes <- rep(NA, length = length(usda_clay))
   
   # Apply texture triangle rules
   classes[(intl_sand < 0.75 - intl_clay) & (intl_clay >= 0.40)] <- "silty clay"
@@ -347,10 +347,9 @@ texture_class_slga <- function(usda_clay, usda_silt) {
 #' @export
 #' @examples
 #' \dontrun{
-#' require(jsonlite)
 #' ## retrieve data from longitude and latitude 151.8305805675806 and -27.496873026858598
 #' ## Note: This can take a couple of minutes
-#' slgas <- get_slga_soil(lonlat = c(151.8306, -27.4969)) 
+#' slga.soil <- get_slga_soil(lonlat = c(151.8306, -27.4969)) 
 #' 
 #' }
 

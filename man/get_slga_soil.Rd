@@ -20,10 +20,9 @@ The data comes from https://esoil.io/TERNLandscapes/Public/Pages/SLGA/index.html
 }
 \examples{
 \dontrun{
-require(jsonlite)
 ## retrieve data from longitude and latitude 151.8305805675806 and -27.496873026858598
 ## Note: This can take a couple of minutes
-slgas <- get_slga_soil(lonlat = c(151.8306, -27.4969)) 
+slga.soil <- get_slga_soil(lonlat = c(151.8306, -27.4969)) 
 
 }
 }
