@@ -49,7 +49,7 @@ get_slga_soil_profile <- function(lonlat,
   if (lon < 112 || lon > 154) stop("Longitude should be between 112 and 154 for the extent of Australia")
   if (lat < -44 || lat > -10) stop("Latitude should be between -44 and -10 for the extent of Australia")
   
-  slga <- get_slga_soil(lat, lon)
+  slga <- get_slga_soil(lonlat = lonlat)
   
   ## These are the default thicknesses in ISRIC
   ## They also match thickness values in SLGA
@@ -83,7 +83,7 @@ get_slga_soil_profile <- function(lonlat,
   ## Create the empty soil profile
   if(missing(soil.profile)){
     new.soil <- FALSE
-    soil_profile <- apsimx_soil_profile(nlayers = 6, Thickness = thcknss, crops = crps) 
+    soil_profile <- apsimx_soil_profile(nlayers = nlayers, Thickness = thcknss, soil.bottom = soil.bottom, crops = crps) 
     soil_profile$soil$ParticleSizeClay <- NA
     soil_profile$soil$ParticleSizeSilt <- NA
     soil_profile$soil$ParticleSizeSand <- NA
