@@ -26,3 +26,6 @@ slga.soil <- get_slga_soil(lonlat = c(151.8306, -27.4969))
 
 }
 }
+\author{
+Chloe (Yunru Lai) and Fernando E. Miguez
+}

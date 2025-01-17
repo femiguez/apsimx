@@ -17,7 +17,7 @@
 #' @return it generates an object of class \sQuote{soil_profile}.
 #' @seealso \code{\link{apsimx_soil_profile}}, \code{\link{edit_apsim_replace_soil_profile}}, \code{\link{edit_apsimx_replace_soil_profile}}.
 #' @export
-#' @author Fernando E. Miguez, Chloe, Eric Zurcher (CSIRO) and Andrew Moore (CSIRO)
+#' @author Fernando E. Miguez, Chloe (Yunru Lai), Eric Zurcher (CSIRO) and Andrew Moore (CSIRO)
 #' @examples 
 #' \dontrun{
 #' ## Get soil profile properties for a single point
@@ -57,9 +57,9 @@ get_slga_soil_profile <- function(lonlat,
   thcknss <- slga$thickness * 10 ## converts cm to mm
   
   ## Some variables can be passed to apsimx:::approx_soil_variable
-  soil.bottom <- 200
+  soil.bottom <- 150
   method <- "constant"
-  nlayers <- 10
+  nlayers <- 6
   crps <- c("Maize", "Soybean", "Wheat")
   if(!is.null(xargs)){
     ### Soil bottom
@@ -334,7 +334,7 @@ texture_class_slga <- function(usda_clay, usda_silt) {
   return(classes)
 }
 
-### The function below was created by Chloe 
+### The function below was created by Chloe (Yunru Lai)
 ### Modified by Fernando Miguez 2025-01-11
 
 #' The data comes from https://esoil.io/TERNLandscapes/Public/Pages/SLGA/index.html
@@ -344,6 +344,7 @@ texture_class_slga <- function(usda_clay, usda_silt) {
 #' @name get_slga_soil
 #' @param lonlat Longitude and latitude vector (e.g. c(151.8306, -27.4969))
 #' @return a data.frame with elements: depth (midpoint in cm), depths (as character in cm), thickness (cm), clay, sand, silt, wv1500, wv0033, bdod, nitrogen, phh2o, cec, soc
+#' @author Chloe (Yunru Lai) and Fernando E. Miguez
 #' @export
 #' @examples
 #' \dontrun{
@@ -430,6 +431,3 @@ get_slga_soil <- function(lonlat) {
   return(ans)
 }
 
-# start <- Sys.time()
-# slgas <- get_slga_soil(lonlat = c(151.8306, -27.4969))
-# end <- Sys.time()
