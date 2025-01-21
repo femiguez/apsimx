@@ -46,6 +46,14 @@ get_slga_soil_profile <- function(lonlat,
   lon <- as.numeric(lonlat[1])
   lat <- as.numeric(lonlat[2])
   
+  ## Determine if the location is in Australia
+  if(requireNamespace("maps", quietly = TRUE)){
+    country <- maps::map.where(x = lon, y = lat)
+    if(country != "Australia" || is.na(country))
+      stop("These coordinates do not correspond to a location in Australia. \n Did you specify the coordinates correctly?")
+  }
+  
+  ## This code is now unnecessay, I think 
   if (lon < 112 || lon > 154) stop("Longitude should be between 112 and 154 for the extent of Australia")
   if (lat < -44 || lat > -10) stop("Latitude should be between -44 and -10 for the extent of Australia")
   

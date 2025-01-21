@@ -210,9 +210,8 @@ get_isric_soil_profile <- function(lonlat,
     soil_profile$soil$SAT <- sr_sat(soil_profile$soil$ParticleSizeSand, soil_profile$soil$DUL, DUL_S)    
   }
 
-  B <- (log(1500) - log(33))/(log(soil_profile$soil$DUL) - log(soil_profile$soil$LL15))
-  Lambda <- 1/B
-  soil_profile$soil$KS <- (1930 * (soil_profile$soil$SAT - soil_profile$soil$DUL)^(3 - Lambda)) * 100
+  ## Comparing this to the previous calculation
+  soil_profile$soil$KS <- sr_ks(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
   
   soil_profile$soil$AirDry <- soil_profile$soil$LL15
   soil_profile$soil$AirDry[1] <- soil_profile$soil$LL15[1] * 0.5 ## AirDry is half of LL for the first layer
@@ -285,7 +284,7 @@ get_isric_soil_profile <- function(lonlat,
                           "- geomdesc =", NA)
   
   soil_profile$metadata <- alist
-  
+
   if(fix) soil_profile <- fix_apsimx_soil_profile(soil_profile, verbose = verbose)
   
   if(check) check_apsimx_soil_profile(soil_profile)
@@ -333,6 +332,19 @@ sr_ll <- function(clay, sand, om){
   ans <- ans0 + (0.14 * ans0 - 0.02)
   ans
 } 
+
+### Saxton and Rawls KS
+sr_ks <- function(clay, sand, om){
+  ## In the paper is given in mm h-1
+  dul <- sr_dul(clay, sand, om)
+  dul_s <- sr_dul_s(clay, sand, om)
+  ll15 <- sr_ll(clay, sand, om)
+  sat <- sr_sat(sand, dul, dul_s)
+  B <- (log(1500) - log(33))/(log(dul) - log(ll15))
+  Lambda <- 1/B
+  ans <- 1930 * (sat - dul)^(3 - Lambda) * 24 ## Converts to mm/day
+  ans
+}
 
 ## Texture to other parameters
 texture2soilParms <- function(texture.class = "NO DATA"){
