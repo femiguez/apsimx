@@ -57,27 +57,28 @@ extract_data_apsimx <- function(file = "", src.dir = ".",
                                 digits = 3,
                                 root = NULL){
   #### Beginning of function ----
-  if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
-    .check_apsim_name(file)
-    .check_apsim_name(normalizePath(src.dir))
-  }
-
-  file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
-
+  # Ensure spaces in filenames are handled
+  file.names <- dir(path = src.dir, pattern = "\\.apsimx$", ignore.case = TRUE, full.names = TRUE)
+  
   if(length(file.names) == 0){
     stop("There are no .apsimx files in the specified directory to inspect.")
   }
-
+  
+  # Match the node and soil.child arguments
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)
-
+  
   if(soil.child %in% c("Nutrient")) stop("Not implemented yet", call. = FALSE)
-
-  ## This matches the specified file from a list of files
-  ## Notice that the .apsimx extension will be added here
-  file <- match.arg(file, file.names)
-
-  apsimx_json <- jsonlite::read_json(file.path(src.dir, file))
+  
+  # Match the specified file from a list of files
+  # Using basename to handle matching without the full path
+  file <- match.arg(file, basename(file.names))
+  
+  # Construct the full path to the file
+  file.path <- normalizePath(file.path(src.dir, file), mustWork = TRUE)
+  
+  # Read the JSON file
+  apsimx_json <- jsonlite::read_json(file.path)
 
   find.root <- TRUE
   other.parm.flag <- 1
