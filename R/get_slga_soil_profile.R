@@ -159,9 +159,12 @@ get_slga_soil_profile <- function(lonlat,
     soil_profile$soil$SAT <- sr_sat(soil_profile$soil$ParticleSizeSand, soil_profile$soil$DUL, DUL_S)    
   }
 
-  B <- (log(1500) - log(33))/(log(soil_profile$soil$DUL) - log(soil_profile$soil$LL15))
-  Lambda <- 1/B
-  soil_profile$soil$KS <- (1930 * (soil_profile$soil$SAT - soil_profile$soil$DUL)^(3 - Lambda)) * 100
+  # B <- (log(1500) - log(33))/(log(soil_profile$soil$DUL) - log(soil_profile$soil$LL15))
+  # Lambda <- 1/B
+  # soil_profile$soil$KS <- (1930 * (soil_profile$soil$SAT - soil_profile$soil$DUL)^(3 - Lambda)) * 100
+  
+  ## This calculation of KS is a new addition (2025-01-22)
+  soil_profile$soil$KS <- sr_ks(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
   
   soil_profile$soil$AirDry <- soil_profile$soil$LL15
   soil_profile$soil$AirDry[1] <- soil_profile$soil$LL15[1] * 0.5 ## AirDry is half of LL for the first layer

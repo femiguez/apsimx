@@ -296,10 +296,14 @@ get_isric_soil_profile <- function(lonlat,
 #### Pedo Transfer equations (Saxton and Rawls) ####
 
 ## Field Capacity or DUL
+## According to Saxton and Rawls the inputs are in percent
+## However, to match the values in Table 3 I need to convert
+## clay and sand to proportion, BUT OM stays in percent!
 sr_dul <- function(clay, sand, om){
-  clay <- clay * 1e-2
-  sand <- sand * 1e-2
-  om <- om * 1e-2
+  p2p <- 1e-2
+  clay <- clay * p2p
+  sand <- sand * p2p
+  om <- om 
   ans0 <- -0.251 * sand + 0.195 * clay + 0.011 * om +
     0.006 * (sand * om) - 0.027 * (clay * om) + 0.452 * (sand * clay) + 0.299
   ans <- ans0 + (1.283 * ans0^2 - 0.374 * ans0 - 0.015)
@@ -307,9 +311,10 @@ sr_dul <- function(clay, sand, om){
 }
 
 sr_dul_s <- function(clay, sand, om){
-  clay <- clay * 1e-2
-  sand <- sand * 1e-2
-  om <- om * 1e-2
+  p2p <- 1e-2
+  clay <- clay * p2p
+  sand <- sand * p2p
+  om <- om 
   ans0 <- 0.278 * sand + clay * 0.034 + om * 0.022 +
     -0.018 * sand * om - 0.027 * clay * om + 
     -0.584 * sand * clay + 0.078
@@ -324,25 +329,38 @@ sr_sat <- function(sand, sr_dul, sr_dul_s){
 }
 
 sr_ll <- function(clay, sand, om){
-  clay <- clay * 1e-2
-  sand <- sand * 1e-2
-  om <- om * 1e-2
+  p2p <- 1e-2 ## percent to proportion
+  clay <- clay * p2p
+  sand <- sand * p2p
+  om <- om
   ans0 <- -0.024 * sand + 0.487 * clay + 0.006 * om + 
-    0.005 * sand * om + 0.013 *clay * om + 0.068 *sand * clay +  0.031
+    0.005 * (sand * om) - 0.013 * (clay * om) + 0.068 * (sand * clay) + 0.031
   ans <- ans0 + (0.14 * ans0 - 0.02)
   ans
 } 
 
 ### Saxton and Rawls KS
-sr_ks <- function(clay, sand, om){
-  ## In the paper is given in mm h-1
+### This version was developed to estimate KS in mm/h
+### and this is for 'gravel-free' soil
+### Multiplying by 24 converts hours to a full day
+### but I'm not sure this will work. APSIM is not too
+### sensitive to this soil property as long as it is not
+### too low
+sr_ks <- function(clay, sand, om, units = c("mm/day", "mm/h")){
+  
+  units <- match.arg(units)
   dul <- sr_dul(clay, sand, om)
   dul_s <- sr_dul_s(clay, sand, om)
   ll15 <- sr_ll(clay, sand, om)
   sat <- sr_sat(sand, dul, dul_s)
   B <- (log(1500) - log(33))/(log(dul) - log(ll15))
   Lambda <- 1/B
-  ans <- 1930 * (sat - dul)^(3 - Lambda) * 24 ## Converts to mm/day
+  conv <- ifelse(units == "mm/day", 24, 1)
+  ans <- 1930 * (sat - dul)^(3 - Lambda) * conv
+  
+  if(any(is.na(ans))){
+    stop("The function resulted in an NA")
+  }
   ans
 }
 
@@ -422,4 +440,70 @@ texture_class <- function (usda_clay, usda_silt ) {
   }  
   
   return( class )
+}
+
+### Saxton and Rawls (Table 3 in the paper)
+sr_table <- function(clay, sand, om){
+  
+  if(missing(clay)){
+    texture.classes <- c("sand", "loamy sand", "sandy loam", "loam", "silty loam", "silt", "sandy clay loam", "clay loam", "silty clay loam", "silty clay", "sandy clay", "clay")
+  }else{
+    
+    if(length(clay) != length(sand))
+      stop("length of 'clay' should be the same as length of 'sand'")
+    
+    if(length(clay) != length(om))
+      stop("length of 'clay' should be the same as length of 'om'")
+    
+    if(any(clay < 0)) stop("Clay should be greater than zero")
+    if(any(clay > 100)) stop("Clay should be less than 100")
+    if(any(sand < 0)) stop("Sand should be greater than zero")
+    if(any(sand > 100)) stop("Sand should be less than 100")
+    
+  }
+  
+  ans <- data.frame(texture.class = NA, sand = NA, clay = NA,
+                    om = NA, ll15 = NA, dul = NA, sat = NA, 
+                    paw = NA, ks = NA)
+  
+  if(missing(clay)){
+    clay <- c(5, 5, 10, 20, 15, 5, 25, 35, 35, 45, 40, 50)
+    sand <- c(88, 80, 65, 40, 20, 10, 60, 30, 10, 10, 50, 25)
+    om <- rep(2.5, length(clay))
+    for(i in seq_along(texture.classes)){
+      ans[i, "texture.class"] <- texture.classes[i]
+      ans[i, "sand"] <- sand[i]
+      ans[i, "clay"] <- clay[i]
+      ans[i, "om"] <- om[i]
+      ll15 <- sr_ll(clay[i], sand[i], om[i])
+      ans[i, "ll15"] <- ll15
+      dul <- sr_dul(clay[i], sand[i], om[i])
+      ans[i, "dul"] <- dul
+      dul_s <- sr_dul_s(clay[i], sand[i], om[i])
+      ans[i, "sat"] <- sr_sat(sand[i], dul, dul_s)
+      ans[i, "paw"] <- dul - ll15 
+      ans[i, "ks"] <- sr_ks(clay[i], sand[i], om[i], units = "mm/h")
+    }    
+  }else{
+    for(i in seq_along(clay)){
+      clay.plus.sand <- clay[i] + sand[i]
+      if(clay.plus.sand >= 100){
+        warning("Clay plus sand cannot be greater or equal to 100")
+      }
+      silt <- 100 - (clay[i] + sand[i])
+      ans[i, "texture.class"] <- texture_class(clay[i], silt)
+      ans[i, "sand"] <- sand[i]
+      ans[i, "clay"] <- clay[i]
+      ans[i, "om"] <- om[i]
+      ll15 <- sr_ll(clay[i], sand[i], om[i])
+      ans[i, "ll15"] <- ll15
+      dul <- sr_dul(clay[i], sand[i], om[i])
+      ans[i, "dul"] <- dul
+      dul_s <- sr_dul_s(clay[i], sand[i], om[i])
+      ans[i, "sat"] <- sr_sat(sand[i], dul, dul_s)
+      ans[i, "paw"] <- dul - ll15 
+      ans[i, "ks"] <- sr_ks(clay[i], sand[i], om[i], units = "mm/h")
+    }
+  }
+ return(ans) 
 }
