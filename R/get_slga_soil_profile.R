@@ -63,24 +63,35 @@ get_slga_soil_profile <- function(lonlat,
   ## They also match thickness values in SLGA
   ## thcknss <- c(50, 100, 150, 300, 400, 1000) ## in mm
   thcknss <- slga$thickness * 10 ## converts cm to mm
+  o.thcknss <- thcknss
   
   ## Some variables can be passed to apsimx:::approx_soil_variable
-  soil.bottom <- 150
+  soil.bottom <- 200
   method <- "constant"
   nlayers <- 6
   crps <- c("Maize", "Soybean", "Wheat")
   if(!is.null(xargs)){
     ### Soil bottom
-    if(!is.null(xargs$soil.bottom)){
+    if(!is.null(xargs$soil.bottom) && is.null(xargs$nlayers)){
       soil.bottom <- xargs$soil.bottom
+      thcknss <- apsimx_soil_profile(nlayers = nlayers, soil.bottom = soil.bottom)$soil$Thickness
     }
     ### Method
     if(!is.null(xargs$method)){
       method <- xargs$method
     }
     ### Number of layers
-    if(!is.null(xargs$nlayers)){
+    if(!is.null(xargs$nlayers) && is.null(xargs$soil.bottom)){
       nlayers <- xargs$nlayers
+      ### Need to redefine 'Thickness'
+      thcknss <- apsimx_soil_profile(nlayers = nlayers)$soil$Thickness
+    }
+    ### Do I need this?
+    if(!is.null(xargs$nlayers) && !is.null(xargs$soil.bottom)){
+      nlayers <- xargs$nlayers
+      soil.bottom <- xargs$soil.bottom
+      ### Need to redefine 'Thickness'
+      thcknss <- apsimx_soil_profile(nlayers = nlayers, soil.bottom = soil.bottom)$soil$Thickness
     }
     ### Crops
     if(!is.null(xargs$crops)){
@@ -90,7 +101,11 @@ get_slga_soil_profile <- function(lonlat,
 
   ## Create the empty soil profile
   if(missing(soil.profile)){
-    new.soil <- FALSE
+    if(is.null(xargs)){
+      new.soil <- FALSE
+    }else{
+      new.soil <- TRUE      
+    }
     soil_profile <- apsimx_soil_profile(nlayers = nlayers, Thickness = thcknss, soil.bottom = soil.bottom, crops = crps) 
     soil_profile$soil$ParticleSizeClay <- NA
     soil_profile$soil$ParticleSizeSilt <- NA
@@ -112,26 +127,54 @@ get_slga_soil_profile <- function(lonlat,
   if (new.soil) {
     sp.xout <- cumsum(soil_profile$soil$Thickness)
     
-    soil_profile$soil$BD <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = slga[["bdod"]]), 
-                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y    
-    soil_profile$soil$Carbon <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = slga[["soc"]]), 
-                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y    
-    soil_profile$soil$PH <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = slga[["phh2o"]]), 
-                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y    
-    soil_profile$soil$ParticleSizeClay <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = slga[["clay"]]), 
-                                                               xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
-    soil_profile$soil$ParticleSizeSand <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = slga[["sand"]]), 
+    ### Will this take care of both number of layers and soil.bottom?
+    if(length(cumsum(thcknss)) != length(slga[["bdod"]])){
+      bdod.dat <- approx(data.frame(cumsum(o.thcknss), slga[["bdod"]]), xout = sp.xout)
+      soc.dat <- approx(data.frame(cumsum(o.thcknss), slga[["soc"]]), xout = sp.xout)
+      phh2o.dat <- approx(data.frame(cumsum(o.thcknss), slga[["phh2o"]]), xout = sp.xout)
+      clay.dat <- approx(data.frame(cumsum(o.thcknss), slga[["clay"]]), xout = sp.xout)
+      sand.dat <- approx(data.frame(cumsum(o.thcknss), slga[["sand"]]), xout = sp.xout)
+      nitrogen.dat <- approx(data.frame(cumsum(o.thcknss), slga[["nitrogen"]]), xout = sp.xout)
+      cec.dat <- approx(data.frame(cumsum(o.thcknss), slga[["cec"]]), xout = sp.xout)
+      ## wv0010.dat <- approx(data.frame(cumsum(o.thcknss), wv0010[[1]]), xout = sp.xout)
+      wv0033.dat <- approx(data.frame(cumsum(o.thcknss), slga[["wv0033"]]), xout = sp.xout)
+      wv1500.dat <- approx(data.frame(cumsum(o.thcknss), slga[["wv1500"]]), xout = sp.xout)
+      sat.tmp <- (1- (slga[["bdod"]]/particle_density))*0.99
+      sat.dat <- approx(data.frame(cumsum(o.thcknss), sat.tmp), xout = sp.xout)
+    }else{
+      bdod.dat <- data.frame(x = cumsum(thcknss), y = slga[["bdod"]])
+      soc.dat <- data.frame(x = cumsum(thcknss), y = slga[["soc"]])
+      phh2o.dat <- data.frame(x = cumsum(thcknss), y = slga[["phh2o"]])
+      clay.dat <- data.frame(x = cumsum(thcknss), y = slga[["clay"]])
+      sand.dat <- data.frame(x = cumsum(thcknss), y = slga[["sand"]])
+      nitrogen.dat <- data.frame(x = cumsum(thcknss), y = slga[["nitrogen"]])
+      cec.dat <- data.frame(x = cumsum(thcknss), y = slga[["cec"]])
+      wv0033.dat <- data.frame(x = cumsum(thcknss), y = slga[["wv0033"]])
+      wv1500.dat <- data.frame(x = cumsum(thcknss), y = slga[["wv1500"]])
+      sat.dat <- data.frame(x = cumsum(thcknss), y = (1- (slga[["bdod"]]/particle_density))*0.99)
+    }
+    
+    soil_profile$soil$BD <- approx_soil_variable(bdod.dat, 
+                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y
+    soil_profile$soil$Carbon <- approx_soil_variable(soc.dat, 
+                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y
+    soil_profile$soil$PH <- approx_soil_variable(phh2o.dat, 
+                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y 
+    soil_profile$soil$ParticleSizeClay <- approx_soil_variable(clay.dat, 
                                                                xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y 
-    soil_profile$soil$Nitrogen <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = slga[["nitrogen"]]), 
-                                                       xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
-    soil_profile$soil$CEC <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = slga[["cec"]]), 
-                                                  xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
-    soil_profile$soil$SAT <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = (1- (slga[["bdod"]]/particle_density)))*0.99, 
+    soil_profile$soil$ParticleSizeSand <- approx_soil_variable(sand.dat, 
+                                                               xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y 
+    soil_profile$soil$Nitrogen <- approx_soil_variable(nitrogen.dat, 
+                                                       xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y
+    soil_profile$soil$CEC <- approx_soil_variable(cec.dat, 
+                                                  xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y 
+    soil_profile$soil$SAT <- approx_soil_variable(sat.dat, 
                                                   xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y * 1e-3
-    soil_profile$soil$DUL <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = slga[["wv0033"]]), 
+    soil_profile$soil$DUL <- approx_soil_variable(wv0033.dat, 
                                                   xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y * 1e-3  
-    soil_profile$soil$LL15 <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = slga[["wv1500"]]), 
-                                                   xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y * 1e-3   
+    soil_profile$soil$LL15 <- approx_soil_variable(wv1500.dat, 
+                                                   xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y * 1e-3
+    
   } else {
     soil_profile$soil$BD <- slga[["bdod"]]  # Bulk density
     soil_profile$soil$Carbon <- slga[["soc"]]  # Soil organic carbon
@@ -143,8 +186,10 @@ get_slga_soil_profile <- function(lonlat,
     soil_profile$soil$CEC <- slga[["cec"]]  # Cation exchange capacity
     soil_profile$soil$DUL <- slga[["wv0033"]] * 1e-2  # Drained upper limit
     soil_profile$soil$LL15 <- slga[["wv1500"]] * 1e-2  # Lower limit (wilting point)
-    soil_profile$soil$SAT <- (1 - (soil_profile$soil$BD / particle_density))*0.99
+    soil_profile$soil$SAT <- (1 - (soil_profile$soil$BD / particle_density))*0.99 # This is Chloe's method
   }
+  
+  soil_profile$soil$ParticleSizeSilt <- 100 - (soil_profile$soil$ParticleSizeSand + soil_profile$soil$ParticleSizeClay)
   
   # Ensure SAT is greater than DUL; if not, set SAT to 1.1 times DUL
   soil_profile$soil$SAT <- ifelse(soil_profile$soil$SAT > soil_profile$soil$DUL, 
@@ -159,10 +204,6 @@ get_slga_soil_profile <- function(lonlat,
     soil_profile$soil$SAT <- sr_sat(soil_profile$soil$ParticleSizeSand, soil_profile$soil$DUL, DUL_S)    
   }
 
-  # B <- (log(1500) - log(33))/(log(soil_profile$soil$DUL) - log(soil_profile$soil$LL15))
-  # Lambda <- 1/B
-  # soil_profile$soil$KS <- (1930 * (soil_profile$soil$SAT - soil_profile$soil$DUL)^(3 - Lambda)) * 100
-  
   ## This calculation of KS is a new addition (2025-01-22)
   soil_profile$soil$KS <- sr_ks(soil_profile$soil$ParticleSizeClay, soil_profile$soil$ParticleSizeSand, soil_profile$soil$Carbon * 2)
   

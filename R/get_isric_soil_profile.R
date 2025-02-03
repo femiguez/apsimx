@@ -24,7 +24,7 @@
 #' @param check whether to check the soil profile (default is TRUE)
 #' @param physical whether soil physical properties are obtained from the data base or through \sQuote{SR}, Saxton and Rawls pedotransfer functions.
 #' @param xargs additional arguments passed to \code{\link{apsimx_soil_profile}} or \sQuote{apsimx:::approx_soil_variable} function. At the moment these are:
-#' \sQuote{soil.bottom}, \sQuote{method} and \sQuote{nlayers}.
+#' \sQuote{soil.bottom}, \sQuote{crops}, and \sQuote{nlayers} for the first function and \sQuote{method} for the second function. 
 #' @return it generates an object of class \sQuote{soil_profile}.
 #' @details Variable which are directly retrieved and a simple unit conversion is performed: \cr
 #' * Bulk density - bdod \cr
@@ -120,6 +120,7 @@ get_isric_soil_profile <- function(lonlat,
   if(any(is.na(soc))) stop("No soil data available for this location. Did you specify the coordinates correctly?")
 
   ## These are the default thicknesses in ISRIC
+  o.thcknss <- c(50, 100, 150, 300, 400, 1000) ## in mm
   thcknss <- c(50, 100, 150, 300, 400, 1000) ## in mm
   
   ## Some variables can be passed to apsimx:::approx_soil_variable
@@ -129,16 +130,26 @@ get_isric_soil_profile <- function(lonlat,
   crps <- c("Maize", "Soybean", "Wheat")
   if(!is.null(xargs)){
     ### Soil bottom
-    if(!is.null(xargs$soil.bottom)){
+    if(!is.null(xargs$soil.bottom) && is.null(xargs$nlayers)){
       soil.bottom <- xargs$soil.bottom
+      thcknss <- apsimx_soil_profile(nlayers = nlayers, soil.bottom = soil.bottom)$soil$Thickness
     }
     ### Method
     if(!is.null(xargs$method)){
       method <- xargs$method
     }
     ### Number of layers
-    if(!is.null(xargs$nlayers)){
+    if(!is.null(xargs$nlayers) && is.null(xargs$soil.bottom)){
       nlayers <- xargs$nlayers
+      ### Need to redefine 'Thickness'
+      thcknss <- apsimx_soil_profile(nlayers = nlayers)$soil$Thickness
+    }
+    ### Do I need this?
+    if(!is.null(xargs$nlayers) && !is.null(xargs$soil.bottom)){
+      nlayers <- xargs$nlayers
+      soil.bottom <- xargs$soil.bottom
+      ### Need to redefine 'Thickness'
+      thcknss <- apsimx_soil_profile(nlayers = nlayers, soil.bottom = soil.bottom)$soil$Thickness
     }
     ### Crops
     if(!is.null(xargs$crops)){
@@ -148,7 +159,11 @@ get_isric_soil_profile <- function(lonlat,
 
   ## Create the empty soil profile
   if(missing(soil.profile)){
-    new.soil <- FALSE
+    if(is.null(xargs)){
+      new.soil <- FALSE
+    }else{
+      new.soil <- TRUE      
+    }
     soil_profile <- apsimx_soil_profile(nlayers = nlayers, Thickness = thcknss, soil.bottom = soil.bottom, crops = crps) 
     soil_profile$soil$ParticleSizeClay <- NA
     soil_profile$soil$ParticleSizeSilt <- NA
@@ -168,25 +183,51 @@ get_isric_soil_profile <- function(lonlat,
   ### For some of the conversions see: https://www.isric.org/explore/soilgrids/faq-soilgrids
   if(new.soil){
     sp.xout <- cumsum(soil_profile$soil$Thickness)
-    soil_profile$soil$BD <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = bdod[[1]] * 1e-2), 
-                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y    
-    soil_profile$soil$Carbon <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = soc[[1]] * 1e-2), 
-                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y    
-    soil_profile$soil$PH <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = phh2o[[1]] * 1e-1), 
-                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y    
-    soil_profile$soil$ParticleSizeClay <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = clay[[1]] * 1e-1), 
-                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
-    soil_profile$soil$ParticleSizeSand <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = sand[[1]] * 1e-1), 
+    
+    ### Will this take care of both number of layers and soil.bottom?
+    if(length(cumsum(thcknss)) != length(bdod[[1]])){
+      bdod.dat <- approx(data.frame(cumsum(o.thcknss), bdod[[1]] * 1e-2), xout = sp.xout)
+      soc.dat <- approx(data.frame(cumsum(o.thcknss), soc[[1]] * 1e-2), xout = sp.xout)
+      phh2o.dat <- approx(data.frame(cumsum(o.thcknss), phh2o[[1]] * 1e-1), xout = sp.xout)
+      clay.dat <- approx(data.frame(cumsum(o.thcknss), clay[[1]] * 1e-1), xout = sp.xout)
+      sand.dat <- approx(data.frame(cumsum(o.thcknss), sand[[1]] * 1e-1), xout = sp.xout)
+      nitrogen.dat <- approx(data.frame(cumsum(o.thcknss), nitrogen[[1]]), xout = sp.xout)
+      cec.dat <- approx(data.frame(cumsum(o.thcknss), cec[[1]]), xout = sp.xout)
+      wv0010.dat <- approx(data.frame(cumsum(o.thcknss), wv0010[[1]]), xout = sp.xout)
+      wv0033.dat <- approx(data.frame(cumsum(o.thcknss), wv0033[[1]]), xout = sp.xout)
+      wv1500.dat <- approx(data.frame(cumsum(o.thcknss), wv1500[[1]]), xout = sp.xout)
+    }else{
+      bdod.dat <- data.frame(x = cumsum(thcknss), y = bdod[[1]] * 1e-2)
+      soc.dat <- data.frame(x = cumsum(thcknss), y = soc[[1]] * 1e-2)
+      phh2o.dat <- data.frame(x = cumsum(thcknss), y = phh2o[[1]] * 1e-1)
+      clay.dat <- data.frame(x = cumsum(thcknss), y = clay[[1]] * 1e-1)
+      sand.dat <- data.frame(x = cumsum(thcknss), y = sand[[1]] * 1e-1)
+      nitrogen.dat <- data.frame(x = cumsum(thcknss), y = nitrogen[[1]])
+      cec.dat <- data.frame(x = cumsum(thcknss), y = cec[[1]])
+      wv0010.dat <- data.frame(x = cumsum(thcknss), y = wv0010[[1]])
+      wv0033.dat <- data.frame(x = cumsum(thcknss), y = wv0033[[1]])
+      wv1500.dat <- data.frame(x = cumsum(thcknss), y = wv1500[[1]])
+    }
+
+    soil_profile$soil$BD <- approx_soil_variable(bdod.dat, 
+                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y
+    soil_profile$soil$Carbon <- approx_soil_variable(soc.dat, 
+                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y
+    soil_profile$soil$PH <- approx_soil_variable(phh2o.dat, 
+                                                     xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y 
+    soil_profile$soil$ParticleSizeClay <- approx_soil_variable(clay.dat, 
+                                                 xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y 
+    soil_profile$soil$ParticleSizeSand <- approx_soil_variable(sand.dat, 
                                                    xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y 
-    soil_profile$soil$Nitrogen <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = nitrogen[[1]]), 
-                                                   xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
-    soil_profile$soil$CEC <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = cec[[1]]), 
-                                                       xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y   
-    soil_profile$soil$SAT <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv0010[[1]]), 
+    soil_profile$soil$Nitrogen <- approx_soil_variable(nitrogen.dat, 
+                                                   xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y
+    soil_profile$soil$CEC <- approx_soil_variable(cec.dat, 
+                                                       xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y 
+    soil_profile$soil$SAT <- approx_soil_variable(wv0010.dat, 
                                                      xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y * 1e-3
-    soil_profile$soil$DUL <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv0033[[1]]), 
+    soil_profile$soil$DUL <- approx_soil_variable(wv0033.dat, 
                                                      xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y * 1e-3  
-    soil_profile$soil$LL15 <- approx_soil_variable(data.frame(x = cumsum(thcknss), y = wv1500[[1]]), 
+    soil_profile$soil$LL15 <- approx_soil_variable(wv1500.dat, 
                                                   xout = sp.xout, soil.bottom = soil.bottom, method = method, nlayers = nlayers)$y * 1e-3   
   }else{
     soil_profile$soil$BD <- bdod[[1]] * 1e-2

@@ -24,7 +24,7 @@ compare_apsim_soil_profile(
   x,
   ...,
   plot.type = c("depth", "vs", "diff", "density"),
-  pairs = c(1, 2),
+  pairs = NULL,
   soil.var = c("all", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", "Carbon",
     "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N", "PH",
     "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand"),

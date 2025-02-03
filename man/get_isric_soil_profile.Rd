@@ -35,7 +35,7 @@ If you are running this function many times it might be better to set this to FA
 \item{physical}{whether soil physical properties are obtained from the data base or through \sQuote{SR}, Saxton and Rawls pedotransfer functions.}
 
 \item{xargs}{additional arguments passed to \code{\link{apsimx_soil_profile}} or \sQuote{apsimx:::approx_soil_variable} function. At the moment these are:
-\sQuote{soil.bottom}, \sQuote{method} and \sQuote{nlayers}.}
+\sQuote{soil.bottom}, \sQuote{crops}, and \sQuote{nlayers} for the first function and \sQuote{method} for the second function.}
 }
 \value{
 it generates an object of class \sQuote{soil_profile}.

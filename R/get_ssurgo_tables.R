@@ -81,18 +81,17 @@ get_ssurgo_tables <- function(lonlat, shift = -1, aoi, verbose = FALSE){
     }    
   }else{
     
-    if(inherits(aoi, "sf")) aoi <- sf::as_Spatial(aoi, "Spatial")
+    ## It appears that coercion is not needed
+    ## if(inherits(aoi, "sf")) aoi <- sf::as_Spatial(aoi, "Spatial")
       
-    if(!inherits(aoi, "SpatialPolygons"))
-      stop("'aoi' should be of class 'SpatialPolygons'.", call. = TRUE)
+    if(!inherits(aoi, "SpatialPolygons") && !inherits(aoi, "sf"))
+      stop("'aoi' should be of class 'SpatialPolygons' or 'sf'.", call. = TRUE)
     spg <- aoi    
   }
 
   if(verbose == FALSE){
-    ## res <- suppressWarnings(soilDB::SDA_spatialQuery(spg, what = 'mukey'))
     res <- suppressWarnings(soilDB::SDA_spatialQuery(spg, what = 'mupolygon', geomIntersection = TRUE))
   }else{
-    ## res <- soilDB::SDA_spatialQuery(spg, what = 'mukey')  
     res <- soilDB::SDA_spatialQuery(spg, what = 'mupolygon', geomIntersection = TRUE)
   }
   
