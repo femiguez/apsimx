@@ -386,11 +386,29 @@ inspect_apsimx <- function(file = "", src.dir = ".",
   ## 'Models.Core.Zone'
   if(find.root){
     wcz <- grepl("Models.Core.Zone", parent.node)
-    if(sum(wcz) < 0.5)
-      stop("Core Zone Simulation not found", call. = FALSE)
-    core.zone.node <- parent.node[wcz][[1]]$Children
 
-    parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)
+    ## sapply(parent.node, \(x) x$`$type`)
+    ## browser()
+    ### In case of multiple fields per simulation, 'Models.Core.Zone' does not exist
+    ### FIXME: The code below needs more careful thinking about how I extract "Models.Core.Zone"
+    ### and what does the [[1]] mean below
+    if(sum(wcz) < 0.5){
+      wcfz <- grepl("Models.* Models", parent.node)  ## This is for which core field zone
+      if(all(wcfz)){
+        core.zone.node <- parent.node
+        parm.path.2 <- parm.path.1 
+      }else{
+        stop("Core Zone Simulation not found", call. = FALSE)
+      }
+    }else{
+      ### What does the [[1]] imply here?
+      core.zone.node <- parent.node[wcz][[1]]$Children
+      parm.path.2 <- paste0(parm.path.1, ".", parent.node[wcz][[1]]$Name)
+    }
+    
+    if(is.null(core.zone.node))
+      stop("Core Zone Simulation not found", call. = FALSE)
+
   }
 
   if(node == "Soil"){
@@ -1712,4 +1730,17 @@ parse_root <- function(root){
     }
   }
   root
+}
+
+### This function is from ChatGPT
+traverse_json <- function(file, path = "$") {
+  
+  json_obj <- jsonlite::read_json(file)
+  if (is.list(json_obj)) {
+    for (key in names(json_obj)) {
+      traverse_json(json_obj[[key]], paste0(path, ".", key))
+    }
+  } else {
+    print(paste(path, ":", json_obj))
+  }
 }

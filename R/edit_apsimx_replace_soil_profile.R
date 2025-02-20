@@ -76,7 +76,8 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
         stop("At the moment 3 is the maximum length for root", call. = TRUE)
       
       if(length(root) == 1){
-        wcore1 <- grep(as.character(root), apsimx_json$Children)
+        root.node.0.names <- sapply(apsimx_json$Children, function(x) x$Name)
+        wcore1 <- grep(as.character(root[1]), root.node.0.names)
         if(length(wcore1) == 0 || length(wcore1) > 1)
           stop("no root node label found or root is not unique")
         parent.node <- apsimx_json$Children[[wcore1]]$Children
