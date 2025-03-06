@@ -49,6 +49,8 @@ compare_apsim_soil_profile(
 
 \item{x}{object of class \sQuote{soil_profile_mrg}}
 
+\item{format}{either \sQuote{wide} or \sQuote{long}, which depends on the merging.}
+
 \item{digits}{number of digits to print (default is 2)}
 
 \item{plot.type}{either \sQuote{depth}, \sQuote{vs}, \sQuote{diff} or \sQuote{density}}

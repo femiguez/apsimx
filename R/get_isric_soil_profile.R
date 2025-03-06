@@ -186,16 +186,16 @@ get_isric_soil_profile <- function(lonlat,
     
     ### Will this take care of both number of layers and soil.bottom?
     if(length(cumsum(thcknss)) != length(bdod[[1]])){
-      bdod.dat <- approx(data.frame(cumsum(o.thcknss), bdod[[1]] * 1e-2), xout = sp.xout)
-      soc.dat <- approx(data.frame(cumsum(o.thcknss), soc[[1]] * 1e-2), xout = sp.xout)
-      phh2o.dat <- approx(data.frame(cumsum(o.thcknss), phh2o[[1]] * 1e-1), xout = sp.xout)
-      clay.dat <- approx(data.frame(cumsum(o.thcknss), clay[[1]] * 1e-1), xout = sp.xout)
-      sand.dat <- approx(data.frame(cumsum(o.thcknss), sand[[1]] * 1e-1), xout = sp.xout)
-      nitrogen.dat <- approx(data.frame(cumsum(o.thcknss), nitrogen[[1]]), xout = sp.xout)
-      cec.dat <- approx(data.frame(cumsum(o.thcknss), cec[[1]]), xout = sp.xout)
-      wv0010.dat <- approx(data.frame(cumsum(o.thcknss), wv0010[[1]]), xout = sp.xout)
-      wv0033.dat <- approx(data.frame(cumsum(o.thcknss), wv0033[[1]]), xout = sp.xout)
-      wv1500.dat <- approx(data.frame(cumsum(o.thcknss), wv1500[[1]]), xout = sp.xout)
+      bdod.dat <- stats::approx(data.frame(cumsum(o.thcknss), bdod[[1]] * 1e-2), xout = sp.xout)
+      soc.dat <- stats::approx(data.frame(cumsum(o.thcknss), soc[[1]] * 1e-2), xout = sp.xout)
+      phh2o.dat <- stats::approx(data.frame(cumsum(o.thcknss), phh2o[[1]] * 1e-1), xout = sp.xout)
+      clay.dat <- stats::approx(data.frame(cumsum(o.thcknss), clay[[1]] * 1e-1), xout = sp.xout)
+      sand.dat <- stats::approx(data.frame(cumsum(o.thcknss), sand[[1]] * 1e-1), xout = sp.xout)
+      nitrogen.dat <- stats::approx(data.frame(cumsum(o.thcknss), nitrogen[[1]]), xout = sp.xout)
+      cec.dat <- stats::approx(data.frame(cumsum(o.thcknss), cec[[1]]), xout = sp.xout)
+      wv0010.dat <- stats::approx(data.frame(cumsum(o.thcknss), wv0010[[1]]), xout = sp.xout)
+      wv0033.dat <- stats::approx(data.frame(cumsum(o.thcknss), wv0033[[1]]), xout = sp.xout)
+      wv1500.dat <- stats::approx(data.frame(cumsum(o.thcknss), wv1500[[1]]), xout = sp.xout)
     }else{
       bdod.dat <- data.frame(x = cumsum(thcknss), y = bdod[[1]] * 1e-2)
       soc.dat <- data.frame(x = cumsum(thcknss), y = soc[[1]] * 1e-2)

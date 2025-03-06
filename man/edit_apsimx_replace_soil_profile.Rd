@@ -30,7 +30,7 @@ edit_apsimx_replace_soil_profile(
 
 \item{verbose}{default TRUE and it will print messages to console}
 
-\item{root}{supply the node postion in the case of multiple simulations such as factorials.}
+\item{root}{supply the node position in the case of multiple simulations such as factorials.}
 }
 \value{
 writes a file to disk with the supplied soil profile

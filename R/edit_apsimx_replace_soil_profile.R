@@ -9,7 +9,7 @@
 #' @param edit.tag default edit tag \sQuote{-edited}
 #' @param overwrite default FALSE
 #' @param verbose default TRUE and it will print messages to console
-#' @param root supply the node postion in the case of multiple simulations such as factorials.
+#' @param root supply the node position in the case of multiple simulations such as factorials.
 #' @return writes a file to disk with the supplied soil profile
 #' @details This function is designed to batch replace the whole soil in an APSIM simulation file. 
 #' @note There is no such thing as a default soil, carefully build the profile for each simulation.
@@ -285,7 +285,7 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
     soil.node[[1]]$Children <- soil.node0
   }
   
-  if(missing(root)){
+  if(is.null(root)){
     ## Replace the soil
     ## 1. soil.node to core.zone.node
     core.zone.node[wsn] <- soil.node
@@ -324,3 +324,4 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
     cat("Created: ", wr.path, "\n")
   }
 }
+

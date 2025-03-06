@@ -129,18 +129,18 @@ get_slga_soil_profile <- function(lonlat,
     
     ### Will this take care of both number of layers and soil.bottom?
     if(length(cumsum(thcknss)) != length(slga[["bdod"]])){
-      bdod.dat <- approx(data.frame(cumsum(o.thcknss), slga[["bdod"]]), xout = sp.xout)
-      soc.dat <- approx(data.frame(cumsum(o.thcknss), slga[["soc"]]), xout = sp.xout)
-      phh2o.dat <- approx(data.frame(cumsum(o.thcknss), slga[["phh2o"]]), xout = sp.xout)
-      clay.dat <- approx(data.frame(cumsum(o.thcknss), slga[["clay"]]), xout = sp.xout)
-      sand.dat <- approx(data.frame(cumsum(o.thcknss), slga[["sand"]]), xout = sp.xout)
-      nitrogen.dat <- approx(data.frame(cumsum(o.thcknss), slga[["nitrogen"]]), xout = sp.xout)
-      cec.dat <- approx(data.frame(cumsum(o.thcknss), slga[["cec"]]), xout = sp.xout)
+      bdod.dat <- stats::approx(data.frame(cumsum(o.thcknss), slga[["bdod"]]), xout = sp.xout)
+      soc.dat <- stats::approx(data.frame(cumsum(o.thcknss), slga[["soc"]]), xout = sp.xout)
+      phh2o.dat <- stats::approx(data.frame(cumsum(o.thcknss), slga[["phh2o"]]), xout = sp.xout)
+      clay.dat <- stats::approx(data.frame(cumsum(o.thcknss), slga[["clay"]]), xout = sp.xout)
+      sand.dat <- stats::approx(data.frame(cumsum(o.thcknss), slga[["sand"]]), xout = sp.xout)
+      nitrogen.dat <- stats::approx(data.frame(cumsum(o.thcknss), slga[["nitrogen"]]), xout = sp.xout)
+      cec.dat <- stats::approx(data.frame(cumsum(o.thcknss), slga[["cec"]]), xout = sp.xout)
       ## wv0010.dat <- approx(data.frame(cumsum(o.thcknss), wv0010[[1]]), xout = sp.xout)
-      wv0033.dat <- approx(data.frame(cumsum(o.thcknss), slga[["wv0033"]]), xout = sp.xout)
-      wv1500.dat <- approx(data.frame(cumsum(o.thcknss), slga[["wv1500"]]), xout = sp.xout)
+      wv0033.dat <- stats::approx(data.frame(cumsum(o.thcknss), slga[["wv0033"]]), xout = sp.xout)
+      wv1500.dat <- stats::approx(data.frame(cumsum(o.thcknss), slga[["wv1500"]]), xout = sp.xout)
       sat.tmp <- (1- (slga[["bdod"]]/particle_density))*0.99
-      sat.dat <- approx(data.frame(cumsum(o.thcknss), sat.tmp), xout = sp.xout)
+      sat.dat <- stats::approx(data.frame(cumsum(o.thcknss), sat.tmp), xout = sp.xout)
     }else{
       bdod.dat <- data.frame(x = cumsum(thcknss), y = slga[["bdod"]])
       soc.dat <- data.frame(x = cumsum(thcknss), y = slga[["soc"]])
@@ -469,7 +469,7 @@ get_slga_soil <- function(lonlat) {
       if(!inherits(response, 'try-error')){
         property_results[i] <- response$Value  # Assign to vector
       }else{
-        messsage("Could not retrieve data for", cog_path, latitude, longitude)
+        message("Could not retrieve data for", cog_path, latitude, longitude)
         property_results[i] <- NA  # Handle errors gracefully
       }
     }
