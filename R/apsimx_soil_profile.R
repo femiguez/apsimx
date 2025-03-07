@@ -962,14 +962,14 @@ compare_apsim_soil_profile <- function(...,
   
   #### Long merging of soils. ----
   ## It is not required that they have the same number of layers 
-  soils.soil.names <- lapply(soils, FUN = \(x) names(x$soil))
+  soils.soil.names <- lapply(soils, FUN = function(x) names(x$soil))
   soils.soil.common.names <- Reduce(intersect, soils.soil.names)
   
   if(is.null(soils.soil.common.names))
     stop("No common column names between 'soil' data.frames", call. = FALSE)
   
   if(missing(labels)){
-    soil.long.labels <- unlist(lapply(soils, FUN = \(x) x$metadata$SoilType))
+    soil.long.labels <- unlist(lapply(soils, FUN = function(x) x$metadata$SoilType))
   }else{
     soil.long.labels <- labels
   }

@@ -49,15 +49,15 @@ if(FALSE){
     geom_line()
   ggplot(sim0, aes(Date, Wheat.Leaf.LAI)) + 
     geom_line()
-  ggplot(sim0, aes(Date, Wheat.Phenology.Stage)) + 
+  ggplot(sim0, aes(Date, Wheat.Phenology.Zadok.Stage)) + 
     geom_line()
 
   ## Create 'observed' data
   sample.dates <- seq(from = as.Date("2016-10-01"), to = as.Date("2017-06-01"), length.out = 10)
 
   set.seed(12345)
-  obs0 <- sim0[sim0$Date %in% sample.dates, c("Date","Wheat.Phenology.Stage","Wheat.Leaf.LAI","Wheat.AboveGround.Wt")]
-  obs0$Wheat.Phenology.Stage <- obs0$Wheat.Phenology.Stage + rnorm(10, 0, sd = 0.1)
+  obs0 <- sim0[sim0$Date %in% sample.dates, c("Date","Wheat.Phenology.Zadok.Stage","Wheat.Leaf.LAI","Wheat.AboveGround.Wt")]
+  obs0$Wheat.Phenology.Zadok.Stage <- obs0$Wheat.Phenology.Zadok.Stage + rnorm(10, 0, sd = 0.1)
   obs0$Wheat.Leaf.LAI[5:10] <- obs0$Wheat.Leaf.LAI[5:10] + rnorm(6, 0, sd = 0.5)
   obs0$Wheat.AboveGround.Wt[3:10] <- obs0$Wheat.AboveGround.Wt[3:10] + rnorm(8, 0, sd = 3)
 
@@ -98,15 +98,15 @@ if(FALSE){
   file.copy(file.path(extd.dir, "Ames.met"), ".")
   file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
   
-  system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp)) ## This takes 4-5 seconds
+  system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp)) ## This takes 2 seconds (Windows 2025-3-6)
   
   ## write.csv(sim.b4, "wheat-sim-b4-opt.csv", row.names = FALSE)
 
   sim.b4.s <- subset(sim.b4, Date > as.Date("2016-09-30") & Date < as.Date("2017-07-01"))
   ## phenology
   ggplot() + 
-    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Stage)) +
-    geom_line(data = sim.b4.s, aes(x = Date, y = Wheat.Phenology.Stage)) + 
+    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Zadok.Stage)) +
+    geom_line(data = sim.b4.s, aes(x = Date, y = Wheat.Phenology.Zadok.Stage)) + 
     ggtitle("Phenology")
   ## LAI
   ggplot() + 
@@ -130,7 +130,7 @@ if(FALSE){
   #                         node.subchild = "USA", node.subsubchild = "Yecora",
   #                         parm = "BasePhyllochron", value = 110)
   
-  ## This takes about ~7.5 minutes
+  ## This takes about ~7 minutes
   start <- Sys.time()
   wop <- optim_apsimx("Wheat-opt-ex.apsimx", 
                        parm.paths = c(pp1, pp2),
@@ -161,8 +161,8 @@ if(FALSE){
   
   ## phenology
   ggplot() + 
-    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Stage)) +
-    geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.Phenology.Stage)) + 
+    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Zadok.Stage)) +
+    geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.Phenology.Zadok.Stage)) + 
     ggtitle("Phenology")
   ## LAI
   ggplot() + 
