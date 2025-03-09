@@ -104,16 +104,15 @@ sens_apsimx <- function(file, src.dir = ".",
     if(cores > detect.cores)
       stop("'cores' argument should not be higher than the number of available cores", call. = FALSE)
 
-    fp.op <- getOption('future.plan')
-
-    ### Maybe multisession needs to be the default regardless of platform
-    if(is.null(fp.op)){
-      oplan <- future::plan(strategy = "multisession", workers = cores)
-      on.exit(future::plan(oplan), add = TRUE)
-    }else{
-      oplan <- future::plan(fp.op, workers = cores)
-      on.exit(future::plan(oplan), add = TRUE)
+    ## This code was contributed by Henrik Bengtsson
+    cplan <- future::plan() ## This is the current plan
+    if (inherits(cplan, "sequential")) {
+      oplan <- future::plan(strategy = future::multisession, workers = cores)
+    } else {
+      oplan <- future::plan(cplan, workers = cores) 
     }
+    on.exit(future::plan(oplan), add = TRUE) 
+    
   }
 
   ## This might offer suggestions in case there is a typo in 'file'
