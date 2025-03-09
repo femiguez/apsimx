@@ -97,7 +97,10 @@ sens_apsimx <- function(file, src.dir = ".",
 
     if(cores > (nrow(grid) - 1))
        stop("'cores' should be an integer smaller than the number of simulations minus one", call. = FALSE)
-    detect.cores <- parallel::detectCores()
+    ### detect.cores <- parallel::detectCores()
+    ### Suggestion by Henrik Bengtsson to use parallely instead of parallel (github issue #191)
+    ### Also, the code below might be unnecessary (or redundant) - I will keep it for now
+    detect.cores <- parallelly::availableCores()
     if(cores > detect.cores)
       stop("'cores' argument should not be higher than the number of available cores", call. = FALSE)
 

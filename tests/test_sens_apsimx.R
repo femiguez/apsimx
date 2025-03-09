@@ -263,6 +263,7 @@ if(run.sens.apsimx){
   end <- Sys.time()
   ### Time elapsed with 2 cores (Mac 2017): 1.158267 (minutes)
   ### Time elapsed with 1 core (Mac 2017): 1.921198 (minutes)
+  ### Time elapsed with 2 cores (Mac 2021): 55.6 (seconds)
   
   summary(sns)
   summary(sns, select = "Wheat.AboveGround.Wt")
@@ -373,6 +374,7 @@ if(run.sens.apsimx.cores){
   ## This takes 1.55 minutes (Mac)
   ## This now (Jan 2024) takes 2.14 minutes (Mac)
   ## Mac 2017 (Aug 2024): 1.800195
+  ## Mac 2021 (Mar 2025): 1.5 minutes
   summary(sns)
   summary(sns, select = "Wheat.AboveGround.Wt", scale = TRUE)
   summary(sns, select = "AboveGround", scale = TRUE)
@@ -385,6 +387,7 @@ if(run.sens.apsimx.cores){
   ## This takes 1.29 minutes (Jan 2024)
   ## Windows: NA
   ## Mac 2017 (Aug 2024): 1.319598
+  ## Mac 2021 (Mar 2025): 54 seconds 
   ## Are they the same?
   (diff.sns.vs.sns.c2 <- sum(colSums(sns$grid.sims - sns.c2$grid.sims)))
   
@@ -397,6 +400,7 @@ if(run.sens.apsimx.cores){
                         grid = grd, cores = 4)
   (Sys.time() - start)
   ## Mac 2017 (Aug 2024) takes: 1.161401 minutes
+  ## Mac 2021 (Mar 2025) takes: 33.9 seconds
   (diff.sns.vs.sns.c4 <- sum(colSums(sns$grid.sims - sns.c4$grid.sims)))
   
   if(abs(diff.sns.vs.sns.c4) > 0.001)
@@ -418,6 +422,7 @@ if(run.sens.apsimx.cores){
                            cores = 2L)
   (Sys.time() - start)
   ### The difference in times here are: Mac 2017 (1 core) - 1.63 vs. (2 cores) - 1.1
+  ### The difference in times here are: Mac 2021 (1 core) - 1.52 vs. (2 cores) - 54.4 seconds
   ## library(arsenal) 
   
   ## Data.frames are not identical, but summary results are
@@ -491,7 +496,9 @@ if(run.sens.apsimx.soils){
                      parm.paths = c(pp1, pp2, 'soil.profile'),
                      soil.profiles = sps,
                      grid = grd)
-  (Sys.time() - start) ## Taking 3.32 minutes (Mac 2017 - Aug 2024)
+  (Sys.time() - start) 
+  ## Taking 3.32 minutes (Mac 2017 - Aug 2024)
+  ## Taking 3.1 minutes (Mac 2021 - Mar 2025)
   
   snsd <- sns$grid.sims
   
