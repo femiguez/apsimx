@@ -46,7 +46,7 @@ See the following for details
 
 [APSIM-X](https://apsimnextgeneration.netlify.app/)
 
-[Holzworth et al. (2018)](https://www.sciencedirect.com/science/article/pii/S1364815217311921)
+Holzworth et al. (2018). APSIM Next Generation: Overcoming challenges in modernising a farming systems model, Environmental Modelling & Software.
 
 This package has been tested on (latest version):
 
@@ -58,7 +58,7 @@ This package has been tested on (latest version):
 
 ## Installing APSIM (Next Generation)
 
-For most functions in this package you need to have a version of APSIM-X (or 'Next Generation') installed (or APSIM 'Classic'). For Mac and Linux, for versions older than Sep 2021, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM (https://www.apsim.info/download-apsim/downloads/). **NOTE**: If you are using a version of APSIM Next Gen released after Sep 2021, you do **not** need to install mono. You will need the .NET Runtime 6.0 for Linux or Mac (https://dotnet.microsoft.com, -> download -> dotnet -> 6.0). The **apsimx** package will try to detect both mono and APSIM (Classic and Next Generation). 
+For most functions in this package you need to have a version of APSIM-X (or 'Next Generation') installed (or APSIM 'Classic'). For Mac and Linux, for versions older than Sep 2021, first you need to install mono (https://www.mono-project.com/download/stable/) and then download and install APSIM (https://www.apsim.info/download-apsim/downloads/). **NOTE**: If you are using a version of APSIM Next Gen released after Sep 2021, you do **not** need to install mono. You will need the .NET Runtime 8.0 for Linux or Mac (go to dotnet microsoft), -> download -> dotnet -> 8.0. The **apsimx** package will try to detect both mono and APSIM (Classic and Next Generation). 
 
 **Mac**: For Mac it is also assumed that APSIM has been moved to 'Applications'.
 
