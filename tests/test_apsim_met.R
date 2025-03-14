@@ -13,7 +13,7 @@ packageVersion("data.table")
 run.apsim.met <- get(".run.local.tests", envir = apsimx.options)
 
 if(.Platform$OS.type == "unix"){
-  internet <- !is.null(utils::nsl("google.com"))
+  internet <- !is.null(nsl("google.com"))
 }else{
   internet <- FALSE  
 }
@@ -200,3 +200,27 @@ if(run.apsim.met && internet){
   plot(pwr, plot.type = "anomaly", summary = TRUE, met.var = c("rain", "high_classic_tt"),
        years = 2012:2016)
 }
+
+if(run.apsim.met && internet){
+  
+  #### Will use this code to identify the potential issue with 
+  #### modifying a iem.met object
+  iem.met <- get_iem_apsim_met(lonlat = c(-93.77, 42.02), 
+                                dates = c("2000-01-01","2020-12-31"))
+  
+  iem.met <- tt_apsim_met(iem.met, method = "Classic_TT", dates = c("1-5", "31-10"))
+  
+  names(iem.met)
+  ### This works as expected now and it removes the units properly
+  iem.met$Classic_TT <- NULL 
+    
+  iem.met <- tt_apsim_met(iem.met, method = "Classic_TT", dates = c("1-5", "31-10"))
+    
+  iem.met <- remove_column_apsim_met(iem.met, "Classic_TT")
+
+  ### This should return an error  
+  try(iem.met$hola <- 100, silent = TRUE)
+  
+}
+
+### Next test should be for creating the 'by' argument

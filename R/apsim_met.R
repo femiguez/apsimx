@@ -1635,9 +1635,10 @@ add_column_apsim_met <- function(met, value, name, units){
   
   if(is.null(value) && name %in% names(x)){
     ## The thing here is that I also need to remove units and column names
+    wn2r <- which(names(x) == name) ## which name to remove
     x[[name]] <- value
-    attr(x, "colnames") <- attr(x, "colnames")[-which(names(x) == name)]
-    attr(x, "units") <- attr(x, "units")[-which(names(x) == name)]
+    attr(x, "colnames") <- attr(x, "colnames")[-wn2r]
+    attr(x, "units") <- attr(x, "units")[-wn2r]
     return(x)
   }
   
@@ -1680,7 +1681,7 @@ remove_column_apsim_met <- function(met, name){
     stop("'name' to be removed is not in 'met' object", call. = FALSE)
   }
     
-  
+  ### This logic works well because it is in the right order?
   attr(met, "units") <- attr(met, "units")[-which(names(met) == name)]   
   met[[name]] <- NULL
   attr(met, "colnames") <- names(met)

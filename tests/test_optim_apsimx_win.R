@@ -56,8 +56,8 @@ if(FALSE){
   sample.dates <- seq(from = as.Date("2016-10-01"), to = as.Date("2017-06-01"), length.out = 10)
 
   set.seed(12345)
-  obs0 <- sim0[sim0$Date %in% sample.dates, c("Date","Wheat.Phenology.Stage","Wheat.Leaf.LAI","Wheat.AboveGround.Wt")]
-  obs0$Wheat.Phenology.Stage <- obs0$Wheat.Phenology.Stage + rnorm(10, 0, sd = 0.1)
+  obs0 <- sim0[sim0$Date %in% sample.dates, c("Date","Wheat.Phenology.Zadok.Stage","Wheat.Leaf.LAI","Wheat.AboveGround.Wt")]
+  obs0$Wheat.Phenology.Zadok.Stage <- obs0$Wheat.Phenology.Zadok.Stage + rnorm(10, 0, sd = 0.1)
   obs0$Wheat.Leaf.LAI[5:10] <- obs0$Wheat.Leaf.LAI[5:10] + rnorm(6, 0, sd = 0.5)
   obs0$Wheat.AboveGround.Wt[3:10] <- obs0$Wheat.AboveGround.Wt[3:10] + rnorm(8, 0, sd = 3)
 
@@ -105,8 +105,8 @@ if(FALSE){
   sim.b4.s <- subset(sim.b4, Date > as.Date("2016-09-30") & Date < as.Date("2017-07-01"))
   ## phenology
   ggplot() + 
-    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Stage)) +
-    geom_line(data = sim.b4.s, aes(x = Date, y = Wheat.Phenology.Stage)) + 
+    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Zadok.Stage)) +
+    geom_line(data = sim.b4.s, aes(x = Date, y = Wheat.Phenology.Zadok.Stage)) + 
     ggtitle("Phenology")
   ## LAI
   ggplot() + 
@@ -131,6 +131,7 @@ if(FALSE){
   #                         parm = "BasePhyllochron", value = 110)
   
   ## This takes about ~7.5 minutes
+  ## Takes 4.4 minutes (Dell Precision 7865)
   start <- Sys.time()
   wop <- optim_apsimx("Wheat-opt-ex.apsimx", 
                        parm.paths = c(pp1, pp2),
@@ -141,6 +142,7 @@ if(FALSE){
   end <- Sys.time()
   
   ## This took 8.8 minutes
+  ## Takes 5.1 minutes (Dell Precision 7865)
   start <- Sys.time()
   wop.h <- optim_apsimx("Wheat-opt-ex.apsimx", 
                           src.dir = extd.dir, 
@@ -161,8 +163,8 @@ if(FALSE){
   
   ## phenology
   ggplot() + 
-    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Stage)) +
-    geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.Phenology.Stage)) + 
+    geom_point(data = obsWheat, aes(x = Date, y = Wheat.Phenology.Zadok.Stage)) +
+    geom_line(data = sim.opt.s, aes(x = Date, y = Wheat.Phenology.Zadok.Stage)) + 
     ggtitle("Phenology")
   ## LAI
   ggplot() + 
@@ -204,6 +206,9 @@ if(FALSE){
                            parallel = FALSE,
                            settings = list(iterations = 5000))
   end <- Sys.time()
+  
+  file.remove(file.path(tmp, "Ames.met"))
+  file.remove(file.path(tmp, "Wheat-opt-ex.apsimx"))
   
 }
 
@@ -347,6 +352,7 @@ if(FALSE){
                         replacement = TRUE,
                         initial.values = 1.2)
   end <- Sys.time() ## It took 3.25 minutes
+  ## It took 1.4 minutes (Dell Precision 7865)
   
   ## Plus hessian
   file.remove("Wheat-opt-ex.apsimx")
