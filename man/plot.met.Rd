@@ -13,7 +13,8 @@
   cumulative = FALSE,
   facet = FALSE,
   climatology = FALSE,
-  summary = FALSE
+  summary = FALSE,
+  by = c("year", "month")
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ which would be the average of the data.
 Ideally, there are at least 20 years in the \sQuote{met} object.}
 
 \item{summary}{whether to plot \sQuote{summary} data. (default FALSE).}
+
+\item{by}{whether to perform summary by \sQuote{year} or \sQuote{month}.}
 }
 \description{
 Some plots are similar to APSIM, others are different

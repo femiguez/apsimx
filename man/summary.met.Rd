@@ -11,9 +11,11 @@
   months,
   days,
   julian.days,
+  by = c("year", "month"),
   compute.frost = FALSE,
   frost.temperature = 0,
   anomaly,
+  anomaly.units = c("percent", "standard.deviation", "absolute"),
   check = FALSE,
   verbose = FALSE,
   na.rm = FALSE,
@@ -38,6 +40,9 @@ between 1 and 31.}
 should be a vector of integers between 1 and 365. Either use \sQuote{days} or
 \sQuote{julian.days} but not both.}
 
+\item{by}{by default the summary is performed by \sQuote{year}. This allows
+the use of \sQuote{month}.}
+
 \item{compute.frost}{logical (default FALSE). Whether to compute
 frost statistics.}
 
@@ -46,6 +51,10 @@ period (default is zero).}
 
 \item{anomaly}{whether to compute the anomaly. Default is FALSE. 
 It could be TRUE (for all variables) or a character vector for a specific set of variables.}
+
+\item{anomaly.units}{what units to use for anomaly calculations. Default is \sQuote{percent}.
+Other options are \sQuote{standard.devaition} and \sQuote{absolute} - this means the original
+units.}
 
 \item{check}{logical (default FALSE). Whether to \sQuote{check} the \sQuote{met} object.}
 
