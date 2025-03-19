@@ -1027,6 +1027,7 @@ pp_apsim_met <- function(metfile, lat, sun_angle=0){
 #' which would be the average of the data. 
 #' Ideally, there are at least 20 years in the \sQuote{met} object.
 #' @param summary whether to plot \sQuote{summary} data. (default FALSE).
+#' @param by whether to perform summary by \sQuote{year} or \sQuote{month}.
 #' @export
 #' @examples 
 #' \donttest{
@@ -1051,7 +1052,8 @@ plot.met <- function(x, ..., years, met.var,
                      cumulative = FALSE,
                      facet = FALSE,
                      climatology = FALSE,
-                     summary = FALSE){
+                     summary = FALSE,
+                     by = c("year", "month")){
   
   if(!requireNamespace("ggplot2", quietly = TRUE)){
     warning("ggplot2 is required for this plotting function")

@@ -344,6 +344,9 @@ if(FALSE){
   pp1 <- "Wheat.Leaf.Photosynthesis.RUE.FixedValue"
   pp2 <- "Wheat.Cultivars.USA.Yecora.BasePhyllochron"
   
+  data(obsWheat)
+  obsWheat$Wheat.Phenology.Zadok.Stage <- obsWheat$Wheat.Phenology.Stage
+  obsWheat$Wheat.Phenology.Stage <- NULL
   ## Testing the "unreliable" method
   start <- Sys.time()
   wop.1 <- optim_apsimx("Wheat-opt-ex.apsimx", 
@@ -352,7 +355,7 @@ if(FALSE){
                         replacement = TRUE,
                         initial.values = 1.2)
   end <- Sys.time() ## It took 3.25 minutes
-  ## It took 1.4 minutes (Dell Precision 7865)
+  ## It took 1.14 minutes (Dell Precision 7865)
   
   ## Plus hessian
   file.remove("Wheat-opt-ex.apsimx")
@@ -366,6 +369,7 @@ if(FALSE){
                           hessian = TRUE,
                           initial.values = 1.2)
   end <- Sys.time() ## It took 3.4 minutes
+  ## It took 1.3 minutes in Dell Precision 7865
  
   ## Erase and try Brent 
   file.remove("Wheat-opt-ex.apsimx")
@@ -382,6 +386,7 @@ if(FALSE){
   end <- Sys.time() ## It took 2.18 minutes 
   ## Brent, naturally, will not provide the best solution if
   ## the solution is outside the interval (lower, upper)
+  ## It took 44 seconds (Dell Precision 7865)
   
   ## Erase and try L-BFGS-B
   file.remove("Wheat-opt-ex.apsimx")
@@ -398,6 +403,7 @@ if(FALSE){
                           initial.values = 1.2,
                           control = list(trace = 3))
   end <- Sys.time() ## It took 7.02 minutes 
+  ## It took 2.6 minutes (Dell Precision 7865 - APSIM 2025.2.7674)
   
   ## Next step is to test whether weighting affects the estimate of the vcov
   ## and how different it is to the Bayesian analysis
@@ -418,6 +424,7 @@ if(FALSE){
                              initial.values = 1.2,
                              control = list(trace = 3))
   end <- Sys.time() ## It took 4.16 minutes 
+  ## It took 2.6 minutes (Dell Precision 7865 - APSIM 2025.2.7674)
   
   ## Testing with two parameters
   file.remove("Wheat-opt-ex.apsimx")
@@ -431,6 +438,7 @@ if(FALSE){
                         hessian = TRUE,
                         initial.values = c(1.2, 120))
   end <- Sys.time() ## It took 15.7 minutes
+  ## It took 8.14 minutes (Dell Precision 7865 - APSIM 2025.2.7674)
   
   ## Testing with two parameters, without the hessian
   file.remove("Wheat-opt-ex.apsimx")
@@ -443,6 +451,7 @@ if(FALSE){
                         replacement = c(TRUE, TRUE),
                         initial.values = c(1.2, 120))
   end <- Sys.time() ## It took 13.97 minutes
+  ## It took 7.3 minutes (Dell Precision 7865 - APSIM 2025.2.7674)
   
   file.remove("Wheat-opt-ex.apsimx")
   file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
@@ -502,7 +511,7 @@ if(FALSE){
   file.copy(file.path(extd.dir, "Ames.met"), ".")
   file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
   
-  system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp)) ## This takes 3.3 seconds in Dell Precision
+  system.time(sim.b4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp)) ## This takes 2.16 seconds in Dell Precision
 
   start <- Sys.time()
   wop.grd <- optim_apsimx("Wheat-opt-ex.apsimx",
@@ -514,9 +523,11 @@ if(FALSE){
                           initial.values = list(RUE = 1.2, BasePhyllochron = 120),
                           verbose = TRUE,
                           grid = pgrd)
-  end <- Sys.time() ## It took 3.6 minutes (Dell Precision) - almost twice as much in Mac 
+  end <- Sys.time() ## It took 2.44 minutes (Dell Precision 7865 - APSIM 2025.2.7674) 
+  ### Selected values 1.6 and 120
+  ### True values are 1.5 and 90, maybe?
+  ### Note that these are the 'optimized' values and are used in subsequent computations!
 
-    
   ggplot(wop.grd$res, aes(x = RUE, y = lrss)) + 
     facet_wrap(~BasePhyllochron) + 
     geom_point() + 
@@ -545,14 +556,18 @@ if(FALSE){
                                     verbose = FALSE)
   
  ## Compare to optim
+  ## The initial values below need to match what was used before
   start <- Sys.time()
   wop.nm <- optim_apsimx("Wheat-opt-ex.apsimx",
                           src.dir = tmp,
                           parm.paths = c(pp1, pp2),
                           data = obsWheat, 
                           replacement = c(TRUE, TRUE),
-                          initial.values = list(RUE = 1.8, BasePhyllochron = 120))
-  end <- Sys.time() ## It took 9.26 Dell Precision - 5.7 minutes (Mac 2017)
+                          initial.values = list(RUE = 1.6, BasePhyllochron = 120))
+  end <- Sys.time() ## It took 4.83 Dell Precision and it does not find the right answer!
+  
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
   
   ### Maybe we need a fine grid around the true values?
   pgrd3 <- expand.grid(RUE = c(1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9), 
@@ -565,23 +580,24 @@ if(FALSE){
                           data = obsWheat, 
                           type = "grid",
                           replacement = c(TRUE, TRUE),
-                          initial.values = list(RUE = 1.8, BasePhyllochron = 120),
+                          initial.values = list(RUE = 1.2, BasePhyllochron = 120),
                           verbose = TRUE,
                           grid = pgrd3)
   end <- Sys.time() ## It took 4.13 minutes 
+  ## It took 2.76 minutes (Dell Precision 7865 - APSIM 2025.2.7674) 
   
   ggplot(wop.grd3$res, aes(x = RUE, y = lrss)) + 
     facet_wrap(~BasePhyllochron) + 
     geom_point() + 
     geom_line()
 
-  system.time(sim.a4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp)) ## 3.08s (Dell Precision laptop)
+  system.time(sim.a4 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp)) ## 2.23s (Dell Precision laptop)
   wop.grd3  
   cmp <- compare_apsim(obsWheat, sim.a4, labels = c("obs", "sim"), cRSS = TRUE)
   cmp$cRSS
   
   xrgs <- xargs_apsimx(single.threaded = TRUE, cpu.count = 1L)
-  system.time(sim.a4.1 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp, xargs = xrgs)) ## Minimally slower 3.23  
+  system.time(sim.a4.1 <- apsimx("Wheat-opt-ex.apsimx", src.dir = tmp, xargs = xrgs)) ## Same speed 2.16? 
   
   ## Compare to optim - refine
   start <- Sys.time()
@@ -590,21 +606,55 @@ if(FALSE){
                           parm.paths = c(pp1, pp2),
                           data = obsWheat, 
                           replacement = c(TRUE, TRUE),
-                          initial.values = list(RUE = 1.5, BasePhyllochron = 90))
-  end <- Sys.time() ## It took 10.33 minutes Dell Precision
+                          initial.values = list(RUE = 1.5, BasePhyllochron = 100))
+  end <- Sys.time() ## It took 9.15 minutes Dell Precision, but did not find the best answer?
+  ## This does not find the right answer either?
+  
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
 
+  #### Testing again the original file, which has values of 1.2 and 120
   start <- Sys.time()
   wop.nm2H <- optim_apsimx("Wheat-opt-ex.apsimx",
                            src.dir = tmp,
                            parm.paths = c(pp1, pp2),
                            data = obsWheat, 
                            replacement = c(TRUE, TRUE),
-                           initial.values = list(RUE = 1.5, BasePhyllochron = 90),
+                           initial.values = list(RUE = 1.2, BasePhyllochron = 120),
                            hessian = TRUE)
   end <- Sys.time() ## It took 10.33 minutes Dell Precision
   
   wop.nm2H    
   confint(wop.nm2H)
+  
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
+  
+  ## This performs an initial grid search
+  start <- Sys.time()
+  wop.grd3 <- optim_apsimx("Wheat-opt-ex.apsimx",
+                           src.dir = tmp,
+                           parm.paths = c(pp1, pp2),
+                           data = obsWheat, 
+                           type = "grid",
+                           replacement = c(TRUE, TRUE),
+                           initial.values = list(RUE = 1.2, BasePhyllochron = 120),
+                           verbose = TRUE,
+                           grid = pgrd3)
+  end <- Sys.time() ## It took 4.13 minutes 
+  ## It took 2.76 minutes (Dell Precision 7865 - APSIM 2025.2.7674) 
+  
+  ## Trying BFGS
+  start <- Sys.time()
+  wop.bfgs2 <- optim_apsimx("Wheat-opt-ex.apsimx",
+                          src.dir = tmp,
+                          parm.paths = c(pp1, pp2),
+                          data = obsWheat, 
+                          replacement = c(TRUE, TRUE),
+                          method = "BFGS",
+                          initial.values = list(RUE = 1.5, BasePhyllochron = 100))
+  end <- Sys.time() ## It took X minutes Dell Precision, 
+  
   
   #### Testing the cores argument -----
   start <- Sys.time()
@@ -614,13 +664,16 @@ if(FALSE){
                              data = obsWheat,
                              type = "grid",
                              replacement = c(TRUE, TRUE),
-                             initial.values = list(RUE = 1.8, BasePhyllochron = 120),
+                             initial.values = list(RUE = 1.2, BasePhyllochron = 120),
                              verbose = TRUE,
-                             grid = pgrd,
+                             grid = pgrd3,
                              cores = 2)
-  end <- Sys.time() ## It took 3.6 minutes (Dell Precision) - almost twice as much in Mac
-  ## In Dell Precision: 1.89 minutes with 2 cores- failed: 34 (maybe Dropbox is a problem)
+  end <- Sys.time() 
+  ## (Dell Precision 7865 - APSIM 2025.2.7674) 
+  ## In Dell Precision: 1.46 minutes with 2 cores- failed: 4 (maybe Box/Dropbox is a problem)
   
+  file.remove("Wheat-opt-ex.apsimx")
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), ".")
   
   start <- Sys.time()
   wop.grd.c3 <- optim_apsimx("Wheat-opt-ex.apsimx",
@@ -629,10 +682,10 @@ if(FALSE){
                              data = obsWheat,
                              type = "grid",
                              replacement = c(TRUE, TRUE),
-                             initial.values = list(RUE = 1.2, BasePhyllochron = 80),
+                             initial.values = list(RUE = 1.5, BasePhyllochron = 100),
                              verbose = TRUE,
-                             grid = pgrd,
-                             cores = 20)
+                             grid = pgrd3,
+                             cores = 4)
   end <- Sys.time() ## It took 3.6 minutes (Dell Precision) - almost twice as much in Mac
   ## In Dell Precision: 1.26 minutes with 3 cores - the problem is that too many simulations fail
   ## Need to separate simulation fails according to the their origin.

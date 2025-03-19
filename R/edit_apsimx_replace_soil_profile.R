@@ -240,6 +240,28 @@ edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
     soil.node[[1]]$Children <- soil.node0
   }
   
+  ## Edit SWIM if present
+  if(inherits(soil.profile$swim, "swim_parms")){
+    
+    wsswmn <- grepl("Models.Soils.Swim3", soil.node0) 
+    ### This is an error instead of a warning because
+    ### if 'swim' is provided, then it is likely that 
+    ### editing is needed
+    if(length(wsswmn) == 0)
+      stop("Could not find Swim3 model in simulation", call. = FALSE)
+    ## Which soil swim node?
+    soil.swim3.node <- soil.node0[wsswmn][[1]]
+    for(i in names(soil.profile$swim)){
+      if(any(is.na(soil.profile$swim[[i]]))){
+        next
+      }else{
+        soil.swim3.node[[i]] <- soil.profile$swim[[i]]  
+      } 
+    }
+    soil.node0[wsswmn][[1]] <- soil.swim3.node
+    soil.node[[1]]$Children <- soil.node0
+  }
+  
   ## Edit InitialWater if present
   if(inherits(soil.profile$initialwater, "initialwater_parms")){
     

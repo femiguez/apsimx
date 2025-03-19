@@ -366,12 +366,17 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
 #' @param julian.days optional argument to subset by julian days. It
 #' should be a vector of integers between 1 and 365. Either use \sQuote{days} or
 #' \sQuote{julian.days} but not both.
+#' @param by by default the summary is performed by \sQuote{year}. This allows
+#' the use of \sQuote{month}. 
 #' @param compute.frost logical (default FALSE). Whether to compute
 #' frost statistics.
 #' @param frost.temperature value to use for the calculation of the frost 
 #' period (default is zero).
 #' @param anomaly whether to compute the anomaly. Default is FALSE. 
 #' It could be TRUE (for all variables) or a character vector for a specific set of variables.
+#' @param anomaly.units what units to use for anomaly calculations. Default is \sQuote{percent}.
+#' Other options are \sQuote{standard.devaition} and \sQuote{absolute} - this means the original
+#' units.
 #' @param check logical (default FALSE). Whether to \sQuote{check} the \sQuote{met} object.
 #' @param verbose whether to print additional infomation to the console
 #' @param na.rm whether to remove missing values. Passed to \sQuote{aggregate}
@@ -386,9 +391,11 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
 #' summary(ames, years = 2014:2016)
 #' 
 summary.met <- function(object, ..., years, months, days, julian.days,
+                        by = c("year", "month"),
                         compute.frost = FALSE,
                         frost.temperature = 0, 
-                        anomaly,
+                        anomaly, 
+                        anomaly.units = c("percent", "standard.deviation", "absolute"),
                         check = FALSE, verbose = FALSE, 
                         na.rm = FALSE, digits = 2){
   
@@ -398,9 +405,17 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   if(!missing(days) && !missing(julian.days))
     stop("Either use days or julian.days but not both", call. = TRUE)
 
+  by <- match.arg(by)
+  anomaly.units <- match.arg(anomaly.units)
+  
   ## Summarize information by year
   if(!missing(years)){
     #### Error message if years outside the range
+    year.range <- range(x$year)
+    if(min(years) < year.range[1])
+      stop("Smallest value in 'years' is not within the range of years in the 'met' object", call. = FALSE)
+    if(max(years) > year.range[2])
+      stop("Largest value in 'years' is not within the range of years in the 'met' object", call. = FALSE)
     x <- x[x$year %in% years,]
   } 
   
@@ -456,21 +471,29 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   n.years <- length(unique(x$year))
   
   ## If I want to both compute frost and calculate Classic_TT
+  nrws <- ifelse(by == "year", n.years, 12) 
+    
   if(compute.frost && "Classic_TT" %in% names(x)){
-    ans <- matrix(nrow = n.years, ncol = 18)  
+    ans <- matrix(nrow = nrws, ncol = 18)  
   }
   if(!compute.frost && "Classic_TT" %in% names(x)){
-    ans <- matrix(nrow = n.years, ncol = 14) 
+    ans <- matrix(nrow = nrws, ncol = 14) 
   }
   if(compute.frost && isFALSE("Classic_TT" %in% names(x))){
-    ans <- matrix(nrow = n.years, ncol = 16) 
+    ans <- matrix(nrow = nrws, ncol = 16) 
   }
   if(!compute.frost && !"Classic_TT" %in% names(x)){
-    ans <- matrix(nrow = n.years, ncol = 12) 
+    ans <- matrix(nrow = nrws, ncol = 12) 
   }
 
-  ans[,1] <- sort(unique(x$year))
-  x <- add_column_apsim_met(x, value = as.factor(x$year), name = "year", units = "()")
+  if(by == "year"){
+    ans[,1] <- sort(unique(x$year))
+    x <- add_column_apsim_met(x, value = as.factor(x$year), name = "year", units = "()")
+  }else{
+    ans[,1] <- 1:12
+    mnth <- format(as.Date(as.character(paste(x$year, x$day, sep = "-")), format = "%Y-%j"), "%m")
+    x <- add_column_apsim_met(x, value = mnth, name = "month", units = "()")
+  }
   
   if(verbose){
     cat("First year:", x$year[1], "\n")
@@ -484,9 +507,16 @@ summary.met <- function(object, ..., years, months, days, julian.days,
     ans[,6] <- NA
     ans[,8] <- NA
   }else{
-    ans[,4] <- round(stats::aggregate(maxt ~ year, data = x, FUN = max, na.rm = na.rm)$maxt, digits) 
-    ans[,6] <- round(stats::aggregate(maxt ~ year, data = x, FUN = mean, na.rm = na.rm)$maxt, digits)
-    ans[,8] <- round(stats::aggregate(maxt ~ year, data = x, FUN = min, na.rm = na.rm)$maxt, digits)
+    if(by == "year"){
+      ans[,4] <- round(stats::aggregate(maxt ~ year, data = x, FUN = max, na.rm = na.rm)$maxt, digits) 
+      ans[,6] <- round(stats::aggregate(maxt ~ year, data = x, FUN = mean, na.rm = na.rm)$maxt, digits)
+      ans[,8] <- round(stats::aggregate(maxt ~ year, data = x, FUN = min, na.rm = na.rm)$maxt, digits)      
+    }
+    if(by == "month"){
+      ans[,4] <- round(stats::aggregate(maxt ~ month, data = x, FUN = max, na.rm = na.rm)$maxt, digits) 
+      ans[,6] <- round(stats::aggregate(maxt ~ month, data = x, FUN = mean, na.rm = na.rm)$maxt, digits)
+      ans[,8] <- round(stats::aggregate(maxt ~ month, data = x, FUN = min, na.rm = na.rm)$maxt, digits)      
+    }
   }
   
   if(all(is.na(x$mint))){
@@ -494,25 +524,47 @@ summary.met <- function(object, ..., years, months, days, julian.days,
     ans[,7] <- NA
     ans[,9] <- NA
   }else{
-    ans[,5] <- round(stats::aggregate(mint ~ year, data = x, FUN = max, na.rm = na.rm)$mint, digits)
-    ans[,7] <- round(stats::aggregate(mint ~ year, data = x, FUN = mean, na.rm = na.rm)$mint, digits)
-    ans[,9] <- round(stats::aggregate(mint ~ year, data = x, FUN = min, na.rm = na.rm)$mint, digits)    
+    if(by == "year"){
+      ans[,5] <- round(stats::aggregate(mint ~ year, data = x, FUN = max, na.rm = na.rm)$mint, digits)
+      ans[,7] <- round(stats::aggregate(mint ~ year, data = x, FUN = mean, na.rm = na.rm)$mint, digits)
+      ans[,9] <- round(stats::aggregate(mint ~ year, data = x, FUN = min, na.rm = na.rm)$mint, digits)  
+    }
+    if(by == "month"){
+      ans[,5] <- round(stats::aggregate(mint ~ month, data = x, FUN = max, na.rm = na.rm)$mint, digits)
+      ans[,7] <- round(stats::aggregate(mint ~ month, data = x, FUN = mean, na.rm = na.rm)$mint, digits)
+      ans[,9] <- round(stats::aggregate(mint ~ month, data = x, FUN = min, na.rm = na.rm)$mint, digits)  
+    }
+  
   }
   
   ## Total precipitation
   if(all(is.na(x$rain))){
     ans[,10] <- NA
   }else{
-    ans[,10] <- round(stats::aggregate(rain ~ year, data = x, FUN = sum, na.rm = na.rm)$rain, digits)  
+    if(by == "year"){
+      ans[,10] <- round(stats::aggregate(rain ~ year, data = x, FUN = sum, na.rm = na.rm)$rain, digits) 
+    }
+    if(by == "month"){
+      ans[,10] <- round(stats::aggregate(rain ~ month, data = x, FUN = sum, na.rm = na.rm)$rain, digits) 
+    }
   }
   ## Total and mean radiation
   if(all(is.na(x$radn))){
     ans[,11] <- NA
     ans[,12] <- NA
   }else{
-    ans[,11] <- round(stats::aggregate(radn ~ year, data = x, FUN = sum, na.rm = na.rm)$radn, digits)
-    ans[,12] <- round(stats::aggregate(radn ~ year, data = x, FUN = mean, na.rm = na.rm)$radn, digits)
+    if(by == "year"){
+      ans[,11] <- round(stats::aggregate(radn ~ year, data = x, FUN = sum, na.rm = na.rm)$radn, digits)
+      ans[,12] <- round(stats::aggregate(radn ~ year, data = x, FUN = mean, na.rm = na.rm)$radn, digits)
+    }
+    if(by == "month"){
+      ans[,11] <- round(stats::aggregate(radn ~ month, data = x, FUN = sum, na.rm = na.rm)$radn, digits)
+      ans[,12] <- round(stats::aggregate(radn ~ month, data = x, FUN = mean, na.rm = na.rm)$radn, digits)
+    }
   }
+  
+  if(by == "month" && compute.frost)
+    stop("'by' = 'month' and 'compute.frost' are not available yet", call. = FALSE)
   
   ## How do I compute the length of the growing season
   if(compute.frost){
@@ -708,16 +760,29 @@ summary.met <- function(object, ..., years, months, days, julian.days,
         ans[,13] <- NA
         ans[,14] <- NA
       }else{
-        ans[,13] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
-        ans[,14] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
+        if(by == "year"){
+          ans[,13] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
+          ans[,14] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
+        }
+        if(by == "month"){
+          ans[,13] <- round(stats::aggregate(Classic_TT ~ month, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
+          ans[,14] <- round(stats::aggregate(Classic_TT ~ month, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
+        }
+
       }      
     }else{
       if(all(is.na(x$Classic_TT))){
         ans[,17] <- NA
         ans[,18] <- NA
       }else{
-        ans[,17] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
-        ans[,18] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
+        if(by == "year"){
+          ans[,17] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
+          ans[,18] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
+        }
+        if(by == "month"){
+          ans[,17] <- round(stats::aggregate(Classic_TT ~ month, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
+          ans[,18] <- round(stats::aggregate(Classic_TT ~ month, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
+        }
       } 
     }
   }
@@ -760,10 +825,15 @@ summary.met <- function(object, ..., years, months, days, julian.days,
                        "high_classic_tt", "avg_classic_tt") ## 17, 18 
   }
   
+  if(by == "month"){
+    clnms <- colnames(ans)
+    colnames(ans) <- c("month", clnms[-1])
+  }
+  
   #### Calculate anomalies ----
   if(!missing(anomaly)){
 
-    vars.to.anomaly <- setdiff(colnames(ans), c("year", "months", "days"))
+    vars.to.anomaly <- setdiff(colnames(ans), c("year", "months", "month", "days"))
     #### This computes anomalies for all variables
     if(!isTRUE(anomaly)){
       v2a <- intersect(anomaly, vars.to.anomaly)
@@ -782,9 +852,21 @@ summary.met <- function(object, ..., years, months, days, julian.days,
     for(i in vars.to.anomaly){
       tmp.var.to.anomaly <- as.data.frame(ans)[[i]]
       mean.i.var.to.anomaly <- mean(tmp.var.to.anomaly, na.rm = TRUE)
-      prct.change <- ((tmp.var.to.anomaly / mean.i.var.to.anomaly) - 1) * 100
+      sd.i.var.to.anomaly <- sd(tmp.var.to.anomaly, na.rm = TRUE)
+      
+      if(anomaly.units == "percent"){
+        ### The units here are in % and the equation is (x / x_mean) - 1
+        anmly.change <- ((tmp.var.to.anomaly / mean.i.var.to.anomaly) - 1) * 100        
+      }
+      if(anomaly.units == "absolute"){
+        anmly.change <- tmp.var.to.anomaly - mean.i.var.to.anomaly        
+      }
+      if(anomaly.units == "standard.deviation"){
+        anmly.change <- (tmp.var.to.anomaly - mean.i.var.to.anomaly)/sd.i.var.to.anomaly        
+      }
+
       name.i.var <- paste0("anomaly_", i)
-      tmpd <- data.frame(anomaly = prct.change)
+      tmpd <- data.frame(anomaly = anmly.change)
       names(tmpd) <- name.i.var
       ans <- cbind(ans, tmpd)
     }
@@ -802,6 +884,17 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   }
   
   ansd$days <- rep(deparse(days), n.years)
+  
+  if(by == "month"){
+    if(missing(years)){
+      yrs <- paste(range(x$year), collapse = ":")    
+    }else{
+      yrs <- paste(range(years), collapse = ":") 
+    }
+    ansd <- data.frame(month = ansd$month, years = yrs, ansd[,2:ncol(ansd)])
+  }
+
+  attr(ansd, "anomaly.units") <- anomaly.units
   
   return(ansd)
 }
