@@ -310,7 +310,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                                         b = dist.parms$b)
   if(is.list(FBiom)){ 
     if(length(FBiom) != 3) stop("FBiom list should be of length 3")
-    ## First element will be the top value of F.mbio
+    ## First element will be the top value of FBiom
     FBiom.max <- FBiom[[1]]
     ## second element will be the a parameter 
     ## third element will be the b parameter 
@@ -1441,6 +1441,7 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
 #' @param depth soil depth (in meters). If missing then the whole soil profile is used.
 #' @param area either \sQuote{m2} meter squared or \sQuote{ha}.
 #' @param method interpolation method. Either \sQuote{linear} or \sQuote{constant}.
+#' @param value whether to return a \sQuote{numeric} or an object of class \sQuote{carbon.stocks}.
 #' @param ... additional arguments passed to internal functions (none used at the moment).
 #' @return returns a value with attribute \sQuote{units} and \sQuote{depth}
 #' @export
@@ -1454,15 +1455,21 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
 #' carbon_stocks(sp, depth = 0.4)
 #' }
 
-carbon_stocks <- function(x, depth, area = c("m2", "ha"), method = c("linear", "constant"), ...){
+carbon_stocks <- function(x, 
+                          depth = NULL, 
+                          area = c("m2", "ha"), 
+                          method = c("linear", "constant"),
+                          value = c("numeric", "carbon.stocks"), ...){
   
   if(!inherits(x, "soil_profile")){
     stop("This function is intended to be used with an object of class 'soil_profile'", call. = FALSE)
   }
   
+  value <- match.arg(value)
+  
   bottom <- sum(x$soil$Thickness) * 1e-3 ## Thickness is in mm, so after conversion this is in meters
   
-  if(!missing(depth)){
+  if(!is.null(depth)){
     if(depth <= 0) stop("'depth' should be a positive number", call. = FALSE)
     if(depth > bottom) stop("'depth' should be a lower number than the bottom of the soil profile ", call. = FALSE)
     if(depth > 10){
@@ -1474,10 +1481,10 @@ carbon_stocks <- function(x, depth, area = c("m2", "ha"), method = c("linear", "
   method <- match.arg(method)
   
   ## Compute carbon for the whole profile
-  if(missing(depth)){
+  if(is.null(depth)){
     weights <- x$soil$Thickness / sum(x$soil$Thickness)
     ### Total volume is equal to 'bottom' (m^3)
-    ## Original BD (from APSIM) is reported in g/cc, which needs to be multipled by 1e3 to get kg/m^3
+    ## Original BD (from APSIM) is reported in g/cc, which needs to be multiplied by 1e3 to get kg/m^3
     ## Carbon is in percent so it needs to be divided by 100 to get it as a proportion.
     weighted.carbon <- sum(x$soil$Carbon * 1e-2 * weights * x$soil$BD * 1e3) 
     total.carbon <- weighted.carbon * bottom
@@ -1519,7 +1526,40 @@ carbon_stocks <- function(x, depth, area = c("m2", "ha"), method = c("linear", "
     attr(ans, "units") <- "kg/m2"
   }
   attr(ans, "depth (m)") <- depth 
+  
+  if(value == "carbon.stocks"){
+    ans <- structure(list(value = ans, depth = depth, 
+                          area = area, method = method, 
+                          soil.profile = x))
+  }
+
   return(ans)
+}
+
+plot.carbon.stocks <- function(x){
+  
+  sp <- x$soil.profile$soil 
+  sp$depth <- -cumsum(sp$Thickness) * 1e-1
+  ### Calculate midpoint depth
+  sp$midpoint.depth <- 0
+  sp$midpoint.depth[1] <- sp$depth[1] / 2
+  for(i in 2:dim(sp)[1]){
+    sp$midpoint.depth[i] <- (sp$depth[i - 1] + sp$depth[i]) / 2    
+  }
+
+  first.depth <- sp$depth[1]
+  first.carbon <- sp$Carbon[1]
+  
+  gp1 <- ggplot2::ggplot(data = sp) + 
+           ggplot2::geom_vline(mapping = ggplot2::aes(xintercept = depth),
+                               linetype = 3) + 
+           ggplot2::geom_point(ggplot2::aes(x = midpoint.depth, y = Carbon)) + 
+           ggplot2::geom_step(ggplot2::aes(x = depth, y = Carbon)) + 
+           ggplot2::annotate("segment", x = 0, xend = first.depth, y = first.carbon, yend = first.carbon) + 
+           ggplot2::coord_flip() + 
+           ggplot2::labs(y = "Carbon (%)", x = "depth (cm)")
+  
+  invisible(gp1)
 }
 
 #' Function to calculate available water content. The output units depend on the choice of area.

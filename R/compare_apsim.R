@@ -1,4 +1,17 @@
 #' 
+#' There are different metrics with different interpretations produced by this function.
+#' Many of them take one object (assuming that is the observed data) and another object
+#' (assuming that is the simulated or predicted) object. Some of these metrics
+#' are a result from the regression.
+#' 
+#' metrics that do not rely on regression (obs vs. pred): bias, mean bias, rss, rmse,
+#' corr, concorr, mod.eff
+#' 
+#' metrics that do depend on a regression model: intercept, slope, rsigma, R2.
+#' 
+#' \sQuote{rsigma} is the regression residual standard deviation obtained by using the function
+#' \code{\link[stats]{sigma}} to the regression object.
+#' 
 #' @title Compare two or more apsim output objects
 #' @name compare_apsim
 #' @rdname compare_apsim
@@ -161,8 +174,8 @@ compare_apsim <- function(...,
     ans.out.length <- ifelse(missing(variable), length(nms1.i) - 2, 1)  
   }
   
-  ans <- data.frame(variable = rep(NA, ans.out.length), vs = NA, labels = NA, bias = NA,
-                    intercept = NA, slope = NA, rss = NA, rmse = NA, r2 = NA, concorr = NA,
+  ans <- data.frame(variable = rep(NA, ans.out.length), vs = NA, labels = NA, bias = NA, mean.bias = NA,
+                    intercept = NA, slope = NA, rsigma = NA, rss = NA, rmse = NA, r2 = NA, concorr = NA,
                     mod.eff = NA)
   k <- 1
   ## Calculate statistics for all variables
@@ -198,16 +211,22 @@ compare_apsim <- function(...,
         fm0 <- lm(tmp[, j] ~ tmp[, j - 1], na.action = "na.exclude")
         ### Store residuals
         resid.matrix <- cbind(resid.matrix, stats::residuals(fm0, type = "pearson"))
-        if(verbose) cat(" \t Bias: ", sum(tmp[, j - 1] - tmp[, j]), "\n")
+        if(verbose) cat(" \t Bias (sum of residuals): ", sum(tmp[, j - 1] - tmp[, j]), "\n")
         ans$bias[k] <- sum(tmp[, j - 1] - tmp[, j])
+        if(verbose) cat(" \t Bias (mean of residuals): ", mean(tmp[, j - 1] - tmp[, j]), "\n")
+        ans$mean.bias[k] <- mean(tmp[, j - 1] - tmp[, j])
         if(verbose) cat(" \t Intercept: ", coef(fm0)[1], "\n")
         ans$intercept[k] <- coef(fm0)[1]
         if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
         ans$slope[k] <- coef(fm0)[2]
-        if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
+        if(verbose) cat(" \t Reg. RSS: ", deviance(fm0), "\n")
         ans$rss[k] <- deviance(fm0)
-        if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
-        ans$rmse[k] <- sigma(fm0)
+        if(verbose) cat(" \t Reg. sigma: ", sigma(fm0), "\n")
+        ans$rsigma[k] <- sigma(fm0)
+        if(verbose) cat(" \t RSS: ", rss(tmp[,j - 1], tmp[, j]), "\n")
+        ans$rss[k] <- rss(tmp[,j - 1], tmp[, j])
+        if(verbose) cat(" \t RMSE: ", rmse(tmp[,j - 1], tmp[, j]), "\n")
+        ans$rmse[k] <- rmse(tmp[,j - 1], tmp[, j])
         if(verbose) cat(" \t R^2: ", summary(fm0)$r.squared, "\n")
         ans$r2[k] <- summary(fm0)$r.squared
         if(verbose) cat(" \t Corr: ", cor(tmp[, j - 1], tmp[, j]), "\n")
@@ -252,16 +271,22 @@ compare_apsim <- function(...,
       fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
       ### Store residuals
       resid.matrix <- cbind(resid.matrix, stats::residuals(fm0, type = "pearson"))
-      if(verbose) cat(" \t Bias: ", sum(tmp[, j - 1] - tmp[, j]), "\n")
+      if(verbose) cat(" \t Bias (sum of residuals): ", sum(tmp[, j - 1] - tmp[, j]), "\n")
       ans$bias[k] <- sum(tmp[, j - 1] - tmp[, j])
+      if(verbose) cat(" \t Bias (mean of residuals): ", mean(tmp[, j - 1] - tmp[, j]), "\n")
+      ans$mean.bias[k] <- mean(tmp[, j - 1] - tmp[, j])
       if(verbose) cat(" \t Intercept: ", coef(fm0)[1], "\n")
       ans$intercept[k] <- coef(fm0)[1]
       if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
       ans$slope[k] <- coef(fm0)[2]
-      if(verbose) cat(" \t RSS: ", deviance(fm0), "\n")
+      if(verbose) cat(" \t Reg. RSS: ", deviance(fm0), "\n")
       ans$rss[k] <- deviance(fm0)
-      if(verbose) cat(" \t RMSE: ", sigma(fm0), "\n")
-      ans$rmse[k] <- sigma(fm0)
+      if(verbose) cat(" \t Reg. sigma: ", sigma(fm0), "\n")
+      ans$rsigma[k] <- sigma(fm0)
+      if(verbose) cat(" \t RSS: ", rss(tmp[,j - 1], tmp[, j]), "\n")
+      ans$rss[k] <- rss(tmp[,j - 1], tmp[, j])
+      if(verbose) cat(" \t RMSE: ", rmse(tmp[,j - 1], tmp[, j]), "\n")
+      ans$rmse[k] <- rmse(tmp[,j - 1], tmp[, j])
       if(verbose) cat(" \t R^2: ", summary(fm0)$r.squared, "\n")
       ans$r2[k] <- summary(fm0)$r.squared
       if(verbose) cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
@@ -638,5 +663,21 @@ con_cor <- function(x, y){
   num <- 2 * cor(x, y) * sd(x) * sd(y)
   den <- var(x) + var(y) + (mean(x) - mean(y))^2
   ans <- num/den
+  ans
+}
+
+## RMSE
+## https://en.wikipedia.org/wiki/Root_mean_square_deviation
+rmse <- function(x, y){
+  n <- length(x)
+  ssd <- sum((x - y)^2)
+  ans <- sqrt((1/n) * ssd)
+  ans
+}
+
+## RSS
+## https://en.wikipedia.org/wiki/Errors_and_residuals
+rss <- function(x, y){
+  ans <- sum((x - y)^2)
   ans
 }

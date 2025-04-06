@@ -229,7 +229,7 @@ read_apsim_soils <- function(file, src.dir = ".", verbose = TRUE){
     }
     
     ### Section fixing FBiom
-    if(length(som.lst1$Fbiom) == 0){
+    if(length(som.lst1$FBiom) == 0){
       som.lst1$FBiom <- rep(0, length(som.lst1$Thickness))
     }
     

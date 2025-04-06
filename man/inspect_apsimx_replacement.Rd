@@ -72,6 +72,8 @@ table with inspected parameters and values (and \sQuote{parm path} when \sQuote{
 inspect the replacement componenet of an JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
 }
 \details{
+### Maybe insert information about regex at some point
+
 This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
 }
 \note{

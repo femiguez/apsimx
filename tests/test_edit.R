@@ -323,3 +323,56 @@ if(run.apsimx.edit){
                 edit.tag = "-tempmet")
   }
 }
+
+#### Testing editing vectors -----
+if(run.apsimx.edit){
+  
+  dir(extd.dir, pattern = "apsimx$")
+  
+  setwd(tmp.dir)
+  
+  file.copy(file.path(extd.dir, "Wheat-opt-ex.apsimx"), tmp.dir)
+  
+  inspect_apsimx_replacement("Wheat-opt-ex.apsimx",
+                             node = "Wheat",
+                             node.child = "Phenology",
+                             node.subchild = "ThermalTime",
+                             node.subsubchild = "Response",
+                             parm = "X",
+                             display.available = FALSE)
+  
+  pp1 <- inspect_apsimx_replacement("Wheat-opt-ex.apsimx",
+                                    node = "Wheat",
+                                    node.child = "Phenology",
+                                    node.subchild = "ThermalTime",
+                                    node.subsubchild = "Response",
+                                    parm = "X",
+                                    print.path = TRUE,
+                                    display.available = FALSE)
+
+  edit_apsimx("Wheat-opt-ex.apsimx",
+              node = "Other",
+              parm.path = pp1,
+              value = "0 25 37")  
+  
+  inspect_apsimx_replacement("Wheat-opt-ex-edited.apsimx",
+                             node = "Wheat",
+                             node.child = "Phenology",
+                             node.subchild = "ThermalTime",
+                             node.subsubchild = "Response",
+                             parm = "X",
+                             display.available = FALSE)
+  
+  extract_values_apsimx("Wheat-opt-ex-edited.apsimx", src.dir = ".", parm = pp1)
+  
+  extract_data_apsimx("Wheat-opt-ex-edited.apsimx", node = "Other", parm = pp1)
+  
+  tmps <- expand.grid(tmp1 = 18:30, tmp2 = 33:45)
+  card.temp.vector <- paste0("0 ", tmps$tmp1, " ", tmps$tmp2)
+  grd <- data.frame(X = card.temp.vector)
+    
+  sns <- sens_apsimx("Wheat-opt-ex-edited.apsimx",
+                     parm.paths = )
+  
+  
+}

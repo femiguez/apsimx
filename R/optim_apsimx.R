@@ -114,9 +114,15 @@ optim_apsimx <- function(file, src.dir = ".",
   ## Data needs to be a data.frame
   if(!inherits(data, "data.frame"))
     stop("Object 'data' should be of class 'data.frame'.", call. = FALSE)
+  
+  if(all(c("SimulationName", "Date") %in% names(data)) && length(index) == 1){
+    stop("'SimulationName' and 'Date' found in  'data' but index length is equal to 1.
+         Maybe index should be c('SimulationName', 'Date')?", call. = FALSE)
+  }
+  
   ## Setting up Date
-  datami <- data[ ,-which(names(data) %in% index), drop = FALSE]
   if(any(grepl("Date", index))) data$Date <- as.Date(data$Date)
+  datami <- data[ ,-which(names(data) %in% index), drop = FALSE]
 
   ## Setting up weights
   if(missing(weights)){
@@ -265,6 +271,13 @@ optim_apsimx <- function(file, src.dir = ".",
 
     if(length(index) == 1 && index == "Date"){
 
+      ## Apparently 'Date' can be a 'date' in both but if classes do not
+      ## match, then it is a problem...
+      if(!inherits(data[, index], "Date"))
+        warning("Column 'Date' in 'data' is not of class 'Date'")
+      if(!inherits(sim[, index], "Date"))
+        warning("Column 'Date' in simulations is not of class 'Date'")
+      
       sim.s <- subset(sim, sim$Date %in% data[[index]], select = names(data))
       sim.s <- sim.s[order(sim.s[, index[1]]),]
       data <- data[order(data[, index[1]]),]
@@ -303,6 +316,14 @@ optim_apsimx <- function(file, src.dir = ".",
     data <- data[,-which(names(data) %in% index)]
     ## Now I need to calculate the residual sum of squares
     ## For this to work all variables should be numeric
+    if(isFALSE(all(sapply(data, is.numeric)))){
+      cat("Column classes for 'data':", sapply(data, class), "\n")
+      stop("All columns for the computation of RSS should be of class 'numeric' in 'data'", call. = FALSE)
+    }
+    if(isFALSE(all(sapply(sim.s, is.numeric)))){
+      cat("Column classes for 'simulations':", sapply(data, class), "\n")
+      stop("All columns for the computation of RSS should be of class 'numeric' in 'simulations'", call. = FALSE)
+    }
     diffs <- as.matrix(data) - as.matrix(sim.s)
     rss <- sum(weights * colSums(diffs^2, na.rm = TRUE))
     return(log(rss))

@@ -2,6 +2,7 @@
 #' 
 #' @name apsim_version
 #' @param which either \sQuote{all} or \sQuote{inuse}
+#' @param version either \sQuote{number} for a compact display or \sQuote{full}
 #' @param verbose whether to print the information to standard output
 #' @return a data frame (all) or a vector (inuse) with APSIM-X and/or APSIM versions
 #' @export
@@ -12,12 +13,15 @@
 #' }
 #' 
 
-apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
+apsim_version <- function(which = c("all","inuse"), 
+                          version = c("number", "full"),
+                          verbose = TRUE){
   
   ## Internal function
   fevc <- function(x) as.numeric(sub("r","",strsplit(x, "-", fixed = TRUE)[[1]][2]))
   
   which <- match.arg(which)
+  version <- match.arg(version)
   
   ## Return (all): a table with APSIM and APSIM-X available versions
   ## Return (inuse): the number for the version in use
@@ -26,7 +30,7 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
   tmp.dat <- data.frame(APSIM = c("Classic", "Next Generation"))
   
   ## Let's do it by operating system
-  if(verbose) cat("OS:",Sys.info()[["sysname"]],"\n")
+  if(verbose) cat("OS:", Sys.info()[["sysname"]], "\n")
   
   ## For unix
   if(.Platform$OS.type == "unix"){
@@ -39,9 +43,12 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
         
         if(length(find.apsim) > 0){ 
             tmp.mat <- matrix(NA, nrow = 2, ncol = length(find.apsim))
-            tmp.mat[2,seq_along(find.apsim)] <- rev(apsimx.versions)
+            tmp.mat[2, seq_along(find.apsim)] <- rev(apsimx.versions)
+            if(version == "number"){
+              tmp.mat[2, ] <- sapply(tmp.mat[2, ], FUN = function(x) strsplit(x, split = ".", fixed = TRUE)[[1]][3])
+            }
             ans <- data.frame(tmp.dat, as.data.frame(tmp.mat))
-            names(ans) <- c("APSIM",paste0("Version.",seq_along(find.apsim)))
+            names(ans) <- c("APSIM", paste0("Version.",seq_along(find.apsim)))
         }
     }
     
@@ -49,10 +56,13 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
         laf <- list.files("/usr/local/lib")
         find.apsim <- grep("apsim", laf, ignore.case = TRUE)
         if(length(find.apsim) == 0) warning("APSIM-X not found")
-        apsimx.version <- paste0("/usr/local/lib/apsim/",list.files("/usr/local/lib/apsim"))
+        apsimx.version <- paste0("/usr/local/lib/apsim/", list.files("/usr/local/lib/apsim"))
         ## Apparently only one version can be present at a time on Debian
         tmp.mat <- matrix(NA, nrow = 2, ncol = length(find.apsim))
-        tmp.mat[2,length(find.apsim)] <- list.files("/usr/local/lib/apsim")
+        tmp.mat[2, length(find.apsim)] <- list.files("/usr/local/lib/apsim")
+        if(version == "number"){
+          tmp.mat[2, ] <- sapply(tmp.mat[2, ], FUN = function(x) strsplit(x, split = ".", fixed = TRUE)[[1]][3])
+        }
         ans <- data.frame(tmp.dat, as.data.frame(tmp.mat))
         names(ans) <- c("APSIM","Version")
     }
@@ -85,6 +95,10 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
     }else{
       tmp.matx <- matrix(NA, nrow = 1, ncol = ncols) 
     }
+    
+    if(version == "number"){
+      tmp.matx[1, ] <- sapply(tmp.mat[1, ], FUN = function(x) strsplit(x, split = ".", fixed = TRUE)[[1]][3])
+    }
 
     ## This is for APSIM 'Classic' and it should work
     if(length(find.apsim) > 0){
@@ -95,8 +109,9 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
     }else{
       tmp.matc <- matrix(NA, nrow = 1, ncol = ncols) 
     }
+
     ans <- data.frame(tmp.dat, as.data.frame(rbind(tmp.matc,tmp.matx)))
-    names(ans) <- c("APSIM", paste0("Version.",1:ncols))
+    names(ans) <- c("APSIM", paste0("Version.", 1:ncols))
   }
   
   if(which == "all"){
@@ -165,5 +180,77 @@ apsim_version <- function(which = c("all","inuse"), verbose = TRUE){
     }
     if(verbose) print(knitr::kable(ans))
   }
+  
   invisible(ans)
 }
+
+
+### This function retrieves model versions from the github page
+apsimx_current_version <- function(model = "Wheat"){
+  model <- get_apsimx_json(model)
+  return(model$Version)
+}
+
+apsim_version_inuse <- function(){
+
+  ## For Unix
+  if(.Platform$OS.type == "unix"){
+    ## If there is only one APSIM present
+    if(length(find.apsim) == 1){
+      ## Darwin is different from Linux
+      if(grepl("Darwin", Sys.info()[["sysname"]])) ans <- laf[find.apsim]
+      if(grepl("Linux", Sys.info()[["sysname"]])) ans <- paste0("apsim", list.files("/usr/local/lib/apsim"))
+    }
+    ## If there are multiple APSIMs present
+    if(length(find.apsim) > 1){
+      len.fa <- length(find.apsim)
+      fa.dt <- sapply(laf[find.apsim],.favd, simplify = FALSE)[[len.fa]]
+      if(verbose) cat("APSIM-X version date:", as.character(fa.dt))
+      ## This next line picks the last one
+      newest.version <- laf[find.apsim][len.fa]
+      ans <- newest.version
+    }
+    ## If the one in use is not any of the above such as a Custom build
+    if(!is.na(get("exe.path", envir = apsimx::apsimx.options))){
+      ans <- get("exe.path", envir = apsimx::apsimx.options)
+    }
+  }
+  ## For Windows
+  if(.Platform$OS.type == "windows"){
+    ## If everything fails NAs will be returned
+    ansc <- NA
+    ansx <- NA
+    ## If there is only one APSIM 'Classic'
+    if(length(find.apsim) == 1){
+      ansc <- laf[find.apsim]
+    }
+    ## If there are multiple APSIMs present
+    if(length(find.apsim) > 1){
+      apsim.versions <- sapply(laf[find.apsim],fevc)
+      newest.version <- sort(apsim.versions, decreasing = TRUE)[1]
+      ansc <- names(newest.version)
+    }
+    ## It is possible that the one in use is not the latest one
+    if(!is.na(get("exe.path", envir = apsimx::apsim.options))){
+      ansc <- get("exe.path", envir = apsimx::apsim.options)
+    }
+    ## For APSIM-X
+    if(length(find.apsimx) == 1){
+      ansx <- lafx[find.apsimx]
+    }
+    if(length(find.apsimx) > 1){
+      apsimx.versions <- lafx[find.apsimx]
+      len.fa <- length(find.apsimx)
+      newest.version <- lafx[find.apsimx][len.fa]
+      ansx <- newest.version
+    }
+    ## It is possible that the one in use is not the latest one
+    if(!is.na(get("exe.path", envir = apsimx::apsimx.options))){
+      ansx <- get("exe.path", envir = apsimx::apsimx.options)
+    }
+    ans <- data.frame(Classic = ansc, NextGeneration = ansx)
+  }
+  invisible(ans)
+}
+
+

@@ -562,6 +562,17 @@ read_apsimx <- function(file = "", src.dir = ".", value = "report", simplify = T
         tbl0$Date <- try(as.Date(sapply(tbl0$Clock.Today, function(x) strsplit(x, " ")[[1]][1])), silent = TRUE)  
       }
     }
+    
+    ## Maybe the user created a 'Date' column in APSIM, so it is useful if I convert it to 'Date' class
+    if(any(grepl("Date", names(tbl0), ignore.case = TRUE))){
+      if(nrow(tbl0) > 0){
+        try.date <- try(as.Date(tbl0$Date), silent = TRUE)
+        if(!inherits(try.date, 'try-error')){
+          tbl0$Date <- try.date           
+        }
+      }
+    }
+    
     ## Maybe include SimulationNames column here?
     if(all(!grepl("SimulationName", names(tbl0)))){
       tbl0$SimulationName <- NA
@@ -756,6 +767,11 @@ check_apsimx <- function(file = "", src.dir = ".",
   }
   
   file <- match.arg(file, file.names)
+  
+  if(verbose){
+    fjson <- jsonlite::read_json(file.path(src.dir, file))
+    cat("File APSIM version:", fjson$Version, "\n")
+  }
 
   node <- match.arg(node)
   soil.child <- match.arg(soil.child)

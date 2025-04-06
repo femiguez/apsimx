@@ -1,4 +1,6 @@
 #' 
+#' ### Maybe insert information about regex at some point
+#' 
 #' @title Inspect a replacement component in an .apsimx (JSON) file
 #' @name inspect_apsimx_replacement
 #' @description inspect the replacement componenet of an JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
