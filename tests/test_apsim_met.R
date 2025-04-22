@@ -224,3 +224,23 @@ if(run.apsim.met && internet){
 }
 
 ### Next test should be for creating the 'by' argument
+
+#### Comparing met files with different year ranges ----
+
+if(run.apsim.met){
+  
+  pwr1 <- get_power_apsim_met(lonlat = c(-93, 42), dates = c("2000-01-01","2010-12-31"))
+  pwr2 <- get_power_apsim_met(lonlat = c(-93, 42), dates = c("2011-01-01","2024-12-31"))
+  
+  ### This has a better error message
+  merge.test1 <- try(compare_apsim_met(pwr1, pwr2), silent = TRUE)
+  
+  ### What about one year in common?
+  
+  pwr3 <- get_power_apsim_met(lonlat = c(-93, 42), dates = c("2000-01-01","2011-12-31"))
+  
+  ### This should work but it should give a warning
+  merge.test2 <- compare_apsim_met(pwr2, pwr3)
+  
+  
+}

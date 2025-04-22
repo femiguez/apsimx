@@ -92,6 +92,20 @@ compare_apsim_met <- function(...,
 
     if(ncol(met1) != ncol(met.i)) stop("met objects should have the same number of columns", call. = FALSE)
     if(all(!names(met1) %in% names(met.i))) stop("met objects should have the same column names", call. = FALSE)
+    
+    ### Check about years in common
+    unique.met1.years <- unique(met1$year)
+    unique.met.i.years <- unique(met.i$year)
+    if(length(intersect(unique.met1.years, unique.met.i.years)) == 0)
+      stop("No years in common between the met files", call. = FALSE)
+      
+    if(length(setdiff(unique.met.i.years, unique.met1.years))){
+      message("Years are different between met files")
+      message(paste(c("Years in met1: ", unique.met1.years), collapse = " "))
+      message(paste(c("Years in met.i: ", unique.met.i.years), collapse = " "))
+      message(paste(c("Years in common: ", intersect(unique.met1.years, unique.met.i.years))), collapse = " ")
+    }
+    
     if(check) check_apsim_met(met.i)
     
     yr <- as.character(met.i$year[1])
@@ -101,6 +115,9 @@ compare_apsim_met <- function(...,
     nms <- names(met.i)
     ## drop the year.i and day.i names
     met.mrg <- merge(met.mrg, met.i, by = "dates")
+
+    if(dim(met.mrg)[[1]] == 0)
+      stop("Failed to merge met files")
   }
   
   if(met.var == "all"){
@@ -375,8 +392,8 @@ plot.met_mrg <- function(x, ..., plot.type = c("vs", "diff", "ts", "density"),
 #' @param anomaly whether to compute the anomaly. Default is FALSE. 
 #' It could be TRUE (for all variables) or a character vector for a specific set of variables.
 #' @param anomaly.units what units to use for anomaly calculations. Default is \sQuote{percent}.
-#' Other options are \sQuote{standard.devaition} and \sQuote{absolute} - this means the original
-#' units.
+#' Other options are \sQuote{standard.devaition} and \sQuote{absolute} - this means the difference, 
+#' which will be in the original units.
 #' @param check logical (default FALSE). Whether to \sQuote{check} the \sQuote{met} object.
 #' @param verbose whether to print additional infomation to the console
 #' @param na.rm whether to remove missing values. Passed to \sQuote{aggregate}

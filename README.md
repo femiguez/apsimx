@@ -85,6 +85,37 @@ If you have any questions contact Fernando E. Miguez (femiguez *at* iastate.edu)
 
 Some papers that cite this package:
 
+23\. Simulating within-field spatial and temporal corn 
+yield response to nitrogen with APSIM model. Thompson et al. (2024).
+https://doi.org/10.1007/s11119-024-10178-1
+
+22\. APSIM NG Model Simulation of Soil N2O Emission from the Dry-Crop 
+Wheat Field and Its Parameter Sensitivity Analysis. Li et al. (2025).
+https://doi.org/10.3390/agronomy15040834
+
+21\. An in-silico approach exploring sorghum source:sink balance across 
+sorghum hybrids: How many leaves are enough? Marziotte et al. (2025).
+https://doi.org/10.1002/csc2.21449
+
+20\. Changes in the leaf area-seed yield relationship in soybean driven by genetic, 
+management and environments: implications for high-throughput phenotyping.
+Chiozza et al. (2024). https://doi.org/10.1093/insilicoplants/diae012
+
+19\. Identifying environments for canola oil production under diverse seasonal crop water stress levels.
+Correndo et al. (2024) https://doi.org/10.1016/j.agwat.2024.108996
+
+18\. PACU: Precision agriculture computational utilities. dos Santos and Miguez.
+https://doi.org/10.1016/j.softx.2024.101971
+
+17\. Determination of a Sustainable Management for Rice Production Through a Modeling Approach.
+Hosseinpour et al. (2025). https://doi.org/10.1007/s42106-024-00319-x
+
+16\. weatherOz: An API Client for Australian Weather and Climate Data Resources in R. 
+Pires et al. (2024). DOI: 10.21105/joss.06717
+
+15\. A cost-effective approach to estimate plant available water capacity. Gajurel et al. (2024).
+https://doi.org/10.1016/j.geoderma.2024.116794
+
 14\. van Versendaal et al.  Integrating Field Data and a Modeling Approach to Inform Optimum Planting Date × Maturity Group for Soybeans under Current and Future Weather Conditions in Kansas. Sustainability 2023, 15(2), 1081; https://doi.org/10.3390/su15021081
 
 13\. R. H. K. Rathnappriya et al. Global Sensitivity Analysis of Key Parameters in the APSIMX-Sugarcane Model to Evaluate Nitrate Balance via Treed Gaussian Process. Agronomy 2022, 12(8), 1979; https://doi.org/10.3390/agronomy12081979

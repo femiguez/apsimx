@@ -19,7 +19,7 @@
 #' @param ... data frames with APSIM output or observed data. 
 #' @param variable specific variable to compare. By default all common ones are compared.
 #' @param index index for merging objects. Default is \sQuote{Date}
-#' @param by factor for splitting the comparison, such as a treatment effect.
+#' @param by factor for splitting the comparison, such as a treatment effect (not implemented yet).
 #' @param labels labels for plotting and identification of objects.
 #' @param cRSS compute (weighted) combined residual sum of squares using some or all variables
 #' @param weights optional weights for computing the (weighted) combined sum of squares
@@ -74,6 +74,9 @@ compare_apsim <- function(...,
   n.outs <- length(outs)
   
   if(n.outs < 2) stop("you should provide at least two data frames")
+  
+  if(!missing(by))
+    stop("Not implemented yet")
   
   out1 <- as.data.frame(outs[[1]])
   
