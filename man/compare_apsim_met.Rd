@@ -4,7 +4,7 @@
 \alias{compare_apsim_met}
 \alias{print.met_mrg}
 \alias{plot.met_mrg}
-\title{Compare two or more metfiles}
+\title{Compare two or more \sQuote{met} files}
 \usage{
 compare_apsim_met(
   ...,
@@ -65,6 +65,12 @@ Helper function which allows for a simple comparison among \sQuote{met} objects
 print method for \sQuote{met_mrg}
 
 plotting function for compare_apsim_met, it requires ggplot2
+}
+\details{
+If the \sQuote{met} files do not have the same number of columns or the same
+names for the data frame, then an error will be returned. If the years are not
+the same a message will be returned with the different years and the years 
+in common.
 }
 \note{
 I have only tested this for 2 or 3 objects. The code is set up to be able to 

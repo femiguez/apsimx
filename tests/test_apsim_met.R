@@ -242,5 +242,19 @@ if(run.apsim.met){
   ### This should work but it should give a warning
   merge.test2 <- compare_apsim_met(pwr2, pwr3)
   
+  dmt <- get_daymet_apsim_met(lonlat = c(-93, 42), years = c(2000, 2023))
   
+  merge.test3 <- try(compare_apsim_met(pwr3, dmt, labels = c("POWER", "DAYMET")), silent = TRUE)
+  ### The number of columns is the same
+  ### This gives an error because some column names are different
+  
+  merge.test4 <- compare_apsim_met(pwr3[, 1:6], dmt[, 1:6], labels = c("POWER", "DAYMET"))
+  plot(merge.test4, met.var = "rain", plot.type = "ts", cumulative = TRUE)
+  plot(merge.test4, plot.type = "ts")
+  
+  merge.test5 <- compare_apsim_met(pwr3[, 1:6], dmt[, 1:6], labels = c("POWER", "DAYMET"),
+                                   check = FALSE)
+  
+  plot(merge.test5, met.var = "rain", plot.type = "ts", cumulative = TRUE)
+
 }

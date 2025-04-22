@@ -90,6 +90,19 @@ print method for \sQuote{out_mrg}
 plotting function for compare_apsim, it requires ggplot2
 }
 \details{
+There are different metrics with different interpretations produced by this function.
+Many of them take one object (assuming that is the observed data) and another object
+(assuming that is the simulated or predicted) object. Some of these metrics
+are a result from the regression.
+
+metrics that do not rely on regression (obs vs. pred): bias, mean bias, rss, rmse,
+corr, concorr, mod.eff
+
+metrics that do depend on a regression model: intercept, slope, rsigma, R2.
+
+\sQuote{rsigma} is the regression residual standard deviation obtained by using the function
+\code{\link[stats]{sigma}} to the regression object.
+
 Plotting function for observed and simulated data
 }
 \note{

@@ -1,5 +1,10 @@
 #' 
-#' @title Compare two or more metfiles
+#' If the \sQuote{met} files do not have the same number of columns or the same
+#' names for the data frame, then an error will be returned. If the years are not
+#' the same a message will be returned with the different years and the years 
+#' in common. 
+#' 
+#' @title Compare two or more \sQuote{met} files
 #' @name compare_apsim_met
 #' @rdname compare_apsim_met
 #' @description Helper function which allows for a simple comparison among \sQuote{met} objects
@@ -91,7 +96,11 @@ compare_apsim_met <- function(...,
     met.i <- as.data.frame(mets[[i]])
 
     if(ncol(met1) != ncol(met.i)) stop("met objects should have the same number of columns", call. = FALSE)
-    if(all(!names(met1) %in% names(met.i))) stop("met objects should have the same column names", call. = FALSE)
+    if(length(setdiff(names(met1), names(met.i))) > 0){
+      message(paste("Names for 'met1'", paste(names(met1), collapse = " ")))
+      message(paste("Names for 'met.i'", paste(names(met.i), collapse = " ")))
+      stop("met objects should have the same column names", call. = FALSE)
+    } 
     
     ### Check about years in common
     unique.met1.years <- unique(met1$year)
@@ -103,7 +112,8 @@ compare_apsim_met <- function(...,
       message("Years are different between met files")
       message(paste(c("Years in met1: ", unique.met1.years), collapse = " "))
       message(paste(c("Years in met.i: ", unique.met.i.years), collapse = " "))
-      message(paste(c("Years in common: ", intersect(unique.met1.years, unique.met.i.years))), collapse = " ")
+      years.in.common <- as.character(intersect(unique.met1.years, unique.met.i.years))
+      message(paste("Years in common: ", paste(years.in.common, collapse = " ")))
     }
     
     if(check) check_apsim_met(met.i)

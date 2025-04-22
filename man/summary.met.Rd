@@ -53,8 +53,8 @@ period (default is zero).}
 It could be TRUE (for all variables) or a character vector for a specific set of variables.}
 
 \item{anomaly.units}{what units to use for anomaly calculations. Default is \sQuote{percent}.
-Other options are \sQuote{standard.devaition} and \sQuote{absolute} - this means the original
-units.}
+Other options are \sQuote{standard.devaition} and \sQuote{absolute} - this means the difference, 
+which will be in the original units.}
 
 \item{check}{logical (default FALSE). Whether to \sQuote{check} the \sQuote{met} object.}
 

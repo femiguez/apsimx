@@ -6,9 +6,10 @@
 \usage{
 carbon_stocks(
   x,
-  depth,
+  depth = NULL,
   area = c("m2", "ha"),
   method = c("linear", "constant"),
+  value = c("numeric", "carbon.stocks"),
   ...
 )
 }
@@ -20,6 +21,8 @@ carbon_stocks(
 \item{area}{either \sQuote{m2} meter squared or \sQuote{ha}.}
 
 \item{method}{interpolation method. Either \sQuote{linear} or \sQuote{constant}.}
+
+\item{value}{whether to return a \sQuote{numeric} or an object of class \sQuote{carbon.stocks}.}
 
 \item{...}{additional arguments passed to internal functions (none used at the moment).}
 }
