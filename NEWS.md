@@ -1,5 +1,12 @@
 **NEWS**
 
+## apsimx 2.8.2XX
+
+- Function compare_apsim_met provides better messages when there are differences
+between the met objects. It can now handle met files with different columns.
+
+- Adding new functionality for calculating and plotting carbon stocks
+
 ## apsimx 2.8.235 - 2025-3-10
 
 - New function get_slga_soil and get_slga_soil_profile to obtain data for Australian soils

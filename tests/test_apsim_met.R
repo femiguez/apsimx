@@ -256,5 +256,27 @@ if(run.apsim.met){
                                    check = FALSE)
   
   plot(merge.test5, met.var = "rain", plot.type = "ts", cumulative = TRUE)
+  
+  ### Scramble the order of columns
+  dmt.attr <- attributes(dmt)
+  dmt2 <- subset(dmt, select = names(dmt)[8:1])
+  attr(dmt2, "filename") <- dmt.attr$filename
+  attr(dmt2, "site") <- dmt.attr$site
+  attr(dmt2, "latitude") <- dmt.attr$latitude
+  attr(dmt2, "longitude") <- dmt.attr$longitude
+  attr(dmt2, "tav") <- dmt.attr$tav
+  attr(dmt2, "colnames") <- rev(dmt.attr$colnames)
+  attr(dmt2, "units") <- dmt.attr$units
+  attr(dmt2, "comments") <- dmt.attr$comments
+  attr(dmt2, "class") <- dmt.attr$class
+  attr(dmt2, "amp") <- dmt.attr$amp
+  head(dmt2)
 
+  merge.test6 <- try(compare_apsim_met(pwr3, dmt2, labels = c("POWER", "DAYMET")), silent = TRUE)
+  ### this results in an error as it should
+
+  merge.test7 <- compare_apsim_met(pwr3[, 1:6], dmt2[, 3:8], labels = c("POWER", "DAYMET"))  
+  plot(merge.test7)
+  plot(merge.test7, met.var = "rain", plot.type = "ts", cumulative = TRUE)
+  
 }

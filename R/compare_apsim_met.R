@@ -93,7 +93,7 @@ compare_apsim_met <- function(...,
       stop(stp.mssg, call. = FALSE)
     }
     
-    met.i <- as.data.frame(mets[[i]])
+    met.i <- as.data.frame(unclass(mets[[i]]))
 
     if(ncol(met1) != ncol(met.i)) stop("met objects should have the same number of columns", call. = FALSE)
     if(length(setdiff(names(met1), names(met.i))) > 0){
@@ -119,10 +119,12 @@ compare_apsim_met <- function(...,
     if(check) check_apsim_met(met.i)
     
     yr <- as.character(met.i$year[1])
+    nms0 <- names(met.i)
     met.i$dates <- as.Date(0:c(nrow(met.i) - 1), origin = as.Date(paste0(yr, "-01-01")))
-    names(met.i) <- c(paste0(names(met1), ".", i), "dates")
+    names(met.i) <- c(paste0(nms0, ".", i), "dates")
     
     nms <- names(met.i)
+    
     ## drop the year.i and day.i names
     met.mrg <- merge(met.mrg, met.i, by = "dates")
 
