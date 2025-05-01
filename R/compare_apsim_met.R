@@ -88,7 +88,7 @@ compare_apsim_met <- function(...,
   for(i in 2:n.mets){
     
     if(!inherits(mets[[i]], "met")){
-      stp.mssg <- paste("Object in position:", i, "is of class:", class(met.i),
+      stp.mssg <- paste("Object in position:", i, "is of class:", class(mets[[i]]),
                         ". Was expecting an object of class 'met'.")
       stop(stp.mssg, call. = FALSE)
     }

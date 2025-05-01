@@ -229,15 +229,15 @@ if(run.apsim.met && internet){
 
 if(run.apsim.met){
   
-  pwr1 <- get_power_apsim_met(lonlat = c(-93, 42), dates = c("2000-01-01","2010-12-31"))
-  pwr2 <- get_power_apsim_met(lonlat = c(-93, 42), dates = c("2011-01-01","2024-12-31"))
+  pwr1 <- get_power_apsim_met(lonlat = c(-93, 42), dates = c("2000-01-01", "2010-12-31"))
+  pwr2 <- get_power_apsim_met(lonlat = c(-93, 42), dates = c("2011-01-01", "2024-12-31"))
   
   ### This has a better error message
   merge.test1 <- try(compare_apsim_met(pwr1, pwr2), silent = TRUE)
   
   ### What about one year in common?
   
-  pwr3 <- get_power_apsim_met(lonlat = c(-93, 42), dates = c("2000-01-01","2011-12-31"))
+  pwr3 <- get_power_apsim_met(lonlat = c(-93, 42), dates = c("2000-01-01", "2011-12-31"))
   
   ### This should work but it should give a warning
   merge.test2 <- compare_apsim_met(pwr2, pwr3)
@@ -278,5 +278,15 @@ if(run.apsim.met){
   merge.test7 <- compare_apsim_met(pwr3[, 1:6], dmt2[, 3:8], labels = c("POWER", "DAYMET"))  
   plot(merge.test7)
   plot(merge.test7, met.var = "rain", plot.type = "ts", cumulative = TRUE)
+  
+  summary(pwr3)
+  summary(dmt2)
+  
+  plot(pwr3, summary = TRUE, climatology = TRUE)
+  plot(dmt2, summary = TRUE, climatology = TRUE)
+
+  plot(pwr3, met.var = "rain", summary = TRUE, climatology = TRUE)
+  plot(dmt2, met.var = "rain", summary = TRUE, climatology = TRUE)
+  
   
 }
