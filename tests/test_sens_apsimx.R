@@ -15,6 +15,7 @@ if(run.sens.apsimx){
   
   ## Test the effect of changing RUE
   extd.dir <- "~/Dropbox/apsimx/inst/extdata"
+  ## extd.dir <- "C:/Users/femiguez/Dropbox/apsimx/inst/extdata"
   file.copy(file.path(extd.dir, "WheatRye.apsimx"), ".")
   file.copy(file.path(extd.dir, "Ames.met"), ".")
   

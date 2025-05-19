@@ -8,12 +8,16 @@
 #' @export
 #' @examples 
 #' \dontrun{
-#' ## Check which apsim version are avialable
+#' ## Check which APSIM versions are available
 #' ava <- apsim_version(verbose = TRUE)
+#' 
+#' ## How to get APSIM 'help'
+#' ## apc <- apsimx:::auto_detect_apsimx()
+#' ## system(paste(apc, "--help"))
 #' }
 #' 
 
-apsim_version <- function(which = c("all","inuse"), 
+apsim_version <- function(which = c("all", "inuse"), 
                           version = c("number", "full"),
                           verbose = TRUE){
   
@@ -97,7 +101,7 @@ apsim_version <- function(which = c("all","inuse"),
     }
     
     if(version == "number"){
-      tmp.matx[1, ] <- sapply(tmp.mat[1, ], FUN = function(x) strsplit(x, split = ".", fixed = TRUE)[[1]][3])
+      tmp.matx[1, ] <- sapply(tmp.matx[1, ], FUN = function(x) strsplit(x, split = ".", fixed = TRUE)[[1]][3])
     }
 
     ## This is for APSIM 'Classic' and it should work
@@ -110,7 +114,7 @@ apsim_version <- function(which = c("all","inuse"),
       tmp.matc <- matrix(NA, nrow = 1, ncol = ncols) 
     }
 
-    ans <- data.frame(tmp.dat, as.data.frame(rbind(tmp.matc,tmp.matx)))
+    ans <- data.frame(tmp.dat, as.data.frame(rbind(tmp.matc, tmp.matx)))
     names(ans) <- c("APSIM", paste0("Version.", 1:ncols))
   }
   

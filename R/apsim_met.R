@@ -185,7 +185,8 @@ write_apsim_met <- function(met, wrt.dir = NULL, filename = NULL){
   writeLines(paste(attr(met,"colnames"), collapse = " "), con = con)
   writeLines(paste(attr(met,"units"), collapse = " "), con = con)
   
-  names(met) <- NULL
+  met <- as.data.frame(unclass(met))
+  attr(met, "names") <- NULL
   utils::write.table(met, file = con,
                      append = TRUE, quote = FALSE,
                      row.names = FALSE, col.names = FALSE)
@@ -621,8 +622,7 @@ as_apsim_met <- function(x,
   attr(x, "longitude") <- paste("longitude =", longitude)
   
   if(is.na(tav)){
-    tav <- mean(colMeans(x[,c("maxt","mint")], na.rm=TRUE), na.rm=TRUE)
-    attr(x, "tav") <- paste("tav =", tav, "(oC) ! calculated annual average ambient temperature", Sys.time())  
+    warning(" 'tav' is NA, use function tav_apsim_met to add it. ") 
   }else{
     attr(x, "tav") <- tav
   }
@@ -634,7 +634,7 @@ as_apsim_met <- function(x,
   class(x) <- c("met","data.frame")
   
   if(is.na(amp)){
-    x <- amp_apsim_met(x)
+    warning(" 'amp' is NA, use function amp_apsim_met to add it. ") 
   }else{
     attr(x, "amp") <- amp  
   }
@@ -1614,14 +1614,27 @@ add_column_apsim_met <- function(met, value, name, units){
   
   units <- as.character(units)
   
-  ## This invokes '$<-.data.frame' or not?
-  met[[name]] <- value
+  ## Need to use `[[<-.data.frame` to avoid issues
+  oatt <- attributes(met)
+  metd <- as.data.frame(unclass(met))
+  metd[[name]] <- value
   
-  attr(met, "colnames") <- colnames(met)
   tmp.units <- attr(met, "units")
-  if(length(tmp.units) < length(colnames(met))){
-    attr(met, "units") <- c(tmp.units, units)    
-  }
+  new.units <- c(tmp.units, units)   
+
+  attr(metd, "filename") <- oatt$filename
+  attr(metd, "site") <- oatt$site
+  attr(metd, "latitude") <- oatt$latitude
+  attr(metd, "longitude") <- oatt$longitude
+  attr(metd, "tav") <- oatt$tav
+  attr(metd, "amp") <- oatt$amp
+  attr(metd, "colnames") <- names(metd)
+  attr(metd, "units") <- new.units
+  attr(metd, "constants") <- oatt$constants
+  attr(metd, "comments") <- oatt$comments
+
+  met <- structure(metd, class = c("met", "data.frame"))
+
   return(met)
 }
 
@@ -1663,6 +1676,46 @@ add_column_apsim_met <- function(met, value, name, units){
 }
 
 #' @rdname add_column_apsim_met
+#' @param x object of class \sQuote{met}
+#' @param name name of the variable to be added or modified
+#' @param value value for the data.frame. It could be an integer, double or vector of length equal to the number of rows in x.
+#' @export
+`[<-.met` <- function(x, i, j, value){
+  
+  if(is.null(attr(value, "units"))){
+    stop("It is recommended to use function add_column_apsim_met for this operation instead.
+         Partly because units are needed", call. = FALSE)    
+  }else{
+    if(!is.null(names(value))){
+      return(add_column_apsim_met(x, value = value, units = attr(value, "units")))  
+    }else{
+      stop("It is recommended to use function add_column_apsim_met for this operation instead.
+         Partly because units are needed", call. = FALSE)    
+    }
+  }
+}
+
+#' @rdname add_column_apsim_met
+#' @param x object of class \sQuote{met}
+#' @param name name of the variable to be added or modified
+#' @param value value for the data.frame. It could be an integer, double or vector of length equal to the number of rows in x.
+#' @export
+`[[<-.met` <- function(x, i, j, value){
+  
+  if(is.null(attr(value, "units"))){
+    stop("It is recommended to use function add_column_apsim_met for this operation instead.
+         Partly because units are needed", call. = FALSE)    
+  }else{
+    if(!is.null(names(value))){
+      return(add_column_apsim_met(x, value = value, units = attr(value, "units")))  
+    }else{
+      stop("It is recommended to use function add_column_apsim_met for this operation instead.
+         Partly because units are needed", call. = FALSE)    
+    }
+  }
+}
+
+#' @rdname add_column_apsim_met
 #' @name remove_column_apsim_met
 #' @param met object of class \sQuote{met}
 #' @param name name of the variable to be removed
@@ -1684,9 +1737,25 @@ remove_column_apsim_met <- function(met, name){
   }
     
   ### This logic works well because it is in the right order?
-  attr(met, "units") <- attr(met, "units")[-which(names(met) == name)]   
-  met[[name]] <- NULL
-  attr(met, "colnames") <- names(met)
+  new.units <- attr(met, "units")[-which(names(met) == name)]  
+  
+  oatt <- attributes(met)
+  metd <- as.data.frame(unclass(met))
+  metd[[name]] <- NULL
+  
+  attr(metd, "filename") <- oatt$filename
+  attr(metd, "site") <- oatt$site
+  attr(metd, "latitude") <- oatt$latitude
+  attr(metd, "longitude") <- oatt$longitude
+  attr(metd, "tav") <- oatt$tav
+  attr(metd, "amp") <- oatt$amp
+  attr(metd, "colnames") <- names(metd)
+  attr(metd, "units") <- new.units
+  attr(metd, "constants") <- oatt$constants
+  attr(metd, "comments") <- oatt$comments
+  
+  met <- structure(metd, class = c("met", "data.frame"))
+  
   return(met)
 }
 
@@ -1791,4 +1860,40 @@ tav_apsim_met <- function(met, by.year = TRUE, na.rm = TRUE){
   attr(met, "tav") <- paste("tav =", ans, "! calculated average annual temperature", Sys.time())
   
   return(met)
+}
+
+#' @title Extract or Replace Part of a \sQuote{met} object
+#' @param x object of class \sQuote{met}
+#' @param i index for rows
+#' @param j index for columns
+#' @param ... additional arguments
+#' @param drop 
+#' @param value object of class \sQuote{met} after the extraction or replacement
+#' @export
+`[.met` <- function(x, i, j, ..., drop = TRUE){
+  
+ orig.met.attr <- attributes(x)
+ 
+ ans <- as.data.frame(unclass(x))[i, j, drop = drop]
+ 
+ attr(ans, "filename") <- orig.met.attr$filename
+ attr(ans, "site") <- orig.met.attr$site
+ attr(ans, "latitude") <- orig.met.attr$latitude
+ attr(ans, "longitude") <- orig.met.attr$longitude
+ attr(ans, "tav") <- orig.met.attr$tav
+ attr(ans, "amp") <- orig.met.attr$amp
+ attr(ans, 'colnames') <- names(ans)
+
+ if(!missing(j)){
+   attr(ans, "units") <- orig.met.attr$units[j]
+ }else{
+   attr(ans, "units") <- orig.met.attr$units
+ }
+ 
+ attr(ans, "constants") <- orig.met.attr$constants
+ attr(ans, "comments") <- orig.met.attr$comments
+
+ ans <- structure(ans, class = c("met", "data.frame"))
+ return(ans)
+  
 }

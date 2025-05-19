@@ -1,5 +1,6 @@
 ## Testing the compare_apsim function
 require(apsimx)
+packageVersion("apsimx")
 require(ggplot2)
 apsimx_options(warn.versions = FALSE)
 
@@ -15,6 +16,8 @@ if(run.test.compare.apsimx){
 
   ## Testing compare_apsim
   cap <- compare_apsim(obsWheat, sim.opt, labels = c("obs", "sim"))
+  
+  compare_apsim(obsWheat, sim.opt, labels = c("obs", "sim"), verbose = TRUE)
   
   plot(cap)
   plot(cap, plot.type = "diff")

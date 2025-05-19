@@ -25,8 +25,12 @@ Display available APSIM \sQuote{Classic} and APSIM-X versions
 }
 \examples{
 \dontrun{
-## Check which apsim version are avialable
+## Check which APSIM versions are available
 ava <- apsim_version(verbose = TRUE)
+
+## How to get APSIM 'help'
+## apc <- apsimx:::auto_detect_apsimx()
+## system(paste(apc, "--help"))
 }
 
 }

@@ -95,10 +95,12 @@ Many of them take one object (assuming that is the observed data) and another ob
 (assuming that is the simulated or predicted) object. Some of these metrics
 are a result from the regression.
 
-metrics that do not rely on regression (obs vs. pred): bias, mean bias, rss, rmse,
+- metrics that do not rely on regression (obs vs. pred): bias, mean bias, rss, rmse,
 corr, concorr, mod.eff
 
-metrics that do depend on a regression model: intercept, slope, rsigma, R2.
+- metrics that do depend on a regression model (Reg): intercept, slope, rsigma, R2. In this case,
+a simple linear regression is first adjusted to the two variables and the parameters and
+statistics are derived from that model. 
 
 \sQuote{rsigma} is the regression residual standard deviation obtained by using the function
 \code{\link[stats]{sigma}} to the regression object.
@@ -107,7 +109,7 @@ Plotting function for observed and simulated data
 }
 \note{
 \sQuote{Con Corr} is the concordance correlation coefficient (https://en.wikipedia.org/wiki/Concordance_correlation_coefficient);
-\sQuote{ME} is the model efficiency (https://en.wikipedia.org/wiki/Nash%E2%80%93Sutcliffe_model_efficiency_coefficient)
+\sQuote{ME} is the model efficiency (https://en.wikipedia.org/wiki/Nash-Sutcliffe_model_efficiency_coefficient)
 }
 \examples{
 \donttest{
@@ -136,8 +138,6 @@ cap <- compare_apsim(obsWheat, sim.opt, variable = "AboveGround",
 ## Using id
 plot(cap, variable = "AboveGround", id = 0.05)
                      
-
-
 }
 
 }

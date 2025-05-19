@@ -3,12 +3,18 @@
 \name{add_column_apsim_met}
 \alias{add_column_apsim_met}
 \alias{$<-.met}
+\alias{[<-.met}
+\alias{[[<-.met}
 \alias{remove_column_apsim_met}
 \title{Add a column to an object of class \sQuote{met}}
 \usage{
 add_column_apsim_met(met, value, name, units)
 
 \method{$}{met}(x, name) <- value
+
+\method{[}{met}(x, i, j) <- value
+
+\method{[[}{met}(x, i, j) <- value
 
 remove_column_apsim_met(met, name)
 }

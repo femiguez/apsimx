@@ -4,10 +4,12 @@
 #' (assuming that is the simulated or predicted) object. Some of these metrics
 #' are a result from the regression.
 #' 
-#' metrics that do not rely on regression (obs vs. pred): bias, mean bias, rss, rmse,
+#' - metrics that do not rely on regression (obs vs. pred): bias, mean bias, rss, rmse,
 #' corr, concorr, mod.eff
 #' 
-#' metrics that do depend on a regression model: intercept, slope, rsigma, R2.
+#' - metrics that do depend on a regression model (Reg): intercept, slope, rsigma, R2. In this case,
+#' a simple linear regression is first adjusted to the two variables and the parameters and
+#' statistics are derived from that model. 
 #' 
 #' \sQuote{rsigma} is the regression residual standard deviation obtained by using the function
 #' \code{\link[stats]{sigma}} to the regression object.
@@ -25,7 +27,7 @@
 #' @param weights optional weights for computing the (weighted) combined sum of squares
 #' @param verbose whether to print indexes to console (default is FALSE).
 #' @note \sQuote{Con Corr} is the concordance correlation coefficient (https://en.wikipedia.org/wiki/Concordance_correlation_coefficient);
-#' \sQuote{ME} is the model efficiency (https://en.wikipedia.org/wiki/Nash%E2%80%93Sutcliffe_model_efficiency_coefficient)
+#' \sQuote{ME} is the model efficiency (https://en.wikipedia.org/wiki/Nash-Sutcliffe_model_efficiency_coefficient)
 #' @export
 #' @return object of class \sQuote{out_mrg}, which can be used for further plotting
 #' @examples 
@@ -55,8 +57,6 @@
 #' ## Using id
 #' plot(cap, variable = "AboveGround", id = 0.05)
 #'                      
-#' 
-#' 
 #' }
 #' 
 
@@ -178,8 +178,8 @@ compare_apsim <- function(...,
   }
   
   ans <- data.frame(variable = rep(NA, ans.out.length), vs = NA, labels = NA, bias = NA, mean.bias = NA,
-                    intercept = NA, slope = NA, rsigma = NA, rss = NA, rmse = NA, r2 = NA, concorr = NA,
-                    mod.eff = NA)
+                    rss = NA, rmse = NA, concorr = NA, mod.eff = NA, corr = NA,
+                    intercept = NA, slope = NA, rsigma = NA, r2 = NA)
   k <- 1
   ## Calculate statistics for all variables
   resid.matrix <- NULL
@@ -214,30 +214,34 @@ compare_apsim <- function(...,
         fm0 <- lm(tmp[, j] ~ tmp[, j - 1], na.action = "na.exclude")
         ### Store residuals
         resid.matrix <- cbind(resid.matrix, stats::residuals(fm0, type = "pearson"))
+        #### First model-free statistics
+        if(verbose) cat("Model-free statistics \n")
         if(verbose) cat(" \t Bias (sum of residuals): ", sum(tmp[, j - 1] - tmp[, j]), "\n")
         ans$bias[k] <- sum(tmp[, j - 1] - tmp[, j])
         if(verbose) cat(" \t Bias (mean of residuals): ", mean(tmp[, j - 1] - tmp[, j]), "\n")
         ans$mean.bias[k] <- mean(tmp[, j - 1] - tmp[, j])
-        if(verbose) cat(" \t Intercept: ", coef(fm0)[1], "\n")
-        ans$intercept[k] <- coef(fm0)[1]
-        if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
-        ans$slope[k] <- coef(fm0)[2]
-        if(verbose) cat(" \t Reg. RSS: ", deviance(fm0), "\n")
-        ans$rss[k] <- deviance(fm0)
-        if(verbose) cat(" \t Reg. sigma: ", sigma(fm0), "\n")
-        ans$rsigma[k] <- sigma(fm0)
         if(verbose) cat(" \t RSS: ", rss(tmp[,j - 1], tmp[, j]), "\n")
         ans$rss[k] <- rss(tmp[,j - 1], tmp[, j])
         if(verbose) cat(" \t RMSE: ", rmse(tmp[,j - 1], tmp[, j]), "\n")
         ans$rmse[k] <- rmse(tmp[,j - 1], tmp[, j])
-        if(verbose) cat(" \t R^2: ", summary(fm0)$r.squared, "\n")
-        ans$r2[k] <- summary(fm0)$r.squared
         if(verbose) cat(" \t Corr: ", cor(tmp[, j - 1], tmp[, j]), "\n")
         ans$corr[k] <- cor(tmp[, j - 1], tmp[, j])
         if(verbose) cat(" \t Con. Corr: ", con_cor(tmp[, j - 1], tmp[, j]), "\n")
         ans$concorr[k] <- con_cor(tmp[, j - 1], tmp[, j])
         if(verbose) cat(" \t ME: ", mod_eff(tmp[, j - 1], tmp[, j]), "\n")
         ans$mod.eff[k] <- mod_eff(tmp[, j - 1], tmp[, j])
+        #### Regression-based statistics
+        if(verbose) cat("Regression-based statistics \n")
+        if(verbose) cat(" \t Reg. Intercept: ", coef(fm0)[1], "\n")
+        ans$intercept[k] <- coef(fm0)[1]
+        if(verbose) cat(" \t Reg. Slope: ", coef(fm0)[2], "\n")
+        ans$slope[k] <- coef(fm0)[2]
+        if(verbose) cat(" \t Reg. RSS: ", deviance(fm0), "\n")
+        ans$rss[k] <- deviance(fm0)
+        if(verbose) cat(" \t Reg. sigma: ", sigma(fm0), "\n")
+        ans$rsigma[k] <- sigma(fm0)
+        if(verbose) cat(" \t Reg. R^2: ", summary(fm0)$r.squared, "\n")
+        ans$r2[k] <- summary(fm0)$r.squared
       }
       k <- k + 1
     }
@@ -252,7 +256,6 @@ compare_apsim <- function(...,
       crss <- sum(weights * colSums(diffs^2, na.rm = TRUE)) 
     }
     ### Need to assign names to residual matrix
-    ## browser()
     colnames(resid.matrix) <- var.sel
   }
   
@@ -274,30 +277,34 @@ compare_apsim <- function(...,
       fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
       ### Store residuals
       resid.matrix <- cbind(resid.matrix, stats::residuals(fm0, type = "pearson"))
+      #### First model-free statistics
+      if(verbose) cat("Model-free statistics \n")
       if(verbose) cat(" \t Bias (sum of residuals): ", sum(tmp[, j - 1] - tmp[, j]), "\n")
       ans$bias[k] <- sum(tmp[, j - 1] - tmp[, j])
       if(verbose) cat(" \t Bias (mean of residuals): ", mean(tmp[, j - 1] - tmp[, j]), "\n")
       ans$mean.bias[k] <- mean(tmp[, j - 1] - tmp[, j])
-      if(verbose) cat(" \t Intercept: ", coef(fm0)[1], "\n")
-      ans$intercept[k] <- coef(fm0)[1]
-      if(verbose) cat(" \t Slope: ", coef(fm0)[2], "\n")
-      ans$slope[k] <- coef(fm0)[2]
-      if(verbose) cat(" \t Reg. RSS: ", deviance(fm0), "\n")
-      ans$rss[k] <- deviance(fm0)
-      if(verbose) cat(" \t Reg. sigma: ", sigma(fm0), "\n")
-      ans$rsigma[k] <- sigma(fm0)
       if(verbose) cat(" \t RSS: ", rss(tmp[,j - 1], tmp[, j]), "\n")
       ans$rss[k] <- rss(tmp[,j - 1], tmp[, j])
       if(verbose) cat(" \t RMSE: ", rmse(tmp[,j - 1], tmp[, j]), "\n")
       ans$rmse[k] <- rmse(tmp[,j - 1], tmp[, j])
-      if(verbose) cat(" \t R^2: ", summary(fm0)$r.squared, "\n")
-      ans$r2[k] <- summary(fm0)$r.squared
       if(verbose) cat(" \t Corr: ", cor(tmp[,j - 1], tmp[, j]), "\n")
       ans$corr[k] <- cor(tmp[, j - 1], tmp[, j])
       if(verbose) cat(" \t Con. Corr: ", con_cor(tmp[, j - 1], tmp[, j]), "\n")
       ans$concorr[k] <- con_cor(tmp[, j - 1], tmp[, j])
       if(verbose) cat(" \t ME: ", mod_eff(tmp[, j-1], tmp[, j]), "\n")
       ans$mod.eff[k] <- mod_eff(tmp[, j - 1], tmp[, j])
+      #### Regression-based statistics
+      if(verbose) cat("Regression-based statistics \n")
+      if(verbose) cat(" \t Reg. Intercept: ", coef(fm0)[1], "\n")
+      ans$intercept[k] <- coef(fm0)[1]
+      if(verbose) cat(" \t Reg. Slope: ", coef(fm0)[2], "\n")
+      ans$slope[k] <- coef(fm0)[2]
+      if(verbose) cat(" \t Reg. RSS: ", deviance(fm0), "\n")
+      ans$rss[k] <- deviance(fm0)
+      if(verbose) cat(" \t Reg. sigma: ", sigma(fm0), "\n")
+      ans$rsigma[k] <- sigma(fm0)
+      if(verbose) cat(" \t Reg. R^2: ", summary(fm0)$r.squared, "\n")
+      ans$r2[k] <- summary(fm0)$r.squared
     }
     clnm <- gsub(".1", "", grep(variable, names(out.mrg), value = TRUE)[1], fixed = TRUE) 
     colnames(resid.matrix) <- clnm
@@ -364,7 +371,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "resid", "ts", "den
   }
   
   x.resid <- x$resid.matrix
-  colnames(x.resid) <- paste0("resid.", colnames(x.resid))
+  colnames(x.resid) <- paste0("residuals.", colnames(x.resid))
   x <- x$out.mrg
   
   o.nms <- attr(x, "out.names")
@@ -521,7 +528,7 @@ plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "resid", "ts", "den
     
     if(is.null(dodge.width)) dodge.width <- 0
     
-    resid.name <- grep("resid", names(tmpr), value = TRUE)
+    resid.name <- grep("residuals", names(tmpr), value = TRUE)
     
     gp1 <- ggplot2::ggplot(data = tmpr, ggplot2::aes(x = eval(parse(text = eval(prs0[1]))), 
                                                      y = eval(parse(text = eval(resid.name))))) +

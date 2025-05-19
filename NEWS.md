@@ -5,6 +5,9 @@
 - Function compare_apsim_met provides better messages when there are differences
 between the met objects. It can now handle met files with different columns.
 
+- Added functions to provide better support for objects of class 'met'. 
+The main improvement now is that attributes are copied over after operations.
+
 - Adding new functionality for calculating and plotting carbon stocks
 
 ## apsimx 2.8.235 - 2025-3-10

@@ -427,9 +427,10 @@ summary.met <- function(object, ..., years, months, days, julian.days,
                         anomaly.units = c("percent", "standard.deviation", "absolute"),
                         check = FALSE, verbose = FALSE, 
                         na.rm = FALSE, digits = 2){
+
+  if(check) check_apsim_met(object)
   
   x <- object
-  if(check) check_apsim_met(x)
   
   if(!missing(days) && !missing(julian.days))
     stop("Either use days or julian.days but not both", call. = TRUE)

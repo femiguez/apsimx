@@ -6,6 +6,8 @@
 ## 3. plotting and different combinations
 
 require(apsimx)
+require(mgcv)
+require(ggplot2)
 packageVersion("apsimx")
 packageVersion("GSODR")
 packageVersion("data.table")
@@ -18,6 +20,7 @@ if(.Platform$OS.type == "unix"){
   internet <- FALSE  
 }
 run.apsim.met <- FALSE  ## This does not work because GSODR does not work
+
 if(run.apsim.met && internet){
   
   ## Testing napad and impute
@@ -239,7 +242,7 @@ if(run.apsim.met){
   
   pwr3 <- get_power_apsim_met(lonlat = c(-93, 42), dates = c("2000-01-01", "2011-12-31"))
   
-  ### This should work but it should give a warning
+  ### This should work but it should give a message
   merge.test2 <- compare_apsim_met(pwr2, pwr3)
   
   dmt <- get_daymet_apsim_met(lonlat = c(-93, 42), years = c(2000, 2023))
@@ -251,6 +254,14 @@ if(run.apsim.met){
   merge.test4 <- compare_apsim_met(pwr3[, 1:6], dmt[, 1:6], labels = c("POWER", "DAYMET"))
   plot(merge.test4, met.var = "rain", plot.type = "ts", cumulative = TRUE)
   plot(merge.test4, plot.type = "ts")
+  
+  #### How can I fix the previous gam fit?
+  mm4 <- merge.test4$met.mrg
+  
+  ggplot(data = mm4, aes(x = dates, y = radn.1)) + 
+    geom_point() + 
+    geom_smooth(formula = y ~ s(x, bs = "cs", k = 70, fx = TRUE))
+  
   
   merge.test5 <- compare_apsim_met(pwr3[, 1:6], dmt[, 1:6], labels = c("POWER", "DAYMET"),
                                    check = FALSE)
@@ -288,5 +299,15 @@ if(run.apsim.met){
   plot(pwr3, met.var = "rain", summary = TRUE, climatology = TRUE)
   plot(dmt2, met.var = "rain", summary = TRUE, climatology = TRUE)
   
+  ### Testing the extractor operation, this works now
+  ### DO I need to create other methods?
+  ### I have created `[<-.met` and `[[<-.met`
+  ### which basically send an error message and ask instead to use 'add_column_apsim_met'
+  dmt5 <- dmt[, 1:4]
+  class(dmt5)
+  dmt6 <- dmt[1:365, 1:4]
+  class(dmt6)
+  
+  summary(dmt6)
   
 }
