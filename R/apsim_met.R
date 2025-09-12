@@ -718,9 +718,15 @@ tt_apsim_met <- function(met, dates,
                                  to = end.date, 
                                  by = "day"), index = 0)
   
-  if("Classic_TT" %in% method) met <- add_column_apsim_met(met, 0, "Classic_TT", units = "(Cd)")
-  if("HeatStress_TT" %in% method) met <- add_column_apsim_met(met, 0, "HeatStress_TT", units = "(Cd)")
-  if("CropHeatUnit_TT" %in% method) met <- add_column_apsim_met(met, 0, "CropHeatUnit_TT", units = "(Cd)")
+  if("Classic_TT" %in% method){
+    Classic_TT_vec <- numeric(nrow(met))
+  } 
+  if("HeatStress_TT" %in% method){
+    HeatStress_TT_vec <- numeric(nrow(met))
+  } 
+  if("CropHeatUnit_TT" %in% method){
+    CropHeatUnit_TT_vec <- numeric(nrow(met))
+  } 
   # if("APSIM_TT" %in% method) met$APSIM_TT <- 0
   if("APSIM_TT" %in% method) stop("Not implemented yet.", call. = FALSE)
   
@@ -754,7 +760,7 @@ tt_apsim_met <- function(met, dates,
   cum.cropheatunit.tt <- 0
   cum.apsim.tt <- 0
   k <- 0
-  
+
   for(i in 1:nrow(met)){
     
     ## In the Southern hemisphere we start at k = 1
@@ -771,13 +777,13 @@ tt_apsim_met <- function(met, dates,
         classic.tt <- (maxt.m + mint.m)/2 - base_temp
         classic.tt <- ifelse(classic.tt >= 0, classic.tt, 0)
         cum.classic.tt <- cum.classic.tt + classic.tt
-        met$Classic_TT[i] <- cum.classic.tt
+        Classic_TT_vec[i] <- cum.classic.tt
       }
       if("HeatStress_TT" %in% method){
         heatstress.tt <- met$maxt[i] - max_temp
         heatstress.tt <- ifelse(heatstress.tt >= 0, heatstress.tt, 0)
         cum.heatstress.tt <- cum.heatstress.tt + heatstress.tt
-        met$HeatStress_TT[i] <- cum.heatstress.tt
+        HeatStress_TT_vec[i] <- cum.heatstress.tt
       }
       if("CropHeatUnit_TT" %in% method){
         mint.m <- 1.8 * met$mint[i] - 4.4
@@ -785,7 +791,7 @@ tt_apsim_met <- function(met, dates,
         cropheatunit.tt <- (maxt.m + mint.m)/2 
         cropheatunit.tt <- ifelse(cropheatunit.tt >= 0, cropheatunit.tt, 0)
         cum.cropheatunit.tt <- cum.cropheatunit.tt + cropheatunit.tt
-        met$CropHeatUnit_TT[i] <- cum.cropheatunit.tt
+        CropHeatUnit_TT_vec[i] <- cum.cropheatunit.tt
       }
       if("APSIM_TT" %in% method){
         apsim.tt <- apsim_tt(met$maxt[i], met$mint[i], Tb = base_temp, To = max_temp, cardinal.temps = x_temp, gdd.coord = y_tt)
@@ -799,8 +805,22 @@ tt_apsim_met <- function(met, dates,
       cum.apsim.tt <- 0
     }
   }
-
+  
+  ### Add variables as needed
   met <- add_column_apsim_met(met, tmpd$Dates, "Dates", units = "()")
+  
+  if("Classic_TT" %in% method){
+    met <- add_column_apsim_met(met, Classic_TT_vec, "Classic_TT", units = "(Cd)")
+  }
+  
+  if("HeatStress_TT" %in% method){
+    met <- add_column_apsim_met(met, HeatStress_TT_vec, "HeatStress_TT", units = "(Cd)")
+  }
+  
+  if("CropHeatUnit_TT" %in% method){
+    met <- add_column_apsim_met(met, CropHeatUnit_TT_vec, "CropHeatUnit_TT", units = "(Cd)")
+  }
+  
   return(met)
 }
   

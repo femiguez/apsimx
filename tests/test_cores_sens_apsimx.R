@@ -1,4 +1,7 @@
 ## Script to test cores functionality
+## Last time running this was with R 4.4.2
+## future ‘1.34.0’
+## apsimx ‘2.8.253’
 
 library(apsimx)
 packageVersion("apsimx")
@@ -40,6 +43,7 @@ if(run.test.two.cores.sns){
     ## 2024-08-19      63.68 (Dell Precision 5680)
     ## 2024-05-05      95.8 (Mac Pro 2021)
     ## 2024-08-12      61.92 (Dell Precision 7865)
+    ## 2025-07-21      89.23 (Dell Precision 7865)
     
     ## The two core simulation seems to work when number of simulations are even for n - 1
     system.time(sns1 <- sens_apsimx(file = "Wheat.apsimx",
@@ -58,6 +62,7 @@ if(run.test.two.cores.sns){
     ## 2024-08-19                  18.16 (Dell Precision 5680 - 8 cores)
     ## 2024-05-05                  55.77 (Mac Pro 2021)
     ## 2024-05-05                  27 (Mac Pro 2021 - 8 cores)
+    ## 2025-07-21                 51.15 (Dell Precision 7865)
 
     ## Are the results identical?
     is.it.zero <- sum(colSums(sns0$grid.sims - sns1$grid.sims))
@@ -172,6 +177,8 @@ if(run.test.even.more.cores.sns){
                                  grid = grd,
                                  cores = 4))
   ## 2024-08-12 Elapsed time: 21.95 (Dell Precision 7865)
+  ## 2024-07-21 Elapsed time: 32.39 (Dell Precision 7865)
+  
 
   system.time(sns8 <- sens_apsimx(file = "Wheat.apsimx",
                                   src.dir = ".",
@@ -179,7 +186,8 @@ if(run.test.even.more.cores.sns){
                                   grid = grd,
                                   cores = 8))
   ## 2024-08-12 Elapsed time: 15.91 (Dell Precision 7865)
-
+  ## 2025-07-21 Elapsed time: 22.45 (Dell Precision 7865)
+  
   ## Compare results
   is.it.zero <- sum(colSums(sns3$grid.sims - sns8$grid.sims))
 
@@ -194,7 +202,8 @@ if(run.test.even.more.cores.sns){
                                    parm.paths = c(pp1, pp2),
                                    grid = grd2,
                                    cores = 10))
-
+  ## 2025-07-21 Elapsed time: 46.97 (Dell Precision 7865)
+  
 }
 
 #### Testing the 'save' feature ----

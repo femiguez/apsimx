@@ -1,7 +1,7 @@
 ## Testing the edit function with a variety of files
 require(apsimx)
 packageVersion("apsimx")
-apsimx_options(warn.versions = FALSE)
+apsimx_options(warn.versions = FALSE, allow.path.spaces = TRUE)
 
 extd.dir <- system.file("extdata", package = "apsimx")
 
@@ -373,6 +373,39 @@ if(run.apsimx.edit){
     
   sns <- sens_apsimx("Wheat-opt-ex-edited.apsimx",
                      parm.paths = )
+  
+  
+}
+
+#### Testing 'duplication' of APSIM nodes ----
+if(run.apsimx.edit){
+  
+  dir(extd.dir, pattern = "apsimx$")
+  
+  setwd(tmp.dir)
+  
+  file.copy(file.path(extd.dir, "Wheat.apsimx"), tmp.dir)
+  
+  inspect_apsimx("Wheat.apsimx",
+                  node = "Soil",
+                  soil.child = "Physical")
+  
+  pp <- inspect_apsimx("Wheat.apsimx",
+                       node = "Soil",
+                       soil.child = "Physical",
+                       parm = "Wheat LL",
+                       print.path = TRUE)
+  
+  edit_apsimx("Wheat.apsimx",
+              node = "Soil",
+              soil.child = "Physical",
+              parm = "Wheat LL",
+              value = rep(0.25, 7))
+  
+  inspect_apsimx("Wheat-edited.apsimx",
+                  node = "Soil",
+                  soil.child = "Physical",
+                  parm = "Wheat LL")
   
   
 }
