@@ -121,7 +121,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
     Thickness <- numeric(nlayers)
     for(i in 1:length(Depth)){
       tmp <- strsplit(Depth[i],"-")[[1]]
-      Thickness[i] <- (tmp[2] - tmp[1]) * 10
+      Thickness[i] <- (as.numeric(tmp[2]) - as.numeric(tmp[1])) * 10
     }
   }
   
