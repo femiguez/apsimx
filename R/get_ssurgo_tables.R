@@ -16,6 +16,7 @@
 #' @param aoi area of interest, if supplied the lonlat and shift arguments will be ignored. Should be
 #' of class \sQuote{sp::SpatialPolygons} or \sQuote{sf}. 
 #' @param verbose whether to print messages and warnings to the console default FALSE
+#' @param ... additional arguments to be passed to \sQuote{soilDB} functions.
 #' @return a list with elements: mapunit, component, chorizon and mapunit.shp
 #' @export
 #' @examples 
@@ -31,7 +32,7 @@
 #' 
 #' }
 
-get_ssurgo_tables <- function(lonlat, shift = -1, aoi, verbose = FALSE){
+get_ssurgo_tables <- function(lonlat, shift = -1, aoi, verbose = FALSE, ...){
   
   if(!requireNamespace("soilDB", quietly = TRUE)){
     warning("The soilDB package is required for this function")
@@ -103,7 +104,7 @@ get_ssurgo_tables <- function(lonlat, shift = -1, aoi, verbose = FALSE){
     fSDA <- soilDB::fetchSDA(sql, duplicates = TRUE)
   } 
   
-  ### Mapunit ### -- this might contain the iacornsr
+  ### Mapunit ### 
   if(verbose == FALSE){
     mapunit <- suppressWarnings(suppressMessages(soilDB::get_mapunit_from_SDA(sql)))
   }else{
@@ -115,7 +116,12 @@ get_ssurgo_tables <- function(lonlat, shift = -1, aoi, verbose = FALSE){
   names(cmpnt) <- gsub("_", ".", names(cmpnt), fixed = TRUE)
   cmpnt$geomdesc <- cmpnt$geompos
   
-  ### retrive the state information ###
+  ### Getting interpretation information ----
+  cointer <- soilDB::get_cointerp_from_SDA(sql,
+                                           mrulename = "NCCPI - National Commodity Crop Productivity Index (Ver 3.0)",
+                                           duplicates = TRUE)
+  
+  ### retrieve the state information ###
   ## This is unnecessary, but it works for now
   states <- spData::us_states ## This object contains states and their geometries
   states <- sf::st_transform(states, crs = 3857)

@@ -1,6 +1,7 @@
 ## Testing the calculation of thermal time in APSIM
 require(apsimx)
 require(ggplot2)
+apsimx_options(warn.versions = FALSE)
 
 run.test.apsim.met.tt <- FALSE
 
@@ -23,7 +24,7 @@ if(run.test.apsim.met.tt){
               value = "[Maize].Phenology.AccumulatedTT", overwrite = TRUE)
   
   inspect_apsimx("Maize.apsimx", src.dir = tmp.dir, node = "Manager",
-                 parm = list("SowingRule", NA))
+                 parm = list("Sow using", NA))
   
   inspect_apsimx("Maize.apsimx", src.dir = tmp.dir, node = "Clock")
   
@@ -35,15 +36,17 @@ if(run.test.apsim.met.tt){
   ## Bring metfile here
   inspect_apsimx("Maize.apsimx", src.dir = tmp.dir, node = "Weather")
   
-  file.copy(file.path(ex.dir, "WeatherFiles/Dalby.met"), tmp.dir)
+  file.copy(file.path(ex.dir, "WeatherFiles/AU_Dalby.met"), tmp.dir)
   
-  dalby <- read_apsim_met("Dalby.met", src.dir = tmp.dir)
+  dalby <- read_apsim_met("AU_Dalby.met", src.dir = tmp.dir)
   
   ## What is the emergence date for 1990
   sim0[sim0$Maize.Phenology.CurrentStageName == "Emergence",]
   sim0[sim0$Maize.Phenology.CurrentStageName == "HarvestRipe",]
   
-  dalby.tt <- tt_apsim_met(dalby, dates = c("07-01", "28-05"), x_temp = c(10, 20, 30, 40), y_tt = c(0, 10, 20, 0))
+  dalby.tt <- tt_apsim_met(dalby, dates = c("07-01", "28-05"), 
+                           method = "Classic",
+                           x_temp = c(10, 20, 30, 40), y_tt = c(0, 10, 20, 0))
   
   sim0$year <- as.numeric(format(sim0$Date, "%Y"))
   sim1991 <- subset(sim0, year == 1991)

@@ -83,7 +83,90 @@ or other languages
 
 If you have any questions contact Fernando E. Miguez (femiguez *at* iastate.edu)
 
-Some papers that cite this package:
+Some papers that cite this package (updated Jan 15 2026):
+
+41\. Zhang, Y.; Ai, P.; Ma, Y.; Fu, Q.; Ma, X. Global Sensitivity 
+Analyses of the APSIM-Wheat Model at Different Soil Moisture Levels. 
+Plants 2025, 14, 2608. https://doi.org/10.3390/plants14172608
+
+40\. Catherine Gilbert, German Mandrini, Elhan Ersoz, Nicolas Martin,
+The seasonal characterization engine, an application for describing 
+environment from the perspective of crop development SoftwareX, Volume 33,
+2026, https://doi.org/10.1016/j.softx.2025.102477.
+
+39\. Li, Y.; Yao, Y.; Du, M.; Dong, L.; Yuan, J.; Li, G. APSIM NG Model Simulation of Soil 
+N2O Emission from the Dry-Crop Wheat Field and Its Parameter Sensitivity Analysis. 
+Agronomy 2025, 15, 834. https://doi.org/10.3390/agronomy15040834
+
+38\. Maas, E. D. v. L., & Sihi, D. (2025). Management alternatives for climate-smart agriculture 
+at two long-term agricultural research sites in the United States: 
+A model ensemble case study. Agronomy Journal, 117, e70146.
+https://doi.org/10.1002/agj2.70146
+
+37\. Marziotte, L., Carcedo, A. J. P., Mayor, L., Prasad, P. V. V., Peraza, J. A., 
+& Ciampitti, I. A. (2025). An in-silico approach exploring sorghum source:sink 
+balance across sorghum hybrids: How many leaves are enough?. 
+Crop Science, 65, e21449. https://doi.org/10.1002/csc2.21449
+
+36\. Hosseinpour, S., Pirdashti, H., Kaveh, M. et al. 
+Determination of a Sustainable Management for Rice Production Through a Modeling Approach. 
+Int. J. Plant Prod. 19, 47–64 (2025). https://doi.org/10.1007/s42106-024-00319-x
+
+35\. Panelo, J. S., Miguez, F. E., Schnable, P. S., & Salas-Fernandez, M. G. (2025). 
+Crop growth model-enabled genetic mapping of biomass accumulation dynamics in 
+photoperiod-sensitive sorghum. The Plant Genome, 18, e70111. 
+https://doi.org/10.1002/tpg2.70111
+
+34\. Intensifying cropping sequences in the US Central Great Plains: 
+an in silico analysis of a sorghum–wheat sequence. Lucia Marziotte, 
+Ana J. P. Carcedo, Daniel Rodriguez, Laura Mayor, V. Vara Prasad, 
+Ignacio A. Ciampitti. Front. Plant Sci., 29 May 2025.
+https://doi.org/10.3389/fpls.2025.1525128
+
+33\. Hangxin Zhou, Yuchen Wei, Mingming Wang, Liujun Xiao, Zhongkui Luo,
+Enhancing whole-profile soil organic carbon predictions in croplands through
+a depth-resolved modelling approach. Soil & Environmental Health. 
+Volume 3, Issue 3, 2025. https://doi.org/10.1016/j.seh.2025.100156.
+
+32\. Raigne, J. G., Higgins, R. H., Elli, E. F., Archontoulis, S. V., Dutta, S., 
+Miguez, F. E., & Singh, A. K. (2025). Genetic variability in biomass partitioning 
+and surface residue carbon-nitrogen ratios in soybean. 
+Crop Science, 65, e70155. https://doi.org/10.1002/csc2.70155
+
+31\. Climate-adaptative management strategies for soybean production under ENSO 
+scenarios in Southern Brazil: An in-silico analysis of crop failure risk. 
+Gabriel Hintz, Ana Carcedo, Luiz Felipe Almeida, Geomar Corassa, Tiago Horbe, 
+Luan Pott, Raí Schwalbert, Trevor Hefley, P.V. Vara Prasad, Ignacio Ciampitti.
+Agricultural Systems, Volume 222, 2025, https://doi.org/10.1016/j.agsy.2024.104153.
+
+30\. Assessing yield stability of pearl millet and rice cropping systems across West Africa 
+using long-term experiments and a modeling approach. Louis Kouadio, Kristina Fraser, 
+Ali Ibrahim, Kazuki Saito, Fatondji Dougbedji, Kalimuthu Senthilkumar.
+Published: May 27, 2025. https://doi.org/10.1371/journal.pone.0317170
+
+29\. A Modeling Approach for Quantifying the Ecosystem Services of Managed Prairie Systems
+Osterloh, Marissa. Iowa State University ProQuest Dissertations & Theses, 2025. 31934073.
+
+28\. Abebe, T.M.; Degefie, D.T.; Abera, W.; Liben, F.M.; Mkuhlani, S. (2025) 
+Integrating legume-based systems into wheat monoculture: Agronomic and soil
+fertility impacts in the southeastern highlands of Ethiopia. 
+CGIAR Sustainable Farming Science Program. 28 p.
+
+27\. Quantifying Ecosystem Service Trade-Offs to Advance Sustainable Intensification of 
+U.S. Corn Belt Agriculture. Magala, Richard. 
+Iowa State University ProQuest Dissertations & Theses, 2025. 31935615.
+
+26\. Ecohydrological Modeling of the Novel Perennial Ground Cover (PGC) System
+Olowoyeye, Oluwatuyi S. Iowa State University ProQuest Dissertations & Theses,
+2025.32117403.
+
+25\. Current and future adaptation potential of heat-tolerant maize in Cameroon:
+a combined attribution and adaptation study.
+Lennart Jansen, Sabine Undorf and Christoph Gornott. DOI: 10.1088/1748-9326/ada459
+
+24\. Enhancing Management Strategies for Crop Yield Improvement via Advanced Data-Informed Decisions
+van Versendaal Pirez, Emmanuela. Kansas State University 
+ProQuest Dissertations & Theses, 2025. 31937010.
 
 23\. Simulating within-field spatial and temporal corn 
 yield response to nitrogen with APSIM model. Thompson et al. (2024).

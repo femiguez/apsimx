@@ -2,6 +2,9 @@
 
 ## apsimx 2.8.2XX
 
+- changes to add_column_apsim_met, which now do not allow to simply add
+a column to a 'met' data frame without providing units
+
 - Function compare_apsim_met provides better messages when there are differences
 between the met objects. It can now handle met files with different columns.
 

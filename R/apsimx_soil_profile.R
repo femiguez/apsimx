@@ -34,6 +34,7 @@
 #' @param FInert Fraction of inert carbon (0-1)
 #' @param NO3N nitrate nitrogen (Chemical) (ppm)
 #' @param NH4N ammonium nitrogen (Chemical) (ppm)
+#' @param CACO3 carbonates (chemical) (ppm). Not used by APSIM currently.
 #' @param PH soil pH
 #' @param ParticleSizeClay particle size clay (in percent)
 #' @param ParticleSizeSilt particle size silt (in percent)
@@ -83,6 +84,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
                                  FInert = NULL,  
                                  NO3N = NULL,
                                  NH4N = NULL,
+                                 CACO3 = NULL,
                                  PH = NULL,
                                  ParticleSizeClay = NULL,
                                  ParticleSizeSilt = NULL,
@@ -355,6 +357,19 @@ apsimx_soil_profile <-  function(nlayers = 10,
     ## third element will be the b parameter 
     NH4N <- NH4N.max * soil_variable_profile(nlayers, a = NH4N[[2]], b = NH4N[[3]])
   }
+  
+  ## 18b. Calcium Carbonates (CaCO3)
+  if(missing(CACO3)) CACO3 <- 0.05 * soil_variable_profile(nlayers, 
+                                                           a = dist.parms$a,
+                                                           b = 0.01)
+  if(is.list(CACO3)){ 
+    if(length(CACO3) != 3) stop("CACO3 list should be of length 3")
+    ## First element will be the top value of CACO3
+    CACO3.max <- CACO3[[1]]
+    ## second element will be the a parameter 
+    ## third element will be the b parameter 
+    CACO3 <- CACO3.max * soil_variable_profile(nlayers, a = CACO3[[2]], b = CACO3[[3]])
+  }
    
   ## 19. Chemical soil PH
   if(missing(PH)) PH <- 6.5 * soil_variable_profile(nlayers, 
@@ -400,7 +415,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
                      KS=KS, Carbon=Carbon, 
                      SoilCNRatio=SoilCNRatio, FOM=FOM, 
                      FOM.CN=FOM.CN, FBiom=FBiom, FInert=FInert,
-                     NO3N=NO3N, NH4N=NH4N, PH=PH, 
+                     NO3N=NO3N, NH4N=NH4N, CACO3 = CACO3, PH=PH, 
                      ParticleSizeClay = ParticleSizeClay,
                      ParticleSizeSilt = ParticleSizeSilt,
                      ParticleSizeSand = ParticleSizeSand)
@@ -408,7 +423,7 @@ apsimx_soil_profile <-  function(nlayers = 10,
     names(soil) <- c("Depth","Thickness", "BD", "AirDry","LL15",
                      "DUL","SAT","KS", "Carbon","SoilCNRatio", "FOM",
                      "FOM.CN","FBiom","FInert",
-                     "NO3N","NH4N","PH", "ParticleSizeClay", "ParticleSizeSilt",
+                     "NO3N","NH4N", "CACO3", "PH", "ParticleSizeClay", "ParticleSizeSilt",
                      "ParticleSizeSand")
     
     soil <- cbind(soil, crop.soil)
@@ -471,7 +486,7 @@ plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater"
                                               "AirDry", "LL15", "DUL", "SAT",
                                               "KS", "Carbon", "SoilCNRatio", 
                                               "FOM", "FOM.CN", "FBiom",
-                                              "FInert", "NO3N", "NH4N", "PH",
+                                              "FInert", "NO3N", "NH4N", "CACO3", "PH",
                                               "ParticleSizeClay", "ParticleSizeSilt",
                                               "ParticleSizeSand", "texture")){
   ## Test for existence of ggplot2
@@ -495,7 +510,7 @@ plot.soil_profile <- function(x,..., property = c("all", "water", "initialwater"
                   "AirDry", "LL15", "DUL", "SAT",
                   "KS", "Carbon", "SoilCNRatio", 
                   "FOM", "FOM.CN", "FBiom",
-                  "FInert", "NO3N", "NH4N", "PH",
+                  "FInert", "NO3N", "NH4N", "CACO3", "PH",
                   "ParticleSizeClay", "ParticleSizeSilt",
                   "ParticleSizeSand", "texture", "ParticleSize")
     
@@ -676,10 +691,10 @@ check_apsimx_soil_profile <- function(x, particle.density = 2.65){
   
   crop.vars <- as.vector(sapply(x$crops, function(x) paste0(x, c(".KL", ".LL", ".XF"))))
   
-  vars <- c("Depth","Thickness", "BD", "AirDry","LL15",
-            "DUL","SAT","KS",
-            "Carbon","SoilCNRatio", "FOM","FOM.CN","FBiom","FInert",
-            "NO3N","NH4N","PH", crop.vars)
+  vars <- c("Depth", "Thickness", "BD", "AirDry", "LL15",
+            "DUL", "SAT", "KS",
+            "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert",
+            "NO3N", "NH4N", "CACO3", "PH", crop.vars)
   
   soil.names <- names(soil)
   
@@ -736,6 +751,8 @@ check_apsimx_soil_profile <- function(x, particle.density = 2.65){
   if(min(soil$NO3N) <= 0) warning("NO3N is zero or negative")
   ## NH4N
   if(min(soil$NH4N) <= 0) warning("NH4N is zero or negative")
+  ## CACO3
+  if(min(soil$CACO3) <= 0) warning("CACO3 is zero or negative")
   ## PH
   if(min(soil$PH) <= 0) warning("PH is zero or negative")
   if(max(soil$PH) > 14) warning("PH is too high")
@@ -939,7 +956,7 @@ compare_apsim_soil_profile <- function(...,
                                           "BD", "AirDry", "LL15", 
                                           "DUL", "SAT", "KS", "Carbon", "SoilCNRatio",
                                           "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
-                                          "NH4N", "PH", "ParticleSizeClay", 
+                                          "NH4N", "CACO3", "PH", "ParticleSizeClay", 
                                           "ParticleSizeSilt", "ParticleSizeSand"),
                                       property,
                                       labels,
@@ -1199,7 +1216,7 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
                                       "BD", "AirDry", "LL15", 
                                       "DUL", "SAT", "KS", "Carbon", "SoilCNRatio",
                                       "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
-                                      "NH4N", "PH", "ParticleSizeClay", 
+                                      "NH4N", "CACO3", "PH", "ParticleSizeClay", 
                                       "ParticleSizeSilt", "ParticleSizeSand"),
                          property,
                          span = 0.75){
@@ -1213,7 +1230,7 @@ plot.soil_profile_mrg <- function(x, ..., plot.type = c("depth", "vs", "diff", "
                "BD", "AirDry", "LL15", 
                "DUL", "SAT", "KS", "Carbon", "SoilCNRatio",
                "FOM", "FOM.CN", "FBiom", "FInert", "NO3N",
-               "NH4N", "PH", "ParticleSizeClay", 
+               "NH4N", "CACO3", "PH", "ParticleSizeClay", 
                "ParticleSizeSilt", "ParticleSizeSand")
   
   plot.type <- match.arg(plot.type)

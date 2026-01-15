@@ -16,6 +16,8 @@
 #' @param soil.bottom bottom of the soil profile
 #' @param method method used for interpolation (see \code{\link{approx}})
 #' @param nlayers number of soil layers to generate
+#' @param carbon.to.om conversion factor from carbon to organic matter (default is 1.724). This is known as the \sQuote{von Bemmelen factor}. 
+#' @param pedotransfer.method \sQuote{Saxton-Rawls}. Only option for now.
 #' @param verbose whether to print details of the process
 #' @return a list with soil profile matrices with length equal to nsoil
 #' @details Download the data from \acronym{SSURGO} using the \sQuote{FedData} package \cr
@@ -110,6 +112,8 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
                       xout = NULL, soil.bottom = 200,
                       method = c("constant","linear"),
                       nlayers = 10,
+                      carbon.to.om = 1.724,
+                      pedotransfer.method = c("Saxton-Rawls"),
                       verbose = FALSE){
   
   if(!requireNamespace("sf", quietly = TRUE)){
@@ -117,6 +121,10 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     return(NULL)
   }
   
+  DUL.method <- "ssurgo"
+  LL15.method <- "ssurgo"
+  SAT.method <- "ssurgo"
+  KS.method <- "ssurgo"
   ## Select important variables from mapunit
   mapunit2 <- subset(mapunit, 
                      select = c("musym", "muname", "muacres", "farmlndcl", 
@@ -185,9 +193,10 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
                                  "claytotal.r", "om.r", "partdensity", 
                                  "ksat.r", "awc.r", 
                                  "wthirdbar.r", "wfifteenbar.r",
-                                 "wsatiated.r", "ph1to1h2o.r",
+                                 "wsatiated.r", "ph1to1h2o.r", "caco3.r",
                                  "cokey", "chkey"))
-  
+
+  ### This takes the middle point! Important to remember!  
   chorizon3$hzdepa.r <- (chorizon3$hzdept.r + chorizon3$hzdepb.r) / 2
   
   ## Rename to match APSIM
@@ -201,18 +210,24 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   
   ## Use Saxton and Rawls to generate these based on texture
   if(any(is.na(chorizon3$wthirdbar.r))){
+    if(verbose) message("'wthirdbar.r' is missing. Using 'SR' to estimate it.")
+    DUL.method <- "Saxton-Rawls"
     chorizon3$DUL <- sr_dul(chorizon3$claytotal.r, chorizon3$sandtotal.r, chorizon3$om.r)
   }else{
     chorizon3$DUL <- chorizon3$wthirdbar.r * 1e-2 ## convert to fraction  
   }
   
   if(any(is.na(chorizon3$wfifteenbar.r))){
+    if(verbose) message("'wfifteenbar.r' is missing. Using 'SR' to estimate it.")
+    LL15.method <- "Saxton-Rawls"
     chorizon3$LL15 <- sr_ll(chorizon3$claytotal.r, chorizon3$sandtotal.r, chorizon3$om.r)
   }else{
     chorizon3$LL15 <- chorizon3$wfifteenbar.r * 1e-2 ## convert to fraction  
   }
   
   if(any(is.na(chorizon3$wsatiated.r))){
+    if(verbose) message("'wsatiated.r' is missing. Using 'SR' to estimate it.")
+    SAT.method <- "Saxton-Rawls"
     DUL_S <- sr_dul_s(chorizon3$claytotal.r, chorizon3$sandtotal.r, chorizon3$om.r)
     chorizon3$SAT <- sr_sat(chorizon3$sandtotal.r, chorizon3$DUL, DUL_S)
   }else{
@@ -220,8 +235,23 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   }
   
   ## Convert micro meters per second to mm/day
-  chorizon3$KS <- chorizon3$ksat.r * 1e-6 * (60 * 60 * 24) * 1e3 
-  chorizon3$PH <- chorizon3$ph1to1h2o.r
+  if(any(is.na(chorizon3$ksat.r))){
+    if(verbose) message("'ksat.r' is missing. Need to estimate it?")
+  }else{
+    chorizon3$KS <- chorizon3$ksat.r * 1e-6 * (60 * 60 * 24) * 1e3 
+  }
+  
+  if(any(is.na(chorizon3$ph1to1h2o.r))){
+    if(verbose) message("'ph1to1h2o.r' is missing. Need to estimate it?")    
+  }else{
+    chorizon3$PH <- chorizon3$ph1to1h2o.r
+  }
+  
+  if(any(is.na(chorizon3$caco3.r))){
+    if(verbose) message("'caco3.r' is missing. Need to estimate it?")    
+  }else{
+    chorizon3$CACO3 <- chorizon3$caco3.r
+  }
   
   ## From Saxton and Rawls
   chorizon3$BD <- (1 - chorizon3$SAT) * ifelse(is.na(chorizon3$partdensity), 2.65, chorizon3$partdensity)
@@ -232,9 +262,29 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   ## Soil Carbon
   ## SOM contains approximately 58% C; therefore, a factor of
   ## 1.72 can be used to convert OC to SOM.
-  chorizon3$Carbon <- chorizon3$om.r * (1/1.72)
+  ## This is known as the 'von Bemmelen' factor, but it is known
+  ## that it is not constant. A value of 2 might be better.
+  ## Douglas W. Pribyl,
+  ## A critical review of the conventional SOC to SOM conversion factor,
+  ## Geoderma, Volume 156, Issues 3–4, 2010, Pages 75-83, ISSN 0016-7061,
+  ## https://doi.org/10.1016/j.geoderma.2010.02.003.
+  if(any(is.na(chorizon3$om.r))){
+    if(verbose) message("'om.r' is missing. Need to estimate it?")    
+  }else{
+    chorizon3$Carbon <- chorizon3$om.r * (1/carbon.to.om)
+  }
   
   ### Adding texture
+  if(any(is.na(chorizon3$ParticleSizeClay))){
+    if(verbose) message("'ParticleSizeClay' is missing. Need to estimate it?")    
+  }
+  if(any(is.na(chorizon3$ParticleSizeSilt))){
+    if(verbose) message("'ParticleSizeSilt' is missing. Need to estimate it?")    
+  }
+  if(any(is.na(chorizon3$ParticleSizeSand))){
+    if(verbose) message("'ParticleSizeSand' is missing. Need to estimate it?")    
+  }
+
   chorizon3$ParticleSizeClay <- chorizon3$claytotal.r
   chorizon3$ParticleSizeSilt <- chorizon3$silttotal.r
   chorizon3$ParticleSizeSand <- chorizon3$sandtotal.r
@@ -244,8 +294,9 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   soil.list <- vector(mode = "list", length = length(soil.names))
   names(soil.list) <- soil.names
   
+  ### Should I add carbonates here? Are they available sometimes?
   vars <- c("Depth", "Thickness", "BD", "AirDry", "LL15", "DUL", "SAT", "KS", 
-            "Carbon", "PH", "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand")
+            "Carbon", "PH", "CACO3", "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand")
   
   for(sz in 1:length(soil.names)){
     
@@ -306,7 +357,11 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
                                               "- drainage class =", as.character(component5$drainagecl)[sz],
                                               "- elevation =", component5$elev.r[sz],
                                               "- slope =", component5$slope.r[sz],
-                                              "- geomdesc =", as.character(component5$geomdesc)[sz])
+                                              "- geomdesc =", as.character(component5$geomdesc)[sz],
+                                              "- DUL.method =", DUL.method,
+                                              "- LL15.method =", LL15.method,
+                                              "- SAT.method =", SAT.method,
+                                              "- KS.method =", KS.method)
     names(soil.d) <- vars
     ## Store in list
     soil.list[[sz]] <- soil.d

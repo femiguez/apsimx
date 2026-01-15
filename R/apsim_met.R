@@ -1612,6 +1612,9 @@ plot.met <- function(x, ..., years, met.var,
 #' attr(vp, "units") <- "(hPa)"
 #' ames$vp <- vp$vp
 #' 
+#' ## or
+#' ames[["vp"]] <- vp
+#' 
 #' ## This is needed to ensure that units and related attributes are also removed
 #' ames <- remove_column_apsim_met(ames, "vp")
 #' ## However, ames$vp <- NULL will also work
@@ -1625,8 +1628,9 @@ add_column_apsim_met <- function(met, value, name, units){
   
   if(missing(name)){
     name <- names(value)
-    if(is.null(name))
-      stop("If 'name' is not provided, 'value' should be a named vector", call. = FALSE)
+    if(is.null(name) && is.null(attr(value, 'name'))){
+      stop("If 'name' is not provided, 'value' should have a 'name' attribute.", call. = FALSE)
+    }
   }
   
   if(missing(units))
@@ -1678,46 +1682,111 @@ add_column_apsim_met <- function(met, value, name, units){
   }
   
   if(name %in% names(x)){
-    x[[name]] <- value
+    ### This means that the variable is already present and we are replacing the 
+    ### data
+    oatt <- attributes(x)
+    xd <- as.data.frame(unclass(x))
+    xd[[name]] <- value
+    
+    attr(xd, "filename") <- oatt$filename
+    attr(xd, "site") <- oatt$site
+    attr(xd, "latitude") <- oatt$latitude
+    attr(xd, "longitude") <- oatt$longitude
+    attr(xd, "tav") <- oatt$tav
+    attr(xd, "amp") <- oatt$amp
+    attr(xd, "colnames") <- names(x)
+    attr(xd, "units") <- oatt$units
+    attr(xd, "constants") <- oatt$constants
+    attr(xd, "comments") <- oatt$comments
+    
+    x <- structure(xd, class = c("met", "data.frame"))
     return(x)
-  }
-  
-  if(is.null(attr(value, "units"))){
-    stop("It is recommended to use function add_column_apsim_met for this operation instead.
-         Partly because units are needed", call. = FALSE)    
   }else{
-    if(!is.null(names(value))){
-      return(add_column_apsim_met(x, value = value, units = attr(value, "units")))  
-    }else{
+    ### 'value' should have the units attribute regardless
+    if(is.null(attr(value, "units"))){
       stop("It is recommended to use function add_column_apsim_met for this operation instead.
          Partly because units are needed", call. = FALSE)    
+    }
+    
+    if(!inherits(value, 'data.frame') || !inherits(value, 'data.frame') || !is.atomic(value))
+      stop("'value' should either be a 'data.frame' or a vector of length equal to the number of rows in the 'met' file", call. = FALSE)
+    
+    ### If 'value' is a data.frame
+    if(inherits(value, 'data.frame')){
+      if(dim(value)[2] > 1)
+        stop("'value' as data.frame should have just one column.", call. = FALSE)
+      nm <- names(value)
+      x <- add_column_apsim_met(x, value = value[[1]], name = nm, units = attr(x, 'units'))
+      return(x)
+    }
+    
+    ### If 'value' is a list
+    if(inherits(value, 'list')){
+      if(length(value) > 1)
+        stop("'value' as a 'list' should have just one element.", call. = FALSE)
+      nm <- names(value)
+      if(is.null(nm))
+        stop("'value' as a 'list' should be named.", call. = FALSE)
+      x <- add_column_apsim_met(x, value = value[[1]], name = nm, units = attr(x, 'units'))
+      return(x)
+    }
+    
+    ### If 'value' is atomic for ('logical', 'integer', 'numeric', 'complex', 'character' and 'raw') vector 
+    if(is.atomic(value)){
+      if(length(value) != nrow(x))
+        stop("'value' should be of length equal to number of rows in 'met' file.", call. = FALSE)
+      if(is.null(attr(x, 'name')))
+        stop("'value' should have an 'name' attribute.", call. = FALSE)
+      nm <- attr(value, 'name')
+      x <- add_column_apsim_met(x, value = value, name = nm, units = attr(x, 'units'))
+      return(x)
     }
   }
 }
 
 #' @rdname add_column_apsim_met
 #' @param x object of class \sQuote{met}
-#' @param name name of the variable to be added or modified
+#' @param i indices specifying elements to extract or replace. 
+#' @param j indices specifying elements to extract or replace. 
 #' @param value value for the data.frame. It could be an integer, double or vector of length equal to the number of rows in x.
 #' @export
-`[<-.met` <- function(x, i, j, value){
+`[<-.met` <- function(x, i, j, ..., value){
   
   if(is.null(attr(value, "units"))){
     stop("It is recommended to use function add_column_apsim_met for this operation instead.
          Partly because units are needed", call. = FALSE)    
-  }else{
-    if(!is.null(names(value))){
-      return(add_column_apsim_met(x, value = value, units = attr(value, "units")))  
-    }else{
-      stop("It is recommended to use function add_column_apsim_met for this operation instead.
-         Partly because units are needed", call. = FALSE)    
-    }
   }
+  
+  oatt <- attributes(x)
+  xd <- as.data.frame(unclass(x))
+  ### If 'value' is missing this is about extracting data
+   if(missing(value)){
+     xd <- xd[i, j]
+   }else{
+     ### If value is not missing, then we are replacing data
+     xd[i, j] <- value
+   }
+  
+  attr(xd, "filename") <- oatt$filename
+  attr(xd, "site") <- oatt$site
+  attr(xd, "latitude") <- oatt$latitude
+  attr(xd, "longitude") <- oatt$longitude
+  attr(xd, "tav") <- oatt$tav
+  attr(xd, "amp") <- oatt$amp
+  attr(xd, "colnames") <- names(x)
+  attr(xd, "units") <- new.units
+  attr(xd, "constants") <- oatt$constants
+  attr(xd, "comments") <- oatt$comments
+  
+  x <- structure(xd, class = c("met", "data.frame"))
+  
+  return(x)
 }
 
 #' @rdname add_column_apsim_met
 #' @param x object of class \sQuote{met}
-#' @param name name of the variable to be added or modified
+#' @param i indices specifying elements to extract or replace. 
+#' @param j indices specifying elements to extract or replace. 
 #' @param value value for the data.frame. It could be an integer, double or vector of length equal to the number of rows in x.
 #' @export
 `[[<-.met` <- function(x, i, j, value){
