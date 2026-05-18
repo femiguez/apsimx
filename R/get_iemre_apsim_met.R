@@ -176,8 +176,10 @@ get_iem_apsim_met <- function(lonlat, dates, wrt.dir = ".",
   yr2 <- format(as.Date(dates[2]), "%Y")
   mnth1 <- format(as.Date(dates[1]), "%m")
   mnth2 <- format(as.Date(dates[2]), "%m")
-  dy1 <- format(as.Date(dates[1]), "%j")
-  dy2 <- format(as.Date(dates[2]), "%j")
+  ## dy1 <- format(as.Date(dates[1]), "%j") The format changed for the API (April 2026)
+  ## dy2 <- format(as.Date(dates[2]), "%j")
+  dy1 <- format(as.Date(dates[1]), "%d")
+  dy2 <- format(as.Date(dates[2]), "%d")
   
   ## Longitude and latitude or State and Station
   stts <- datasets::state.abb
