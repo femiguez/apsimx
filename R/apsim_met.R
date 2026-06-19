@@ -238,75 +238,92 @@ impute_apsim_met <- function(met, method = c("approx","spline","mean"), verbose 
   ## Someday I will do this when it is needed
   args <- list(...)
   
+  ans <- as.data.frame(met) ### make copy of met object as a data frame
+  
   ## If there is a missing value in the first row it won't be imputed
-  if(any(is.na(met[1,]))){
-    wn1r <- which(is.na(met[1,]))
+  if(any(is.na(ans[1,]))){
+    wn1r <- which(is.na(ans[1,]))
     for(i in seq_along(wn1r)){
-      if(all(is.na(met[1:15, wn1r[i]]))){
+      if(all(is.na(ans[1:15, wn1r[i]]))){
         warning("The mean was used to impute the first row as the first 15 values were NAs")
-        met[1, wn1r[i]] <- mean(met[, wn1r[i]], na.rm = TRUE)
+        ans[1, wn1r[i]] <- mean(ans[, wn1r[i]], na.rm = TRUE)
       }else{
-        met[1, wn1r[i]] <- mean(met[1:15, wn1r[i]], na.rm = TRUE)  
+        ans[1, wn1r[i]] <- mean(ans[1:15, wn1r[i]], na.rm = TRUE)  
       }
-      cat("Imputed first row for:", names(met)[wn1r[i]], "\n")
+      cat("Imputed first row for:", names(ans)[wn1r[i]], "\n")
     }
-    print(as.data.frame(met[1,]))
+    print(as.data.frame(ans[1,]))
   }
   
   ## If there is a missing value in the last row it won't be imputed
-  if(any(is.na(met[nrow(met),]))){
-    wn1r <- which(is.na(met[nrow(met),]))
+  if(any(is.na(ans[nrow(ans),]))){
+    wn1r <- which(is.na(ans[nrow(ans),]))
     for(i in seq_along(wn1r)){
-      if(all(is.na(met[(nrow(met) - 15):nrow(met), wn1r[i]]))){
+      if(all(is.na(ans[(nrow(ans) - 15):nrow(ans), wn1r[i]]))){
         warning("The mean was used to impute the last row as the last 15 values were NAs")
-        met[nrow(met), wn1r[i]] <- mean(met[, wn1r[i]], na.rm = TRUE)
+        ans[nrow(ans), wn1r[i]] <- mean(ans[, wn1r[i]], na.rm = TRUE)
       }else{
-        met[nrow(met), wn1r[i]] <- mean(met[(nrow(met) - 15):nrow(met), wn1r[i]], na.rm = TRUE)  
+        ans[nrow(ans), wn1r[i]] <- mean(ans[(nrow(ans) - 15):nrow(ans), wn1r[i]], na.rm = TRUE)  
       }
-      cat("Imputed last row for:", names(met)[wn1r[i]], "\n")
+      cat("Imputed last row for:", names(ans)[wn1r[i]], "\n")
     }
-    print(as.data.frame(met[nrow(met),]))
+    print(as.data.frame(ans[nrow(ans),]))
   }
   
   ## Which rows have missing data
-  missing.vector <- vector(mode = "numeric", length = length(names(met)))
+  missing.vector <- vector(mode = "numeric", length = length(names(ans)))
   
-  if(all(sapply(sapply(met, function(x) which(is.na(x))),length) == 0))
+  if(all(sapply(sapply(ans, function(x) which(is.na(x))),length) == 0))
     warning("No missing data found")
   
-  missing.rows <- sapply(met, function(x) which(is.na(x)), simplify = FALSE)
+  missing.rows <- sapply(ans, function(x) which(is.na(x)), simplify = FALSE)
 
   if(verbose){
-    for(i in 1:ncol(met)){
+    for(i in 1:ncol(ans)){
       tmp.mr <- missing.rows[[i]]
       if(length(tmp.mr) > 0){
-        cat("Missing values for", names(met)[i], "\n")
-        print(as.data.frame(met)[tmp.mr,])
+        cat("Missing values for", names(ans)[i], "\n")
+        print(as.data.frame(ans)[tmp.mr,])
       }
     }
   }
   
-  col.classes <- sapply(met, class) 
+  col.classes <- sapply(ans, class) 
   ## I might need to prevent imputation on characters/factors 
   which.col.missing.values <- which(sapply(missing.rows, function(x) length(x)) > 0)
 
   for(i in which.col.missing.values){
     if(method == "approx"){
-      imputed.values <- stats::approx(x=seq_len(nrow(met)),
-                                      y=met[[i]],
-                                      xout=missing.rows[[i]])$y
+      imputed.values <- stats::approx(x = seq_len(nrow(ans)),
+                                      y = ans[[i]],
+                                      xout = missing.rows[[i]])$y
     }
     if(method == "spline"){
-      imputed.values <- stats::spline(x=seq_len(nrow(met)),
-                                      y=met[[i]],
-                                      xout=missing.rows[[i]])$y
+      imputed.values <- stats::spline(x = seq_len(nrow(ans)),
+                                      y = met[[i]],
+                                      xout = missing.rows[[i]])$y
     }
     if(method == "mean"){
-      imputed.values <- mean(met[[i]], na.rm = TRUE)
+      imputed.values <- mean(ans[[i]], na.rm = TRUE)
     }
-    met[missing.rows[[i]],i] <- imputed.values
+    
+    ans[missing.rows[[i]],i] <- imputed.values
+    
   }
-  return(met)
+  
+  ### Copy attributes to metd
+  attr(ans, "filename") <- attr(met, "filename")
+  attr(ans, "site") <- attr(met, "site")
+  attr(ans, "latitude") <- attr(met, "latitude")
+  attr(ans, "longitude") <- attr(met, "longitude")
+  attr(ans, "tav") <- attr(met, "tav")
+  attr(ans, "amp") <- attr(met, "amp")
+  attr(ans, "colnames") <- attr(met, "colnames")
+  attr(ans, "units") <- attr(met, "units")
+  attr(ans, "constants") <- attr(met, "constants")
+  attr(ans, "comments") <- attr(met, "comments")
+  class(ans) <- c("met","data.frame")
+  return(ans)
 }
 
 #' @title Check a met file for possible errors
@@ -1675,9 +1692,21 @@ add_column_apsim_met <- function(met, value, name, units){
   if(is.null(value) && name %in% names(x)){
     ## The thing here is that I also need to remove units and column names
     wn2r <- which(names(x) == name) ## which name to remove
-    x[[name]] <- value
-    attr(x, "colnames") <- attr(x, "colnames")[-wn2r]
-    attr(x, "units") <- attr(x, "units")[-wn2r]
+    x.att <- attributes(x)
+    xd <- as.data.frame(x) ## convert to data.frame first
+    xd[[name]] <- value
+    ## copy attributes
+    attr(xd, "filename") <- x.att$filename
+    attr(xd, "site") <- x.att$site
+    attr(xd, "latitude") <- x.att$latitude
+    attr(xd, "longitude") <- x.att$longitude
+    attr(xd, "tav") <- x.att$tav
+    attr(xd, "amp") <- x.att$amp
+    attr(xd, "colnames") <- attr(x.att, "colnames")[-wn2r]
+    attr(xd, "units") <- attr(x.att, "units")[-wn2r]
+    attr(xd, "constants") <- x.att$constants
+    attr(xd, "comments") <- x.att$comments
+    x <- structure(xd, class = c("met", "data.frame"))
     return(x)
   }
   
@@ -1708,9 +1737,7 @@ add_column_apsim_met <- function(met, value, name, units){
          Partly because units are needed", call. = FALSE)    
     }
     
-    if(!inherits(value, 'data.frame') || !inherits(value, 'data.frame') || !is.atomic(value))
-      stop("'value' should either be a 'data.frame' or a vector of length equal to the number of rows in the 'met' file", call. = FALSE)
-    
+  
     ### If 'value' is a data.frame
     if(inherits(value, 'data.frame')){
       if(dim(value)[2] > 1)
@@ -1718,28 +1745,31 @@ add_column_apsim_met <- function(met, value, name, units){
       nm <- names(value)
       x <- add_column_apsim_met(x, value = value[[1]], name = nm, units = attr(x, 'units'))
       return(x)
-    }
-    
-    ### If 'value' is a list
-    if(inherits(value, 'list')){
-      if(length(value) > 1)
-        stop("'value' as a 'list' should have just one element.", call. = FALSE)
-      nm <- names(value)
-      if(is.null(nm))
-        stop("'value' as a 'list' should be named.", call. = FALSE)
-      x <- add_column_apsim_met(x, value = value[[1]], name = nm, units = attr(x, 'units'))
-      return(x)
-    }
-    
-    ### If 'value' is atomic for ('logical', 'integer', 'numeric', 'complex', 'character' and 'raw') vector 
-    if(is.atomic(value)){
-      if(length(value) != nrow(x))
-        stop("'value' should be of length equal to number of rows in 'met' file.", call. = FALSE)
-      if(is.null(attr(x, 'name')))
-        stop("'value' should have an 'name' attribute.", call. = FALSE)
-      nm <- attr(value, 'name')
-      x <- add_column_apsim_met(x, value = value, name = nm, units = attr(x, 'units'))
-      return(x)
+    }else{
+      ### If 'value' is a list
+      if(inherits(value, 'list')){
+        if(length(value) > 1)
+          stop("'value' as a 'list' should have just one element.", call. = FALSE)
+        nm <- names(value)
+        if(is.null(nm))
+          stop("'value' as a 'list' should be named.", call. = FALSE)
+        x <- add_column_apsim_met(x, value = value[[1]], name = nm, units = attr(x, 'units'))
+        return(x)
+      }else{
+        ### If 'value' is atomic for ('logical', 'integer', 'numeric', 'complex', 'character' and 'raw') vector 
+        if(is.atomic(value)){
+          if(length(value) != nrow(x))
+            stop("'value' should be of length equal to number of rows in 'met' file.", call. = FALSE)
+          if(is.null(attr(x, 'name')))
+            stop("'value' should have an 'name' attribute.", call. = FALSE)
+          nm <- attr(value, 'name')
+          x <- add_column_apsim_met(x, value = value, name = nm, units = attr(x, 'units'))
+          return(x)
+        }else{
+          if(!inherits(value, 'data.frame') || !inherits(value, 'list') || !is.atomic(value))
+            stop("'value' should either be a 'data.frame' or a vector of length equal to the number of rows in the 'met' file", call. = FALSE)
+        }
+      }
     }
   }
 }

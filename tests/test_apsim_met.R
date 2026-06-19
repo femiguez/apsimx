@@ -31,7 +31,8 @@ if(run.apsim.met && internet){
   pwr <- get_power_apsim_met(lonlat = c(bsas.lon, bsas.lat), dates = c("2010-01-01", "2015-12-31"))
   dim(pwr)
   check_apsim_met(pwr)
-  gsd <- get_gsod_apsim_met(lonlat = c(bsas.lon, bsas.lat), dates = c("2010-01-01", "2015-12-31"))
+  gsd <- get_gsod_apsim_met(lonlat = c(bsas.lon, bsas.lat), 
+                            dates = c("2010-01-01", "2015-12-31"))
   dim(gsd)
   check_apsim_met(gsd)
   gsd$radn <- pwr$radn
@@ -80,7 +81,8 @@ if(run.apsim.met){
   vp <- data.frame(vp = abs(rnorm(nrow(ames), 2)))
   attr(vp, "units") <- "(hPa)"
   
-  ames$vp <- vp
+  ames$vp <- vp ## This works now (2026-6-18)
+  ames[["vp"]] <- vp ## This works now (2026-6-18)
 
   val <- abs(rnorm(nrow(ames), 2))
   nm <- "vp"
