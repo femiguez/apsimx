@@ -1,7 +1,7 @@
 ## Run a few tests for the examples
 require(apsimx)
 packageVersion("apsimx")
-apsimx_options(warn.versions = FALSE)
+apsimx_options(warn.versions = FALSE, allow.path.spaces = TRUE)
 
 ## Run inspect tests
 
@@ -548,6 +548,7 @@ if(inspect.factorial.test.parm.path){
   
   ## Inspect Replacement version
   inspect_apsimx_replacement(i, src.dir = tmp.dir,
+                             node = "Forages",
                              root = list("AgPastureExample", 2),
                              display.available = TRUE)
   
@@ -566,30 +567,27 @@ if(inspect.factorial.test.parm.path){
                  print.path = TRUE)
   
   inspect_apsimx_replacement("Factorial.apsimx", src.dir = tmp.dir,
+                             node = "Base1",
                              root = list("RangeExperiment"),
                              display.available = TRUE,
                              print.path = TRUE)
 
-  # inspect_apsimx_json("Factorial.apsimx", src.dir = tmp.dir,
-  #                     parm = "Clock",
-  #                     print.path = TRUE)
-  
   inspect_apsimx_json("Factorial.apsimx", src.dir = tmp.dir,
                       parm = "Permutation",
                       print.path = TRUE)
   
-
-  inspect_apsimx_json("AgPasture.apsimx", src.dir = tmp.dir,
-                 parm = "CO2xBaseTemperature",
-                 print.path = TRUE)
-  
-  inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
-                 root = list("CO2xBaseTemperature", "CO2xTb"),
-                 print.path = TRUE)
-
-  inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
-                 root = list("PastureByWaterAndNitrogen", "Base"),
-                 print.path = TRUE)
+### AgPasture has changed and these do not work anymore
+  # inspect_apsimx_json("AgPasture.apsimx", src.dir = tmp.dir,
+  #                parm = "AgPastureExample.CO2EffectScaleFactor",
+  #                print.path = TRUE)
+  # 
+  # inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
+  #                root = list("CO2xBaseTemperature", "CO2xTb"),
+  #                print.path = TRUE)
+  # 
+  # inspect_apsimx("AgPasture.apsimx", src.dir = tmp.dir,
+  #                root = list("PastureByWaterAndNitrogen", "Base"),
+  #                print.path = TRUE)
 }
 
 #### Test Solute ----

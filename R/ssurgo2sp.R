@@ -241,15 +241,21 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     chorizon3$KS <- chorizon3$ksat.r * 1e-6 * (60 * 60 * 24) * 1e3 
   }
   
-  if(any(is.na(chorizon3$ph1to1h2o.r))){
+  if(all(is.na(chorizon3$ph1to1h2o.r))){
     if(verbose) message("'ph1to1h2o.r' is missing. Need to estimate it?")    
   }else{
+    if(any(is.na(chorizon$ph1to1h2o.r))){
+      if(verbose) message("'ph1to1h2o.r' is partially missing. Need to estimate it?")    
+    }
     chorizon3$PH <- chorizon3$ph1to1h2o.r
   }
   
-  if(any(is.na(chorizon3$caco3.r))){
+  if(all(is.na(chorizon3$caco3.r))){
     if(verbose) message("'caco3.r' is missing. Need to estimate it?")    
   }else{
+    if(any(is.na(chorizon$caco3.r))){
+      if(verbose) message("'caco3.r' is partially missing. Need to estimate it?")    
+    }
     chorizon3$CACO3 <- chorizon3$caco3.r
   }
   
@@ -268,9 +274,12 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
   ## A critical review of the conventional SOC to SOM conversion factor,
   ## Geoderma, Volume 156, Issues 3–4, 2010, Pages 75-83, ISSN 0016-7061,
   ## https://doi.org/10.1016/j.geoderma.2010.02.003.
-  if(any(is.na(chorizon3$om.r))){
+  if(all(is.na(chorizon3$om.r))){
     if(verbose) message("'om.r' is missing. Need to estimate it?")    
   }else{
+    if(any(is.na(chorizon$om.r))){
+      if(verbose) message("'om.r' is partially missing. Need to estimate it?")    
+    }
     chorizon3$Carbon <- chorizon3$om.r * (1/carbon.to.om)
   }
   
@@ -314,6 +323,11 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     nlayers1 <- nlayers + 1
   
     for(i in 2:length(vars)){
+
+      if(is.na(match(vars[i], names(one.soil)))){
+        message(paste(names(one.soil), collapse = " "))
+        stop(paste("soil variable:", vars[i], "not found in soil table"))
+      }
       tmp <- one.soil[,c("Depth",vars[i])]
     
       nlayers <- ifelse(vars[i] == "Thickness", nlayers1, nlayers0)

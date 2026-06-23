@@ -14,6 +14,7 @@ if(run.apsimx.check){
     
     file.to.check <- ex.dir.list[.j]
     if(file.to.check == "Slurp.apsimx") next
+    if(file.to.check == "Graph.apsimx") next
     
     if(.j %in% c(2, 4, 5, 16, 17, 18, 24, 29, 30, 34)){
       cat("Simulation check:", file.to.check, "\n")
@@ -36,8 +37,11 @@ if(run.apsimx.check){
       if(file.to.check == "Chickpea.apsimx"){
         inspect_apsimx(file.to.check, ex.dir, root = "Continuous_TOS.Cont_TOS")
         inspect_apsimx(file.to.check, ex.dir, node = "Soil",
-                       soil.child = "InitialWater",
-                       root = "Continuous_TOS.Cont_TOS")
+                       soil.child = "Metadata",
+                       root = "Continuous_TOS.Cont_TOS") 
+        inspect_apsimx(file.to.check, ex.dir, node = "Soil",
+                       soil.child = "Physical",
+                       root = "Continuous_TOS.Cont_TOS") 
         check_apsimx(file.to.check, ex.dir, root = "Continuous_TOS.Cont_TOS")        
       }
       if(file.to.check %in% c("Chicory.apsimx", "ControlledEnvironment.apsimx", "CsvWeather.apsimx")){

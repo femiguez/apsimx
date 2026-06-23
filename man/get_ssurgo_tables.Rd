@@ -4,7 +4,7 @@
 \alias{get_ssurgo_tables}
 \title{Retrieve soil profile data and return a (list) with data frames (tables)}
 \usage{
-get_ssurgo_tables(lonlat, shift = -1, aoi, verbose = FALSE)
+get_ssurgo_tables(lonlat, shift = -1, aoi, verbose = FALSE, ...)
 }
 \arguments{
 \item{lonlat}{Longitude and latitude vector (e.g. c(-93, 42))}
@@ -16,6 +16,8 @@ lonlat by some amount of distance (e.g. 300 - in meters)}
 of class \sQuote{sp::SpatialPolygons} or \sQuote{sf}.}
 
 \item{verbose}{whether to print messages and warnings to the console default FALSE}
+
+\item{...}{additional arguments to be passed to \sQuote{soilDB} functions.}
 }
 \value{
 a list with elements: mapunit, component, chorizon and mapunit.shp

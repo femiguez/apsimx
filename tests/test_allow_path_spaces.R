@@ -1,4 +1,5 @@
 
+### NOTE: This test passed on Jun 22 2026 with package version 
 library(apsimx)
 packageVersion("apsimx")
 apsimx_options(warn.versions = FALSE, allow.path.spaces = TRUE, warn.find.apsimx = FALSE)

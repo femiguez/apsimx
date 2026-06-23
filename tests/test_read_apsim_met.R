@@ -42,8 +42,10 @@ if(run.test.impute.apsim.met && username == "fernandomiguez"){
   ## Check for reasonable ranges 
   check_apsim_met(pwr)
   ## Impute using linear interpolation
-  pwr[1, "radn"] <- NA
-  pwr[nrow(pwr), "radn"] <- NA
+  missing.input <- NA
+  attr(missing.input, "units") <- "MJ/day" 
+  pwr[1, "radn"] <- missing.input
+  pwr[nrow(pwr), "radn"] <- missing.input
   check_apsim_met(pwr)
   pwr.imptd <- impute_apsim_met(pwr, verbose = TRUE)
   summary(pwr.imptd)

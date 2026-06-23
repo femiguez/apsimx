@@ -27,6 +27,7 @@ apsimx_soil_profile(
   FInert = NULL,
   NO3N = NULL,
   NH4N = NULL,
+  CACO3 = NULL,
   PH = NULL,
   ParticleSizeClay = NULL,
   ParticleSizeSilt = NULL,
@@ -50,7 +51,7 @@ apsimx_soil_profile(
   ...,
   property = c("all", "water", "initialwater", "BD", "AirDry", "LL15", "DUL", "SAT",
     "KS", "Carbon", "SoilCNRatio", "FOM", "FOM.CN", "FBiom", "FInert", "NO3N", "NH4N",
-    "PH", "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand", "texture")
+    "CACO3", "PH", "ParticleSizeClay", "ParticleSizeSilt", "ParticleSizeSand", "texture")
 )
 
 check_apsimx_soil_profile(x, particle.density = 2.65)
@@ -95,6 +96,8 @@ check_apsimx_soil_profile(x, particle.density = 2.65)
 \item{NO3N}{nitrate nitrogen (Chemical) (ppm)}
 
 \item{NH4N}{ammonium nitrogen (Chemical) (ppm)}
+
+\item{CACO3}{carbonates (chemical) (ppm). Not used by APSIM currently.}
 
 \item{PH}{soil pH}
 

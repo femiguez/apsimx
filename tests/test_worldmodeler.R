@@ -28,7 +28,8 @@ if(run.test.worldmodeler && Sys.info()[["user"]] == "fernandomiguez"){
   
 }
 
-if(run.test.worldmodeler && Sys.info()[["user"]] == "fernandomiguez"){
+### World modeler is not currently working (2026-06-22)
+if(run.test.worldmodeler && Sys.info()[["user"]] == "fernandomiguez" && FALSE){
   
   am0 <- get_worldmodeler_apsim_met(lonlat = c(-93, 42), dates = c("1990-01-01", "2020-12-31"))
   

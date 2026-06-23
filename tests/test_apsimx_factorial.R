@@ -1,6 +1,6 @@
 ## A few steps
 require(apsimx)
-apsimx_options(warn.versions = FALSE)
+apsimx_options(warn.versions = FALSE, allow.path.spaces = TRUE)
 
 ## Only write to a temp directory
 tmp.dir <- tempdir()

@@ -904,7 +904,8 @@ fix_apsimx_soil_profile <- function(x, soil.var = c("SAT", "BD"), particle.densi
             cat("length of InitialWater:", length(iwat < 0), "layer", j, "\n")
             stop("iwat length greater than one")
           }
-          if(any(iwat < 0)){
+          if(any(iwat > 0)){
+            ### Changed to greater than zero per github issue #208 by LucioLourido
             x$initialwater$InitialValues[j] <- x$soil$DUL[j] * 0.9  
             if(verbose){
               cat("InitialWater cannot be greater than DUL in layer:", j,".\n",
@@ -1553,29 +1554,39 @@ carbon_stocks <- function(x,
   return(ans)
 }
 
-plot.carbon.stocks <- function(x){
+
+#' @title Plot carbon stocks (function in progress)
+#' @description Plotting of carbon stocks based on an object of class \sQuote{soil_profile}
+#' @name plot.carbon.stocks
+#' @param x object of class \sQuote{soil_profile}
+#' @param ... optional argument, not used at the moment
+#' @return returns a graph
+#' @export
+plot.carbon.stocks <- function(x, ...){
+
+  depth <- NULL; midpoint.depth <- NULL; Carbon <- NULL;
   
-  sp <- x$soil.profile$soil 
+  sp <- x$soil.profile$soil
   sp$depth <- -cumsum(sp$Thickness) * 1e-1
   ### Calculate midpoint depth
   sp$midpoint.depth <- 0
   sp$midpoint.depth[1] <- sp$depth[1] / 2
   for(i in 2:dim(sp)[1]){
-    sp$midpoint.depth[i] <- (sp$depth[i - 1] + sp$depth[i]) / 2    
+     sp$midpoint.depth[i] <- (sp$depth[i - 1] + sp$depth[i]) / 2
   }
 
   first.depth <- sp$depth[1]
   first.carbon <- sp$Carbon[1]
-  
-  gp1 <- ggplot2::ggplot(data = sp) + 
+
+  gp1 <- ggplot2::ggplot(data = sp) +
            ggplot2::geom_vline(mapping = ggplot2::aes(xintercept = depth),
-                               linetype = 3) + 
-           ggplot2::geom_point(ggplot2::aes(x = midpoint.depth, y = Carbon)) + 
-           ggplot2::geom_step(ggplot2::aes(x = depth, y = Carbon)) + 
-           ggplot2::annotate("segment", x = 0, xend = first.depth, y = first.carbon, yend = first.carbon) + 
-           ggplot2::coord_flip() + 
+                               linetype = 3) +
+           ggplot2::geom_point(ggplot2::aes(x = midpoint.depth, y = Carbon)) +
+           ggplot2::geom_step(ggplot2::aes(x = depth, y = Carbon)) +
+           ggplot2::annotate("segment", x = 0, xend = first.depth, y = first.carbon, yend = first.carbon) +
+           ggplot2::coord_flip() +
            ggplot2::labs(y = "Carbon (%)", x = "depth (cm)")
-  
+
   invisible(gp1)
 }
 

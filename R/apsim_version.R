@@ -195,66 +195,69 @@ apsimx_current_version <- function(model = "Wheat"){
   return(model$Version)
 }
 
-apsim_version_inuse <- function(){
-
-  ## For Unix
-  if(.Platform$OS.type == "unix"){
-    ## If there is only one APSIM present
-    if(length(find.apsim) == 1){
-      ## Darwin is different from Linux
-      if(grepl("Darwin", Sys.info()[["sysname"]])) ans <- laf[find.apsim]
-      if(grepl("Linux", Sys.info()[["sysname"]])) ans <- paste0("apsim", list.files("/usr/local/lib/apsim"))
-    }
-    ## If there are multiple APSIMs present
-    if(length(find.apsim) > 1){
-      len.fa <- length(find.apsim)
-      fa.dt <- sapply(laf[find.apsim],.favd, simplify = FALSE)[[len.fa]]
-      if(verbose) cat("APSIM-X version date:", as.character(fa.dt))
-      ## This next line picks the last one
-      newest.version <- laf[find.apsim][len.fa]
-      ans <- newest.version
-    }
-    ## If the one in use is not any of the above such as a Custom build
-    if(!is.na(get("exe.path", envir = apsimx::apsimx.options))){
-      ans <- get("exe.path", envir = apsimx::apsimx.options)
-    }
-  }
-  ## For Windows
-  if(.Platform$OS.type == "windows"){
-    ## If everything fails NAs will be returned
-    ansc <- NA
-    ansx <- NA
-    ## If there is only one APSIM 'Classic'
-    if(length(find.apsim) == 1){
-      ansc <- laf[find.apsim]
-    }
-    ## If there are multiple APSIMs present
-    if(length(find.apsim) > 1){
-      apsim.versions <- sapply(laf[find.apsim],fevc)
-      newest.version <- sort(apsim.versions, decreasing = TRUE)[1]
-      ansc <- names(newest.version)
-    }
-    ## It is possible that the one in use is not the latest one
-    if(!is.na(get("exe.path", envir = apsimx::apsim.options))){
-      ansc <- get("exe.path", envir = apsimx::apsim.options)
-    }
-    ## For APSIM-X
-    if(length(find.apsimx) == 1){
-      ansx <- lafx[find.apsimx]
-    }
-    if(length(find.apsimx) > 1){
-      apsimx.versions <- lafx[find.apsimx]
-      len.fa <- length(find.apsimx)
-      newest.version <- lafx[find.apsimx][len.fa]
-      ansx <- newest.version
-    }
-    ## It is possible that the one in use is not the latest one
-    if(!is.na(get("exe.path", envir = apsimx::apsimx.options))){
-      ansx <- get("exe.path", envir = apsimx::apsimx.options)
-    }
-    ans <- data.frame(Classic = ansc, NextGeneration = ansx)
-  }
-  invisible(ans)
-}
+# apsim_version_inuse <- function(verbose = TRUE){
+# 
+#   ## For Unix
+#   if(.Platform$OS.type == "unix"){
+#     ## If there is only one APSIM present
+#     if(length(find.apsim) == 1){
+#       ## Darwin is different from Linux
+#       if(grepl("Darwin", Sys.info()[["sysname"]])){
+#         laf <- list.files("/Applications/")
+#         ans <- laf[find.apsim]
+#       } 
+#       if(grepl("Linux", Sys.info()[["sysname"]])) ans <- paste0("apsim", list.files("/usr/local/lib/apsim"))
+#     }
+#     ## If there are multiple APSIMs present
+#     if(length(find.apsim) > 1){
+#       len.fa <- length(find.apsim)
+#       fa.dt <- sapply(laf[find.apsim],.favd, simplify = FALSE)[[len.fa]]
+#       if(verbose) cat("APSIM-X version date:", as.character(fa.dt))
+#       ## This next line picks the last one
+#       newest.version <- laf[find.apsim][len.fa]
+#       ans <- newest.version
+#     }
+#     ## If the one in use is not any of the above such as a Custom build
+#     if(!is.na(get("exe.path", envir = apsimx::apsimx.options))){
+#       ans <- get("exe.path", envir = apsimx::apsimx.options)
+#     }
+#   }
+#   ## For Windows
+#   if(.Platform$OS.type == "windows"){
+#     ## If everything fails NAs will be returned
+#     ansc <- NA
+#     ansx <- NA
+#     ## If there is only one APSIM 'Classic'
+#     if(length(find.apsim) == 1){
+#       ansc <- laf[find.apsim]
+#     }
+#     ## If there are multiple APSIMs present
+#     if(length(find.apsim) > 1){
+#       apsim.versions <- sapply(laf[find.apsim],fevc)
+#       newest.version <- sort(apsim.versions, decreasing = TRUE)[1]
+#       ansc <- names(newest.version)
+#     }
+#     ## It is possible that the one in use is not the latest one
+#     if(!is.na(get("exe.path", envir = apsimx::apsim.options))){
+#       ansc <- get("exe.path", envir = apsimx::apsim.options)
+#     }
+#     ## For APSIM-X
+#     if(length(find.apsimx) == 1){
+#       ansx <- lafx[find.apsimx]
+#     }
+#     if(length(find.apsimx) > 1){
+#       apsimx.versions <- lafx[find.apsimx]
+#       len.fa <- length(find.apsimx)
+#       newest.version <- lafx[find.apsimx][len.fa]
+#       ansx <- newest.version
+#     }
+#     ## It is possible that the one in use is not the latest one
+#     if(!is.na(get("exe.path", envir = apsimx::apsimx.options))){
+#       ansx <- get("exe.path", envir = apsimx::apsimx.options)
+#     }
+#     ans <- data.frame(Classic = ansc, NextGeneration = ansx)
+#   }
+#   invisible(ans)
+# }
 
 

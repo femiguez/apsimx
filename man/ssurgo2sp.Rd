@@ -15,6 +15,8 @@ ssurgo2sp(
   soil.bottom = 200,
   method = c("constant", "linear"),
   nlayers = 10,
+  carbon.to.om = 1.724,
+  pedotransfer.method = c("Saxton-Rawls"),
   verbose = FALSE
 )
 }
@@ -38,6 +40,10 @@ ssurgo2sp(
 \item{method}{method used for interpolation (see \code{\link{approx}})}
 
 \item{nlayers}{number of soil layers to generate}
+
+\item{carbon.to.om}{conversion factor from carbon to organic matter (default is 1.724). This is known as the \sQuote{von Bemmelen factor}.}
+
+\item{pedotransfer.method}{\sQuote{Saxton-Rawls}. Only option for now.}
 
 \item{verbose}{whether to print details of the process}
 }

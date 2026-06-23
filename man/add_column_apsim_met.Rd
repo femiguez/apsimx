@@ -12,7 +12,7 @@ add_column_apsim_met(met, value, name, units)
 
 \method{$}{met}(x, name) <- value
 
-\method{[}{met}(x, i, j) <- value
+\method{[}{met}(x, i, j, ..., drop = TRUE) <- value
 
 \method{[[}{met}(x, i, j) <- value
 
@@ -28,6 +28,14 @@ remove_column_apsim_met(met, name)
 \item{units}{units for the new column (required)}
 
 \item{x}{object of class \sQuote{met}}
+
+\item{i}{indices specifying elements to extract or replace.}
+
+\item{j}{indices specifying elements to extract or replace.}
+
+\item{...}{dots, see Extract}
+
+\item{drop}{If TRUE the result is coerced to the lowest possible dimension}
 }
 \value{
 an object of class \sQuote{met} with the additional column
@@ -51,6 +59,9 @@ ames <- add_column_apsim_met(ames, value = val, name = "vp", units = "(hPa)")
 vp <- data.frame(vp = abs(rnorm(nrow(ames), 10)))
 attr(vp, "units") <- "(hPa)"
 ames$vp <- vp$vp
+
+## or
+ames[["vp"]] <- vp
 
 ## This is needed to ensure that units and related attributes are also removed
 ames <- remove_column_apsim_met(ames, "vp")

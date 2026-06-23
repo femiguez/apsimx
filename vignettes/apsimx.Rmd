@@ -1,5 +1,5 @@
 ---
-title: "apsimx: An R package for APSIM Next Generation (and Classic)"
+title: "apsimx: An R package for APSIM (Next Generation and Classic)"
 author: "Fernando Miguez"
 date: "`r Sys.Date()`"
 output: 

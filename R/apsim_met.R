@@ -1151,6 +1151,7 @@ plot.met <- function(x, ..., years, met.var,
 
   if(!missing(years)){
     x <- x[x$year %in% years,]
+    ## Is this better? x <- subset(x, year %in% years) ## programmatically?
   }
   
   x <- add_column_apsim_met(x, value = as.factor(x$year), name = "Years", units = "()")
@@ -1364,7 +1365,10 @@ plot.met <- function(x, ..., years, met.var,
       for(i in seq_along(sort(unique(x$year)))){
         yr <- sort(unique(x$year))[i]
         x.tmp <- x[x$year == yr,]
-        if(nrow(x.tmp) < 365) next ## Skip incomplete years
+        if(nrow(x.tmp) < 365){
+          message(paste("year:", unique(x$year)[i], "was removed as it is incomplete"))
+          next ## Skip incomplete years
+        } 
         if(nrow(x.tmp) == 366) x.tmp <- x.tmp[1:365,]
         x.dag.maxt <- cumsum(x.tmp$maxt) - cumsum(maxt.climatology[1:365, "maxt"])
         x.dag.mint <- cumsum(x.tmp$mint) - cumsum(mint.climatology[1:365, "mint"])
@@ -1778,9 +1782,11 @@ add_column_apsim_met <- function(met, value, name, units){
 #' @param x object of class \sQuote{met}
 #' @param i indices specifying elements to extract or replace. 
 #' @param j indices specifying elements to extract or replace. 
+#' @param ... dots, see Extract
 #' @param value value for the data.frame. It could be an integer, double or vector of length equal to the number of rows in x.
+#' @param drop If TRUE the result is coerced to the lowest possible dimension
 #' @export
-`[<-.met` <- function(x, i, j, ..., value){
+`[<-.met` <- function(x, i, j, ..., value, drop = TRUE){
   
   if(is.null(attr(value, "units"))){
     stop("It is recommended to use function add_column_apsim_met for this operation instead.
@@ -1791,7 +1797,7 @@ add_column_apsim_met <- function(met, value, name, units){
   xd <- as.data.frame(unclass(x))
   ### If 'value' is missing this is about extracting data
    if(missing(value)){
-     xd <- xd[i, j]
+     xd <- xd[i, j, drop = drop]
    }else{
      ### If value is not missing, then we are replacing data
      xd[i, j] <- value
@@ -1804,7 +1810,7 @@ add_column_apsim_met <- function(met, value, name, units){
   attr(xd, "tav") <- oatt$tav
   attr(xd, "amp") <- oatt$amp
   attr(xd, "colnames") <- names(x)
-  attr(xd, "units") <- new.units
+  attr(xd, "units") <- oatt$units
   attr(xd, "constants") <- oatt$constants
   attr(xd, "comments") <- oatt$comments
   
@@ -1986,7 +1992,7 @@ tav_apsim_met <- function(met, by.year = TRUE, na.rm = TRUE){
 #' @param i index for rows
 #' @param j index for columns
 #' @param ... additional arguments
-#' @param drop 
+#' @param drop result is coerced to lowest possible dimension if TRUE.
 #' @param value object of class \sQuote{met} after the extraction or replacement
 #' @export
 `[.met` <- function(x, i, j, ..., drop = TRUE){

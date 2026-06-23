@@ -1,7 +1,7 @@
 #### Testing extract data function
 require(apsimx)
 packageVersion("apsimx")
-apsimx_options(warn.versions = FALSE)
+apsimx_options(warn.versions = FALSE, allow.path.spaces = TRUE)
 
 run.extract.tests <- get(".run.local.tests", envir = apsimx.options)
 

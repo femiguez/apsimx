@@ -2,7 +2,7 @@
 ## Testing initialwater with a variety of files
 require(apsimx)
 packageVersion("apsimx")
-apsimx_options(warn.versions = FALSE)
+apsimx_options(warn.versions = FALSE, allow.path.spaces = TRUE)
 
 run.apsimx.initialwater <- get(".run.local.tests", envir = apsimx.options)
 
