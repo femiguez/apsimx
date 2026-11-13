@@ -736,7 +736,6 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
     ## Here the path should be to the full parameter path
     ## Unpack the parm.path
     ## root node starts at .
-    
     if(!missing(parm))
       parm.path <- paste0(parm.path, ".", parm)
     
@@ -797,6 +796,10 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       wl5 <- which(upp[5] == sapply(n4$Children, function(x) x$Name))
       n5 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]
       wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
+      n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
+      if(!upp[7] %in% names(n6)){
+        stop("Could not find parameter at level 7")
+      }
       apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]][[upp[7]]] <- value
     }
     if(upp.lngth == 8){
@@ -806,6 +809,10 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       wl6 <- which(upp[6] == sapply(n5$Children, function(x) x$Name))
       n6 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]
       wl7 <- which(upp[7] == sapply(n6$Children, function(x) x$Name))
+      n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]] 
+      if(!upp[8] %in% names(n7)){
+        stop("Could not find parameter at level 8")
+      }
       apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]][[upp[8]]] <- value
     }
     if(upp.lngth == 9){
@@ -817,6 +824,10 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       wl7 <- which(upp[7] == sapply(n6$Children, function(x) x$Name))
       n7 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]
       wl8 <- which(upp[8] == sapply(n7$Children, function(x) x$Name))
+      n8 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]
+      if(!upp[9] %in% names(n8)){
+        stop("Could not find parameter at level 9")
+      }
       apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]][[upp[9]]] <- value
     }
     if(upp.lngth == 10){
@@ -830,6 +841,10 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
       wl8 <- which(upp[8] == sapply(n7$Children, function(x) x$Name))
       n8 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]
       wl9 <- which(upp[9] == sapply(n8$Children, function(x) x$Name))
+      n9 <- apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]$Children[[wl9]]
+      if(!upp[10] %in% names(n9)){
+        stop("Could not find parameter at level 10")
+      }
       apsimx_json$Children[[wl3]]$Children[[wl4]]$Children[[wl5]]$Children[[wl6]]$Children[[wl7]]$Children[[wl8]]$Children[[wl9]][[upp[10]]] <- value
     }
   }

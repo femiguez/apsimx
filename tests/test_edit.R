@@ -233,6 +233,34 @@ if(run.apsimx.edit){
   ### It might have worked?
   file.remove(file.path(tmp.dir, "AgPasture-edited.apsimx"))
   
+  ### Testing edit when node == "Other" and parameter is a soil physical property
+  pp <- inspect_apsimx("Wheat.apsimx", src.dir = extd.dir,
+                       node = "Soil",
+                       soil.child = "Physical",
+                       parm = "Wheat LL",
+                       print.path = TRUE)
+
+  ### The correct path is
+  ppp <- ".Simulations.Simulation.Field.Soil.Physical.WheatSoil.LL"
+  
+  edit_apsimx("Wheat.apsimx", src.dir = extd.dir,
+              wrt.dir = tmp.dir,
+              node = "Other",
+              parm.path = ppp,
+              value = rep(0.5, 7))  
+
+  inspect_apsimx("Wheat-edited.apsimx", 
+                 src.dir = tmp.dir,
+                 node = "Soil",
+                 soil.child = "Physical",
+                 parm = "Wheat LL")
+  
+  inspect_apsimx("Wheat.apsimx",
+                 src.dir = extd.dir,
+                 node = "Other",
+                 parm = list(1, 1, 5, 3, 1, 1, 2),
+                 print.path = TRUE)
+  
   
 }
 

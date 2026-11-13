@@ -102,7 +102,6 @@ geom_point() +
   geom_path() + 
   ylab("Soil Depth (cm)") + xlab("Organic Matter (percent)") +
   ggtitle("Method linear")
-}
 
 # One simple way of creating the 'xout' vector for 15 layers
 xout <- cumsum(rep(10, 15))
@@ -114,6 +113,7 @@ sp.x <- ssurgo2sp(mapunit = mapunit,
                  method = "linear",
                  xout = xout, 
                  nlayers = 15)
+}
 
 \dontrun{
 ## Method using get_ssurgo_tables

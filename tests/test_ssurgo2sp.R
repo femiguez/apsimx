@@ -82,3 +82,15 @@ if(run.test.ssurgo.workflow){
   
   
 }
+
+if(run.test.ssurgo.workflow){
+  
+  xout <- cumsum(rep(10, 15))
+  
+  sp1 <- ssurgo2sp(mapunit = stbls$mapunit, 
+                   component = stbls$component,
+                   chorizon = stbls$chorizon, 
+                   mapunit.shp = stbls$mapunit.shp,
+                   xout = xout,
+                   nlayers = 15)
+}
