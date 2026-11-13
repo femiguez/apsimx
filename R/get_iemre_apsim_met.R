@@ -1,5 +1,5 @@
 #'
-#' The original data can be obtained from: https://mesonet.agron.iastate.edu/iemre/
+#' The original data can be obtained from: (mesonet.agron.iastate.edu/iemre)
 #'
 #' @title Get weather data from Iowa Environmental Mesonet Reanalysis
 #' @description Retrieves weather data from Iowa Environmental Mesonet Reanalysis into an APSIM met file
@@ -124,7 +124,7 @@ get_iemre_apsim_met <- function(lonlat, dates, wrt.dir=".", filename=NULL,
 
 
 #'
-#' The original data can be obtained from: https://mesonet.agron.iastate.edu/request/coop/fe.phtml
+#' The original data can be obtained from: (mesonet.agron.iastate.edu/request/coop)
 #'
 #' @title Get weather data from Iowa Environmental Ag Weather Stations
 #' @description Retrieves weather data from Iowa Environmental Mesonet (AgWeather) into an APSIM met file

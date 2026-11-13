@@ -26,7 +26,7 @@ returns an object of class \sQuote{met} and writes a file to disk when filename 
 Retrieves weather data from Iowa Environmental Mesonet (AgWeather) into an APSIM met file
 }
 \details{
-The original data can be obtained from: https://mesonet.agron.iastate.edu/request/coop/fe.phtml
+The original data can be obtained from: (mesonet.agron.iastate.edu/request/coop)
 
 If the filename is not provided it will not write the file to disk, 
 but it will return an object of class \sQuote{met}. This is useful in case manipulation

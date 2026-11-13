@@ -1,5 +1,5 @@
-#' Source: https://www.isric.org/ \cr
-#' Details: https://www.isric.org/explore/soilgrids/faq-soilgrids \cr
+#' Source: https://isric.org/ \cr
+#' Details: https://docs.isric.org/globaldata/soilgrids/SoilGrids_faqs.html \cr
 #' 
 #' Pedotransfer functions: Saxton and Rawls, 2006. Soil Water Characteristic Estimates by Texture and Organic Matter for Hydrologic Solutions.
 #' Soil Sci. Soc. Am. J. 70:1569–1578. \cr

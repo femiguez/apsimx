@@ -2,6 +2,7 @@
 #'  Some of the conversions use pedotrasnfer equations from Saxton and Rawls.
 #'  Soil Water Characteristic Estimates by Texture and Organic Matter for Hydrologic Solutions.
 #'  Soil Sci. Soc. Am. J. 70:1569–1578 (2006). 
+#'  
 #' 
 #' @title Take in \acronym{SSURGO} csv files and create a soil profile
 #' @name ssurgo2sp
@@ -12,7 +13,7 @@
 #' @param mapunit.shp mapunit shapefile for creating metadata
 #' @param nmapunit number of mapunits to select
 #' @param nsoil number of soil components (within a mapunit) to consider
-#' @param xout vector for interpolation and extrapolation
+#' @param xout vector for interpolation and extrapolation (see example)
 #' @param soil.bottom bottom of the soil profile
 #' @param method method used for interpolation (see \code{\link{approx}})
 #' @param nlayers number of soil layers to generate
@@ -20,7 +21,7 @@
 #' @param pedotransfer.method \sQuote{Saxton-Rawls}. Only option for now.
 #' @param verbose whether to print details of the process
 #' @return a list with soil profile matrices with length equal to nsoil
-#' @details Download the data from \acronym{SSURGO} using the \sQuote{FedData} package \cr
+#' @details Download the data from \acronym{SSURGO} \cr
 #' This will generate csv files \sQuote{chorizon}, \sQuote{component} and \sQuote{mapunit}, \cr
 #' but also many other files which are not needed for creating a soil profile.
 #' @export
@@ -65,6 +66,17 @@
 #'   ylab("Soil Depth (cm)") + xlab("Organic Matter (percent)") +
 #'   ggtitle("Method linear")
 #' }
+#' 
+#' # One simple way of creating the 'xout' vector for 15 layers
+#' xout <- cumsum(rep(10, 15))
+#' 
+#' sp.x <- ssurgo2sp(mapunit = mapunit, 
+#'                  component = component, 
+#'                  chorizon = chorizon, 
+#'                  mapunit.shp = mapunit.shp,
+#'                  method = "linear",
+#'                  xout = xout, 
+#'                  nlayers = 15)
 #' 
 #' \dontrun{
 #' ## Method using get_ssurgo_tables
@@ -121,6 +133,17 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
     return(NULL)
   }
   
+  if(!is.null(xout)){
+    if(length(xout) != nlayers)
+      stop("length of 'xout' should equal the number of layers")   
+    if(any(diff(xout) <= 0))
+      stop("'xout' should be strictly increasing")
+    if(any(xout == 0))
+      stop("zero values are not allowed in 'xout'")
+    if(verbose)
+      message("when 'xout' is used soil.bottom is ignored")
+  }
+
   DUL.method <- "ssurgo"
   LL15.method <- "ssurgo"
   SAT.method <- "ssurgo"
@@ -347,9 +370,11 @@ ssurgo2sp <- function(mapunit = NULL, component = NULL,
       }
 
       if(vars[i] == "Thickness"){
-        thck <- numeric(nlayers0)
-        for(j in 2:nlayers1) thck[j-1] <- sva$x[j] - sva$x[j-1] 
-          soil.mat[,i] <- thck
+        if(is.null(xout)){
+          soil.mat[,i] <- diff(sva$x)  
+        }else{
+          soil.mat[,i] <- diff(c(0, sva$x))
+        }
       }else{
         soil.mat[,i] <- sva$y
       }
@@ -401,7 +426,11 @@ approx_soil_variable <- function(x, xout = NULL, soil.bottom = 200,
   
   xd <- as.data.frame(x)
   method <- match.arg(method)
-  if(is.null(xout)) xout <- seq(0, soil.bottom, length.out = nlayers)
+  if(is.null(xout)){
+    xout <- seq(0, soil.bottom, length.out = nlayers)
+  }else{
+
+  } 
   
   ans <- stats::approx(x = xd[[1]], y = xd[[2]], method = method, xout = xout, rule = 2)
   

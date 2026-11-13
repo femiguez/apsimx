@@ -33,7 +33,7 @@ ssurgo2sp(
 
 \item{nsoil}{number of soil components (within a mapunit) to consider}
 
-\item{xout}{vector for interpolation and extrapolation}
+\item{xout}{vector for interpolation and extrapolation (see example)}
 
 \item{soil.bottom}{bottom of the soil profile}
 
@@ -58,7 +58,7 @@ Some of the conversions use pedotrasnfer equations from Saxton and Rawls.
  Soil Water Characteristic Estimates by Texture and Organic Matter for Hydrologic Solutions.
  Soil Sci. Soc. Am. J. 70:1569–1578 (2006).
 
-Download the data from \acronym{SSURGO} using the \sQuote{FedData} package \cr
+Download the data from \acronym{SSURGO} \cr
 This will generate csv files \sQuote{chorizon}, \sQuote{component} and \sQuote{mapunit}, \cr
 but also many other files which are not needed for creating a soil profile.
 }
@@ -103,6 +103,17 @@ geom_point() +
   ylab("Soil Depth (cm)") + xlab("Organic Matter (percent)") +
   ggtitle("Method linear")
 }
+
+# One simple way of creating the 'xout' vector for 15 layers
+xout <- cumsum(rep(10, 15))
+
+sp.x <- ssurgo2sp(mapunit = mapunit, 
+                 component = component, 
+                 chorizon = chorizon, 
+                 mapunit.shp = mapunit.shp,
+                 method = "linear",
+                 xout = xout, 
+                 nlayers = 15)
 
 \dontrun{
 ## Method using get_ssurgo_tables

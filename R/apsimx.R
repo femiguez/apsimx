@@ -111,6 +111,7 @@ apsimx <- function(file = "", src.dir = ".",
                           shQuote(normalizePath(file.name.path)))
     }
     if(!missing(xargs)) run.strng <- paste(run.strng, xargs$xargs.string)
+    browser()
     shell(cmd = run.strng, translate = TRUE, intern = intern)
   }
 
@@ -1127,7 +1128,7 @@ apsimx_options <- function(exe.path = NA, dotnet = FALSE, mono = FALSE, examples
 #' @description Environment which can store the path to the executable, warning settings and 
 #'              where examples are located.
 #'              Creating an environment avoids the use of global variables or other similar practices
-#'              which would have possible undesriable consequences. 
+#'              which would have possible undesirable consequences. 
 #' @return This is an environment, not a function, so nothing is returned.
 #' @export
 #' @examples 
@@ -1147,7 +1148,7 @@ assign('warn.versions', TRUE, apsimx.options)
 assign('warn.find.apsimx', TRUE, apsimx.options)
 assign('allow.path.spaces', FALSE, apsimx.options)
 assign('system.intern', FALSE, apsimx.options)
-assign('.run.local.tests', TRUE, apsimx.options)
+assign('.run.local.tests', FALSE, apsimx.options)
 
 ## I'm planning to use '.run.local.tests' for running tests
 ## which do not require an APSIM install

@@ -50,11 +50,11 @@ Holzworth et al. (2018). APSIM Next Generation: Overcoming challenges in moderni
 
 This package has been tested on (latest version):
 
-**Mac**: ApsimX version (2025-03) 7382 (R 4.3.0)
+**Mac**: ApsimX version (2026-06) 8057 (R 4.5.2)
 
 **Debian**: ApsimX version (2024-02) 7382 (R 4.1.2)
 
-**Windows**: ApsimX version (2025-03) 7676 and APSIM Classic 7.10-r4221 (R 4.3.3)
+**Windows**: ApsimX version (2026-06) 8057 and APSIM Classic 7.10-r4221 (R 4.5.3)
 
 ## Installing APSIM (Next Generation)
 
@@ -458,7 +458,7 @@ I won't be running the 'Factorial' example here, but if you are interested this 
 ## Obtaining weather data
 
 One of the easiest ways of generating weather data (".met" files) is by using the  'nasapower' (https://github.com/ropensci/nasapower) or 'GSODR' (https://github.com/ropensci/GSODR) packages. For the US, some options are 'daymetr' (https://github.com/bluegreen-labs/daymetr) or through the Iowa
-Environmental Mesonet (https://mesonet.agron.iastate.edu/). In addition, this package provides the following utilities:
+Environmental Mesonet (mesonet.agron.iastate.edu). In addition, this package provides the following utilities:
 
 * **read_apsim_met**: read an APSIM met file into R with S3 class 'met'.
 * **write_apsim_met**: write an APSIM met file from an object of class 'met'.
@@ -479,7 +479,7 @@ Note that some utilities were available in the 'APSIM' package (loadMet, prepare
 
 ## Obtaining soil data
 
-The function **get_isric_soil_profile** will retrieve data from the ISRIC Soil Grid global dataset (https://www.isric.org/) and return an object of class *soil_profile* (see also *apsimx_soil_profile*). To derive some of the properties needed by APSIM pedotransfer functions from Saxton and Rawls (2006) were used. This is a work in progress and improvements and suggestions are welcome.
+The function **get_isric_soil_profile** will retrieve data from the ISRIC Soil Grid global dataset (https://isric.org/) and return an object of class *soil_profile* (see also *apsimx_soil_profile*). To derive some of the properties needed by APSIM pedotransfer functions from Saxton and Rawls (2006) were used. This is a work in progress and improvements and suggestions are welcome.
 
 In the USA, the function **get_ssurgo_soil_profile** will retrieve data from the SSURGO database through the **soilDB** R pacakge and will always return a list with objects of class *soil_profile*. Internally, it uses the **ssurgo2sp** function, which can be used to create an APSIM soil profile in two steps. The first step would be to obtain soil data through the 'FedData' R package by using the function **get_ssurgo** or use the **get_ssurgo_tables** in apsimx. The function **ssurgo2sp** can be used for conversion from **SSURGO** csv files to an object of class **soil_profile** and **apsimx_soil_profile** for generating a soil profile that can be used in APSIM-X. Finally, the function **edit_apsimx_replace_soil_profile** will batch replace the soil profile created by **apsimx_soil_profile** in a designated '.apsimx' file. Similarly, 'edit_apsim_replace_soil_profile' will batch replace the soil profile in a designated '.apsim' (Classic) file. I will be working on a more concrete tutorial at some point.
 

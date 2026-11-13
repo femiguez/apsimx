@@ -213,7 +213,7 @@ compare_apsim <- function(...,
         }
         fm0 <- lm(tmp[, j] ~ tmp[, j - 1], na.action = "na.exclude")
         ### Store residuals
-        resid.matrix <- cbind(resid.matrix, stats::residuals(fm0, type = "pearson"))
+        resid.matrix <- cbind(resid.matrix, stats::rstandard(fm0))
         #### First model-free statistics
         if(verbose) cat("Model-free statistics \n")
         if(verbose) cat(" \t Bias (sum of residuals): ", sum(tmp[, j - 1] - tmp[, j]), "\n")
@@ -276,7 +276,7 @@ compare_apsim <- function(...,
       }
       fm0 <- lm(tmp[, j - 1] ~ tmp[, j])
       ### Store residuals
-      resid.matrix <- cbind(resid.matrix, stats::residuals(fm0, type = "pearson"))
+      resid.matrix <- cbind(resid.matrix, stats::rstandard(fm0))
       #### First model-free statistics
       if(verbose) cat("Model-free statistics \n")
       if(verbose) cat(" \t Bias (sum of residuals): ", sum(tmp[, j - 1] - tmp[, j]), "\n")
@@ -337,7 +337,7 @@ print.out_mrg <- function(x, ..., digits = 2){
 #' @description plotting function for compare_apsim, it requires ggplot2
 #' @param x object of class \sQuote{out_mrg}
 #' @param ... data frames with APSIM output or observed data. 
-#' @param plot.type either \sQuote{vs}, \sQuote{diff}, \sQuote{ts} - for time series or \sQuote{density}
+#' @param plot.type either \sQuote{vs}, \sQuote{diff}, \sQuote{resid}, \sQuote{ts} - for time series or \sQuote{density}
 #' @param pairs pair of objects to compare, defaults to 1 and 2 but others are possible
 #' @param cumulative whether to plot cumulative values (default FALSE)
 #' @param variable variable to plot 
@@ -354,7 +354,8 @@ print.out_mrg <- function(x, ..., digits = 2){
 #' @return it produces a plot
 #' @export
 #' 
-plot.out_mrg <- function(x, ..., plot.type = c("vs", "diff", "resid", "ts", "density"),
+plot.out_mrg <- function(x, ..., 
+                         plot.type = c("vs", "diff", "resid", "ts", "density"),
                          pairs = c(1, 2),
                          cumulative = FALSE, ## Might not make sense for these type of graphs...
                          variable,

@@ -313,3 +313,21 @@ if(run.apsim.met){
   summary(dmt6)
   
 }
+
+if(FALSE){
+  
+  ### How the heck does the 'Extract' work in 'met' files?
+  ## Testing adding a column
+  extd.dir <- system.file("extdata", package = "apsimx")
+  ames <- read_apsim_met("Ames.met", src.dir = extd.dir)
+  
+  ## ames$vp <- 5 This does not work and it is not supposed to 
+  
+  vp <- data.frame(vp = abs(rnorm(nrow(ames), 2)))
+  attr(vp, "units") <- "(hPa)"
+  
+  ames$vp <- vp ## This works now (2026-6-18)
+  ames[["vp"]] <- vp ## This works now (2026-6-18)
+  
+  
+}

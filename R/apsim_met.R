@@ -1782,11 +1782,9 @@ add_column_apsim_met <- function(met, value, name, units){
 #' @param x object of class \sQuote{met}
 #' @param i indices specifying elements to extract or replace. 
 #' @param j indices specifying elements to extract or replace. 
-#' @param ... dots, see Extract
 #' @param value value for the data.frame. It could be an integer, double or vector of length equal to the number of rows in x.
-#' @param drop If TRUE the result is coerced to the lowest possible dimension
 #' @export
-`[<-.met` <- function(x, i, j, ..., value, drop = TRUE){
+`[<-.met` <- function(x, i, j, value){
   
   if(is.null(attr(value, "units"))){
     stop("It is recommended to use function add_column_apsim_met for this operation instead.
@@ -1797,7 +1795,7 @@ add_column_apsim_met <- function(met, value, name, units){
   xd <- as.data.frame(unclass(x))
   ### If 'value' is missing this is about extracting data
    if(missing(value)){
-     xd <- xd[i, j, drop = drop]
+     xd <- xd[i, j]
    }else{
      ### If value is not missing, then we are replacing data
      xd[i, j] <- value
@@ -1993,7 +1991,6 @@ tav_apsim_met <- function(met, by.year = TRUE, na.rm = TRUE){
 #' @param j index for columns
 #' @param ... additional arguments
 #' @param drop result is coerced to lowest possible dimension if TRUE.
-#' @param value object of class \sQuote{met} after the extraction or replacement
 #' @export
 `[.met` <- function(x, i, j, ..., drop = TRUE){
   

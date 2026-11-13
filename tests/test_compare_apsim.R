@@ -37,8 +37,20 @@ if(run.test.compare.apsimx){
        id.label = letters[1:10])
   
   ## Adding the capability when the length of the index is equal to 2
-  obsPheno <- read.csv("~/Dropbox/apsimx-other/pheno_optim/obsPheno.csv")
-  simPheno <- read.csv("~/Dropbox/apsimx-other/pheno_optim/simPheno.csv")
+  user.name <- Sys.info()[["user"]]
+  
+  if(user.name == "femiguez"){
+    root.dir <- "C:/Users/femiguez/Dropbox/apsimx-other/pheno_optim"
+  }else{
+    if(user.name == "fernandomiguez"){
+      root.dir <- "~/Dropbox/apsimx-other/pheno_optim/"    
+    }else{
+      stop("This test should only run in local computers") 
+    }
+  }
+  
+  obsPheno <- read.csv(file.path(root.dir, "obsPheno.csv"))
+  simPheno <- read.csv(file.path(root.dir, "simPheno.csv"))
   
   obsPheno$Date <- as.Date(obsPheno$Date)
   simPheno$Date <- as.Date(simPheno$Date)
@@ -62,8 +74,15 @@ if(run.test.compare.apsimx){
 
 if(FALSE){
   
+  ### This test is not fully developed
+  if(user.name == "femiguez"){
+    root.dir <- "C:/Users/femiguez/Dropbox"
+  }else{
+    root.dir <- "~/Dropbox"
+  }
+  
   ### Testing inspired by a more complicated dataset?
-  sim.wheat <- read_apsim_all(src.dir = "~/Dropbox/apsimx-other/KeLiu/mcmc_test/mcmc_test")
+  sim.wheat <- read_apsim_all(src.dir = file.path(root.dir, "apsimx-other/KeLiu/mcmc_test/mcmc_test"))
   sim.wheat$outfile <- as.factor(sim.wheat$outfile)
   ## obs.wheat <- as.data.frame(readxl::read_excel("~/Dropbox/apsimx-other/KeLiu/mcmc_test/mcmc_test/Obs.xlsx"))
   obs.wheat$outfile <- as.factor(obs.wheat$outfile)

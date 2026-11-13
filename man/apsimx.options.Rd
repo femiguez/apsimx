@@ -13,7 +13,7 @@ This is an environment, not a function, so nothing is returned.
 Environment which can store the path to the executable, warning settings and 
              where examples are located.
              Creating an environment avoids the use of global variables or other similar practices
-             which would have possible undesriable consequences.
+             which would have possible undesirable consequences.
 }
 \details{
 Environment which stores APSIM-X options

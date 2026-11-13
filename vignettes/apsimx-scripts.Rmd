@@ -32,7 +32,7 @@ In Windows, if you use the current (`r Sys.Date()`) version of the installer the
 
 **C:\\Program Files\\APSIM2024.2.7382.0\\bin\\Models.exe**
 
-Notice that for each new build of APSIM-X the path will change. After 'APSIM' is the year and month, and version separated by a period. In this case '2021.08.12.6707'. In the folder 'bin' (for 'binary') there are many libraries ('.dll files') and some executables. The 'Models.exe' is the one that can run .apsimx files.
+Notice that for each new build of APSIM-X the path will change. After 'APSIM' is the year and month, and version separated by a period. In this case '2024.2.7382.0'. In the folder 'bin' (for 'binary') there are many libraries ('.dll files') and some executables. The 'Models.exe' is the one that can run .apsimx files.
 
 When trying to invoke that line at the command line, the space after 'Program' is a problem. There are some possible solutions. One is to add quotations (for example see 'shQuote' function in R). Another option is to use Windows short name paths, which in this case, for 'Program Files' is 'PROGRA~1' (but this can change). If running the program from R, for example, the separator needs to be either a double backslash '\\\\' or a forward slash '/'. So one example would be:
 
@@ -166,7 +166,7 @@ To look at paths in Windows:
 **echo %path%**
 **echo %path:;=&echo.%**
 
-[Editing PATH in Windows Example](https://docs.telerik.com/teststudio/features/test-runners/add-path-environment-variables)
+[Editing PATH in Windows Example](https://www.telerik.com/teststudio/documentation/features/test-runners/add-path-environment-variables)
 
 [Editing PATH in Windows 2](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/)
 

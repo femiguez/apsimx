@@ -25,7 +25,8 @@ Get APSIM-X Model Replacement from github
 \examples{
 \donttest{
 tmp.dir <- tempdir()
-wheat <- get_apsimx_json(model = "Wheat", wrt.dir = tmp.dir)
+### try to download without generating an error
+wheat <- try(get_apsimx_json(model = "Wheat", wrt.dir = tmp.dir), silent = TRUE)
 }
 
 }

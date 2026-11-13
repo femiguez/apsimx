@@ -55,7 +55,7 @@ compare_apsim(
 
 \item{digits}{digits to print (default is 2)}
 
-\item{plot.type}{either \sQuote{vs}, \sQuote{diff}, \sQuote{ts} - for time series or \sQuote{density}}
+\item{plot.type}{either \sQuote{vs}, \sQuote{diff}, \sQuote{resid}, \sQuote{ts} - for time series or \sQuote{density}}
 
 \item{pairs}{pair of objects to compare, defaults to 1 and 2 but others are possible}
 

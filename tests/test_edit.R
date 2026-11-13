@@ -265,7 +265,9 @@ if(run.apsimx.edit){
   
   ex.to.test <- dir(ex.dir, pattern = "apsimx$")
   
-  ex2test <- ex.to.test[c(2, 16, 18, 30)]
+  ### 
+  ### ex2test <- ex.to.test[c(17, 18, 19, 25, 31, 32)]
+  ex2test <- c("Maize.apsimx", "Mungbean.apsimx", "Oats.apsimx", "RedClover.apsimx", "Sorghum.apsimx", "Soybean.apsimx") 
   
   for(i in ex2test){
     
@@ -308,7 +310,7 @@ if(run.apsimx.edit){
   
   ex.to.test <- dir(ex.dir, pattern = "apsimx$")
   
-  ex2test <- ex.to.test[c(2, 16, 18, 30, 34)]
+  ex2test <- c("Maize.apsimx", "Mungbean.apsimx", "Oats.apsimx", "RedClover.apsimx", "Sorghum.apsimx", "Soybean.apsimx") 
   
   for(i in ex2test){
     
@@ -365,14 +367,14 @@ if(run.apsimx.edit){
   
   extract_values_apsimx("Wheat-opt-ex-edited.apsimx", src.dir = ".", parm = pp1)
   
-  extract_data_apsimx("Wheat-opt-ex-edited.apsimx", node = "Other", parm = pp1)
+  ## extract_data_apsimx("Wheat-opt-ex-edited.apsimx", node = "Other", parm = pp1)
   
   tmps <- expand.grid(tmp1 = 18:30, tmp2 = 33:45)
   card.temp.vector <- paste0("0 ", tmps$tmp1, " ", tmps$tmp2)
   grd <- data.frame(X = card.temp.vector)
     
-  sns <- sens_apsimx("Wheat-opt-ex-edited.apsimx",
-                     parm.paths = )
+  # sns <- sens_apsimx("Wheat-opt-ex-edited.apsimx",
+  #                    parm.paths = )
   
   
 }
