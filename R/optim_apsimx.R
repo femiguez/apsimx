@@ -60,8 +60,10 @@
 #' }
 #'
 
-optim_apsimx <- function(file, src.dir = ".",
-                         parm.paths, data,
+optim_apsimx <- function(file, 
+                         src.dir,
+                         parm.paths, 
+                         data,
                          type = c("optim", "nloptr", "mcmc", "ucminf", "grid"),
                          weights,
                          index = "Date",
@@ -72,6 +74,12 @@ optim_apsimx <- function(file, src.dir = ".",
                          grid,
                          ...){
 
+  #### beginning of optim_apsimx function ----
+  if(file == "") stop("need to specify file name", call. = FALSE)
+  
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
+  
   if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
     .check_apsim_name(file)
     .check_apsim_name(normalizePath(src.dir))

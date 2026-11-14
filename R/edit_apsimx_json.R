@@ -75,7 +75,9 @@
 #' }
 #' 
 
-edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
+edit_apsimx <- function(file, 
+                        src.dir, 
+                        wrt.dir = NULL,
                         node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop", "Manager", "Report", "Operations", "Other"),
                         soil.child = c("Metadata", "Water", "SoilWater", "Organic", "Physical", "Analysis", "Chemical", "InitialWater", "Sample", "Solute", "NO3", "NH4", "Urea", "Swim3"),
                         manager.child = NULL,
@@ -85,6 +87,11 @@ edit_apsimx <- function(file, src.dir = ".", wrt.dir = NULL,
                         parm.path = NULL,
                         root = NULL,
                         verbose = TRUE){
+  #### beginning of edit_apsimx function ----
+  if(missing(file)) stop("need to specify file name", call. = FALSE)
+  
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
   
   if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
     .check_apsim_name(file)

@@ -6,7 +6,7 @@
 \usage{
 edit_apsimx_batch(
   file,
-  src.dir = ".",
+  src.dir,
   wrt.dir = NULL,
   parms = NULL,
   silent = FALSE,

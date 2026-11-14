@@ -43,12 +43,19 @@
 #'                value = values)
 #' }
 
-edit_apsim_xml <- function(file, src.dir = ".", wrt.dir = NULL,
-                           parm.path=NULL, 
-                           value=NULL, 
+edit_apsim_xml <- function(file, 
+                           src.dir, 
+                           wrt.dir = NULL,
+                           parm.path = NULL, 
+                           value = NULL, 
                            overwrite = FALSE,
                            edit.tag = "-edited",
                            verbose = TRUE){
+  #### beginning of edit_apsim_xml function ----
+  if(missing(file)) stop("need to specify file name", call. = FALSE)
+  
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
   
   if(missing(wrt.dir)) wrt.dir <- src.dir
   

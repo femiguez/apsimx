@@ -6,7 +6,7 @@
 \usage{
 inspect_apsimx_replacement(
   file = "",
-  src.dir = ".",
+  src.dir,
   node = NULL,
   node.child = NULL,
   node.subchild = NULL,
@@ -69,7 +69,7 @@ This option will be ignored at the level of \sQuote{Command}.}
 table with inspected parameters and values (and \sQuote{parm path} when \sQuote{print.path} = TRUE).
 }
 \description{
-inspect the replacement componenet of an JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
+inspect the replacement component of an JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
 }
 \details{
 ### Maybe insert information about regex at some point

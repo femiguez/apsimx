@@ -8,7 +8,7 @@
 \usage{
 sens_apsimx(
   file,
-  src.dir = ".",
+  src.dir,
   parm.paths,
   convert,
   replacement,

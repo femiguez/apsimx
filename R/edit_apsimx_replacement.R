@@ -81,7 +81,9 @@
 #' }
 #'
 
-edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
+edit_apsimx_replacement <- function(file = "", 
+                                    src.dir, 
+                                    wrt.dir,
                                     node = NULL, node.child = NULL,
                                     node.subchild = NULL, node.subsubchild = NULL,
                                     node.sub3child = NULL, node.sub4child = NULL, 
@@ -89,6 +91,13 @@ edit_apsimx_replacement <- function(file = "", src.dir = ".", wrt.dir = ".",
                                     root = list("Models.Core.Replacements", NA),
                                     parm = NULL, value = NULL, overwrite = FALSE,
                                     edit.tag = "-edited", verbose = TRUE, grep.options){
+  
+  #### beginning of inspect_apsimx_replacement function ----
+  if(file == "") stop("need to specify file name", call. = FALSE)
+  
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
+  if(missing(wrt.dir)) wrt.dir <- src.dir
   
   if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
     .check_apsim_name(file)

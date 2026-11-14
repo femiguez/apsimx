@@ -6,7 +6,7 @@
 \usage{
 apsimx(
   file = "",
-  src.dir = ".",
+  src.dir,
   silent = FALSE,
   intern = FALSE,
   value = "report",

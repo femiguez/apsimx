@@ -6,7 +6,7 @@
 \usage{
 edit_apsimx_replace_soil_profile(
   file = "",
-  src.dir = ".",
+  src.dir,
   wrt.dir = NULL,
   soil.profile = NULL,
   edit.tag = "-edited",

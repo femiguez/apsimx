@@ -84,6 +84,8 @@ edit_apsim <- function(file, src.dir = ".", wrt.dir = NULL,
                        verbose = TRUE,
                        check.length = TRUE){
   
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
   if(is.null(wrt.dir)) wrt.dir <- src.dir
   
   file.names <- dir(path = src.dir, pattern=".apsim$", ignore.case=TRUE)

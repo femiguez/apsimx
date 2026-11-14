@@ -60,7 +60,8 @@
 #' }
 #'
 
-sens_apsimx <- function(file, src.dir = ".",
+sens_apsimx <- function(file, 
+                        src.dir,
                         parm.paths,
                         convert,
                         replacement,
@@ -73,8 +74,12 @@ sens_apsimx <- function(file, src.dir = ".",
                         save = FALSE,
                         ...){
 
+  #### beginning of sens_apsimx function ----
   if(missing(file))
     stop("file is missing with no default", call. = FALSE)
+  
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
 
   if(isFALSE(get("allow.path.spaces", apsimx::apsimx.options))){
     .check_apsim_name(file)

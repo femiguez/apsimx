@@ -6,7 +6,7 @@
 \usage{
 inspect_apsim(
   file = "",
-  src.dir = ".",
+  src.dir,
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "Crop", "Manager",
     "Outputfile", "Other"),
   soil.child = c("Metadata", "Water", "OrganicMatter", "Nitrogen", "Analysis",

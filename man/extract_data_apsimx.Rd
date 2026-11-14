@@ -6,7 +6,7 @@
 \usage{
 extract_data_apsimx(
   file = "",
-  src.dir = ".",
+  src.dir,
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
     "Manager", "Report", "Operations", "Other"),
   soil.child = c("Metadata", "Water", "InitialWater", "Chemical", "Physical", "Analysis",

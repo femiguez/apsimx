@@ -6,8 +6,8 @@
 \usage{
 edit_apsimx_replacement(
   file = "",
-  src.dir = ".",
-  wrt.dir = ".",
+  src.dir,
+  wrt.dir,
   node = NULL,
   node.child = NULL,
   node.subchild = NULL,

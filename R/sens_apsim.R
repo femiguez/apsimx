@@ -31,7 +31,8 @@
 #' }
 #' 
 
-sens_apsim <- function(file, src.dir = ".", 
+sens_apsim <- function(file, 
+                       src.dir = ".", 
                        crop.file,
                        parm.paths,
                        parm.vector.index,
@@ -45,7 +46,10 @@ sens_apsim <- function(file, src.dir = ".",
                        ...){
   
   if(missing(file))
-    stop("file is missing with no default")
+    stop("file is missing with no default", call. = FALSE)
+
+  if(src.dir != ".") stop("At the moment it is not possible \n
+                          to change the source directory.")
   
   .check_apsim_name(file)
   .check_apsim_name(src.dir)
@@ -55,9 +59,6 @@ sens_apsim <- function(file, src.dir = ".",
          Please submit an issue in github if you need it")    
   }
 
-  if(src.dir != ".") stop("At the moment it is not possible \n
-                          to change the source directory.")
-  
   ## This might offer suggestions in case there is a typo in 'file'
   file.names <- dir(path = src.dir, pattern = ".apsim$", ignore.case = TRUE)
   

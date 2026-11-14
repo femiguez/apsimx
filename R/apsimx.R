@@ -27,7 +27,8 @@
 #' }
 #'
 
-apsimx <- function(file = "", src.dir = ".",
+apsimx <- function(file = "", 
+                   src.dir,
                    silent = FALSE, 
                    intern = FALSE,
                    value = "report",
@@ -35,14 +36,18 @@ apsimx <- function(file = "", src.dir = ".",
                    simplify = TRUE,
                    xargs){
   
-  if(file == "") stop("need to specify file name")
+  #### beginning of apsimx function ----
+  if(file == "") stop("need to specify file name", call. = FALSE)
+
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
   
   if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
      .check_apsim_name(file)
      .check_apsim_name(normalizePath(src.dir))
   }
   
-  ## The might offer suggestions in case there is a typo in 'file'
+  ## This offers suggestions in case there is a typo in 'file'
   file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case = TRUE)
   
   if(length(file.names) == 0){
@@ -54,7 +59,6 @@ apsimx <- function(file = "", src.dir = ".",
   }
   
   file <- match.arg(file, file.names)
-  
   file.name.path <- file.path(src.dir, file)
   
   ada <- auto_detect_apsimx()

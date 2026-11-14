@@ -107,7 +107,8 @@
 #' }
 #' 
 
-inspect_apsim <- function(file = "", src.dir = ".", 
+inspect_apsim <- function(file = "", 
+                          src.dir, 
                           node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "Crop", "Manager", "Outputfile", "Other"),
                           soil.child = c("Metadata", "Water", "OrganicMatter", "Nitrogen", "Analysis", "InitialWater", "Sample", "SWIM"),
                           parm = NULL,
@@ -115,6 +116,12 @@ inspect_apsim <- function(file = "", src.dir = ".",
                           print.path = FALSE,
                           root){
   
+  #### beginning of inspect_apsimx_replacement function ----
+  if(file == "") stop("need to specify file name", call. = FALSE)
+  
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
+
   file.names <- dir(path = src.dir, pattern=".apsim$", ignore.case=TRUE)
   
   if(length(file.names) == 0){

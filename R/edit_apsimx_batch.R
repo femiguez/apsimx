@@ -57,12 +57,14 @@
 #' 
 
 edit_apsimx_batch <- function(file, 
-                              src.dir = ".", 
+                              src.dir, 
                               wrt.dir = NULL,
                               parms = NULL, 
                               silent = FALSE,
                               verbose = TRUE){
   
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
   if(missing(wrt.dir)) wrt.dir <- src.dir
   
   file.names <- dir(path = src.dir, pattern = ".apsimx$", ignore.case = TRUE)

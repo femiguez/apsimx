@@ -6,7 +6,7 @@
 \usage{
 edit_apsim_xml(
   file,
-  src.dir = ".",
+  src.dir,
   wrt.dir = NULL,
   parm.path = NULL,
   value = NULL,

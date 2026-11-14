@@ -41,7 +41,7 @@ apsim <- function(file = "", src.dir = ".",
   .check_apsim_name(.file = file)
   .check_apsim_name(.file = src.dir)
   
-  if(src.dir != ".") stop("In APSIM Classic you can only run a file from the current directory.")
+  if(src.dir != ".") stop("In APSIM Classic you can only run a file from the current directory.", call. = FALSE)
   
   ## Extra checking, not sure if it will be triggered
   file.names <- dir(path = src.dir, pattern = ".apsim$", ignore.case = TRUE)

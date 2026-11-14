@@ -6,7 +6,7 @@
 \usage{
 optim_apsimx(
   file,
-  src.dir = ".",
+  src.dir,
   parm.paths,
   data,
   type = c("optim", "nloptr", "mcmc", "ucminf", "grid"),

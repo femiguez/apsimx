@@ -3,7 +3,7 @@
 #' 
 #' @title Inspect a replacement component in an .apsimx (JSON) file
 #' @name inspect_apsimx_replacement
-#' @description inspect the replacement componenet of an JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
+#' @description inspect the replacement component of an JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
 #' @param file file ending in .apsimx to be inspected (JSON)
 #' @param src.dir directory containing the .apsimx file to be inspected; defaults to the current working directory
 #' @param node specific node to be inspected
@@ -54,7 +54,8 @@
 #'}
 
 
-inspect_apsimx_replacement <- function(file = "", src.dir = ".", 
+inspect_apsimx_replacement <- function(file = "", 
+                                       src.dir, 
                                        node = NULL, node.child = NULL,
                                        node.subchild = NULL, node.subsubchild = NULL,
                                        node.sub3child = NULL, node.sub4child = NULL,
@@ -64,6 +65,12 @@ inspect_apsimx_replacement <- function(file = "", src.dir = ".",
                                        digits = 3, print.path = FALSE,
                                        verbose = TRUE,
                                        grep.options){
+  
+  #### beginning of apsimx function ----
+  if(file == "") stop("need to specify file name", call. = FALSE)
+  
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
   
   if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
     .check_apsim_name(file)

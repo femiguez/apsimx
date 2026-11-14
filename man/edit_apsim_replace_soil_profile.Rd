@@ -6,7 +6,7 @@
 \usage{
 edit_apsim_replace_soil_profile(
   file = "",
-  src.dir = ".",
+  src.dir,
   wrt.dir = NULL,
   soil.profile = NULL,
   swim = NULL,

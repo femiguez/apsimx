@@ -6,7 +6,7 @@
 \usage{
 edit_apsimx(
   file,
-  src.dir = ".",
+  src.dir,
   wrt.dir = NULL,
   node = c("Clock", "Weather", "Soil", "SurfaceOrganicMatter", "MicroClimate", "Crop",
     "Manager", "Report", "Operations", "Other"),

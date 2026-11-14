@@ -40,7 +40,8 @@
 #'  }
 #'
 
-edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
+edit_apsim_replace_soil_profile <-  function(file = "", 
+                                             src.dir,
                                              wrt.dir = NULL,
                                              soil.profile = NULL,
                                              swim = NULL,
@@ -50,6 +51,12 @@ edit_apsim_replace_soil_profile <-  function(file = "", src.dir = ".",
                                              overwrite = FALSE,
                                              verbose = TRUE,
                                              root){
+  
+  #### beginning of apsimx function ----
+  if(file == "") stop("need to specify file name")
+  
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
   
   .check_apsim_name(file)
   

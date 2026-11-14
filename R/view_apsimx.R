@@ -25,7 +25,10 @@ view_apsimx <- function(file, src.dir, viewer = c("json","react"), ...){
     return(NULL)
   }
   
-  if(missing(file)) stop("need to specify file name")
+  if(missing(file)) stop("need to specify file name", call. = FALSE)
+  
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
   
   if(isFALSE(get("allow.path.spaces", apsimx::apsimx.options))){
     .check_apsim_name(file)

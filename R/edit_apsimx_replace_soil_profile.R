@@ -29,20 +29,25 @@
 #'  }
 #'
 
-edit_apsimx_replace_soil_profile <-  function(file = "", src.dir = ".",
+edit_apsimx_replace_soil_profile <-  function(file = "", 
+                                              src.dir,
                                               wrt.dir = NULL,
                                               soil.profile = NULL,
                                               edit.tag = "-edited",
                                               overwrite = FALSE,
                                               verbose = TRUE,
                                               root = NULL){
+  #### beginning of edit_apsimx_replace_soil_profile function ----
+  if(file == "") stop("need to specify file name", call. = FALSE)
+  
+  if(missing(src.dir)) src.dir <- dirname(file)
+  file <- basename(file)
+  if(missing(wrt.dir)) wrt.dir <- src.dir
   
   if(isFALSE(get("allow.path.spaces", envir = apsimx::apsimx.options))){
     .check_apsim_name(file)
     .check_apsim_name(src.dir)
   } 
-  
-  if(missing(wrt.dir)) wrt.dir <- src.dir
   
   file.names <- dir(path = src.dir, pattern=".apsimx$", ignore.case=TRUE)
   
