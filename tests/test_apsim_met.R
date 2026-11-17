@@ -364,13 +364,25 @@ if(run.apsim.met){
 
   plot(mettt, met.var = "rain", summary = TRUE, climatology = TRUE)
 
-  ### Summary for a sinlge year
+  ### Summary for a single year
   summary(mettt, years = 2012)
+  summary(mettt, years = 2012, anomaly.units = "absolute")
   
   plot(mettt, met.var = c("avg_maxt", "rain_sum"), 
        summary = TRUE, 
        plot.type = "anomaly",
        years = 2012)
   
+  plot(mettt, met.var = c("avg_maxt", "rain_sum"), 
+       summary = TRUE, 
+       plot.type = "anomaly",
+       anomaly.units = "absolute",
+       years = 2012)
+
+  plot(mettt, met.var = c("avg_maxt", "rain_sum"), 
+       summary = TRUE, 
+       plot.type = "anomaly",
+       anomaly.units = "standard",
+       years = 2012)
   
 }

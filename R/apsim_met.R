@@ -1555,8 +1555,63 @@ plot.met <- function(x, ..., years, met.var,
       if(missing(met.var)) 
         stop("'met.var' is missing with no default", call. = FALSE)
       
-      ax2 <- summary(x2, anomaly = met.var)
+      ax2 <- summary(x2, anomaly = met.var, ...)
+      
+      aunits <- attr(ax2, "anomaly.units")
+      
+      if(is.null(aunits)) stop("could not find units for anomaly variable", call. = FALSE)
+      ## browser()
+      ## valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg", "first_half_frost", "second_half_frost", "frost_free_period", "frost_days", "high_classic_tt", "avg_classic_tt", "high_heatstress_tt", "avg_heatstress_tt") 
+      if(length(met.var) >= 1){
+        met.var.aunits <- switch(met.var[1],
+                                 rain_sum = "(mm)",
+                                 rain_avg = "(mm)",
+                                 radn_sum = "(MJ/m2)",
+                                 radn_avg = "(MJ/m2)",
+                                 rh = "(%)",
+                                 high_maxt = "(degrees C)",
+                                 avg_maxt = "(degrees C)",
+                                 high_mint = "(degrees C)",
+                                 avg_mint = "(degrees C)",
+                                 vp = "(hPa)",
+                                 windspeed = "(m/s)",
+                                 high_classic_tt = "(Cd)",
+                                 avg_classic_tt = "(Cd)",
+                                 high_heatstress_tt = "(Cd)",
+                                 avg_heatstress_tt = "(Cd)",
+                                 CropHeatUnit_TT = "(Cd)",
+                                 photoperiod = "(hours)")
+        
+        if(aunits == "percent") aunits.label1 <- " (%)"
+        if(aunits == "standard.deviation") aunits.label1 <- paste(met.var.aunits, "- std. dev.")
+        if(aunits == "absolute") aunits.label1 <- met.var.aunits
+      }
 
+      if(length(met.var) > 1){
+        met.var.aunits <- switch(met.var[2],
+                                 rain_sum = "(mm)",
+                                 rain_avg = "(mm)",
+                                 radn_sum = "(MJ/m2)",
+                                 radn_avg = "(MJ/m2)",
+                                 rh = "(%)",
+                                 high_maxt = "(degrees C)",
+                                 avg_maxt = "(degrees C)",
+                                 high_mint = "(degrees C)",
+                                 avg_mint = "(degrees C)",
+                                 vp = "(hPa)",
+                                 windspeed = "(m/s)",
+                                 high_classic_tt = "(Cd)",
+                                 avg_classic_tt = "(Cd)",
+                                 high_heatstress_tt = "(Cd)",
+                                 avg_heatstress_tt = "(Cd)",
+                                 CropHeatUnit_TT = "(Cd)",
+                                 photoperiod = "(hours)")
+        
+        if(aunits == "percent") aunits.label2 <- " (%)"
+        if(aunits == "standard.deviation") aunits.label2 <- paste(met.var.aunits, "- std. dev.")
+        if(aunits == "absolute") aunits.label2 <- met.var.aunits
+      }
+      
       if(length(grep("anomaly", names(ax2))) == 1){
         if(missing(years)){
           gav <- grep("anomaly", names(ax2), value = TRUE)
@@ -1564,7 +1619,7 @@ plot.met <- function(x, ..., years, met.var,
           gp1 <- ggplot2::ggplot(data = ax2, ggplot2::aes(x = tav, y = 0)) + 
             ggplot2::geom_point() + 
             ggplot2::geom_vline(xintercept = 0) + 
-            ggplot2::xlab(paste("Anomaly", met.var, " (%)")) +
+            ggplot2::xlab(paste("Anomaly", met.var, aunits.label1)) +
             ggplot2::ylab("") + 
             ggplot2::scale_y_continuous(breaks = NULL)
         }else{
@@ -1576,7 +1631,7 @@ plot.met <- function(x, ..., years, met.var,
             ggplot2::geom_point(data = ax2, ggplot2::aes(x = tav, y = 0)) + 
             ggplot2::geom_point(data = sax2y, ggplot2::aes(x = tav, y = 0, color = Year), size = 4) + 
             ggplot2::geom_vline(xintercept = 0) + 
-            ggplot2::xlab(paste("Anomaly", met.var, " (%)")) + 
+            ggplot2::xlab(paste("Anomaly", met.var, aunits.label1)) + 
             ggplot2::ylab("") +
             ggplot2::scale_y_continuous(breaks = NULL)
         }
@@ -1599,8 +1654,8 @@ plot.met <- function(x, ..., years, met.var,
             ggplot2::geom_point() + 
             ggplot2::geom_hline(yintercept = 0) + 
             ggplot2::geom_vline(xintercept = 0) + 
-            ggplot2::xlab(paste("Anomaly", gsub("anomaly_", "", tavs[1]), " (%)")) + 
-            ggplot2::ylab(paste("Anomaly", gsub("anomaly_", "", tavs[2]), " (%)"))
+            ggplot2::xlab(paste("Anomaly", gsub("anomaly_", "", tavs[1]), aunits.label1)) + 
+            ggplot2::ylab(paste("Anomaly", gsub("anomaly_", "", tavs[2]), aunits.label2))
         }else{
           sax2y <- subset(ax2, year %in% years)
           sax2y$Year <- as.factor(sax2y$year)
@@ -1609,8 +1664,8 @@ plot.met <- function(x, ..., years, met.var,
             ggplot2::geom_point(data = sax2y, ggplot2::aes(x = tav1, y = tav2, color = Year), size = 4) +
             ggplot2::geom_hline(yintercept = 0) + 
             ggplot2::geom_vline(xintercept = 0) + 
-            ggplot2::xlab(paste("Anomaly", gsub("anomaly_", "", tavs[1]), " (%)")) + 
-            ggplot2::ylab(paste("Anomaly", gsub("anomaly_", "", tavs[2]), " (%)"))
+            ggplot2::xlab(paste("Anomaly", gsub("anomaly_", "", tavs[1]), aunits.label1)) + 
+            ggplot2::ylab(paste("Anomaly", gsub("anomaly_", "", tavs[2]), aunits.label2))
         }
       }
       print(gp1)
