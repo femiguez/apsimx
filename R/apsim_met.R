@@ -201,7 +201,7 @@ write_apsim_met <- function(met, wrt.dir = NULL, filename = NULL){
 #' @return It prints to console. Not used to return an R object.
 #' @export
 #' 
-print.met <- function(x,...){
+print.met <- function(x, ...){
   
   ## print the header and just head
   cat(attr(x, "filename"),"\n")
@@ -1138,6 +1138,10 @@ plot.met <- function(x, ..., years, met.var,
       classic_tt.climatology <- stats::aggregate(Classic_TT ~ day, data = x, FUN = mean)
       met.var.climatology <- cbind(met.var.climatology, classic_tt.climatology[, "Classic_TT", drop = FALSE])
     }
+    if(any(grepl("HeatStress_TT", names(x), fixed = TRUE))){
+      heatstress_tt.climatology <- stats::aggregate(HeatStress_TT ~ day, data = x, FUN = mean)
+      met.var.climatology <- cbind(met.var.climatology, heatstress_tt.climatology[, "HeatStress_TT", drop = FALSE])
+    }
   }
 
   if(!missing(years)){
@@ -1364,7 +1368,7 @@ plot.met <- function(x, ..., years, met.var,
       xdat <- NULL
       for(i in seq_along(sort(unique(x$year)))){
         yr <- sort(unique(x$year))[i]
-        x.tmp <- x[x$year == yr,]
+        x.tmp <- x[x$year == yr, ,drop = FALSE]
         if(nrow(x.tmp) < 365){
           message(paste("year:", unique(x$year)[i], "was removed as it is incomplete"))
           next ## Skip incomplete years
@@ -1418,9 +1422,9 @@ plot.met <- function(x, ..., years, met.var,
     }
     
     if(is.null(list(...)$compute.frost)){
-      valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg", "high_classic_tt", "avg_classic_tt") 
+      valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg", "high_classic_tt", "avg_classic_tt", "high_heatstress_tt", "avg_heatstress_tt") 
     }else{
-      valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg", "first_half_frost", "second_half_frost", "frost_free_period", "frost_days", "high_classic_tt", "avg_classic_tt") 
+      valid.met.vars <- c("high_maxt", "high_mint", "avg_maxt", "avg_mint", "low_maxt", "low_mint", "rain_sum", "radn_sum", "radn_avg", "first_half_frost", "second_half_frost", "frost_free_period", "frost_days", "high_classic_tt", "avg_classic_tt", "high_heatstress_tt", "avg_heatstress_tt") 
     }
     sel.met.var <- sapply(met.var, function(x) grep(x, valid.met.vars)) 
     if(length(sel.met.var) == 0 || is.list(sel.met.var)){
@@ -1448,6 +1452,12 @@ plot.met <- function(x, ..., years, met.var,
     
     if(any(grepl("frost", met.var)))
       ylabs <- "Days"
+    
+    if(any(grepl("classic", met.var)))
+      ylabs <- "Thermal Time (Cd)"
+    
+    if(any(grepl("heatstress", met.var)))
+      ylabs <- "Thermal Time (Cd)"
       
     if(plot.type == "density" && climatology){
       stmp2 <- summary(x2, ...) 
@@ -1460,6 +1470,7 @@ plot.met <- function(x, ..., years, met.var,
       
     stmp <- summary(x, ...)      
     tmp <- NULL
+
     for(i in seq_along(met.var)){
       dat <- data.frame(year = stmp$year, met.var = met.var[i], value = stmp[[met.var[i]]])
       tmp <- rbind(tmp, dat)

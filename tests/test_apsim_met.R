@@ -263,8 +263,7 @@ if(run.apsim.met){
   ggplot(data = mm4, aes(x = dates, y = radn.1)) + 
     geom_point() + 
     geom_smooth(formula = y ~ s(x, bs = "cs", k = 70, fx = TRUE))
-  
-  
+
   merge.test5 <- compare_apsim_met(pwr3[, 1:6], dmt[, 1:6], labels = c("POWER", "DAYMET"),
                                    check = FALSE)
   
@@ -314,7 +313,7 @@ if(run.apsim.met){
   
 }
 
-if(FALSE){
+if(run.apsim.met){
   
   ### How the heck does the 'Extract' work in 'met' files?
   ## Testing adding a column
@@ -328,6 +327,50 @@ if(FALSE){
   
   ames$vp <- vp ## This works now (2026-6-18)
   ames[["vp"]] <- vp ## This works now (2026-6-18)
+
+}
+
+#### Heatstress improvements ----
+if(run.apsim.met){
+  
+  ### Adding stress degree days to the quadrant
+  met <- get_power_apsim_met(c(-93, 42),
+                             dates = c("2000-01-01", "2025-12-31")) 
+  
+  plot(met, plot.type = "anomaly")
+  plot(met, plot.type = "anomaly", met.var = "rain")
+  plot(met, plot.type = "anomaly", met.var = "rain", years = 2020:2025)
+
+  mett <- tt_apsim_met(met, method = "HeatStress", 
+                       dates = c("01-05", "31-10"))
+  
+  summary(mett)
+  summary(mett, anomaly = TRUE)
+  
+  plot(mett, met.var ="HeatStress_TT")
+  plot(mett, met.var = "heatstress_tt", summary = TRUE)
+  
+  mettt <- tt_apsim_met(mett, method = "Classic", 
+                        dates = c("01-05", "31-10"))
+
+  summary(mettt)
+  
+  plot(mettt, met.var = "Classic_TT")
+  plot(mettt, met.var = "classic_tt", summary = TRUE)
+  plot(mettt, met.var = "high_classic_tt", summary = TRUE)
+  plot(mettt, met.var = "high_classic_tt", summary = TRUE, climatology = TRUE)
+
+  plot(mettt, met.var = "heatstress_tt", summary = TRUE, climatology = TRUE)
+
+  plot(mettt, met.var = "rain", summary = TRUE, climatology = TRUE)
+
+  ### Summary for a sinlge year
+  summary(mettt, years = 2012)
+  
+  plot(mettt, met.var = c("avg_maxt", "rain_sum"), 
+       summary = TRUE, 
+       plot.type = "anomaly",
+       years = 2012)
   
   
 }

@@ -503,21 +503,19 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   ## If I want to both compute frost and calculate Classic_TT
   nrws <- ifelse(by == "year", n.years, 12) 
     
-  if(compute.frost && "Classic_TT" %in% names(x)){
-    ans <- matrix(nrow = nrws, ncol = 18)  
-  }
-  if(!compute.frost && "Classic_TT" %in% names(x)){
-    ans <- matrix(nrow = nrws, ncol = 14) 
-  }
-  if(compute.frost && isFALSE("Classic_TT" %in% names(x))){
-    ans <- matrix(nrow = nrws, ncol = 16) 
-  }
-  if(!compute.frost && !"Classic_TT" %in% names(x)){
-    ans <- matrix(nrow = nrws, ncol = 12) 
-  }
+  ## I need designated columns for each variable and delete them if not 
+  ## needed
+  ## based number of columns is 12, 
+  ## compute.frost adds 4 [13:16]
+  ## Classic_TT adds 2 [17:18]
+  ## HeatStress_TT adds [19:20]
+  ## Total is 20
+  ## If I add compute frost and Classic_TT
+  ans <- matrix(nrow = nrws, ncol = 20)  
 
   if(by == "year"){
     ans[,1] <- sort(unique(x$year))
+    ## I don't know why I did this 
     x <- add_column_apsim_met(x, value = as.factor(x$year), name = "year", units = "()")
   }else{
     ans[,1] <- 1:12
@@ -564,7 +562,6 @@ summary.met <- function(object, ..., years, months, days, julian.days,
       ans[,7] <- round(stats::aggregate(mint ~ month, data = x, FUN = mean, na.rm = na.rm)$mint, digits)
       ans[,9] <- round(stats::aggregate(mint ~ month, data = x, FUN = min, na.rm = na.rm)$mint, digits)  
     }
-  
   }
   
   ## Total precipitation
@@ -785,75 +782,62 @@ summary.met <- function(object, ..., years, months, days, julian.days,
   }
   
   if("Classic_TT" %in% names(x)){
-    if(isFALSE(compute.frost)){
-      if(all(is.na(x$Classic_TT))){
-        ans[,13] <- NA
-        ans[,14] <- NA
-      }else{
-        if(by == "year"){
-          ans[,13] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
-          ans[,14] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
-        }
-        if(by == "month"){
-          ans[,13] <- round(stats::aggregate(Classic_TT ~ month, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
-          ans[,14] <- round(stats::aggregate(Classic_TT ~ month, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
-        }
-
-      }      
+    if(all(is.na(x$Classic_TT))){
+      ans[,17] <- NA
+      ans[,18] <- NA
     }else{
-      if(all(is.na(x$Classic_TT))){
-        ans[,17] <- NA
-        ans[,18] <- NA
-      }else{
-        if(by == "year"){
-          ans[,17] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
-          ans[,18] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
-        }
-        if(by == "month"){
-          ans[,17] <- round(stats::aggregate(Classic_TT ~ month, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
-          ans[,18] <- round(stats::aggregate(Classic_TT ~ month, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
-        }
-      } 
+      if(by == "year"){
+        ans[,17] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
+        ans[,18] <- round(stats::aggregate(Classic_TT ~ year, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
+      }
+      if(by == "month"){
+        ans[,17] <- round(stats::aggregate(Classic_TT ~ month, data = x, FUN = max, na.rm = na.rm)$Classic_TT, digits)
+        ans[,18] <- round(stats::aggregate(Classic_TT ~ month, data = x, FUN = mean, na.rm = na.rm)$Classic_TT, digits)
+      }
     }
   }
 
-  if(compute.frost && isFALSE("Classic_TT" %in% names(x))){
-    colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
-                       "high_maxt", "high_mint", ## 4 and 5
-                       "avg_maxt", "avg_mint", ## 6 and 7
-                       "low_maxt", "low_mint", ## 8 and 9
-                       "rain_sum", "radn_sum", "radn_avg", ## 10, 11, 12
-                       "first_half_frost", "second_half_frost", ## 13, 14
-                       "frost_free_period", "frost_days") ## 15, 16    
+  if("HeatStress_TT" %in% names(x)){
+    if(all(is.na(x$HeatStress_TT))){
+        ans[,19] <- NA
+        ans[,20] <- NA
+    }else{
+      if(by == "year"){
+        ans[,19] <- round(stats::aggregate(HeatStress_TT ~ year, data = x, FUN = max, na.rm = na.rm)$HeatStress_TT, digits)
+        ans[,20] <- round(stats::aggregate(HeatStress_TT ~ year, data = x, FUN = mean, na.rm = na.rm)$HeatStress_TT, digits)
+      }
+      if(by == "month"){
+        ans[,19] <- round(stats::aggregate(HeatStress_TT ~ month, data = x, FUN = max, na.rm = na.rm)$HeatStress_TT, digits)
+        ans[,20] <- round(stats::aggregate(HeatStress_TT ~ month, data = x, FUN = mean, na.rm = na.rm)$HeatStress_TT, digits)
+      }
+    }
+  }
+
+  colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
+                     "high_maxt", "high_mint", ## 4 and 5
+                     "avg_maxt", "avg_mint", ## 6 and 7
+                     "low_maxt", "low_mint", ## 8 and 9
+                     "rain_sum", "radn_sum", "radn_avg", ## 10, 11, 12
+                     "first_half_frost", "second_half_frost", ## 13, 14
+                     "frost_free_period", "frost_days", ## 15, 16
+                     "high_classic_tt", "avg_classic_tt", ## 17, 18
+                     "high_heatstress_tt", "avg_heatstress_tt") ## 19, 20
+
+  cols.to.delete <- NULL
+  
+  if(isFALSE(compute.frost)){
+    cols.to.delete <- c(cols.to.delete, 13:16)
+  }
+
+  if(isFALSE("Classic_TT" %in% names(x))){
+    cols.to.delete <- c(cols.to.delete, 17:18)
+  }
+    
+  if(isFALSE("HeatStress_TT" %in% names(x))){
+    cols.to.delete <- c(cols.to.delete, 19:20)
   }
   
-  if(isFALSE(compute.frost) && isFALSE("Classic_TT" %in% names(x))){
-    colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
-                       "high_maxt", "high_mint", ## 4 and 5
-                       "avg_maxt", "avg_mint", ## 6 and 7
-                       "low_maxt", "low_mint", ## 8 and 9
-                       "rain_sum", "radn_sum", "radn_avg") ## 10, 11, 12
-  }
-  
-  if(isFALSE(compute.frost) && isTRUE("Classic_TT" %in% names(x))){
-    colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
-                       "high_maxt", "high_mint", ## 4 and 5
-                       "avg_maxt", "avg_mint", ## 6 and 7
-                       "low_maxt", "low_mint", ## 8 and 9
-                       "rain_sum", "radn_sum", "radn_avg", ## 10, 11, 12
-                       "high_classic_tt", "avg_classic_tt") ## 13, 14 
-  }
-  
-  if(isTRUE(compute.frost) && isTRUE("Classic_TT" %in% names(x))){
-    colnames(ans) <- c("year", "months", "days", ## 1, 2, 3
-                       "high_maxt", "high_mint", ## 4 and 5
-                       "avg_maxt", "avg_mint", ## 6 and 7
-                       "low_maxt", "low_mint", ## 8 and 9
-                       "rain_sum", "radn_sum", "radn_avg", ## 10, 11, 12
-                       "first_half_frost", "second_half_frost", ## 13, 14
-                       "frost_free_period", "frost_days", ## 15, 16
-                       "high_classic_tt", "avg_classic_tt") ## 17, 18 
-  }
+  if(!is.null(cols.to.delete)) ans <- ans[, -cols.to.delete, drop = FALSE]
   
   if(by == "month"){
     clnms <- colnames(ans)

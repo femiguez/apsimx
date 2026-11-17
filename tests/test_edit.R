@@ -437,5 +437,51 @@ if(run.apsimx.edit){
                   soil.child = "Physical",
                   parm = "Wheat LL")
   
+  # Using the node = "Other" method
+  ppo <- inspect_apsimx("Wheat.apsimx",
+                        node = "Other",
+                        parm = list(1, 1, 5, 3, 1, 1, 2),
+                        print.path = TRUE)
+ 
+  edit_apsimx("Wheat.apsimx",
+              node = "Other",
+              parm.path = ppo,
+              value = rep(0.5, 7),
+              edit.tag = "-other")
+  
+  inspect_apsimx("Wheat-other.apsimx",
+                 node = "Soil",
+                 soil.child = "Physical",
+                 parm = "Wheat LL")
+}
+
+#### Testing Manager errors ----
+if(run.apsimx.edit){
+  
+  ex.dir <- auto_detect_apsimx_examples()
+  
+  ex2r <- dir(ex.dir)[c(4, 6, 22, 25, 28, 40, 41, 49)]
+  
+  for(i in ex2r){
+    inspect_apsimx(file.path(ex.dir, i),
+                   node = "Manager",
+                   parm = list("sowing", NA))
+    
+    inspect_apsimx(file.path(ex.dir, i),
+                   node = "Manager",
+                   parm = list("sowing", 0))
+  }
+  
+  i <- "Factorial.apsimx"
+  
+  inspect_apsimx(file.path(ex.dir, i),
+                 node = "Other",
+                 parm = list(1, 2, 3, 5, 4, 1, 1, 2),
+                 print.path = TRUE)
+
+  inspect_apsimx(file.path(ex.dir, i),
+                 node = "Other",
+                 parm = list(1, 5, 3, 5, 4, 3, 5),
+                 print.path = TRUE)
   
 }

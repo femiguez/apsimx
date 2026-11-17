@@ -6,9 +6,13 @@
 #' This option is useful when the intention is to show the simulation structure to pick a root presumably. \sQuote{parm}
 #' can be set as 0, 1, 2 or 3 for different levels.
 #' \sQuote{parm} can also be a list with integers, such as \sQuote{list(1, 2, 3)}. If zero is included, available elements
-#  will be displayed. At the moment, the maximum length of this list is 7.
+#  will be displayed. At the moment, the maximum length of this list is 10.
 #' If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied.
 #'
+#' When node = \sQuote{Manager}, the argument \sQuote{parm} needs to be a list of length 2. The
+#' first element should match one of the manager children and the second one should be the position of
+#' the target parameter. If this second element is zero or NA all components will be printed.
+#' 
 #' @title Inspect an .apsimx (JSON) file
 #' @name inspect_apsimx
 #' @description inspect a JSON apsimx file. It does not replace the GUI, but it can save time by quickly checking parameters and values.
@@ -817,13 +821,17 @@ inspect_apsimx <- function(file = "",
     cat("Management Scripts: ", manager.node.names,"\n\n")
 
     if(!is.null(parm)){
+      if(length(parm) != 2)
+        stop("'parm' needs to be of length 2", call. = FALSE)
       parm1 <- parm[[1]]
       position <- parm[[2]]
       find.manager <- grep(parm1, manager.node.names, ignore.case = TRUE)
+      if(length(find.manager) != 1)
+        stop("Manager child not found or not unique", call. = FALSE)
       selected.manager.node <- manager.node.names[find.manager]
       parm.path <- paste0(parm.path.2, ".", selected.manager.node)
 
-      if(is.na(position)){
+      if(is.na(position) || position == 0){
         ms.params <- manager.node[[find.manager]]$Parameters
         if(length(ms.params) == 0) warning("parameter not found")
 
@@ -841,9 +849,14 @@ inspect_apsimx <- function(file = "",
         cat("\n")
       }
 
-      if(!is.na(position)){
+      if(!is.na(position) && position != 0){
         ms.params <- manager.node[[find.manager]]$Parameters
+        
         if(length(ms.params) == 0) warning("no parameters found")
+        
+        if(position > length(ms.params))
+          stop("position is not within the range of parameters", call. = FALSE)
+        
         mat <- matrix(NA, ncol=2, nrow = length(position),
                       dimnames = list(NULL, c("parm", "value")))
 
@@ -1241,6 +1254,114 @@ inspect_apsimx <- function(file = "",
           }
         }
         if(length(parm) >= 8){
+          
+          names.level.7 <- FALSE
+          root.names.level.7 <- vapply(wlevel6$Children, FUN = function(x) x$Name,
+                                       FUN.VALUE = "character")
+          if(length(root.names.level.7) == 0){
+            root.names.level.7 <- names(wlevel6)
+            names.level.7 <- TRUE
+          }
+          if(length(parm[[8]]) == 1){
+            if(parm[[8]] > 0){
+              if(names.level.7){
+                selected.names <- root.names.level.7[parm[[8]]]
+                ##pdat <- data.frame(sixth_level = selected.names)
+                ##print(knitr::kable(pdat, row.names = TRUE))
+                parm.path <- paste0(parm.path, ".", selected.names)
+              }else{
+                wlevel7 <- try(apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]$Children[[parm[[5]]]]$Children[[parm[[6]]]]$Children[[parm[[7]]]]$Children[[parm[[8]]]], silent = TRUE)
+                if(inherits(wlevel7, "try-error"))
+                  stop("parm[[8]] did not match an available node", call. = FALSE)
+                parm.path <- paste0(parm.path, ".", root.names.level.7[parm[[8]]])
+              }
+            }else{
+              pdat <- data.frame(eigth_level = root.names.level.7)
+              print(knitr::kable(pdat, row.names = TRUE))
+            }
+          }else{
+            ### Here I assume that parm[[7]] is a vector
+            if(length(parm[[8]]) > length(root.names.level.7))
+              stop("Length of parm[[8]] should be less than number of elements in the eight level")
+            selected.levels <- root.names.level.7[parm[[8]]]
+            parm.path <- paste0(parm.path, ".", selected.levels)
+            pdat <- data.frame(eigth_level = root.names.level.7)
+            print(knitr::kable(pdat[parm[[8]],, drop = FALSE], row.names = TRUE))
+          }
+        }
+        if(length(parm) >= 9){
+          
+          names.level.8 <- FALSE
+          root.names.level.8 <- vapply(wlevel7$Children, FUN = function(x) x$Name,
+                                       FUN.VALUE = "character")
+          if(length(root.names.level.8) == 0){
+            root.names.level.8 <- names(wlevel7)
+            names.level.8 <- TRUE
+          }
+          if(length(parm[[9]]) == 1){
+            if(parm[[9]] > 0){
+              if(names.level.8){
+                selected.names <- root.names.level.8[parm[[9]]]
+                ##pdat <- data.frame(sixth_level = selected.names)
+                ##print(knitr::kable(pdat, row.names = TRUE))
+                parm.path <- paste0(parm.path, ".", selected.names)
+              }else{
+                wlevel8 <- try(apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]$Children[[parm[[5]]]]$Children[[parm[[6]]]]$Children[[parm[[7]]]]$Children[[parm[[8]]]]$Children[[parm[[9]]]], silent = TRUE)
+                if(inherits(wlevel8, "try-error"))
+                  stop("parm[[9]] did not match an available node", call. = FALSE)
+                parm.path <- paste0(parm.path, ".", root.names.level.8[parm[[9]]])
+              }
+            }else{
+              pdat <- data.frame(ninth_level = root.names.level.8)
+              print(knitr::kable(pdat, row.names = TRUE))
+            }
+          }else{
+            ### Here I assume that parm[[7]] is a vector
+            if(length(parm[[9]]) > length(root.names.level.8))
+              stop("Length of parm[[9]] should be less than number of elements in the ninth level")
+            selected.levels <- root.names.level.8[parm[[9]]]
+            parm.path <- paste0(parm.path, ".", selected.levels)
+            pdat <- data.frame(ninth_level = root.names.level.8)
+            print(knitr::kable(pdat[parm[[9]],, drop = FALSE], row.names = TRUE))
+          }
+        }
+        if(length(parm) >= 10){
+          
+          names.level.9 <- FALSE
+          root.names.level.9 <- vapply(wlevel8$Children, FUN = function(x) x$Name,
+                                       FUN.VALUE = "character")
+          if(length(root.names.level.9) == 0){
+            root.names.level.9 <- names(wlevel8)
+            names.level.9 <- TRUE
+          }
+          if(length(parm[[10]]) == 1){
+            if(parm[[10]] > 0){
+              if(names.level.9){
+                selected.names <- root.names.level.9[parm[[10]]]
+                ##pdat <- data.frame(sixth_level = selected.names)
+                ##print(knitr::kable(pdat, row.names = TRUE))
+                parm.path <- paste0(parm.path, ".", selected.names)
+              }else{
+                wlevel9 <- try(apsimx_json$Children[[parm[[2]]]]$Children[[parm[[3]]]]$Children[[parm[[4]]]]$Children[[parm[[5]]]]$Children[[parm[[6]]]]$Children[[parm[[7]]]]$Children[[parm[[8]]]]$Children[[parm[[9]]]]$Children[[parm[[10]]]], silent = TRUE)
+                if(inherits(wlevel9, "try-error"))
+                  stop("parm[[10]] did not match an available node", call. = FALSE)
+                parm.path <- paste0(parm.path, ".", root.names.level.9[parm[[10]]])
+              }
+            }else{
+              pdat <- data.frame(tenth_level = root.names.level.9)
+              print(knitr::kable(pdat, row.names = TRUE))
+            }
+          }else{
+            ### Here I assume that parm[[7]] is a vector
+            if(length(parm[[10]]) > length(root.names.level.9))
+              stop("Length of parm[[10]] should be less than number of elements in the tenth level")
+            selected.levels <- root.names.level.9[parm[[10]]]
+            parm.path <- paste0(parm.path, ".", selected.levels)
+            pdat <- data.frame(tenth_level = root.names.level.9)
+            print(knitr::kable(pdat[parm[[10]],, drop = FALSE], row.names = TRUE))
+          }
+        }
+        if(length(parm) >= 11){
           stop("Have not developed this yet", call. = FALSE)
         }
       }else{

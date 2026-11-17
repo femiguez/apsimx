@@ -53,6 +53,10 @@ can be set as 0, 1, 2 or 3 for different levels.
 \sQuote{parm} can also be a list with integers, such as \sQuote{list(1, 2, 3)}. If zero is included, available elements
 If a parameter is specified the function will try to \sQuote{guess} the root elements from the parameter path supplied.
 
+When node = \sQuote{Manager}, the argument \sQuote{parm} needs to be a list of length 2. The
+first element should match one of the manager children and the second one should be the position of
+the target parameter. If this second element is zero or NA all components will be printed.
+
 This is simply a script that prints the relevant parameters which are likely to need editing. It does not print all information from an .apsimx file.
          To investigate the available \sQuote{soil.childs} specify \sQuote{Soil} for \sQuote{node} and do not specify the \sQuote{soil.child}.
 }
